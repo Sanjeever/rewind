@@ -2,7 +2,6 @@ const _default = require("@react-native-clipboard/clipboard").default;
 const _default2 = require("./../components/Text.js").default;
 const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
 const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
-const _asyncRuntime = require("@babel/runtime/helpers/regeneratorRuntime")();
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -37,44 +36,27 @@ var React = _interopRequireWildcard(require("react")),
           return e + t.interval;
         }, 0) : void 0;
       };
-      a.netEaseAlbum = function (e) {
-        var t, n, i, o, l, r, u, s;
-        return _asyncRuntime.async(function (d) {
-          for (;;) switch (d.prev = d.next) {
-            case 0:
-              d.next = 2;
-              return _asyncRuntime.awrap(services.Netease.album(e));
-            case 2:
-              if (t = d.sent, !(0, utils.usable)(t)) {
-                d.next = 14;
-                break;
-              }
-              if (n = t.album, 200 === (i = t.code)) {
-                d.next = 8;
-                break;
-              }
-              toast(locales.default.ERROR + " -> " + i);
-              return d.abrupt("return");
-            case 8:
-              o = n.songs;
-              l = t.album;
-              r = utils.timeFormatter.localeString(l.publishTime);
-              u = l.company;
-              s = l.description;
-              o && (a.setState({
-                data: o,
-                loaded: true,
-                id: e,
-                publishTime: r,
-                company: u,
-                description: s,
-                duration: a.getDurationSum(o)
-              }), a.netEaseIsLikedAlbum());
-            case 14:
-            case "end":
-              return d.stop();
-          }
-        }, null, this);
+      a.netEaseAlbum = async function (id) {
+        const response = await services.Netease.album(id);
+        if (!utils.usable(response)) return;
+        if (response.code !== 200) {
+          toast(locales.default.ERROR + ' -> ' + response.code);
+          return;
+        }
+        const album = response.album;
+        const songs = response.songs || album.songs;
+        if (songs) {
+          a.setState({
+            data: songs,
+            loaded: true,
+            id,
+            publishTime: utils.timeFormatter.localeString(album.publishTime),
+            company: album.company,
+            description: album.description,
+            duration: a.getDurationSum(songs)
+          });
+          await a.netEaseIsLikedAlbum();
+        }
       };
       a.qqMusicAlbum = function (e) {
         services.QQMusic.album_song(e).then(function (t) {
@@ -199,46 +181,20 @@ var React = _interopRequireWildcard(require("react")),
           }
         }]) : a.onLikeAlbumImpl();
       };
-      a.netEaseIsLikedAlbum = function () {
-        var e, t, n, i, o;
-        return _asyncRuntime.async(function (l) {
-          for (;;) switch (l.prev = l.next) {
-            case 0:
-              l.next = 2;
-              return _asyncRuntime.awrap(services.Netease.sublist_album({
-                limit: 1e3
-              }));
-            case 2:
-              e = l.sent;
-              (0, utils.usable)(e) && (t = e.code, n = e.data, 200 === t && n.length > 0 && (i = a.state.id, o = n.filter(function (e) {
-                return e.id === i;
-              }), a.setState({
-                followed: o.length > 0
-              })));
-            case 4:
-            case "end":
-              return l.stop();
-          }
-        }, null, this);
+      a.netEaseIsLikedAlbum = async function () {
+        const response = await services.Netease.sublist_album({
+          limit: 1000
+        });
+        if (response?.code === 200 && Array.isArray(response.data)) a.setState({
+          followed: response.data.some(album => album.id === a.state.id)
+        });
       };
-      a.netEaseLikeAlbum = function (e, t) {
-        var a, n;
-        return _asyncRuntime.async(function (i) {
-          for (;;) switch (i.prev = i.next) {
-            case 0:
-              i.next = 2;
-              return _asyncRuntime.awrap(services.Netease.sublist_album_add({
-                id: e,
-                op: true === t ? 'sub' : 'unsub'
-              }));
-            case 2:
-              a = i.sent;
-              (0, utils.usable)(a) && 200 !== (n = a.code) && toast(locales.default.ERROR + " -> " + n);
-            case 4:
-            case "end":
-              return i.stop();
-          }
-        }, null, this);
+      a.netEaseLikeAlbum = async function (id, like) {
+        const response = await services.Netease.sublist_album_add({
+          id,
+          op: like === true ? 'sub' : 'unsub'
+        });
+        if (utils.usable(response) && response.code !== 200) toast(locales.default.ERROR + ' -> ' + response.code);
       };
       a.onTop = function () {
         var e;

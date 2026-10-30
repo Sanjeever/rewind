@@ -1,7 +1,6 @@
 const _default = require("@react-native-clipboard/clipboard").default;
 const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
 const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
-const _asyncRuntime = require("@babel/runtime/helpers/regeneratorRuntime")();
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -57,24 +56,16 @@ var x = {
         releaseMode: R.all,
         albumsGroup: [],
         singlesAndEpsGroup: []
-      }, a.getNeteaseArtistSongs = function (e) {
-        var t, n, r, s, l, i;
-        return _asyncRuntime.async(function (o) {
-          for (;;) switch (o.prev = o.next) {
-            case 0:
-              o.next = 2;
-              return _asyncRuntime.awrap(services.Netease.artist(e));
-            case 2:
-              (t = o.sent) && (n = t.hotSongs, r = t.artist, s = r.img1v1Url ? r.img1v1Url + '?param=500y500' : null, l = r.followed || false, i = (0, artistAliases.default)(r), a.setState({
-                hotSongs: n,
-                followed: l,
-                subtitle: i
-              }), a.setImgUrl(s));
-            case 4:
-            case "end":
-              return o.stop();
-          }
-        }, null, this);
+      }, a.getNeteaseArtistSongs = async function (id) {
+        const response = await services.Netease.artist(id);
+        if (!response?.artist) return;
+        const artist = response.artist;
+        a.setState({
+          hotSongs: response.hotSongs,
+          followed: artist.followed || false,
+          subtitle: artistAliases.default(artist)
+        });
+        a.setImgUrl(artist.img1v1Url ? artist.img1v1Url + '?param=500y500' : null);
       }, a.getQQmusicArtistSongs = function (e) {
         services.QQMusic.artist_song(e).then(function (e) {
           (null === e || void 0 === e ? void 0 : e.length) > 0 && a.setState({
@@ -109,55 +100,29 @@ var x = {
             a.getAlbums(n, t);
             a.getMVs(n, t);
         }
-      }, a.getAlbums = function (e, t) {
-        var n, r, s;
-        return _asyncRuntime.async(function (l) {
-          for (;;) switch (l.prev = l.next) {
-            case 0:
-              l.next = 2;
-              return _asyncRuntime.awrap(albumPagination.default.albums({
-                id: e,
-                api: t
-              }));
-            case 2:
-              n = l.sent;
-              r = [];
-              s = [];
-              t === providers.default.qqMusic ? n.forEach(function (e) {
-                e.albumtype.includes('\u4e13\u8f91') ? r.push(e) : s.push(e);
-              }) : n.forEach(function (e) {
-                '\u4e13\u8f91' === e.type ? r.push(e) : s.push(e);
-              });
-              a.setState({
-                albums: n,
-                albumsGroup: r,
-                singlesAndEpsGroup: s
-              });
-            case 7:
-            case "end":
-              return l.stop();
-          }
-        }, null, this);
-      }, a.getMVs = function (e, t) {
-        var n;
-        return _asyncRuntime.async(function (r) {
-          for (;;) switch (r.prev = r.next) {
-            case 0:
-              r.next = 2;
-              return _asyncRuntime.awrap(albumPagination.default.mvs({
-                api: t,
-                id: e
-              }));
-            case 2:
-              n = r.sent;
-              a.setState({
-                mvs: n
-              });
-            case 4:
-            case "end":
-              return r.stop();
-          }
-        }, null, this);
+      }, a.getAlbums = async function (id, api) {
+        const albums = await albumPagination.default.albums({
+          id,
+          api
+        });
+        const albumsGroup = [],
+          singlesAndEpsGroup = [];
+        for (const album of albums) {
+          const full = api === providers.default.qqMusic ? album.albumtype.includes('专辑') : album.type === '专辑';
+          (full ? albumsGroup : singlesAndEpsGroup).push(album);
+        }
+        a.setState({
+          albums,
+          albumsGroup,
+          singlesAndEpsGroup
+        });
+      }, a.getMVs = async function (id, api) {
+        a.setState({
+          mvs: await albumPagination.default.mvs({
+            id,
+            api
+          })
+        });
       }, a.setImgUrl = function (e) {
         e && a.setState({
           artistImg: e
@@ -194,51 +159,20 @@ var x = {
             a.onLikeArtistImpl();
           }
         }]) : a.onLikeArtistImpl();
-      }, a.qqMusicLikeArtist = function (e, t) {
-        var n, a, r, s;
-        return _asyncRuntime.async(function (l) {
-          for (;;) switch (l.prev = l.next) {
-            case 0:
-              l.next = 2;
-              return _asyncRuntime.awrap(users.default.getUserInfo());
-            case 2:
-              if ('object' != typeof (n = l.sent)) {
-                l.next = 7;
-                break;
-              }
-              a = n.qqMusic;
-              r = a.userId;
-              s = a.cookies;
-              l.next = 7;
-              return _asyncRuntime.awrap(services.QQMusic.like_artist({
-                mid: e,
-                cookies: s,
-                userId: r,
-                isLike: t
-              }));
-            case 7:
-            case "end":
-              return l.stop();
-          }
-        }, null, this);
-      }, a.netEaseLikeArtist = function (e, t) {
-        var n;
-        return _asyncRuntime.async(function (a) {
-          for (;;) switch (a.prev = a.next) {
-            case 0:
-              a.next = 2;
-              return _asyncRuntime.awrap(services.Netease.sublist_artist_add({
-                id: e,
-                op: true === t ? 'sub' : 'unsub'
-              }));
-            case 2:
-              n = a.sent;
-              (0, utils.usable)(n) && 200 !== n.code && toast(locales.default.ERROR);
-            case 4:
-            case "end":
-              return a.stop();
-          }
-        }, null, this);
+      }, a.qqMusicLikeArtist = async function (mid, isLike) {
+        const account = (await users.default.getUserInfo())?.qqMusic;
+        if (account) await services.QQMusic.like_artist({
+          mid,
+          cookies: account.cookies,
+          userId: account.userId,
+          isLike
+        });
+      }, a.netEaseLikeArtist = async function (id, like) {
+        const response = await services.Netease.sublist_artist_add({
+          id,
+          op: like === true ? 'sub' : 'unsub'
+        });
+        if (utils.usable(response) && response.code !== 200) toast(locales.default.ERROR);
       }, a.onTop = function () {
         var e, t;
         null === (e = (t = a._list).scrollToBegin) || void 0 === e || e.call(t);
