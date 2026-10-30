@@ -1,908 +1,576 @@
-const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
-const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
-const _assertThisInitialized = require("@babel/runtime/helpers/assertThisInitialized");
-const _appStorage = require("./../storage/index.js");
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-var React = require("react"),
-  ReactNative = require("react-native"),
-  providers = _interopRequireDefault(require("../services/providers")),
-  constants = require("../theme/constants"),
-  names = _interopRequireDefault(require("../events/names")),
-  keys = _interopRequireDefault(require("../storage/keys")),
-  locales = _interopRequireDefault(require("../locales/index")),
-  services = require("../services/index"),
-  events = require("../events/index"),
-  utils = require("../utils/index"),
-  types = _interopRequireWildcard(require("../utils/types")),
-  trackInfo = require("../services/trackInfo"),
-  audioPlayer = _interopRequireDefault(require("../native/audioPlayer")),
-  timer = _interopRequireDefault(require("../native/timer")),
-  mediaStore = _interopRequireDefault(require("../native/mediaStore")),
-  shutdown = _interopRequireDefault(require("../native/shutdown")),
-  wakeLock = _interopRequireDefault(require("../native/wakeLock")),
-  files = require("../storage/files"),
-  lastSong = _interopRequireDefault(require("../storage/lastSong")),
-  lastTime = _interopRequireDefault(require("../storage/lastTime")),
-  lastQueue = _interopRequireDefault(require("../storage/lastQueue")),
-  history = require("../storage/history"),
-  cache = _interopRequireDefault(require("./cache")),
-  lyricPreferences = _interopRequireDefault(require("./lyricPreferences")),
-  queue = require("./queue"),
-  playModeModule = _interopRequireDefault(require("./playMode")),
-  lyrics = _interopRequireDefault(require("./lyrics")),
-  trackUrl = _interopRequireDefault(require("./trackUrl")),
-  notification = _interopRequireDefault(require("./notification")),
-  queueActions = _interopRequireDefault(require("./queueActions")),
-  gestures = _interopRequireDefault(require("./gestures")),
-  playOrder = require("./playOrder"),
-  F = null,
-  H = 600,
-  U = class a extends React.PureComponent {
-    lyricRequest = 0;
-    constructor() {
-      var e, t, n;
-      for (var r = arguments.length, i = new Array(r), M = 0; M < r; M++) i[M] = arguments[M];
-      return t = n = super(...i), n.ANIMATION_CONFIG = ReactNative.LayoutAnimation.create(400, ReactNative.LayoutAnimation.Types.easeOut, ReactNative.LayoutAnimation.Properties.opacity), n.TEMP_DATA = {}, n.animatedOpacity = new ReactNative.Animated.Value(1), n.AUDIO_FOCUS_TYPE = null, n.state = {
-        url: '',
-        playState: 'paused',
-        currentTime: 0,
-        duration: 0,
-        expanded: false,
-        playMode: 'list',
-        showLyric: false,
-        loaded: false,
-        showTool: true,
-        isLike: false,
-        volume: 1,
-        color: '#fff',
-        showSlider: false,
-        showTrans: true,
-        showCoverElevation: true,
-        randomArray: [],
-        isFM: false,
-        lyricFontSize: 15,
-        retriedTimes: 0,
-        currentMiniLyric: '',
-        pid: void 0,
-        playingSongUID: void 0,
-        lastPlayedTracksLoaded: false,
-        isBackground: false
-      }, n.handleAppStateChange = function (e) {
-        'background' === e ? (n.backgroundStatusChanged(true), n.setState({
-          isBackground: true
-        })) : 'active' === e && (n.backgroundStatusChanged(false), n.setState({
-          isBackground: false
-        }));
-      }, n.backgroundStatusChanged = function (e) {
-        if (false === e) timer.default.setTimeout(function () {
-          n.intervalCurrentTimeGetter();
-        }, H);else {
-          var t,
-            a = n.state.currentTime;
-          (null === (t = n.props.settings) || void 0 === t ? void 0 : t.autoLoadLastPlayedTracks) && lastTime.default.save(a);
-        }
-      }, n.preparePlay = function (url) {
-        if (!types.isString(url)) {
-          n.errorWhenPlay();
-          return;
-        }
-        n.initialPlay(url);
-        lastSong.default.save(n.props.api, n.props.songItem).catch(error => toast('保存播放记录失败：' + error.message));
-        n.saveLastPlayedTracks();
-      }, n.saveLastPlayedTracks = function () {
-        if (n.props.settings?.autoLoadLastPlayedTracks) {
-          const {
-            api,
-            tracks,
-            playingIndex
-          } = n.props;
-          return lastQueue.default.save({
-            tracks,
-            index: playingIndex,
-            api
-          }).catch(error => toast('保存队列失败：' + error.message));
-        }
-      }, n.recordPlayed = async function (song) {
-        if (n.props.api !== providers.default.netEase || !n.props.settings.recordPlayCount) return;
-        const result = await services.Netease.play_count(song.id, song.album?.id || song.al?.id, Math.floor(song.dt / 1000));
-        if (result?.code !== 200) toast(locales.default.ERROR);
-      }, n.errorWhenPlay = function () {
-        var e = arguments.length > 0 && void 0 !== arguments[0] && arguments[0],
-          t = n.state.retriedTimes;
-        if ((true === n.props.settings.autoErrorNext || t >= 5) && !e) {
-          n.changeSong('next');
-          return void n.setState({
-            retriedTimes: 0
-          });
-        }
-        var a = n.props,
-          r = a.tracks,
-          i = a.playingIndex,
-          s = a.api,
-          o = r[i];
-        n.musicPlayerEmitter({
-          song: o,
-          data: r,
-          index: i,
-          api: s
-        });
-        n.setState({
-          retriedTimes: t + 1
-        });
-      }, n.initialPlay = function (e) {
-        try {
-          F = new audioPlayer.default(e, function (e) {
-            e ? n.errorWhenPlay(4 === e.type) : n.playSound(true);
-          });
-        } catch (e) {
-          return null;
-        }
-      }, n.playSound = function () {
-        var e,
-          t = arguments.length > 0 && void 0 !== arguments[0] && arguments[0];
-        null === (e = F) || void 0 === e || e.play(function (e) {
-          e && n.finishPlay();
-        });
-        n.updatePlayType('PLAYING');
-        t && n.lastPlayedTracksCheck();
-      }, n.lastPlayedTracksCheck = function () {
-        var e;
-        !n.state.lastPlayedTracksLoaded && (null === (e = n.props.settings) || void 0 === e ? void 0 : e.autoLoadLastPlayedTracks) ? (n.seekToLastPlayedTime(), n.setState({
-          lastPlayedTracksLoaded: true
-        })) : n.playSound();
-      }, n.seekToLastPlayedTime = async function () {
-        try {
-          const seconds = await lastTime.default.get();
-          n.seekTo(seconds, false);
-          n.pauseSound();
-          await lastTime.default.save(0);
-        } catch (error) {
-          n.pauseSound();
-          toast('恢复进度失败：' + error.message);
-        }
-      }, n.onlyPause = function () {
-        try {
-          var e;
-          null === (e = F) || void 0 === e || e.pause();
-        } catch (e) {
-          return null;
-        }
-      }, n.pauseSound = function () {
-        n.onlyPause();
-        'paused' !== n.state.playState && n.updatePlayType('PAUSED');
-      }, n.switchSong = function () {
-        n.onlyPause();
-        n.setLyric(null, false);
-        n.setState({
-          duration: 0,
-          currentTime: 0,
-          loaded: false,
-          currentMiniLyric: ''
-        });
-      }, n.exit = async function () {
-        try {
-          if (n.props.settings?.autoLoadLastPlayedTracks) {
-            const seconds = F?.isLoaded() ? await new Promise(resolve => F.getCurrentTime(resolve)) : n.state.currentTime;
-            await lastTime.default.save(seconds);
-          }
-          shutdown.default.fire();
-        } catch (error) {
-          toast('保存进度失败：' + error.message);
-        }
-      }, n.setVolume = function (e) {
-        var t;
-        null === (t = F) || void 0 === t || t.setVolume(e);
-      }, n.seekTo = function (e) {
-        var t,
-          a = !(arguments.length > 1 && void 0 !== arguments[1]) || arguments[1];
-        null === (t = F) || void 0 === t || t.setCurrentTime(e, a);
-        a && n.playSound();
-      }, n.onBackPress = function () {
-        return true === n.state.showLyric ? (n.onTap(), true) : true === n.state.expanded && (n._playerClose(), true);
-      }, n.musicControlLoad = function () {
-        var e = n.props.api,
-          t = n.props.songItem,
-          a = (0, trackInfo.extractFullInfo)(t, 'big');
-        if (a.song && null != a.img) {
-          var r = 'local' === e ? null : a.img;
-          audioPlayer.default.setNowPlaying({
-            title: a.song,
-            artwork: r,
-            album: a.album,
-            artist: (0, utils.parseArtist)(a.singer)
-          });
-        }
-      }, n.musicPlayerEmitter = function (e) {
-        if (e) {
-          if ('clearPlayingList' === e.type) return void n.clearPlayingList();
-          if (n.switchSong(), !types.isObject(e.song) || !types.isArray(e.data)) return void n.setState({
-            url: null
-          });
-          var selection = queue.selectQueue(n.props, e, n.state.playMode),
-            a = selection.api,
-            r = selection.playingIndex,
-            i = selection.songItem,
-            s = selection.tracks,
-            o = (0, trackInfo.extractFullInfo)(i, true === n.state.expanded ? 'big' : 'small');
-          'random' === n.state.playMode && s.length !== n.props.tracks.length && n.setState({randomArray: playOrder.createPlayOrder(s.length)});
-          n.loadPlayerResource({
-            api: a,
-            obj: o,
-            songItem: i,
-            index: r,
-            data: s,
-            pid: e.pid
-          });
-        }
-      }, n.clearPlayingList = function () {
-        n.setState({
-          url: '',
-          expanded: false,
-          duration: 0,
-          currentTime: 0,
-          loaded: false,
-          currentMiniLyric: '',
-          playerStyle: null,
-          imgStyle: null,
-          expanded: false,
-          showLyric: false,
-          showSlider: false
-        });
-        n.setLyric(null, false);
-        n.props.setPlayerData({
-          tracks: [],
-          songItem: null,
-          songItemInfo: {
-            singer: null,
-            song: null
-          },
-          playingIndex: null,
-          api: null
-        });
-        n.pauseSound();
-      }, n.saveDataBeforeIsFM = function (e) {
-        true !== e || n.TEMP_DATA.tracks ? e || (n.TEMP_DATA = {}) : n.TEMP_DATA = {
-          tracks: n.props.tracks,
-          playingIndex: n.props.playingIndex,
-          songItem: n.props.songItem
-        };
-      }, n.loadPlayerResource = function (e) {
-        var t = e.api,
-          a = e.obj,
-          r = e.songItem,
-          i = e.index,
-          s = e.data,
-          o = e.pid;
-        (0, history.musicHistory)(r, t);
-        n.props.setPlayerData({
-          tracks: s,
-          songItem: r,
-          songItemInfo: {
-            song: a.song,
-            singer: a.singer,
-            uid: a.uid
-          },
-          playingIndex: i,
-          api: t
-        });
-        n.setLyric(null, false);
-        n.setState({
-          url: a.img,
-          playingSongUID: a.uid,
-          pid: o,
-          isFM: Boolean(r.isFM)
-        }, function () {
-          n.musicControlLoad();
-          n.prepareMusic({
-            data: s,
-            song: r,
-            index: i
-          }, a, t);
-        });
-        n.loadLikelist(r, t);
-        n.getLyric(t, a, r);
-      }, n.getLyric = async function (api, obj, songItem) {
-        const request = ++n.lyricRequest;
-        try {
-          const result = await lyrics.default.getLyric({
-            api,
-            obj,
-            songItem
-          });
-          if (request === n.lyricRequest) n.setLyric(result.lyric, result.hasTrans);
-        } catch (error) {
-          if (request !== n.lyricRequest || error.code === 'ERR_CANCELED') return;
-          n.setLyric(null, false);
-          toast('歌词加载失败：' + error.message);
-        }
-      }, n.setLyric = function (e, t) {
-        n.props.setLyric(e, t);
-      }, n._volumeOnPanResponderRelease = function (e, t) {
-        var a = t.dy;
-        Math.abs(a) > 20 && audioPlayer.default.showSystemStreamVolumeUI();
-      }, n._sliderOnPanResponderMove = function (e, t) {
-        var a = n.state,
-          r = a.currentTime,
-          i = a.duration;
-        if (!(t.x0 < 15 || t.x0 > constants.DEVICE_WIDTH - 15)) {
-          var s = t.moveY - n.y0,
-            o = gestures.default.stepMap(s),
-            u = Math.floor(o / 200 * i);
-          n.y0 = t.moveY;
-          var d = r + u;
-          d = (d = d >= i ? i : d) <= 0 ? 0 : d;
-          n.onSliderValueChange(d);
-        }
-      }, n._sliderOnPanResponderRelease = function (e, t) {
-        var a = n.state.currentTime;
-        gestures.default.isOverEdge({
-          gestureState: t,
-          DEVICE_WIDTH: constants.DEVICE_WIDTH
-        }) ? n.fallBackPlayType && n.setState({
-          playState: n.fallBackPlayType
-        }, function () {
-          n.getMusicTimeInfo('currentTime');
-          n.intervalCurrentTimeGetter();
-        }) : n.slidingEnd(a);
-        n.y0 = null;
-        n.sliding = null;
-        n.fallBackPlayType = null;
-      }, n.loadLikelist = function (e, t) {
-        e && _appStorage.storage.load({
-          key: keys.default.likelist
-        }).then(function (a) {
-          var r,
-            i = false,
-            s = a.netEase;
-          switch (t) {
-            case providers.default.netEase:
-              r = e.id;
-              s.filter(function (e) {
-                e === r && (i = true);
-              });
-              break;
-            case providers.default.qqMusic:
-              r = e.mid || e.songmid;
-              a.qqMusic.filter(function (e) {
-                e === r && (i = true);
-              });
-          }
-          n.setState({
-            isLike: i
-          });
-        }).catch(function () {
-          n.setState({
-            isLike: false
-          });
-        });
-      }, n.matchLocalImg = async function (song) {
-        const keywords = song.title + ' ' + song.singer;
-        const response = await services.Netease.search({
-          keywords
-        });
-        if (!types.isObject(response)) return;
-        let match = response.result?.songs?.[0];
-        if (!response.result?.songs) {
-          const songs = await services.QQMusic.searchSong(keywords);
-          match = songs?.find(item => item.interval === Math.floor(song.duration / 1000));
-        }
-        if (!match) return;
-        const info = trackInfo.extractFullInfo(match);
-        n.setState({
-          url: info.img
-        });
-        audioPlayer.default.updatePlayback({
-          title: info.song,
-          artwork: info.img,
-          artist: utils.parseArtist(info.singer)
-        });
-      }, n.prepareMusic = async function (request, info, api) {
-        const uid = n.state.playingSongUID;
-        try {
-          const local = request.song.localPath;
-          if (local?.length && (await files.isUsableFile(local))) {
-            n.preparePlay(local);
-            return;
-          }
-          if (api === 'local') {
-            n.setLocalArtWork(info.localAlbumId, request.song);
-            n.preparePlay(request.song.path);
-            return;
-          }
-          const url = await n.cachedGetWebMusicUrl(request, api);
-          if (uid !== n.props.songItemInfo.uid) return;
-          if (!url) throw new Error('未取得可播放地址');
-          n.preparePlay(url);
-        } catch (error) {
-          if (uid !== n.props.songItemInfo.uid) return;
-          n.pauseSound();
-          toast('音源加载失败：' + error.message);
-        }
-      }, n.getWebMusicUrl = async function (request, api) {
-        return trackUrl.default.getUrl(api, request, n.props.settings.defaultHighQuality);
-      }, n.setLocalArtWork = function (e, t) {
-        e && mediaStore.default.getArtWork(e).then(function (e) {
-          if (e) {
-            var a = t;
-            a.img = e;
-            var r = (0, trackInfo.extractFullInfo)(a);
-            r.img ? (n.setState({
-              url: r.img
-            }), audioPlayer.default.updatePlayback({
-              title: r.song,
-              artwork: e,
-              base64: false,
-              artist: (0, utils.parseArtist)(r.singer)
-            })) : n.matchLocalImg(t);
-          }
-        });
-      }, n.updatePlayType = function (e) {
-        switch (e) {
-          case 'PLAYING':
-            n.setState({
-              playState: 'playing'
-            }, function () {
-              n.intervalCurrentTimeGetter();
-            });
-            n.getMusicTimeInfo('duration');
-            false === n.state.loaded && (false === n.state.isBackground && ReactNative.LayoutAnimation.linear(), n.setState({
-              loaded: true
-            }));
-            break;
-          case 'PAUSED':
-            n.setState({
-              playState: 'paused'
-            });
-            break;
-          case 'FINISHED':
-            n.finishPlay();
-        }
-      }, n.finishPlay = function () {
-        switch (n.state.playMode) {
-          case 'circulate':
-            n.seekTo(0);
-            break;
-          case 'list':
-            n.changeSong('next');
-            break;
-          case 'random':
-            n.changeSong('random');
-        }
-        n.recordPlayed(n.props.songItem);
-      }, n.intervalCurrentTimeGetter = function () {
-        if (n.currentTimeTimer) {
-          timer.default.clearTimeout(n.currentTimeTimer);
-          n.currentTimeTimer = null;
-        }
-        const {
-          playState,
-          expanded,
-          isBackground
-        } = n.state;
-        if (!isBackground && playState === 'playing' && F) {
-          n.getMusicTimeInfo('currentTime');
-          n.currentTimeTimer = timer.default.setTimeout(n.intervalCurrentTimeGetter, H);
-          if (!expanded && !n.props.settings.hideMiniLyric) n.getCurrentMiniLyric();
-        }
-      }, n.getMusicTimeInfo = function (type) {
-        if (type === 'currentTime') F?.getCurrentTime(seconds => n.setState({
-          currentTime: seconds
-        }));else if (type === 'duration' && F) n.setState({
-          duration: F.getDuration()
-        });
-      }, n.getLyricIndex = function (e, t) {
-        if (e && !(e.length < 1)) {
-          if (t < e[0].total) return 0;
-          var a = null,
-            n = t + .3;
-          try {
-            var r = e.length,
-              i = e[r - 1].total > 0 ? r - 1 : r - 2;
-            e.map(function (t, i) {
-              var s,
-                o = i + 1 >= r ? i : i + 1;
-              n >= t.total && (null === (s = e[o]) || void 0 === s ? void 0 : s.total) > n && (a = i);
-            });
-            n >= e[i].total && (a = i);
-          } catch (e) {
-            return null;
-          }
-          return a;
-        }
-      }, n.getCurrentMiniLyric = function () {
-        var e = n.props,
-          t = e.lyric,
-          a = e.settings.hideMiniLyricTrans;
-        if (t) {
-          var r = n.state.currentTime,
-            i = n.getLyricIndex(t, r + .2);
-          if (t[i]) {
-            if (t[i].txt.match(/\u8bcd|\u66f2|\u97f3|\uff1a|:/g)) return;
-            var s = t[i].txt;
-            !a && t[i].trans && (s = t[i].trans.txt + ' / ' + s);
-            n.setState({
-              currentMiniLyric: s
-            });
-          }
-        }
-      }, n.togglePlay = function () {
-        switch (n.state.playState) {
-          case 'paused':
-            n.playSound();
-            break;
-          case 'playing':
-            n.pauseSound();
-        }
-      }, n.changeSong = function (e) {
-        var t = n.props,
-          a = t.tracks,
-          r = t.api,
-          i = t.playingIndex;
-        if (a) {
-          var s = n.state,
-            o = s.isFM,
-            l = s.playMode,
-            u = s.randomArray;
-          if ('next' === e && o && i === a.length - 1) n.startFM();else {
-            var d = 'random' === l ? (0, playOrder.getRandomIndex)({
-              type: e,
-              playingIndex: i,
-              randomArray: u
-            }) : (0, playOrder.getNextPlayIndex)({
-              type: e,
-              tracks: a,
-              playingIndex: i
-            });
-            n.musicPlayerEmitter({
-              song: a[d],
-              data: a,
-              index: d,
-              api: r,
-              pid: n.state.pid
-            });
-          }
-        }
-      }, n.onLike = function () {
-        var e = n.props,
-          t = e.api,
-          a = e.songItem,
-          r = n.state.isLike;
-        true == !r ? toast(locales.default.MUSIC_LIKE) : toast(locales.default.MUSIC_DIS_LIKE);
-        n.setState({
-          isLike: !r
-        });
-        playModeModule.default.onLike(a, t, r);
-      }, n.onCollect = function () {
-        var e = n.props,
-          t = e.api,
-          a = e.songItem;
-        events.emitter.emit(names.default.CollectModal, {
-          api: t,
-          song: a
-        });
-      }, n.onComment = function () {
-        var e = n.props,
-          t = e.api,
-          a = e.songItem;
-        'local' !== t ? (utils.universalNavigator.navigate('CommentPage', {
-          api: t,
-          song: a
-        }), n._playerClose()) : toast(locales.default.COMMENT_LOCAL_CAN_NOT);
-      }, n.onDetail = function () {
-        var e = n.props,
-          t = e.api,
-          a = e.songItem,
-          r = e.playingIndex;
-        events.emitter.emit(names.default.DetailModal, {
-          song: a,
-          index: r,
-          api: t
-        });
-      }, n.onChangePlaylist = function () {
-        events.emitter.emit(names.default.ChangePlaylist);
-      }, n.showSlider = function () {
-        setTimeout(function () {
-          n.setState({
-            showSlider: true
-          });
-        }, 300);
-      }, n._playerOpen = function () {
-        var e = (0, trackInfo.extractFullInfo)(n.props.songItem, 'big');
-        events.emitter.emit(names.default.PlayerShow, true);
-        n.showSlider();
-        ReactNative.LayoutAnimation.configureNext(n.ANIMATION_CONFIG);
-        n.setState({
-          url: e.img,
-          playerStyle: {
-            width: constants.DEVICE_WIDTH,
-            height: constants.DEVICE_HEIGHT,
-            top: 0,
-            left: 0,
-            position: 'absolute',
-            marginBottom: 0
-          },
-          expanded: true
-        });
-        wakeLock.default.activate();
-      }, n._playerClose = function (e) {
-        var t = (0, trackInfo.extractFullInfo)(n.props.songItem, 'small');
-        events.emitter.emit(names.default.PlayerShow, false);
-        e || ReactNative.LayoutAnimation.configureNext(n.ANIMATION_CONFIG);
-        n.setState({
-          url: t.img,
-          playerStyle: null,
-          imgStyle: null,
-          expanded: false,
-          showLyric: false,
-          showSlider: false
-        });
-        wakeLock.default.deactivate();
-      }, n.onFmMode = function () {
-        events.emitter.emit(names.default.FM_MODE);
-      }, n.startFM = async function () {
-        const response = await services.Netease.personal_fm();
-        if (!response) return;
-        if (response.code === 405) {
-          toast(locales.default.NETEASE_NOT_LOGIN);
-          utils.universalNavigator.navigate('NeteaseLogin');
-          return;
-        }
-        if (!Array.isArray(response.data) || !response.data.length) return;
-        const tracks = response.data.map(song => ({
-          ...song,
-          isFM: true
-        }));
-        n.musicPlayerEmitter({
-          song: tracks[0],
-          data: tracks,
-          index: 0,
-          api: providers.default.netEase
-        });
-      }, n.stopFM = function () {
-        if (n.TEMP_DATA) {
-          var e = n.TEMP_DATA,
-            t = e.tracks,
-            a = e.songItem,
-            r = e.playingIndex;
-          types.isObject(a) ? (n.musicPlayerEmitter({
-            song: a,
-            data: t,
-            index: r,
-            api: providers.default.netEase
-          }), n.TEMP_DATA = {}) : n.clearPlayingList();
-        }
-      }, n.onTimer = function () {
-        utils.stopTimer.open();
-      }, n.onCheck = function () {
-        if (n.props.api === providers.default.netEase) {
-          toast(locales.default.LIFE_PLUS_ONE);
-          return n.recordPlayed(n.props.songItem);
-        }
-        toast(locales.default.PLAY_COUNT_ONLY_SUPPORT_NETEASE);
-      }, n.onTap = function () {
-        var e = n.state.showLyric;
-        n.setState({
-          showSlider: false,
-          showCoverElevation: false
-        });
-        ReactNative.Animated.timing(n.animatedOpacity, {
-          toValue: 0,
-          duration: 200,
-          useNativeDriver: true
-        }).start(function () {
-          n.setState({
-            showLyric: !e,
-            showSlider: true
-          });
-          ReactNative.Animated.timing(n.animatedOpacity, {
-            toValue: 1,
-            duration: 200,
-            useNativeDriver: true
-          }).start(function () {
-            n.setState({
-              showCoverElevation: true
-            });
-          });
-        });
-      }, n.saveShowToolStatus = function () {
-        _appStorage.storage.save({
-          key: keys.default.showToolBtnStatus,
-          data: n.state.showTool
-        }).then(function (e) {
-          return e;
-        });
-      }, n.showToolBtn = function () {
-        var e = n.state.showTool;
-        ReactNative.LayoutAnimation.configureNext(n.ANIMATION_CONFIG);
-        n.setState({
-          showTool: !e
-        }, function () {
-          n.saveShowToolStatus();
-        });
-      }, n.onChangeLyricFontSize = function (e) {
-        n.setState({
-          lyricFontSize: e
-        });
-        _appStorage.storage.save({
-          key: keys.default.lyricFontSize,
-          data: e
-        }).then(function (e) {
-          return e;
-        });
-      }, n.onChangeShowTrans = function () {
-        var e = !n.state.showTrans;
-        n.setState({
-          showTrans: e
-        });
-        _appStorage.storage.save({
-          key: keys.default.showTrans,
-          data: e
-        }).then(function (e) {
-          return e;
-        });
-      }, n.onChangePlayStatus = function () {
-        var e;
-        switch (n.state.playMode) {
-          case 'circulate':
-            e = 'list';
-            break;
-          case 'random':
-            e = 'circulate';
-            break;
-          case 'list':
-            e = 'random';
-        }
-        'random' === e && n.setState({randomArray: playOrder.createPlayOrder(n.props.tracks.length)});
-        n.setState({
-          playMode: e
-        });
-        _appStorage.storage.save({
-          key: keys.default.lastPlayMode,
-          data: e
-        }).then(function (e) {
-          return e;
-        });
-      }, n.onNowPlaying = function () {
-        n.props.setDisplayNowPlaying(true);
-      }, n.slidingStart = function (e) {
-        false === n.state.showTool && (n.sliderValue0 = e);
-      }, n.onSliderValueChange = function (e) {
-        n.updatePlayType('PAUSED');
-        n.setState({
-          currentTime: e
-        });
-        n.sliding = true;
-      }, n.slidingEnd = function (e) {
-        var t;
-        true === n.state.showTool ? n.seekTo(e) : Math.abs(e - n.sliderValue0) < 5 ? n.togglePlay() : n.seekTo(e);
-        null === (t = n.slidingTimeText) || void 0 === t || t.fadeOut(500);
-        setTimeout(function () {
-          n.sliding = null;
-        }, 500);
-      }, t;
+import React from 'react';
+import {Animated, AppState, BackHandler, DeviceEventEmitter, LayoutAnimation, PanResponder} from 'react-native';
+import providers from '../services/providers';
+import {DEVICE_WIDTH, DEVICE_HEIGHT} from '../theme/constants';
+import names from '../events/names';
+import keys from '../storage/keys';
+import locales from '../locales';
+import {Netease} from '../services';
+import {emitter} from '../events';
+import {extractFullInfo, getTrackKey} from '../services/trackInfo';
+import parseArtist from '../utils/parseArtist';
+import universalNavigator from '../utils/universalNavigator';
+import stopTimer from '../utils/stopTimer';
+import AudioPlayer from '../native/audioPlayer';
+import timer from '../native/timer';
+import mediaStore from '../native/mediaStore';
+import shutdown from '../native/shutdown';
+import wakeLock from '../native/wakeLock';
+import {storage} from '../storage';
+import {isUsableFile} from '../storage/files';
+import lastSong from '../storage/lastSong';
+import lastTime from '../storage/lastTime';
+import lastQueue from '../storage/lastQueue';
+import {musicHistory} from '../storage/history';
+import cache from './cache';
+import lyricPreferences from './lyricPreferences';
+import {selectQueue, insertNext, removeFromQueue} from './queue';
+import playModeActions from './playMode';
+import lyrics from './lyrics';
+import trackUrl from './trackUrl';
+import notification from './notification';
+import gestures from './gestures';
+import {createPlayOrder, reconcilePlayOrder, getNextPlayIndex, getRandomIndex} from './playOrder';
+import {subscribePlaybackCommands} from './commands';
+
+const PROGRESS_INTERVAL = 600;
+
+export default class PlayerController extends React.PureComponent {
+  audio = null;
+  playbackRequest = 0;
+  lyricRequest = 0;
+  queueKeys = [];
+  savedFMQueue = null;
+  audioFocusType = null;
+  ANIMATION_CONFIG = LayoutAnimation.create(400, LayoutAnimation.Types.easeOut, LayoutAnimation.Properties.opacity);
+  animatedOpacity = new Animated.Value(1);
+  cachedGetWebMusicUrl = cache((request, api) => trackUrl.getUrl(api, request, this.props.settings.defaultHighQuality));
+  state = {
+    url: '', playState: 'paused', currentTime: 0, duration: 0,
+    expanded: false, playMode: 'list', showLyric: false, loaded: false,
+    showTool: true, isLike: false, volume: 1, color: '#fff', showSlider: false,
+    showTrans: true, showCoverElevation: true, randomArray: [], isFM: false,
+    lyricFontSize: 15, retriedTimes: 0, currentMiniLyric: '', pid: undefined,
+    playingSongUID: undefined, lastPlayedTracksLoaded: false, isBackground: false,
+  };
+
+  componentDidMount() {
+    this.mounted = true;
+    this.playbackStateSubscription = DeviceEventEmitter.addListener('rewind.playbackState', this.handlePlaybackState);
+    lyricPreferences.loadAll().then(preferences => {
+      if (!this.mounted) return;
+      this.setState({...preferences, randomArray: createPlayOrder(this.props.tracks.length)});
+    }).catch(error => toast('读取播放设置失败：' + error.message));
+    this.notificationCleanup = notification.init({
+      previous: () => this.changeSong('pre'), next: () => this.changeSong('next'),
+      play: this.playSound, pause: this.pauseSound, stop: this.exit,
+    });
+    AudioPlayer.setHandleAudioFocus(!this.props.settings.playWithOthers);
+    this.backSubscription = BackHandler.addEventListener('hardwareBackPress', this.onBackPress);
+    this.appStateSubscription = AppState.addEventListener('change', this.handleAppStateChange);
+    this.unsubscribeCommands = subscribePlaybackCommands({play: this.handlePlayCommand, insert: this.insertIntoQueue, remove: this.removeTrack});
+    this.subscriptions = [
+      emitter.addListener(names.HidePlayer, event => this.setState({hidePlayer: !!event?.hide})),
+      emitter.addListener(names.PlayerClose, () => { if (this.state.expanded) this._playerClose(true); }),
+      emitter.addListener(names.FM_MODE, this.onFmMode),
+      emitter.addListener(names.AUDIO_NOISY, this.pauseSound),
+      emitter.addListener(names.CloseTimerEvent, this.setCloseTimer),
+      DeviceEventEmitter.addListener(names.NATIVE_AUDIO_FOCUS, this.handleAudioFocus),
+    ];
+    this._sliderPanResponder = PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onMoveShouldSetPanResponder: () => false,
+      onPanResponderGrant: (_, gesture) => {
+        this.y0 = gesture.moveY;
+        this.fallBackPlayType = this.state.playState;
+      },
+      onPanResponderMove: this._sliderOnPanResponderMove,
+      onPanResponderRelease: this._sliderOnPanResponderRelease,
+      onPanResponderTerminationRequest: () => false,
+    });
+    this._volumePanResponder = PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onMoveShouldSetPanResponder: () => false,
+      onPanResponderRelease: (_, gesture) => {
+        if (Math.abs(gesture.dy) > 20) AudioPlayer.showSystemStreamVolumeUI();
+      },
+      onPanResponderTerminationRequest: () => false,
+    });
+  }
+
+  componentDidUpdate(previous) {
+    if (previous.settings.playWithOthers !== this.props.settings.playWithOthers) {
+      AudioPlayer.setHandleAudioFocus(!this.props.settings.playWithOthers);
     }
-    "componentDidMount"() {
-      var t = this;
-      this.playbackStateListener = ReactNative.DeviceEventEmitter.addListener('rewind.playbackState', event => {
-        const playState = event.playing ? 'playing' : 'paused';
-        if (playState !== this.state.playState) this.setState({playState}, this.intervalCurrentTimeGetter);
-      });
-      lyricPreferences.default.loadAll(this);
-      notification.default.init(this);
-      audioPlayer.default.setHandleAudioFocus(!this.props.settings.playWithOthers);
-      this.backSubscription = ReactNative.BackHandler.addEventListener('hardwareBackPress', this.onBackPress);
-      this.appStateSubscription = ReactNative.AppState.addEventListener('change', this.handleAppStateChange);
-      this._sliderPanResponder = ReactNative.PanResponder.create({
-        onStartShouldSetPanResponder: function () {
-          return true;
-        },
-        onMoveShouldSetPanResponder: function () {
-          return false;
-        },
-        onPanResponderGrant: function (e, a) {
-          t.y0 = a.moveY;
-          t.fallBackPlayType = t.state.playState;
-        },
-        onPanResponderMove: this._sliderOnPanResponderMove,
-        onPanResponderRelease: this._sliderOnPanResponderRelease,
-        onPanResponderTerminationRequest: function () {
-          return false;
-        }
-      });
-      this._volumePanResponder = ReactNative.PanResponder.create({
-        onStartShouldSetPanResponder: function () {
-          return true;
-        },
-        onMoveShouldSetPanResponder: function () {
-          return false;
-        },
-        onPanResponderGrant: function () {
-          return null;
-        },
-        onPanResponderMove: function () {
-          return null;
-        },
-        onPanResponderRelease: this._volumeOnPanResponderRelease,
-        onPanResponderTerminationRequest: function () {
-          return false;
-        }
-      });
-      events.emitter.on(names.default.Player, this.musicPlayerEmitter);
-      this.hidePlayerListener = events.emitter.addListener(names.default.HidePlayer, function (e) {
-        var a = (e || {}).hide;
-        t.setState({
-          hidePlayer: !!a
-        });
-      });
-      this.playerCloseListener = events.emitter.addListener(names.default.PlayerClose, function () {
-        true === t.state.expanded && t._playerClose(true);
-      });
-      this.pushToQueueListener = events.emitter.addListener(names.default.InsertToList, function (e) {
-        return (0, queueActions.default)(t, e);
-      });
-      this.deleteFromQueueListener = events.emitter.addListener(names.default.DeleteFromQueue, function (e) {
-        var next = queue.removeFromQueue(t.props, e.item);
-        t.props.setPlayerData({tracks: next.tracks, playingIndex: next.playingIndex});
-      });
-      this.fmModeListener = events.emitter.addListener(names.default.FM_MODE, function () {
-        var a = t.state.isFM;
-        false === a ? (global.toast(locales.default.FM_MODE_ENTER), t.saveDataBeforeIsFM(!a), t.startFM()) : (global.toast(locales.default.FM_MODE_QUIT), t.stopFM());
-        t.setState({
-          isFM: !a
-        });
-      });
-      this.audioNoisyListener = events.emitter.addListener(names.default.AUDIO_NOISY, function () {
-        t.pauseSound();
-      });
-      this.audioFocusListener = ReactNative.DeviceEventEmitter.addListener(names.default.NATIVE_AUDIO_FOCUS, function (e) {
-        var a = true;
-        'HeadSetReceiver' === e.type && t.pauseSound();
-        true !== t.props.settings.playWithOthers && ('AUDIOFOCUS_LOSS' === e.type && t.pauseSound(), 'AUDIOFOCUS_LOSS_TRANSIENT' === e.type && ('paused' === t.state.playState && (a = false), t.pauseSound()), 'AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK' === e.type && t.setVolume(.4), 'AUDIOFOCUS_GAIN' === e.type && ('AUDIOFOCUS_LOSS_TRANSIENT' === t.AUDIO_FOCUS_TYPE && t.playSound(), t.setVolume(t.state.volume)), true === a && (t.AUDIO_FOCUS_TYPE = e.type));
-      });
-      this.closeTimerListener = events.emitter.addListener(names.default.CloseTimerEvent, function (e) {
-        if (e < 1) {
-          t.closeTimer && timer.default.clearTimeout(t.closeTimer);
-          return void toast(locales.default.COUNTDOWN_CANCELED);
-        }
-        if (t.state.url) {
-          var a = 60 * e * 1e3,
-            n = Math.floor(e / 60),
-            r = e - 60 * n;
-          toast(n > 0 ? n + "\u5c0f\u65f6" + r + "\u5206\u949f\u540e\u505c\u6b62" : r + "\u5206\u949f\u540e\u505c\u6b62");
-          t.closeTimer && timer.default.clearTimeout(t.closeTimer);
-          t.closeTimer = timer.default.setTimeout(function () {
-            true === t.state.isBackground ? t.exit() : t.pauseSound();
-            toast(locales.default.PLAY_STOPPED);
-          }, a);
-        } else toast(locales.default.NOT_PLAYED);
-      });
-      this.cachedGetWebMusicUrl = (0, cache.default)(this.getWebMusicUrl);
-    }
-    componentDidUpdate(previous) {
-      if (previous.settings.playWithOthers !== this.props.settings.playWithOthers) {
-        audioPlayer.default.setHandleAudioFocus(!this.props.settings.playWithOthers);
-      }
-    }
-    "componentWillUnmount"() {
-      this.lyricRequest++;
-      this.playbackStateListener.remove();
-      if (this.currentTimeTimer) timer.default.clearTimeout(this.currentTimeTimer);
-      var e;
-      events.emitter.off(names.default.Player, this.musicPlayerEmitter);
-      this.playerCloseListener.remove();
-      this.pushToQueueListener.remove();
-      this.fmModeListener.remove();
-      this.audioFocusListener.remove();
-      this.audioNoisyListener.remove();
-      this.closeTimerListener.remove();
-      this.deleteFromQueueListener.remove();
-      this.hidePlayerListener.remove();
-      this.backSubscription?.remove();
-      this.appStateSubscription?.remove();
-      null === (e = F) || void 0 === e || e.release();
+  }
+
+  componentWillUnmount() {
+    this.mounted = false;
+    this.playbackRequest++;
+    this.lyricRequest++;
+    this.unsubscribeCommands();
+    this.subscriptions.forEach(subscription => subscription.remove());
+    this.playbackStateSubscription.remove();
+    this.backSubscription.remove();
+    this.appStateSubscription.remove();
+    this.notificationCleanup();
+    this.clearTimers();
+    this.audio?.release();
+    this.audio = null;
+    wakeLock.deactivate();
+  }
+
+  clearTimers = () => {
+    for (const name of ['currentTimeTimer', 'closeTimer', 'showSliderTimer', 'slidingTimer']) {
+      if (this[name]) timer.clearTimeout(this[name]);
+      this[name] = null;
     }
   };
-exports.default = U;
+
+  handlePlaybackState = ({playing}) => {
+    const playState = playing ? 'playing' : 'paused';
+    if (playState !== this.state.playState) this.setState({playState}, this.intervalCurrentTimeGetter);
+  };
+
+  handlePlayCommand = command => {
+    if (command.type === 'clearPlayingList') return this.clearPlayingList();
+    if (!command.song || !Array.isArray(command.data) || !command.data[command.index]) {
+      toast('播放指令缺少歌曲或有效队列位置');
+      return;
+    }
+    const request = ++this.playbackRequest;
+    this.switchSong();
+    this.props.setPlayerData(current => {
+      const selected = selectQueue(current, command, this.state.playMode);
+      const info = extractFullInfo(selected.songItem);
+      return {...selected, songItemInfo: {song: info.song, singer: info.singer, uid: info.uid}};
+    }, selected => {
+      if (request !== this.playbackRequest) return;
+      this.syncPlayOrder(selected.tracks);
+      this.loadPlayerResource(selected, command.pid, request);
+    });
+  };
+
+  syncPlayOrder = (tracks, playNext = []) => {
+    const keys = tracks.map(song => getTrackKey(song));
+    if (playNext.length || keys.length !== this.queueKeys.length || keys.some((key, index) => key !== this.queueKeys[index])) {
+      const randomArray = reconcilePlayOrder(this.queueKeys, keys, this.state.randomArray,
+        getTrackKey(this.props.songItem, this.props.api), playNext);
+      this.setState({randomArray});
+      this.queueKeys = keys;
+    }
+  };
+
+  insertIntoQueue = ({data, type, api}) => {
+    const songs = type === 'array' ? data : [data];
+    if (!songs.length) return;
+    if (!this.props.tracks.length) {
+      this.handlePlayCommand({song: songs[0], data: songs, index: 0, api});
+      return;
+    }
+    this.props.setPlayerData(current => {
+      const next = insertNext(current, songs, api);
+      return {tracks: next.tracks, playingIndex: next.playingIndex};
+    }, selected => this.syncPlayOrder(selected.tracks, songs.map(song => getTrackKey(song, api))));
+  };
+
+  removeTrack = ({item}) => {
+    this.props.setPlayerData(current => {
+      const next = removeFromQueue(current, item);
+      return {tracks: next.tracks, playingIndex: next.playingIndex};
+    }, selected => this.syncPlayOrder(selected.tracks));
+  };
+
+  switchSong = () => {
+    this.lyricRequest++;
+    this.audio?.release();
+    this.audio = null;
+    if (this.currentTimeTimer) timer.clearTimeout(this.currentTimeTimer);
+    this.props.setLyric(null, false);
+    this.setState({playState: 'paused', duration: 0, currentTime: 0, loaded: false, currentMiniLyric: ''});
+  };
+
+  clearPlayingList = () => {
+    this.playbackRequest++;
+    this.switchSong();
+    this.queueKeys = [];
+    this.setState({url: '', expanded: false, playerStyle: null, imgStyle: null, showLyric: false, showSlider: false, randomArray: []});
+    this.props.setPlayerData({tracks: [], songItem: null, songItemInfo: {singer: null, song: null}, playingIndex: null, api: null});
+    wakeLock.deactivate();
+  };
+
+  loadPlayerResource = (selected, pid, request) => {
+    const {songItem: song, api} = selected;
+    const info = extractFullInfo(song, this.state.expanded ? 'big' : 'small');
+    musicHistory(song, api);
+    this.setState({url: info.img, playingSongUID: info.uid, pid, isFM: Boolean(song.isFM)}, () => {
+      if (request !== this.playbackRequest) return;
+      AudioPlayer.setNowPlaying({title: info.song, artwork: api === providers.local ? null : info.img, album: info.album, artist: parseArtist(info.singer)});
+      this.prepareMusic({song}, info, api, request);
+    });
+    this.loadLikelist(song, api, request);
+    this.getLyric(api, info, song);
+  };
+
+  prepareMusic = async (command, info, api, request = this.playbackRequest) => {
+    try {
+      let source;
+      const local = command.song.localPath;
+      if (local?.length && await isUsableFile(local)) source = local;
+      else if (api === providers.local) {
+        source = command.song.path;
+        this.setLocalArtWork(info.localAlbumId, command.song, request);
+      } else source = await this.cachedGetWebMusicUrl(command, api);
+      if (request !== this.playbackRequest) return;
+      if (typeof source !== 'string' || !source) throw new Error('未取得可播放地址');
+      this.preparePlay(source, request);
+    } catch (error) {
+      if (request !== this.playbackRequest) return;
+      this.pauseSound();
+      toast('音源加载失败：' + error.message);
+    }
+  };
+
+  preparePlay = (source, request = this.playbackRequest) => {
+    this.audio = new AudioPlayer(source, error => {
+      if (request !== this.playbackRequest) return;
+      if (error) return this.errorWhenPlay(error);
+      this.setState({duration: this.audio.getDuration(), loaded: true, retriedTimes: 0}, () => {
+        if (request !== this.playbackRequest) return;
+        if (!this.state.lastPlayedTracksLoaded && this.props.settings.autoLoadLastPlayedTracks) {
+          this.setState({lastPlayedTracksLoaded: true});
+          this.seekToLastPlayedTime(request);
+        } else this.playSound();
+      });
+    });
+    lastSong.save(this.props.api, this.props.songItem).catch(error => toast('保存播放记录失败：' + error.message));
+    this.saveLastPlayedTracks();
+  };
+
+  errorWhenPlay = error => {
+    toast('播放失败：' + (error.message || error.type));
+    const retries = this.state.retriedTimes;
+    if (this.props.settings.autoErrorNext || retries >= 5) {
+      this.setState({retriedTimes: 0});
+      this.changeSong('next');
+    } else {
+      this.setState({retriedTimes: retries + 1});
+      const {tracks, playingIndex: index, api} = this.props;
+      this.handlePlayCommand({song: tracks[index], data: tracks, index, api});
+    }
+  };
+
+  saveLastPlayedTracks = () => {
+    if (!this.props.settings.autoLoadLastPlayedTracks) return;
+    const {tracks, playingIndex: index, api} = this.props;
+    return lastQueue.save({tracks, index, api}).catch(error => toast('保存队列失败：' + error.message));
+  };
+
+  playSound = () => {
+    const request = this.playbackRequest;
+    this.audio?.play(finished => {
+      if (request !== this.playbackRequest) return;
+      if (finished) this.finishPlay();
+      else toast('音频播放中断');
+    });
+  };
+
+  pauseSound = () => this.audio?.pause();
+  setVolume = volume => this.audio?.setVolume(volume);
+  seekTo = (seconds, play = true) => {
+    this.audio?.setCurrentTime(seconds, play);
+    if (play) this.playSound();
+  };
+  togglePlay = () => this.state.playState === 'playing' ? this.pauseSound() : this.playSound();
+
+  seekToLastPlayedTime = async request => {
+    try {
+      const seconds = await lastTime.get();
+      if (request !== this.playbackRequest) return;
+      this.seekTo(seconds, false);
+      await lastTime.save(0);
+    } catch (error) {
+      if (request === this.playbackRequest) toast('恢复进度失败：' + error.message);
+    }
+  };
+
+  exit = async () => {
+    try {
+      if (this.props.settings.autoLoadLastPlayedTracks) {
+        const seconds = this.audio?.isLoaded() ? await new Promise(resolve => this.audio.getCurrentTime(resolve)) : this.state.currentTime;
+        await lastTime.save(seconds);
+      }
+      shutdown.fire();
+    } catch (error) {
+      toast('保存进度失败：' + error.message);
+    }
+  };
+
+  changeSong = type => {
+    const {tracks, playingIndex, api} = this.props;
+    if (!tracks.length) return;
+    if (type === 'next' && this.state.isFM && playingIndex === tracks.length - 1) return this.startFM();
+    const index = this.state.playMode === 'random'
+      ? getRandomIndex({type, playingIndex, randomArray: this.state.randomArray})
+      : getNextPlayIndex({type, playingIndex, tracks});
+    this.handlePlayCommand({song: tracks[index], data: tracks, index, api, pid: this.state.pid});
+  };
+
+  finishPlay = () => {
+    const finishedSong = this.props.songItem;
+    if (this.state.playMode === 'circulate') this.seekTo(0);
+    else this.changeSong(this.state.playMode === 'random' ? 'random' : 'next');
+    this.recordPlayed(finishedSong);
+  };
+
+  recordPlayed = async song => {
+    if (song.api !== providers.netEase || !this.props.settings.recordPlayCount) return;
+    try {
+      const response = await Netease.play_count(song.id, song.album?.id || song.al?.id, Math.floor(song.dt / 1000));
+      if (response?.code !== 200) throw new Error('播放记录响应无效');
+    } catch (error) { toast('记录播放次数失败：' + error.message); }
+  };
+
+  intervalCurrentTimeGetter = () => {
+    if (this.currentTimeTimer) timer.clearTimeout(this.currentTimeTimer);
+    this.currentTimeTimer = null;
+    if (this.state.isBackground || this.state.playState !== 'playing' || !this.audio) return;
+    this.getMusicTimeInfo('currentTime');
+    this.currentTimeTimer = timer.setTimeout(this.intervalCurrentTimeGetter, PROGRESS_INTERVAL);
+    if (!this.state.expanded && !this.props.settings.hideMiniLyric) this.getCurrentMiniLyric();
+  };
+
+  getMusicTimeInfo = type => {
+    const request = this.playbackRequest;
+    if (type === 'duration' && this.audio) this.setState({duration: this.audio.getDuration()});
+    else if (type === 'currentTime') this.audio?.getCurrentTime(currentTime => {
+      if (request === this.playbackRequest) this.setState({currentTime});
+    });
+  };
+
+  handleAppStateChange = state => {
+    if (state !== 'background' && state !== 'active') return;
+    const isBackground = state === 'background';
+    this.setState({isBackground}, this.intervalCurrentTimeGetter);
+    if (isBackground && this.props.settings.autoLoadLastPlayedTracks) {
+      lastTime.save(this.state.currentTime).catch(error => toast('保存进度失败：' + error.message));
+    }
+  };
+
+  handleAudioFocus = ({type}) => {
+    if (type === 'HeadSetReceiver') return this.pauseSound();
+    if (this.props.settings.playWithOthers) return;
+    if (type === 'AUDIOFOCUS_LOSS_TRANSIENT') {
+      this.resumeAfterFocus = this.state.playState === 'playing';
+      this.pauseSound();
+    } else if (type === 'AUDIOFOCUS_LOSS') {
+      this.resumeAfterFocus = false;
+      this.pauseSound();
+    } else if (type === 'AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK') this.setVolume(0.4);
+    else if (type === 'AUDIOFOCUS_GAIN') {
+      if (this.resumeAfterFocus) this.playSound();
+      this.resumeAfterFocus = false;
+      this.setVolume(this.state.volume);
+    }
+    this.audioFocusType = type;
+  };
+
+  setCloseTimer = minutes => {
+    if (this.closeTimer) timer.clearTimeout(this.closeTimer);
+    this.closeTimer = null;
+    if (minutes < 1) return toast(locales.COUNTDOWN_CANCELED);
+    if (!this.state.url) return toast(locales.NOT_PLAYED);
+    const hours = Math.floor(minutes / 60);
+    toast((hours ? hours + '小时' : '') + (minutes % 60) + '分钟后停止');
+    this.closeTimer = timer.setTimeout(() => {
+      this.closeTimer = null;
+      if (this.state.isBackground) this.exit();
+      else this.pauseSound();
+      toast(locales.PLAY_STOPPED);
+    }, minutes * 60000);
+  };
+
+  getLyric = async (api, info, songItem) => {
+    const request = ++this.lyricRequest;
+    try {
+      const result = await lyrics.getLyric({api, obj: info, songItem});
+      if (request === this.lyricRequest) this.props.setLyric(result.lyric, result.hasTrans);
+    } catch (error) {
+      if (request !== this.lyricRequest || error.code === 'ERR_CANCELED') return;
+      this.props.setLyric(null, false);
+      toast('歌词加载失败：' + error.message);
+    }
+  };
+
+  loadLikelist = async (song, api, request) => {
+    try {
+      const likes = await storage.load({key: keys.likelist});
+      if (request === this.playbackRequest) this.setState({isLike: (likes[api] || []).includes(api === providers.qqMusic ? song.mid || song.songmid : song.id)});
+    } catch (error) {
+      if (request !== this.playbackRequest) return;
+      if (error.name !== 'NotFoundError') toast('读取收藏失败：' + error.message);
+      this.setState({isLike: false});
+    }
+  };
+
+  setLocalArtWork = async (albumId, song, request) => {
+    if (albumId == null) return;
+    try {
+      const image = await mediaStore.getArtWork(albumId);
+      if (request !== this.playbackRequest) return;
+      if (image) {
+        const info = extractFullInfo({...song, img: image});
+        this.setState({url: info.img});
+        AudioPlayer.updatePlayback({title: info.song, artwork: info.img, artist: parseArtist(info.singer)});
+      }
+    } catch (error) {
+      if (request === this.playbackRequest) toast('本地封面加载失败：' + error.message);
+    }
+  };
+
+  getLyricIndex = (lines, seconds) => {
+    if (!lines?.length) return null;
+    if (seconds < lines[0].total) return 0;
+    let selected = null;
+    for (let index = 0; index < lines.length; index++) {
+      if (Number.isFinite(lines[index].total) && seconds + 0.3 >= lines[index].total) selected = index;
+    }
+    return selected;
+  };
+
+  getCurrentMiniLyric = () => {
+    const lines = this.props.lyric;
+    const line = lines?.[this.getLyricIndex(lines, this.state.currentTime + 0.2)];
+    if (!line || /词|曲|音|：|:/.test(line.txt)) return;
+    const currentMiniLyric = !this.props.settings.hideMiniLyricTrans && line.trans ? line.trans.txt + ' / ' + line.txt : line.txt;
+    this.setState({currentMiniLyric});
+  };
+
+  onLike = async () => {
+    const {songItem, api} = this.props;
+    try {
+      await playModeActions.onLike(songItem, api, this.state.isLike);
+      this.loadLikelist(songItem, api, this.playbackRequest);
+    } catch (error) { toast('更新收藏失败：' + error.message); }
+  };
+  onCollect = () => emitter.emit(names.CollectModal, {api: this.props.api, song: this.props.songItem});
+  onDetail = () => emitter.emit(names.DetailModal, {api: this.props.api, song: this.props.songItem, index: this.props.playingIndex});
+  onChangePlaylist = () => emitter.emit(names.ChangePlaylist);
+  onNowPlaying = () => this.props.setDisplayNowPlaying(true);
+  onTimer = () => stopTimer.open();
+  onCheck = () => {
+    if (this.props.api === providers.netEase) return this.recordPlayed(this.props.songItem);
+    toast(locales.PLAY_COUNT_ONLY_SUPPORT_NETEASE);
+  };
+  onComment = () => {
+    if (this.props.api === providers.local) return toast(locales.COMMENT_LOCAL_CAN_NOT);
+    universalNavigator.navigate('CommentPage', {api: this.props.api, song: this.props.songItem});
+    this._playerClose();
+  };
+
+  onFmMode = () => {
+    if (this.state.isFM) this.stopFM();
+    else {
+      const {tracks, playingIndex, songItem, api} = this.props;
+      this.savedFMQueue = {tracks, playingIndex, songItem, api};
+      this.startFM();
+    }
+  };
+  startFM = async () => {
+    const request = this.playbackRequest;
+    try {
+      const response = await Netease.personal_fm();
+      if (request !== this.playbackRequest) return;
+      if (response?.code === 405) {
+        toast(locales.NETEASE_NOT_LOGIN);
+        universalNavigator.navigate('NeteaseLogin');
+        return;
+      }
+      if (!Array.isArray(response?.data) || !response.data.length) throw new Error('私人电台未返回歌曲');
+      const tracks = response.data.map(song => ({...song, isFM: true}));
+      this.handlePlayCommand({song: tracks[0], data: tracks, index: 0, api: providers.netEase});
+    } catch (error) {
+      if (request === this.playbackRequest) toast('私人电台加载失败：' + error.message);
+    }
+  };
+  stopFM = () => {
+    const saved = this.savedFMQueue;
+    this.savedFMQueue = null;
+    if (saved?.songItem) this.handlePlayCommand({song: saved.songItem, data: saved.tracks, index: saved.playingIndex, api: saved.api});
+    else this.clearPlayingList();
+  };
+
+  onBackPress = () => {
+    if (this.state.showLyric) { this.onTap(); return true; }
+    if (this.state.expanded) { this._playerClose(); return true; }
+    return false;
+  };
+  _playerOpen = () => {
+    emitter.emit(names.PlayerShow, true);
+    this.showSliderTimer = timer.setTimeout(() => this.setState({showSlider: true}), 300);
+    LayoutAnimation.configureNext(this.ANIMATION_CONFIG);
+    this.setState({
+      url: extractFullInfo(this.props.songItem, 'big').img,
+      playerStyle: {width: DEVICE_WIDTH, height: DEVICE_HEIGHT, top: 0, left: 0, position: 'absolute', marginBottom: 0},
+      expanded: true,
+    });
+    wakeLock.activate();
+  };
+  _playerClose = skipAnimation => {
+    emitter.emit(names.PlayerShow, false);
+    if (this.showSliderTimer) timer.clearTimeout(this.showSliderTimer);
+    if (!skipAnimation) LayoutAnimation.configureNext(this.ANIMATION_CONFIG);
+    this.setState({url: extractFullInfo(this.props.songItem).img, playerStyle: null, imgStyle: null, expanded: false, showLyric: false, showSlider: false});
+    wakeLock.deactivate();
+  };
+  onTap = () => {
+    const showLyric = !this.state.showLyric;
+    this.setState({showSlider: false, showCoverElevation: false});
+    Animated.timing(this.animatedOpacity, {toValue: 0, duration: 200, useNativeDriver: true}).start(() => {
+      this.setState({showLyric, showSlider: true});
+      Animated.timing(this.animatedOpacity, {toValue: 1, duration: 200, useNativeDriver: true})
+        .start(() => this.setState({showCoverElevation: true}));
+    });
+  };
+  showToolBtn = () => {
+    LayoutAnimation.configureNext(this.ANIMATION_CONFIG);
+    this.setState(state => ({showTool: !state.showTool}), () => this.savePreference(keys.showToolBtnStatus, this.state.showTool));
+  };
+  savePreference = (key, data) => storage.save({key, data}).catch(error => toast('保存播放设置失败：' + error.message));
+  onChangeLyricFontSize = lyricFontSize => {
+    this.setState({lyricFontSize});
+    this.savePreference(keys.lyricFontSize, lyricFontSize);
+  };
+  onChangeShowTrans = () => {
+    this.setState(state => ({showTrans: !state.showTrans}), () => this.savePreference(keys.showTrans, this.state.showTrans));
+  };
+  onChangePlayStatus = () => {
+    const playMode = {circulate: 'list', list: 'random', random: 'circulate'}[this.state.playMode];
+    this.setState({playMode, randomArray: playMode === 'random' ? createPlayOrder(this.props.tracks.length) : this.state.randomArray});
+    this.savePreference(keys.lastPlayMode, playMode);
+  };
+  slidingStart = seconds => { if (!this.state.showTool) this.sliderValue0 = seconds; };
+  onSliderValueChange = currentTime => {
+    this.sliding = true;
+    this.setState({currentTime});
+  };
+  slidingEnd = seconds => {
+    if (!this.state.showTool && Math.abs(seconds - this.sliderValue0) < 5) this.togglePlay();
+    else this.seekTo(seconds);
+    this.slidingTimeText?.fadeOut(500);
+    this.slidingTimer = timer.setTimeout(() => { this.sliding = false; }, 500);
+  };
+  _sliderOnPanResponderMove = (_, gesture) => {
+    if (gesture.x0 < 15 || gesture.x0 > DEVICE_WIDTH - 15) return;
+    const delta = Math.floor(gestures.stepMap(gesture.moveY - this.y0) / 200 * this.state.duration);
+    this.y0 = gesture.moveY;
+    this.onSliderValueChange(Math.max(0, Math.min(this.state.duration, this.state.currentTime + delta)));
+  };
+  _sliderOnPanResponderRelease = (_, gesture) => {
+    if (!gestures.isOverEdge({gestureState: gesture, DEVICE_WIDTH})) this.slidingEnd(this.state.currentTime);
+    else this.getMusicTimeInfo('currentTime');
+    this.y0 = null;
+    this.sliding = false;
+    this.fallBackPlayType = null;
+  };
+}

@@ -32,7 +32,10 @@ export default class AudioPlayer {
   static setNowPlaying(info) { native.setNowPlaying(info); }
   static enableControl(name, enabled) { native.enableControl(name, enabled); }
   static setHandleAudioFocus(enabled) { native.setHandleAudioFocus(enabled); }
-  static on(name, callback) { actions.set(name, callback); }
+  static on(name, callback) {
+    actions.set(name, callback);
+    return () => { if (actions.get(name) === callback) actions.delete(name); };
+  }
   static updatePlayback(info) { native.updatePlayback(info); }
   static openEqualizer() { return native.openEqualizer(); }
 }

@@ -1,7 +1,7 @@
 const {test} = require('node:test');
 const assert = require('node:assert/strict');
 const {selectQueue, insertNext, removeFromQueue} = require('./queue.js');
-const {createPlayOrder, getNextPlayIndex, getRandomIndex, getNextPlayIndexByPagerPos} = require('./playOrder.js');
+const {createPlayOrder, reconcilePlayOrder, getNextPlayIndex, getRandomIndex, getNextPlayIndexByPagerPos} = require('./playOrder.js');
 const {getTrackKey} = require('../services/trackFields.js');
 
 function queue(tracks, index = 0, api = 'netEase') {
@@ -54,6 +54,15 @@ test('广播节目使用 mainTrackId 播放，同时保留节目 ID 和输入数
   assert.deepEqual(selected.songItem, {id: 11, mainTrackId: 11, rid: 7, api: 'netEase'});
   assert.equal(selected.tracks[0], selected.songItem);
   assert.equal(song.id, 7);
+  const restored = selectQueue(selected, {song: selected.songItem, data: selected.tracks, index: 0, api: 'netEase'}, 'list');
+  assert.equal(restored.songItem.rid, 7);
+});
+
+test('随机队列插入已有歌曲后仍在下一首播放，删除后保持剩余顺序且不产生越界索引', () => {
+  const inserted = reconcilePlayOrder(['a', 'b', 'c'], ['a', 'c', 'b', 'd'], [2, 0, 1], 'a', ['c', 'd']);
+  assert.deepEqual(inserted, [0, 1, 3, 2]);
+  const removed = reconcilePlayOrder(['a', 'c', 'b', 'd'], ['a', 'b', 'd'], inserted, 'a');
+  assert.deepEqual(removed, [0, 2, 1]);
 });
 
 test('列表和随机顺序在首尾正确循环，空队列无可播放索引', () => {

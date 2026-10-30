@@ -8,7 +8,7 @@ export function selectQueue(current, command, playMode) {
   let tracks = command.data.map(song => tagTrack(song, command.api));
   let index = command.type === 'ChangePlaylist' && playMode !== 'random' ? 0 : command.index;
   let song = index === 0 && command.type === 'ChangePlaylist' ? tracks[0] : tagTrack(command.song, command.api);
-  if (song.mainTrackId > 0) song = {...song, rid: song.id, id: song.mainTrackId};
+  if (song.mainTrackId > 0) song = {...song, rid: song.rid ?? song.id, id: song.mainTrackId};
   if (command.type === 'insert' && current.tracks.length) {
     const key = getTrackKey(song);
     tracks = current.tracks.map(track => tagTrack(track, current.api)).filter(track => getTrackKey(track) !== key);
