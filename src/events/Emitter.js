@@ -1,22 +1,29 @@
-module.exports = function (n) {
+export default function createEmitter() {
+  const listeners = new Map();
   return {
-    all: n = n || new Map(),
-    on: function (t, e) {
-      var i = n.get(t);
-      i ? i.push(e) : n.set(t, [e]);
+    all: listeners,
+    on(name, listener) {
+      const handlers = listeners.get(name) || [];
+      handlers.push(listener);
+      listeners.set(name, handlers);
     },
-    off: function (t, e) {
-      var i = n.get(t);
-      i && (e ? i.splice(i.indexOf(e) >>> 0, 1) : n.set(t, []));
+    off(name, listener) {
+      if (!listener) listeners.delete(name);
+      else {
+        const handlers = listeners.get(name);
+        const index = handlers?.indexOf(listener) ?? -1;
+        if (index >= 0) handlers.splice(index, 1);
+      }
     },
-    emit: function (t, e) {
-      var i = n.get(t);
-      i && i.slice().map(function (n) {
-        n(e);
-      });
-      (i = n.get("*")) && i.slice().map(function (n) {
-        n(t, e);
-      });
-    }
+    emit(name, payload) {
+      listeners.get(name)?.slice().forEach(listener => listener(payload));
+      listeners.get('*')?.slice().forEach(listener => listener(name, payload));
+    },
+    addListener(name, listener) {
+      this.on(name, listener);
+      return {remove: () => this.off(name, listener)};
+    },
   };
-};
+}
+
+export const emitter = createEmitter();

@@ -14,7 +14,7 @@
     "android:install": "node scripts/android.cjs installDebug",
     "android:build:standalone": "node scripts/android.cjs assembleStandalone",
     "android:install:standalone": "node scripts/android.cjs installStandalone",
-    "test": "node --test src/storage/migrate.test.cjs src/settings/merge.test.cjs src/utils/md5.test.cjs src/utils/parseLyric.test.cjs src/services/trackInfo.test.cjs src/player/queue.test.cjs"
+    "test": "node --test src/storage/migrate.test.cjs src/settings/merge.test.cjs src/utils/md5.test.cjs src/utils/parseLyric.test.cjs src/services/trackInfo.test.cjs src/player/queue.test.cjs src/services/search.test.cjs src/modules/SongSearchResults.test.cjs src/player/commands.test.cjs"
   },
   "dependencies": {
     "@babel/runtime": "7.28.4",

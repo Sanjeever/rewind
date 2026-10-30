@@ -1,156 +1,110 @@
-const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
-const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
-const _toConsumableArray = require("@babel/runtime/helpers/toConsumableArray");
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-var React = _interopRequireWildcard(require("react")),
-  ReactNative = require("react-native"),
-  reactNativeLargelist = require("./../components/Scrolling.js"),
-  components = require("../components/index"),
-  ParallaxList = _interopRequireDefault(require("../components/ParallaxList")),
-  providers = _interopRequireDefault(require("../services/providers")),
-  constants = require("../theme/constants"),
-  locales = _interopRequireDefault(require("../locales/index")),
-  services = require("../services/index"),
-  events = require("../events/index"),
-  utils = require("../utils/index"),
-  trackInfo = require("../services/trackInfo"),
-  searchTypes = _interopRequireDefault(require("../services/searchTypes")),
-  m = class t extends React.PureComponent {
-    constructor() {
-      var e, a, r;
-      for (var n = arguments.length, o = new Array(n), i = 0; i < n; i++) o[i] = arguments[i];
-      return a = r = super(...o), r.state = {
-        data: [],
-        loaded: false,
-        preSearch: ''
-      }, r.fetchData = function (e) {
-        var t = r.props.api;
-        e && (r.setState({
-          data: [],
-          loaded: true,
-          preSearch: e
-        }), r.fetchAPI(t, e));
-      }, r.fetchAPI = function (e, t) {
-        var a = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : 0;
-        switch (e) {
-          case providers.default.netEase:
-            services.Netease.cloud_search({
-              keywords: t,
-              offset: a
-            }).then(function (e) {
-              var t = e.result.songs;
-              r.setState({
-                data: _toConsumableArray(r.state.data).concat(_toConsumableArray(t))
-              });
-              r.endLoading();
-            });
-            break;
-          case providers.default.qqMusic:
-            services.QQMusic.searchSong(t, a / 30 + 1).then(function (e) {
-              r.setState({
-                data: _toConsumableArray(r.state.data).concat(_toConsumableArray(e))
-              });
-              r.endLoading();
-            });
-        }
-      }, r.getMore = function () {
-        var e = r.props,
-          t = e.search,
-          a = e.api,
-          n = r.state.data.length;
-        r.fetchAPI(a, t, n);
-      }, r.endLoading = function () {
-        var e, t;
-        null === (e = (t = r._list).endLoading) || void 0 === e || e.call(t);
-      }, r._renderIndexPath = function (e) {
-        var t = e.row,
-          a = r.state.data[t],
-          n = (0, trackInfo.extractFullInfo)(a);
-        return React.default.createElement(components.SongRow, {
-          song: n.song,
-          album: '\u7a7a' === n.album ? '' : n.album,
-          singer: n.singer,
-          img: n.img,
-          onPress: function () {
-            return r.playMusic(a, t);
-          },
-          detail: function () {
-            return r.onDetail(a, t);
-          },
-          addToQueue: function () {
-            return r.addToQueue(a);
-          },
-          alias: (0, utils.delve)(a, 'tns.0'),
-          round: true,
-          songItem: a
-        });
-      }, r.addToQueue = function (e) {
-        var t;
-        if ((null === (t = e.album) || void 0 === t ? void 0 : t.id) < 1) toast(locales.default.MUSIC_CAN_NOT_PLAY);else {
-          var a = r.props.api;
-          (0, events.toInsertToList)({
-            data: e,
-            api: a
-          });
-        }
-      }, r.onDetail = function (e, t) {
-        var a;
-        if ((null === (a = e.album) || void 0 === a ? void 0 : a.id) < 1) toast(locales.default.MUSIC_CAN_NOT_PLAY);else {
-          var n = r.props.api;
-          (0, events.toDetailModal)({
-            item: e,
-            index: t,
-            api: n
-          });
-        }
-      }, r.playMusic = function (e, t) {
-        var a;
-        if ((null === (a = e.album) || void 0 === a ? void 0 : a.id) < 1) toast(locales.default.MUSIC_CAN_NOT_PLAY);else {
-          var n = r.props.api,
-            l = r.state.data;
-          (0, events.toPlayer)({
-            item: e,
-            data: l,
-            index: t,
-            api: n,
-            type: 'insert'
-          });
-        }
-      }, a;
+import React from 'react';
+import {StyleSheet, View} from 'react-native';
+import {LargeList} from '../components/Scrolling';
+import {SongRow, Spinkit, TextButton} from '../components';
+import Text from '../components/Text';
+import {ITEM_HEIGHT} from '../theme/constants';
+import {searchSongs} from '../services/search';
+import {getAlias} from '../services/trackFields';
+import {toDetailModal} from '../events';
+import {playTracks, insertTracks} from '../player/commands';
+
+export default class SongSearchResults extends React.PureComponent {
+  state = {tracks: [], loading: false, error: null, hasMore: false};
+  requestId = 0;
+  offset = 0;
+  pending = false;
+
+  componentDidMount() {
+    this.search();
+  }
+
+  componentDidUpdate(previous) {
+    if (previous.search !== this.props.search || previous.api !== this.props.api) this.search();
+  }
+
+  componentWillUnmount() {
+    this.requestId++;
+  }
+
+  search = () => {
+    const requestId = ++this.requestId;
+    this.offset = 0;
+    this.pending = false;
+    this.setState({tracks: [], loading: true, error: null, hasMore: false});
+    return this.fetchPage(requestId);
+  };
+
+  fetchPage = async (requestId = this.requestId) => {
+    if (this.pending) return;
+    this.pending = true;
+    const {search: query, api} = this.props;
+    try {
+      const result = await searchSongs({query, api, offset: this.offset});
+      if (requestId !== this.requestId) return;
+      this.offset = result.offset;
+      this.setState(state => {
+        const knownKeys = new Set(state.tracks.map(track => track.key));
+        return {
+          tracks: [...state.tracks, ...result.tracks.filter(track => {
+            if (knownKeys.has(track.key)) return false;
+            knownKeys.add(track.key);
+            return true;
+          })],
+          loading: false,
+          error: null,
+          hasMore: result.hasMore,
+        };
+      });
+      this.list?.endLoading(!result.hasMore);
+    } catch (error) {
+      if (requestId !== this.requestId) return;
+      this.setState({loading: false, error});
+      this.list?.endLoading();
+    } finally {
+      if (requestId === this.requestId) this.pending = false;
     }
-    "UNSAFE_componentWillReceiveProps"(e) {
-      var t = e.index,
-        a = e.search;
-      t === searchTypes.default.songs && this.state.preSearch !== a && this.fetchData(a);
-    }
-    "render"() {
-      var e = this,
-        t = this.state.data;
-      return t.length < 1 ? React.default.createElement(components.Spinkit, null) : React.default.createElement(ReactNative.View, {
-        style: _.container
-      }, React.default.createElement(reactNativeLargelist.LargeList, {
-        ref: function (t) {
-          return e._list = t;
-        },
-        data: [{
-          items: t
-        }],
-        heightForIndexPath: function () {
-          return constants.ITEM_HEIGHT;
-        },
-        renderIndexPath: this._renderIndexPath,
-        onLoading: this.getMore,
-        loadingFooter: ParallaxList.default
-      }));
-    }
-  },
-  _ = ReactNative.StyleSheet.create({
-    container: {
-      flex: 1
-    }
-  }),
-  y = m;
-exports.default = y;
+  };
+
+  loadMore = () => {
+    if (this.state.hasMore && !this.state.error) return this.fetchPage();
+  };
+
+  play = (track, index) => {
+    playTracks({
+      song: track.source,
+      tracks: this.state.tracks.map(item => item.source),
+      index,
+      api: track.api,
+      type: 'insert',
+    });
+  };
+
+  renderSong = ({row}) => {
+    const track = this.state.tracks[row];
+    return <SongRow song={track.title} album={track.album === '空' ? '' : track.album}
+      singer={track.artists.join('/')} img={track.artwork} songItem={track.source} round
+      alias={getAlias(track.source)} onPress={() => this.play(track, row)}
+      detail={() => toDetailModal({item: track.source, index: row, api: track.api})}
+      addToQueue={() => insertTracks({tracks: [track.source], api: track.api})} />;
+  };
+
+  renderStatus = () => {
+    if (this.state.error) return <View style={styles.status}>
+      <Text selectable>{this.state.error.message}</Text>
+      <TextButton text="重试" onPress={() => this.fetchPage()} style={{padding: 12}} />
+    </View>;
+    if (!this.state.tracks.length) return <Text style={styles.status}>无搜索结果</Text>;
+    return null;
+  };
+
+  render() {
+    if (this.state.loading) return <Spinkit />;
+    return <LargeList key={this.props.api + ':' + this.props.search}
+      ref={list => { this.list = list; }} data={[{items: this.state.tracks}]}
+      heightForIndexPath={() => ITEM_HEIGHT} renderIndexPath={this.renderSong}
+      renderFooter={this.renderStatus} onLoading={this.loadMore} />;
+  }
+}
+
+const styles = StyleSheet.create({status: {padding: 20, alignItems: 'center'}});
