@@ -1,8 +1,10 @@
+const _default = require("./Text.js").default;
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var React = babelHelpers.interopRequireDefault(require("react")),
+var React = _interopRequireDefault(require("react")),
   ReactNative = require("react-native"),
   filterColors = require("./filterColors"),
   c = ReactNative.StyleSheet.create({
@@ -28,7 +30,7 @@ var React = babelHelpers.interopRequireDefault(require("react")),
       onPress: l
     }, React.default.createElement(ReactNative.View, {
       style: c.container
-    }, React.default.createElement(ReactNative.Text, {
+    }, React.default.createElement(_default, {
       style: [c.item, i && c.highlight, r]
     }, t)));
   };

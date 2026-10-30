@@ -1,20 +1,23 @@
+const _default = require("./Text.js").default;
+const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+const _extends = require("@babel/runtime/helpers/extends");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var React = babelHelpers.interopRequireWildcard(require("react")),
+var React = _interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
-  TouchableScale = babelHelpers.interopRequireDefault(require("./TouchableScale")),
+  TouchableScale = _interopRequireDefault(require("./TouchableScale")),
   components = require("./index"),
   constants = require("../theme/constants"),
-  icons = babelHelpers.interopRequireDefault(require("../theme/icons")),
+  icons = _interopRequireDefault(require("../theme/icons")),
   d = '6y-UleORITEDbvrOLV0Q8A==/5639395138885805',
-  f = function (e) {
-    function t() {
+  f = class t extends React.PureComponent {
+    constructor() {
       var e, r, n;
-      babelHelpers.classCallCheck(this, t);
       for (var l = arguments.length, o = new Array(l), u = 0; u < l; u++) o[u] = arguments[u];
-      return babelHelpers.possibleConstructorReturn(n, (r = n = babelHelpers.possibleConstructorReturn(this, (e = babelHelpers.getPrototypeOf(t)).call.apply(e, [this].concat(o))), n.state = {
+      return r = n = super(...o), n.state = {
         imgError: false
       }, n.renderImg = function () {
         var e = n.state.imgError,
@@ -52,17 +55,17 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
             backgroundColor: 0
           },
           size: 23
-        }) : r ? React.default.createElement(ReactNative.Text, {
+        }) : r ? React.default.createElement(_default, {
           numberOfLines: o,
           style: [b.bold, b.title]
-        }, t, React.default.createElement(ReactNative.Text, {
+        }, t, React.default.createElement(_default, {
           style: [b.trans]
         }, " (", r, ")")) : l ? React.default.createElement(ReactNative.View, {
           style: {
             flexDirection: 'row',
             alignItems: 'center'
           }
-        }, React.default.createElement(ReactNative.Text, {
+        }, React.default.createElement(_default, {
           numberOfLines: o,
           style: [b.bold, b.title]
         }, t), React.default.createElement(components.Icon, {
@@ -71,44 +74,39 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
           },
           name: icons.default.CHECK_DECAGRAM,
           size: 13
-        })) : React.default.createElement(ReactNative.Text, {
+        })) : React.default.createElement(_default, {
           numberOfLines: o,
           style: [b.bold, b.title]
         }, t);
-      }, r));
+      }, r;
     }
-    babelHelpers.createClass(t, [{
-      key: "render",
-      value: function () {
-        var e = this.props,
-          t = e.onLongPress,
-          r = e.onPress,
-          n = e.subtitle,
-          l = e.onPressImg,
-          u = e.rightIcon;
-        return React.default.createElement(ReactNative.TouchableNativeFeedback, {
-          onPress: r,
-          onLongPress: t
-        }, React.default.createElement(ReactNative.View, {
-          style: [b.container]
-        }, React.default.createElement(TouchableScale.default, {
-          disabled: !l,
-          onPress: l
-        }, this.renderImg()), React.default.createElement(ReactNative.View, {
-          style: b.info
-        }, this.renderTitle(), n ? React.default.createElement(ReactNative.Text, {
-          numberOfLines: 1,
-          style: [b.subtitle]
-        }, n) : null), u && React.default.createElement(components.Icon, babelHelpers.extends({
-          style: {
-            marginHorizontal: 10
-          }
-        }, u))));
-      }
-    }]);
-    babelHelpers.inherits(t, e);
-    return t;
-  }(React.PureComponent);
+    "render"() {
+      var e = this.props,
+        t = e.onLongPress,
+        r = e.onPress,
+        n = e.subtitle,
+        l = e.onPressImg,
+        u = e.rightIcon;
+      return React.default.createElement(ReactNative.TouchableNativeFeedback, {
+        onPress: r,
+        onLongPress: t
+      }, React.default.createElement(ReactNative.View, {
+        style: [b.container]
+      }, React.default.createElement(TouchableScale.default, {
+        disabled: !l,
+        onPress: l
+      }, this.renderImg()), React.default.createElement(ReactNative.View, {
+        style: b.info
+      }, this.renderTitle(), n ? React.default.createElement(_default, {
+        numberOfLines: 1,
+        style: [b.subtitle]
+      }, n) : null), u && React.default.createElement(components.Icon, _extends({
+        style: {
+          marginHorizontal: 10
+        }
+      }, u))));
+    }
+  };
 f.defaultProps = {
   numberOfLines: 1
 };

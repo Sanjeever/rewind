@@ -1,30 +1,32 @@
+const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+const _asyncRuntime = require("@babel/runtime/helpers/regeneratorRuntime")();
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var React = babelHelpers.interopRequireWildcard(require("react")),
+var React = _interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
   components = require("./index"),
   constants = require("../theme/constants"),
-  names = babelHelpers.interopRequireDefault(require("../events/names")),
-  icons = babelHelpers.interopRequireDefault(require("../theme/icons")),
+  names = _interopRequireDefault(require("../events/names")),
+  icons = _interopRequireDefault(require("../theme/icons")),
   events = require("../events/index"),
-  types = babelHelpers.interopRequireWildcard(require("../utils/types")),
-  users = babelHelpers.interopRequireDefault(require("../storage/users")),
-  g = function (e) {
-    function t() {
+  types = _interopRequireWildcard(require("../utils/types")),
+  users = _interopRequireDefault(require("../storage/users")),
+  g = class t extends React.PureComponent {
+    constructor() {
       var e, a, n;
-      babelHelpers.classCallCheck(this, t);
       for (var r = arguments.length, o = new Array(r), u = 0; u < r; u++) o[u] = arguments[u];
-      return babelHelpers.possibleConstructorReturn(n, (a = n = babelHelpers.possibleConstructorReturn(this, (e = babelHelpers.getPrototypeOf(t)).call.apply(e, [this].concat(o))), n.state = {
+      return a = n = super(...o), n.state = {
         data: []
       }, n.getUserInfo = function () {
         var e, t, a, r;
-        return regeneratorRuntime.async(function (i) {
+        return _asyncRuntime.async(function (i) {
           for (;;) switch (i.prev = i.next) {
             case 0:
               i.next = 2;
-              return regeneratorRuntime.awrap(users.default.getUserInfo());
+              return _asyncRuntime.awrap(users.default.getUserInfo());
             case 2:
               if (e = i.sent, types.isObject(e)) {
                 i.next = 6;
@@ -106,49 +108,40 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
             }]
           }, e.nickname)));
         });
-      }, a));
+      }, a;
     }
-    babelHelpers.createClass(t, [{
-      key: "componentDidMount",
-      value: function () {
-        var e = this;
-        this.getUserInfo();
-        this.sub = events.emitter.addListener(names.default.UserLogined, function () {
-          setTimeout(function () {
-            e.getUserInfo();
-          }, 500);
-        });
-      }
-    }, {
-      key: "componentWillUnmount",
-      value: function () {
-        var e, t;
-        null === (e = (t = this.sub).remove) || void 0 === e || e.call(t);
-      }
-    }, {
-      key: "render",
-      value: function () {
-        var e = this.props.onNavigate,
-          t = this.state.data;
-        return React.default.createElement(ReactNative.Animated.View, {
-          style: m.container
-        }, t.length > 0 ? this.renderAvatars() : React.default.createElement(ReactNative.View, {
-          style: m.con
-        }, React.default.createElement(components.Icon, {
-          name: icons.default.ACCOUNT,
-          size: 40,
-          onPress: function () {
-            return e('InitialLogin');
-          },
-          style: {
-            marginLeft: 10
-          }
-        })));
-      }
-    }]);
-    babelHelpers.inherits(t, e);
-    return t;
-  }(React.PureComponent),
+    "componentDidMount"() {
+      var e = this;
+      this.getUserInfo();
+      this.sub = events.emitter.addListener(names.default.UserLogined, function () {
+        setTimeout(function () {
+          e.getUserInfo();
+        }, 500);
+      });
+    }
+    "componentWillUnmount"() {
+      var e, t;
+      null === (e = (t = this.sub).remove) || void 0 === e || e.call(t);
+    }
+    "render"() {
+      var e = this.props.onNavigate,
+        t = this.state.data;
+      return React.default.createElement(ReactNative.Animated.View, {
+        style: m.container
+      }, t.length > 0 ? this.renderAvatars() : React.default.createElement(ReactNative.View, {
+        style: m.con
+      }, React.default.createElement(components.Icon, {
+        name: icons.default.ACCOUNT,
+        size: 40,
+        onPress: function () {
+          return e('InitialLogin');
+        },
+        style: {
+          marginLeft: 10
+        }
+      })));
+    }
+  },
   m = ReactNative.StyleSheet.create({
     container: {
       width: '100%',

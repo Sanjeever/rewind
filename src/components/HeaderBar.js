@@ -1,21 +1,23 @@
+const _default = require("./Text.js").default;
+const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var React = babelHelpers.interopRequireWildcard(require("react")),
+var React = _interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
-  reactNativeAnimatable = babelHelpers.interopRequireWildcard(require("react-native-animatable")),
+  reactNativeAnimatable = _interopRequireWildcard(require("react-native-animatable")),
   constants = require("../theme/constants"),
-  icons = babelHelpers.interopRequireDefault(require("../theme/icons")),
-  locales = babelHelpers.interopRequireDefault(require("../locales/index")),
+  icons = _interopRequireDefault(require("../theme/icons")),
+  locales = _interopRequireDefault(require("../locales/index")),
   components = require("./index"),
-  Input = babelHelpers.interopRequireDefault(require("./Input")),
-  f = function (e) {
-    function t() {
+  Input = _interopRequireDefault(require("./Input")),
+  f = class t extends React.PureComponent {
+    constructor() {
       var e, n, r;
-      babelHelpers.classCallCheck(this, t);
       for (var o = arguments.length, u = new Array(o), d = 0; d < o; d++) u[d] = arguments[d];
-      return babelHelpers.possibleConstructorReturn(r, (n = r = babelHelpers.possibleConstructorReturn(this, (e = babelHelpers.getPrototypeOf(t)).call.apply(e, [this].concat(u))), r.state = {
+      return n = r = super(...u), r.state = {
         showTextInput: false,
         hideStatusBar: false
       }, r.titleOrTextInput = function () {
@@ -52,7 +54,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
             flex: 1,
             justifyContent: 'center'
           }
-        }, React.default.createElement(ReactNative.Text, {
+        }, React.default.createElement(_default, {
           numberOfLines: 1,
           style: [b.text, {
             paddingLeft: 5,
@@ -108,49 +110,44 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
         r.setState({
           showTextInput: !r.state.showTextInput
         });
-      }, n));
+      }, n;
     }
-    babelHelpers.createClass(t, [{
-      key: "render",
-      value: function () {
-        var e = this.props,
-          t = e.opacity,
-          n = e.goBack,
-          r = e.blur,
-          o = e.rightIcon,
-          a = e.headerStyle,
-          u = e.toolStyle,
-          c = e.textInput,
-          p = e.backIcon,
-          f = e.iconColor,
-          g = e.disabledTextInputBtn;
-        return React.default.createElement(ReactNative.Animated.View, {
-          style: [b.container, b.borderline, ReactNative.StyleSheet.flatten(a)]
-        }, r && React.default.createElement(ReactNative.Animated.View, {
-          style: [{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            opacity: t
-          }, b.borderline]
-        }, React.default.createElement(components.Background, {
-          blur: true
-        })), React.default.createElement(ReactNative.View, {
-          style: [b.tool, u, (c || o) && {
-            paddingRight: 70
-          }]
-        }, React.default.createElement(h, {
-          onPress: n,
-          name: (null === p || void 0 === p ? void 0 : p.name) || icons.default.ARROW_LEFT,
-          color: f
-        }), this.titleOrTextInput()), this.renderRightIcon(), true === c && !g && this.textInputBtn());
-      }
-    }]);
-    babelHelpers.inherits(t, e);
-    return t;
-  }(React.PureComponent),
+    "render"() {
+      var e = this.props,
+        t = e.opacity,
+        n = e.goBack,
+        r = e.blur,
+        o = e.rightIcon,
+        a = e.headerStyle,
+        u = e.toolStyle,
+        c = e.textInput,
+        p = e.backIcon,
+        f = e.iconColor,
+        g = e.disabledTextInputBtn;
+      return React.default.createElement(ReactNative.Animated.View, {
+        style: [b.container, b.borderline, ReactNative.StyleSheet.flatten(a)]
+      }, r && React.default.createElement(ReactNative.Animated.View, {
+        style: [{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          opacity: t
+        }, b.borderline]
+      }, React.default.createElement(components.Background, {
+        blur: true
+      })), React.default.createElement(ReactNative.View, {
+        style: [b.tool, u, (c || o) && {
+          paddingRight: 70
+        }]
+      }, React.default.createElement(h, {
+        onPress: n,
+        name: (null === p || void 0 === p ? void 0 : p.name) || icons.default.ARROW_LEFT,
+        color: f
+      }), this.titleOrTextInput()), this.renderRightIcon(), true === c && !g && this.textInputBtn());
+    }
+  },
   h = function (e) {
     var t = e.onPress,
       n = e.name,

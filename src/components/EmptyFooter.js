@@ -1,25 +1,20 @@
+const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var React = babelHelpers.interopRequireWildcard(require("react")),
+var React = _interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
-  i = function (e) {
-    function t() {
-      babelHelpers.classCallCheck(this, t);
-      return babelHelpers.possibleConstructorReturn(this, babelHelpers.getPrototypeOf(t).apply(this, arguments));
+  i = class t extends React.PureComponent {
+    constructor() {
+      return super(...arguments);
     }
-    babelHelpers.createClass(t, [{
-      key: "render",
-      value: function () {
-        return React.default.createElement(ReactNative.View, {
-          style: {
-            height: 128
-          }
-        });
-      }
-    }]);
-    babelHelpers.inherits(t, e);
-    return t;
-  }(React.PureComponent);
+    "render"() {
+      return React.default.createElement(ReactNative.View, {
+        style: {
+          height: 128
+        }
+      });
+    }
+  };
 exports.default = i;

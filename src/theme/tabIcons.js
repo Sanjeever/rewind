@@ -1,8 +1,9 @@
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var icons = babelHelpers.interopRequireDefault(require("./icons")),
+var icons = _interopRequireDefault(require("./icons")),
   d = {
     LOCAL: {
       name: icons.default.MUSIC_NOTE

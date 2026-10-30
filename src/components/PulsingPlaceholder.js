@@ -1,17 +1,19 @@
+const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+const _objectWithoutProperties = require("@babel/runtime/helpers/objectWithoutProperties");
+const _extends = require("@babel/runtime/helpers/extends");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var React = babelHelpers.interopRequireWildcard(require("react")),
+var React = _interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
   o = 1e3,
   s = 500,
-  u = function (e) {
-    function t() {
+  u = class t extends React.PureComponent {
+    constructor() {
       var e, a, n;
-      babelHelpers.classCallCheck(this, t);
       for (var i = arguments.length, l = new Array(i), u = 0; u < i; u++) l[u] = arguments[u];
-      return babelHelpers.possibleConstructorReturn(n, (a = n = babelHelpers.possibleConstructorReturn(this, (e = babelHelpers.getPrototypeOf(t)).call.apply(e, [this].concat(l))), n._animValue = new ReactNative.Animated.Value(.3), n.start = function () {
+      return a = n = super(...l), n._animValue = new ReactNative.Animated.Value(.3), n.start = function () {
         n._animation = ReactNative.Animated.timing(n._animValue, {
           toValue: 1,
           easing: ReactNative.Easing.easeIn,
@@ -26,39 +28,30 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
           });
           n._animation.start(n.start);
         });
-      }, a));
+      }, a;
     }
-    babelHelpers.createClass(t, [{
-      key: "componentDidMount",
-      value: function () {
-        this.start();
-      }
-    }, {
-      key: "componentWillUnmount",
-      value: function () {
-        var e, t;
-        null === (e = (t = this._animation).stop) || void 0 === e || e.call(t);
-      }
-    }, {
-      key: "render",
-      value: function () {
-        var e = this.props,
-          t = e.style,
-          a = e.textMode,
-          n = babelHelpers.objectWithoutProperties(e, ["style", "textMode"]);
-        return a ? React.default.createElement(ReactNative.Animated.Text, babelHelpers.extends({
-          style: [{
-            opacity: this._animValue
-          }, t]
-        }, n)) : React.default.createElement(ReactNative.Animated.View, babelHelpers.extends({
-          style: [{
-            backgroundColor: "#eee",
-            opacity: this._animValue
-          }, t]
-        }, n));
-      }
-    }]);
-    babelHelpers.inherits(t, e);
-    return t;
-  }(React.PureComponent);
+    "componentDidMount"() {
+      this.start();
+    }
+    "componentWillUnmount"() {
+      var e, t;
+      null === (e = (t = this._animation).stop) || void 0 === e || e.call(t);
+    }
+    "render"() {
+      var e = this.props,
+        t = e.style,
+        a = e.textMode,
+        n = _objectWithoutProperties(e, ["style", "textMode"]);
+      return a ? React.default.createElement(ReactNative.Animated.Text, _extends({
+        style: [{
+          opacity: this._animValue
+        }, t]
+      }, n)) : React.default.createElement(ReactNative.Animated.View, _extends({
+        style: [{
+          backgroundColor: "#eee",
+          opacity: this._animValue
+        }, t]
+      }, n));
+    }
+  };
 exports.default = u;

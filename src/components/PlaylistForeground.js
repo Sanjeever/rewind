@@ -1,14 +1,17 @@
+const _default = require("./Text.js").default;
+const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var React = babelHelpers.interopRequireWildcard(require("react")),
+var React = _interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
-  reactNativeAnimatable = babelHelpers.interopRequireWildcard(require("react-native-animatable")),
-  TouchableScale = babelHelpers.interopRequireDefault(require("./TouchableScale")),
+  reactNativeAnimatable = _interopRequireWildcard(require("react-native-animatable")),
+  TouchableScale = _interopRequireDefault(require("./TouchableScale")),
   components = require("./index"),
   constants = require("../theme/constants"),
-  icons = babelHelpers.interopRequireDefault(require("../theme/icons")),
+  icons = _interopRequireDefault(require("../theme/icons")),
   trackInfo = require("../services/trackInfo"),
   reactNativePopupMenu = require("react-native-popup-menu"),
   g = .9 * constants.DEVICE_WIDTH,
@@ -87,94 +90,88 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
       size: 25
     }))));
   },
-  p = function (e) {
-    function t() {
-      babelHelpers.classCallCheck(this, t);
-      return babelHelpers.possibleConstructorReturn(this, babelHelpers.getPrototypeOf(t).apply(this, arguments));
+  p = class t extends React.PureComponent {
+    constructor() {
+      return super(...arguments);
     }
-    babelHelpers.createClass(t, [{
-      key: "render",
-      value: function () {
-        var e = this.props,
-          t = e.coverImgUrl,
-          n = e.onRestore,
-          a = e.showRestore,
-          r = e.subscribed,
-          u = e.onSubscribe,
-          d = e.savePic,
-          f = e.orderText,
-          m = e.onSortText,
-          g = (e.heartMode, e.onHeartMode),
-          E = e.onSort,
-          b = e.onMult,
-          p = e.isCreatedByMe,
-          v = e.lastPlayedSong,
-          P = e.onPlay,
-          T = e.onInsert,
-          S = e.onWebview,
-          R = e.creator,
-          w = e.onUser,
-          O = e.disabledLastPlayedSong,
-          _ = e.onCopy,
-          H = e.onOpenUrl,
-          x = e.onShare;
-        return React.default.createElement(React.default.Fragment, null, React.default.createElement(ReactNative.View, {
-          style: [C.foreground]
-        }, React.default.createElement(ReactNative.View, {
-          style: C.coverCon
-        }, h({
-          coverImgUrl: t,
-          savePic: d,
-          creator: R,
-          onUser: w
-        })), React.default.createElement(ReactNative.View, {
-          style: C.extraBtnCon
-        }, f ? React.default.createElement(ReactNative.TouchableOpacity, {
-          activeOpacity: .7,
-          onPress: m,
-          style: {
-            position: 'absolute',
-            left: 50,
-            bottom: 0
-          }
-        }, React.default.createElement(reactNativeAnimatable.Text, {
-          style: C.sortText,
-          animation: 'fadeIn'
-        }, f)) : null, E && React.default.createElement(components.IconButton, {
-          name: icons.default.SORT_VARIANT,
-          size: 25,
-          onPress: E
-        }), a && React.default.createElement(components.IconButton, {
-          name: icons.default.BACKUP_RESTORE,
-          onPress: n,
-          size: 25
-        }), g && p && React.default.createElement(components.IconButton, {
-          name: icons.default.HEART_PULSE,
-          size: 25,
-          onPress: g
-        }), !p && u && React.default.createElement(components.IconButton, {
-          name: r ? icons.default.PLAYLIST_REMOVE : icons.default.PLAYLIST_PLUS,
-          size: 25,
-          onPress: u
-        }), b && React.default.createElement(components.IconButton, {
-          name: icons.default.CHECKBOX_MULTIPLE_MARKED_CIRCLE_OUTLINE,
-          size: 25,
-          onPress: b
-        }), S && React.default.createElement(I, {
-          onWebview: S,
-          onCopy: _,
-          onOpenUrl: H,
-          onShare: x
-        }))), !O && y({
-          lastPlayedSong: v,
-          onPlay: P,
-          onInsert: T
-        }));
-      }
-    }]);
-    babelHelpers.inherits(t, e);
-    return t;
-  }(React.PureComponent);
+    "render"() {
+      var e = this.props,
+        t = e.coverImgUrl,
+        n = e.onRestore,
+        a = e.showRestore,
+        r = e.subscribed,
+        u = e.onSubscribe,
+        d = e.savePic,
+        f = e.orderText,
+        m = e.onSortText,
+        g = (e.heartMode, e.onHeartMode),
+        E = e.onSort,
+        b = e.onMult,
+        p = e.isCreatedByMe,
+        v = e.lastPlayedSong,
+        P = e.onPlay,
+        T = e.onInsert,
+        S = e.onWebview,
+        R = e.creator,
+        w = e.onUser,
+        O = e.disabledLastPlayedSong,
+        _ = e.onCopy,
+        H = e.onOpenUrl,
+        x = e.onShare;
+      return React.default.createElement(React.default.Fragment, null, React.default.createElement(ReactNative.View, {
+        style: [C.foreground]
+      }, React.default.createElement(ReactNative.View, {
+        style: C.coverCon
+      }, h({
+        coverImgUrl: t,
+        savePic: d,
+        creator: R,
+        onUser: w
+      })), React.default.createElement(ReactNative.View, {
+        style: C.extraBtnCon
+      }, f ? React.default.createElement(ReactNative.TouchableOpacity, {
+        activeOpacity: .7,
+        onPress: m,
+        style: {
+          position: 'absolute',
+          left: 50,
+          bottom: 0
+        }
+      }, React.default.createElement(reactNativeAnimatable.Text, {
+        style: C.sortText,
+        animation: 'fadeIn'
+      }, f)) : null, E && React.default.createElement(components.IconButton, {
+        name: icons.default.SORT_VARIANT,
+        size: 25,
+        onPress: E
+      }), a && React.default.createElement(components.IconButton, {
+        name: icons.default.BACKUP_RESTORE,
+        onPress: n,
+        size: 25
+      }), g && p && React.default.createElement(components.IconButton, {
+        name: icons.default.HEART_PULSE,
+        size: 25,
+        onPress: g
+      }), !p && u && React.default.createElement(components.IconButton, {
+        name: r ? icons.default.PLAYLIST_REMOVE : icons.default.PLAYLIST_PLUS,
+        size: 25,
+        onPress: u
+      }), b && React.default.createElement(components.IconButton, {
+        name: icons.default.CHECKBOX_MULTIPLE_MARKED_CIRCLE_OUTLINE,
+        size: 25,
+        onPress: b
+      }), S && React.default.createElement(I, {
+        onWebview: S,
+        onCopy: _,
+        onOpenUrl: H,
+        onShare: x
+      }))), !O && y({
+        lastPlayedSong: v,
+        onPlay: P,
+        onInsert: T
+      }));
+    }
+  };
 exports.default = p;
 var h = function (e) {
     var t = e.coverImgUrl,
@@ -228,7 +225,7 @@ var h = function (e) {
       }
     }, React.default.createElement(components.Icon, {
       name: icons.default.PLAY
-    }), React.default.createElement(ReactNative.Text, {
+    }), React.default.createElement(_default, {
       style: {
         marginLeft: 7
       }

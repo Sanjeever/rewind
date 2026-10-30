@@ -1,22 +1,24 @@
+const _default = require("./Text.js").default;
+const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var React = babelHelpers.interopRequireWildcard(require("react")),
+var React = _interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
-  reactNativeAnimatable = babelHelpers.interopRequireWildcard(require("react-native-animatable")),
+  reactNativeAnimatable = _interopRequireWildcard(require("react-native-animatable")),
   components = require("./index"),
-  providers = babelHelpers.interopRequireDefault(require("../services/providers")),
+  providers = _interopRequireDefault(require("../services/providers")),
   constants = require("../theme/constants"),
-  icons = babelHelpers.interopRequireDefault(require("../theme/icons")),
-  locales = babelHelpers.interopRequireDefault(require("../locales/index")),
+  icons = _interopRequireDefault(require("../theme/icons")),
+  locales = _interopRequireDefault(require("../locales/index")),
   p = .05 * constants.DEVICE_HEIGHT,
-  m = function (e) {
-    function t() {
+  m = class t extends React.PureComponent {
+    constructor() {
       var e, n, r;
-      babelHelpers.classCallCheck(this, t);
       for (var a = arguments.length, o = new Array(a), s = 0; s < a; s++) o[s] = arguments[s];
-      return babelHelpers.possibleConstructorReturn(r, (n = r = babelHelpers.possibleConstructorReturn(this, (e = babelHelpers.getPrototypeOf(t)).call.apply(e, [this].concat(o))), r.renderQQMusic = function () {
+      return n = r = super(...o), r.renderQQMusic = function () {
         var e = r.props,
           t = e._Login,
           n = e.onChangeText,
@@ -139,46 +141,41 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
             return s('netease_weibo');
           }
         })));
-      }, n));
+      }, n;
     }
-    babelHelpers.createClass(t, [{
-      key: "render",
-      value: function () {
-        var e = this.props,
-          t = e.avatar,
-          n = e.nickname,
-          r = e.api;
-        return React.default.createElement(reactNativeAnimatable.View, {
-          animation: "fadeIn",
-          useNativeDriver: true,
-          style: {
-            flex: 1,
-            paddingTop: 60,
-            alignItems: 'center'
-          }
-        }, React.default.createElement(ReactNative.TouchableOpacity, {
-          onPress: this.props.onUserManager
-        }, React.default.createElement(ReactNative.View, {
-          style: y.avatarView
-        }, t ? React.default.createElement(ReactNative.Image, {
-          source: {
-            uri: t
-          },
-          style: y.avatar
-        }) : React.default.createElement(components.Icon, {
-          name: icons.default.ACCOUNT,
-          size: 50
-        }), React.default.createElement(ReactNative.Text, {
-          style: [{
-            fontSize: 18,
-            marginTop: 10
-          }]
-        }, n))), r === providers.default.netEase ? this.renderNetease() : this.renderQQMusic());
-      }
-    }]);
-    babelHelpers.inherits(t, e);
-    return t;
-  }(React.PureComponent);
+    "render"() {
+      var e = this.props,
+        t = e.avatar,
+        n = e.nickname,
+        r = e.api;
+      return React.default.createElement(reactNativeAnimatable.View, {
+        animation: "fadeIn",
+        useNativeDriver: true,
+        style: {
+          flex: 1,
+          paddingTop: 60,
+          alignItems: 'center'
+        }
+      }, React.default.createElement(ReactNative.TouchableOpacity, {
+        onPress: this.props.onUserManager
+      }, React.default.createElement(ReactNative.View, {
+        style: y.avatarView
+      }, t ? React.default.createElement(ReactNative.Image, {
+        source: {
+          uri: t
+        },
+        style: y.avatar
+      }) : React.default.createElement(components.Icon, {
+        name: icons.default.ACCOUNT,
+        size: 50
+      }), React.default.createElement(_default, {
+        style: [{
+          fontSize: 18,
+          marginTop: 10
+        }]
+      }, n))), r === providers.default.netEase ? this.renderNetease() : this.renderQQMusic());
+    }
+  };
 exports.default = m;
 var y = ReactNative.StyleSheet.create({
   container: {

@@ -1,8 +1,11 @@
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+const _asyncRuntime = require("@babel/runtime/helpers/regeneratorRuntime")();
+const _appStorage = require("./../storage/index.js");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.initBackgroundState = exports.getBackground = void 0;
-var keys = babelHelpers.interopRequireDefault(require("../storage/keys")),
+var keys = _interopRequireDefault(require("../storage/keys")),
   files = require("../storage/files"),
   o = {},
   i = false;
@@ -11,12 +14,12 @@ exports.getBackground = function () {
 };
 var s = function () {
   var e;
-  return regeneratorRuntime.async(function (r) {
+  return _asyncRuntime.async(function (r) {
     for (;;) switch (r.prev = r.next) {
       case 0:
         r.prev = 0;
         r.next = 3;
-        return regeneratorRuntime.awrap(storage.load({
+        return _asyncRuntime.awrap(_appStorage.storage.load({
           key: keys.default.background
         }));
       case 3:
@@ -25,7 +28,7 @@ var s = function () {
           break;
         }
         r.next = 7;
-        return regeneratorRuntime.awrap(p());
+        return _asyncRuntime.awrap(p());
       case 7:
         o = r.sent;
         r.next = 11;

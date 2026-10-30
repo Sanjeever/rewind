@@ -1,21 +1,23 @@
+const _default = require("./Text.js").default;
+const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var React = babelHelpers.interopRequireWildcard(require("react")),
+var React = _interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
-  reactNativeAnimatable = babelHelpers.interopRequireWildcard(require("react-native-animatable")),
-  TouchableScale = babelHelpers.interopRequireDefault(require("./TouchableScale")),
+  reactNativeAnimatable = _interopRequireWildcard(require("react-native-animatable")),
+  TouchableScale = _interopRequireDefault(require("./TouchableScale")),
   components = require("./index"),
   constants = require("../theme/constants"),
-  icons = babelHelpers.interopRequireDefault(require("../theme/icons")),
+  icons = _interopRequireDefault(require("../theme/icons")),
   events = require("../events/index"),
   utils = require("../utils/index"),
-  g = function (e) {
-    function t(e) {
+  g = class t extends React.PureComponent {
+    constructor(e) {
       var n;
-      babelHelpers.classCallCheck(this, t);
-      (n = babelHelpers.possibleConstructorReturn(this, babelHelpers.getPrototypeOf(t).call(this, e))).handleOnPress = function () {
+      (n = super(e)).handleOnPress = function () {
         requestAnimationFrame(function () {
           var e, t;
           null === (e = (t = n.props).onPress) || void 0 === e || e.call(t);
@@ -34,80 +36,75 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
       };
       return n;
     }
-    babelHelpers.createClass(t, [{
-      key: "render",
-      value: function () {
-        var e = this.props,
-          t = e.img,
-          n = e.index,
-          a = e.song,
-          l = e.album,
-          o = e.singer,
-          u = e.detail,
-          f = e.onMV,
-          g = e.showMV,
-          y = e.textStyle,
-          x = e.playing,
-          v = e.addToQueue,
-          R = e.containerStyle,
-          C = e.deleteBtn,
-          w = e.isExist,
-          P = e.alias,
-          H = e.isChecked,
-          O = e.disabled,
-          k = e.showRank,
-          _ = void 0 !== k && k,
-          S = e.lastRank,
-          L = o && (0, utils.parseArtist)(o);
-        return React.default.createElement(ReactNative.TouchableNativeFeedback, {
-          disabled: O,
-          onPress: this.handleOnPress,
-          onLongPress: this.onLongPress
-        }, React.default.createElement(ReactNative.View, {
-          style: [T.container, R]
-        }, true === H && React.default.createElement(reactNativeAnimatable.View, {
-          useNativeDriver: true,
-          animation: "fadeIn",
-          style: {
-            width: 5,
-            height: '100%',
-            backgroundColor: constants.COLORS.secondary,
-            borderRadius: 1
-          }
-        }), b({
-          img: t,
-          addToQueue: v
-        }), p({
-          index: n,
-          img: t,
-          addToQueue: v,
-          playing: x,
-          showRank: _,
-          lastRank: S
-        }), I({
-          textStyle: y,
-          song: a,
-          playing: x,
-          alias: P,
-          isExist: w,
-          singers: L,
-          album: l
-        }), g && f ? React.default.createElement(E, {
-          onPress: f
-        }) : null, u ? React.default.createElement(h, {
-          onPress: u,
-          style: T.next
-        }) : null, C ? React.default.createElement(h, {
-          name: icons.default.WINDOW_CLOSE,
-          size: 20,
-          onPress: C,
-          style: T.delete
-        }) : null));
-      }
-    }]);
-    babelHelpers.inherits(t, e);
-    return t;
-  }(React.PureComponent),
+    "render"() {
+      var e = this.props,
+        t = e.img,
+        n = e.index,
+        a = e.song,
+        l = e.album,
+        o = e.singer,
+        u = e.detail,
+        f = e.onMV,
+        g = e.showMV,
+        y = e.textStyle,
+        x = e.playing,
+        v = e.addToQueue,
+        R = e.containerStyle,
+        C = e.deleteBtn,
+        w = e.isExist,
+        P = e.alias,
+        H = e.isChecked,
+        O = e.disabled,
+        k = e.showRank,
+        _ = void 0 !== k && k,
+        S = e.lastRank,
+        L = o && (0, utils.parseArtist)(o);
+      return React.default.createElement(ReactNative.TouchableNativeFeedback, {
+        disabled: O,
+        onPress: this.handleOnPress,
+        onLongPress: this.onLongPress
+      }, React.default.createElement(ReactNative.View, {
+        style: [T.container, R]
+      }, true === H && React.default.createElement(reactNativeAnimatable.View, {
+        useNativeDriver: true,
+        animation: "fadeIn",
+        style: {
+          width: 5,
+          height: '100%',
+          backgroundColor: constants.COLORS.secondary,
+          borderRadius: 1
+        }
+      }), b({
+        img: t,
+        addToQueue: v
+      }), p({
+        index: n,
+        img: t,
+        addToQueue: v,
+        playing: x,
+        showRank: _,
+        lastRank: S
+      }), I({
+        textStyle: y,
+        song: a,
+        playing: x,
+        alias: P,
+        isExist: w,
+        singers: L,
+        album: l
+      }), g && f ? React.default.createElement(E, {
+        onPress: f
+      }) : null, u ? React.default.createElement(h, {
+        onPress: u,
+        style: T.next
+      }) : null, C ? React.default.createElement(h, {
+        name: icons.default.WINDOW_CLOSE,
+        size: 20,
+        onPress: C,
+        style: T.delete
+      }) : null));
+    }
+  },
   E = function (e) {
     var t = e.onPress;
     return React.default.createElement(ReactNative.TouchableOpacity, {
@@ -160,7 +157,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
       }, s ? React.default.createElement(components.Icon, {
         name: s,
         size: 15
-      }) : null, l ? React.default.createElement(ReactNative.Text, {
+      }) : null, l ? React.default.createElement(_default, {
         style: T.rank
       }, l) : null);
     }
@@ -193,7 +190,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
     }, l ? React.default.createElement(components.Icon, {
       name: icons.default.EMOTICON_HAPPY_OUTLINE,
       size: 20
-    }) : React.default.createElement(ReactNative.Text, {
+    }) : React.default.createElement(_default, {
       style: [T.song, T.indexText]
     }, 1 + (0 | t)), y({
       showRank: s,
@@ -211,12 +208,12 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
       f = e.album;
     return React.default.createElement(ReactNative.View, {
       style: [T.textCon, t]
-    }, React.default.createElement(ReactNative.Text, {
+    }, React.default.createElement(_default, {
       numberOfLines: 1,
       style: [T.song, a && {
         fontWeight: 'bold'
       }]
-    }, n, l && React.default.createElement(ReactNative.Text, {
+    }, n, l && React.default.createElement(_default, {
       style: T.alias
     }, " (", l, ")")), React.default.createElement(ReactNative.View, {
       style: {
@@ -231,7 +228,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
       style: {
         marginRight: 3
       }
-    })) : null, (null === d || void 0 === d ? void 0 : d.length) > 0 ? React.default.createElement(ReactNative.Text, {
+    })) : null, (null === d || void 0 === d ? void 0 : d.length) > 0 ? React.default.createElement(_default, {
       numberOfLines: 1,
       style: [T.singer]
     }, d, " ", f && '|  ' + f) : null));

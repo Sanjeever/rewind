@@ -1,10 +1,11 @@
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var React = babelHelpers.interopRequireDefault(require("react")),
+var React = _interopRequireDefault(require("react")),
   ReactNative = require("react-native"),
-  reactNativeLinearGradient = babelHelpers.interopRequireDefault(require("react-native-linear-gradient"));
+  reactNativeLinearGradient = _interopRequireDefault(require("react-native-linear-gradient"));
 exports.default = function (e) {
   var t = e.colors,
     r = e.from,

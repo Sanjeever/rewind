@@ -1,19 +1,21 @@
+const _default = require("./Text.js").default;
+const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var React = babelHelpers.interopRequireWildcard(require("react")),
+var React = _interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
-  reactNativeAnimatable = babelHelpers.interopRequireWildcard(require("react-native-animatable")),
+  reactNativeAnimatable = _interopRequireWildcard(require("react-native-animatable")),
   constants = require("../theme/constants"),
-  icons = babelHelpers.interopRequireDefault(require("../theme/icons")),
+  icons = _interopRequireDefault(require("../theme/icons")),
   components = require("./index"),
-  d = function (e) {
-    function t() {
+  d = class t extends React.PureComponent {
+    constructor() {
       var e, a, n;
-      babelHelpers.classCallCheck(this, t);
       for (var o = arguments.length, i = new Array(o), u = 0; u < o; u++) i[u] = arguments[u];
-      return babelHelpers.possibleConstructorReturn(n, (a = n = babelHelpers.possibleConstructorReturn(this, (e = babelHelpers.getPrototypeOf(t)).call.apply(e, [this].concat(i))), n.renderBottomMask = function () {
+      return a = n = super(...i), n.renderBottomMask = function () {
         var e = n.props.animOffsetY;
         return React.default.createElement(ReactNative.Animated.View, {
           style: {
@@ -34,82 +36,77 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
             height: '100%'
           }
         }));
-      }, a));
+      }, a;
     }
-    babelHelpers.createClass(t, [{
-      key: "render",
-      value: function () {
-        var e = this.props,
-          t = e.img,
-          a = e.subtitle,
-          n = e.title,
-          o = e.animOffsetY,
-          d = e.alias,
-          c = e.onInfo,
-          g = constants.STATUS_BAR_HEIGHT + 40,
-          m = 'string' == typeof a ? [a] : a,
-          b = [{
-            translateY: o.interpolate({
-              inputRange: [-constants.DEVICE_WIDTH, 0],
-              outputRange: [-constants.DEVICE_WIDTH / 2, 0],
-              extrapolate: 'clamp'
-            })
-          }, {
-            scale: o.interpolate({
-              inputRange: [-constants.DEVICE_WIDTH, 0],
-              outputRange: [2, 1],
-              extrapolate: 'clamp'
-            })
-          }];
-        return React.default.createElement(ReactNative.Animated.View, {
-          style: [f.foreground, {
-            opacity: o.interpolate({
-              inputRange: [100, constants.DEVICE_WIDTH - g - 30],
-              outputRange: [1, 0],
-              extrapolate: 'clamp'
-            })
-          }]
-        }, 'string' == typeof t && t ? React.default.createElement(reactNativeAnimatable.Image, {
-          animation: 'fadeIn',
-          useNativeDriver: true,
-          source: {
-            uri: t
-          },
-          style: [f.foregroundImg, {
-            transform: b
-          }]
-        }) : React.default.createElement(ReactNative.View, {
-          style: [f.foregroundImg, f.foregroundIconCon]
-        }, React.default.createElement(components.Icon, {
-          name: icons.default.ACCOUNT_MUSIC,
-          size: 70
-        })), this.renderBottomMask(), React.default.createElement(ReactNative.Animated.View, {
-          style: [f.textCon, {
-            opacity: o.interpolate({
-              inputRange: [-constants.DEVICE_WIDTH / 3, 0],
-              outputRange: [0, 1],
-              extrapolate: 'clamp'
-            })
-          }]
-        }, React.default.createElement(components.Selectable, {
-          style: [f.bold]
-        }, n, Boolean(d) && React.default.createElement(ReactNative.Text, {
-          style: f.alias
-        }, ' / ', d)), (null === m || void 0 === m ? void 0 : m.length) > 0 && m.map(function (e, t) {
-          return 'string' == typeof e && React.default.createElement(ReactNative.Text, {
-            key: t,
-            style: f.subtitle
-          }, e);
-        }), Boolean(c) && React.default.createElement(components.Icon, {
-          name: icons.default.INFORMATION_OUTLINE,
-          style: f.info,
-          onPress: c
-        })));
-      }
-    }]);
-    babelHelpers.inherits(t, e);
-    return t;
-  }(React.PureComponent);
+    "render"() {
+      var e = this.props,
+        t = e.img,
+        a = e.subtitle,
+        n = e.title,
+        o = e.animOffsetY,
+        d = e.alias,
+        c = e.onInfo,
+        g = constants.STATUS_BAR_HEIGHT + 40,
+        m = 'string' == typeof a ? [a] : a,
+        b = [{
+          translateY: o.interpolate({
+            inputRange: [-constants.DEVICE_WIDTH, 0],
+            outputRange: [-constants.DEVICE_WIDTH / 2, 0],
+            extrapolate: 'clamp'
+          })
+        }, {
+          scale: o.interpolate({
+            inputRange: [-constants.DEVICE_WIDTH, 0],
+            outputRange: [2, 1],
+            extrapolate: 'clamp'
+          })
+        }];
+      return React.default.createElement(ReactNative.Animated.View, {
+        style: [f.foreground, {
+          opacity: o.interpolate({
+            inputRange: [100, constants.DEVICE_WIDTH - g - 30],
+            outputRange: [1, 0],
+            extrapolate: 'clamp'
+          })
+        }]
+      }, 'string' == typeof t && t ? React.default.createElement(reactNativeAnimatable.Image, {
+        animation: 'fadeIn',
+        useNativeDriver: true,
+        source: {
+          uri: t
+        },
+        style: [f.foregroundImg, {
+          transform: b
+        }]
+      }) : React.default.createElement(ReactNative.View, {
+        style: [f.foregroundImg, f.foregroundIconCon]
+      }, React.default.createElement(components.Icon, {
+        name: icons.default.ACCOUNT_MUSIC,
+        size: 70
+      })), this.renderBottomMask(), React.default.createElement(ReactNative.Animated.View, {
+        style: [f.textCon, {
+          opacity: o.interpolate({
+            inputRange: [-constants.DEVICE_WIDTH / 3, 0],
+            outputRange: [0, 1],
+            extrapolate: 'clamp'
+          })
+        }]
+      }, React.default.createElement(components.Selectable, {
+        style: [f.bold]
+      }, n, Boolean(d) && React.default.createElement(_default, {
+        style: f.alias
+      }, ' / ', d)), (null === m || void 0 === m ? void 0 : m.length) > 0 && m.map(function (e, t) {
+        return 'string' == typeof e && React.default.createElement(_default, {
+          key: t,
+          style: f.subtitle
+        }, e);
+      }), Boolean(c) && React.default.createElement(components.Icon, {
+        name: icons.default.INFORMATION_OUTLINE,
+        style: f.info,
+        onPress: c
+      })));
+    }
+  };
 exports.default = d;
 var f = ReactNative.StyleSheet.create({
   foreground: {

@@ -1,29 +1,32 @@
+const _default = require("./Text.js").default;
+const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+const _asyncRuntime = require("@babel/runtime/helpers/regeneratorRuntime")();
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var React = babelHelpers.interopRequireWildcard(require("react")),
+var React = _interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
   components = require("./index"),
-  actions = babelHelpers.interopRequireDefault(require("../screens/home/actions")),
-  names = babelHelpers.interopRequireDefault(require("../events/names")),
-  locales = babelHelpers.interopRequireDefault(require("../locales/index")),
+  actions = _interopRequireDefault(require("../screens/home/actions")),
+  names = _interopRequireDefault(require("../events/names")),
+  locales = _interopRequireDefault(require("../locales/index")),
   services = require("../services/index"),
   events = require("../events/index"),
-  p = function (e) {
-    function t() {
+  p = class t extends React.PureComponent {
+    constructor() {
       var e, n, a;
-      babelHelpers.classCallCheck(this, t);
       for (var r = arguments.length, s = new Array(r), l = 0; l < r; l++) s[l] = arguments[l];
-      return babelHelpers.possibleConstructorReturn(a, (n = a = babelHelpers.possibleConstructorReturn(this, (e = babelHelpers.getPrototypeOf(t)).call.apply(e, [this].concat(s))), a.state = {
+      return n = a = super(...s), a.state = {
         netEaseLogined: true
       }, a.checkNetEaseLogined = function () {
         var e;
-        return regeneratorRuntime.async(function (t) {
+        return _asyncRuntime.async(function (t) {
           for (;;) switch (t.prev = t.next) {
             case 0:
               t.next = 2;
-              return regeneratorRuntime.awrap(services.Netease.cloud(1));
+              return _asyncRuntime.awrap(services.Netease.cloud(1));
             case 2:
               (e = t.sent) && (301 === e.code ? a.setState({
                 netEaseLogined: false
@@ -74,56 +77,47 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
           case locales.default.FEATURE:
             u();
         }
-      }, n));
+      }, n;
     }
-    babelHelpers.createClass(t, [{
-      key: "componentDidMount",
-      value: function () {
-        var e = this;
-        this.checkNetEaseLogined();
-        this.sub = events.emitter.addListener(names.default.UserLogined, function () {
-          setTimeout(function () {
-            e.checkNetEaseLogined();
-          }, 500);
-        });
-      }
-    }, {
-      key: "componentWillUnmount",
-      value: function () {
-        this.sub.remove();
-      }
-    }, {
-      key: "render",
-      value: function () {
-        var e = this;
-        return React.default.createElement(ReactNative.View, {
-          style: b.container
-        }, actions.default.map(function (t, n) {
-          return n < 2 && !e.state.netEaseLogined ? null : React.default.createElement(ReactNative.TouchableNativeFeedback, {
-            key: n,
-            onPress: function () {
-              requestAnimationFrame(function () {
-                e.onPress(t);
-              });
-            }
-          }, React.default.createElement(ReactNative.View, {
-            style: b.btn
-          }, React.default.createElement(components.Icon, {
-            name: t.icon.name,
-            key: n,
-            size: 20,
-            style: {
-              width: 25
-            }
-          }), React.default.createElement(ReactNative.Text, {
-            style: b.text
-          }, t.name)));
-        }));
-      }
-    }]);
-    babelHelpers.inherits(t, e);
-    return t;
-  }(React.PureComponent),
+    "componentDidMount"() {
+      var e = this;
+      this.checkNetEaseLogined();
+      this.sub = events.emitter.addListener(names.default.UserLogined, function () {
+        setTimeout(function () {
+          e.checkNetEaseLogined();
+        }, 500);
+      });
+    }
+    "componentWillUnmount"() {
+      this.sub.remove();
+    }
+    "render"() {
+      var e = this;
+      return React.default.createElement(ReactNative.View, {
+        style: b.container
+      }, actions.default.map(function (t, n) {
+        return n < 2 && !e.state.netEaseLogined ? null : React.default.createElement(ReactNative.TouchableNativeFeedback, {
+          key: n,
+          onPress: function () {
+            requestAnimationFrame(function () {
+              e.onPress(t);
+            });
+          }
+        }, React.default.createElement(ReactNative.View, {
+          style: b.btn
+        }, React.default.createElement(components.Icon, {
+          name: t.icon.name,
+          key: n,
+          size: 20,
+          style: {
+            width: 25
+          }
+        }), React.default.createElement(_default, {
+          style: b.text
+        }, t.name)));
+      }));
+    }
+  },
   b = ReactNative.StyleSheet.create({
     container: {
       width: '100%',
