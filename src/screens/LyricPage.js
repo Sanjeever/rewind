@@ -1,23 +1,25 @@
+const _default = require("./../components/Text.js").default;
+const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
 var immer = require("immer"),
-  React = babelHelpers.interopRequireWildcard(require("react")),
+  React = _interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
-  providers = babelHelpers.interopRequireDefault(require("../services/providers")),
+  providers = _interopRequireDefault(require("../services/providers")),
   constants = require("../theme/constants"),
   endpoints = require("../services/endpoints"),
   services = require("../services/index"),
   utils = require("../utils/index"),
   trackInfo = require("../services/trackInfo"),
-  LyricText = babelHelpers.interopRequireDefault(require("./lyrics/LyricText")),
-  p = function (e) {
-    function t() {
+  LyricText = _interopRequireDefault(require("./lyrics/LyricText")),
+  p = class t extends React.PureComponent {
+    constructor() {
       var e, r, n;
-      babelHelpers.classCallCheck(this, t);
       for (var a = arguments.length, s = new Array(a), c = 0; c < a; c++) s[c] = arguments[c];
-      return babelHelpers.possibleConstructorReturn(n, (r = n = babelHelpers.possibleConstructorReturn(this, (e = babelHelpers.getPrototypeOf(t)).call.apply(e, [this].concat(s))), n.state = {
+      return r = n = super(...s), n.state = {
         img: null,
         songName: null,
         qrcode: null,
@@ -95,81 +97,72 @@ var immer = require("immer"),
         n.setState({
           lyric: t
         });
-      }, r));
+      }, r;
     }
-    babelHelpers.createClass(t, [{
-      key: "componentDidMount",
-      value: function () {
-        var e = this.props.navigation.state.params;
-        if (e) {
-          var t = e.id,
-            r = e.api,
-            n = e.item,
-            a = (0, trackInfo.extractFullInfo)(n, 'big');
-          this.setState({
-            img: a.img,
-            songName: this.songName(a)
-          });
-          this.getLyric(t, r);
-          this.getQRCode(t, r);
-          ReactNative.StatusBar.setHidden(true);
+    "componentDidMount"() {
+      var e = this.props.route.params;
+      if (e) {
+        var t = e.id,
+          r = e.api,
+          n = e.item,
+          a = (0, trackInfo.extractFullInfo)(n, 'big');
+        this.setState({
+          img: a.img,
+          songName: this.songName(a)
+        });
+        this.getLyric(t, r);
+        this.getQRCode(t, r);
+        ReactNative.StatusBar.setHidden(true);
+      }
+    }
+    "componentWillUnmount"() {
+      ReactNative.StatusBar.setHidden(false);
+    }
+    "render"() {
+      var e = this,
+        t = this.state,
+        r = t.lyric,
+        n = t.img,
+        a = t.songName,
+        i = t.qrcode;
+      return React.default.createElement(ReactNative.Modal, {
+        animationType: "fade",
+        transparent: true,
+        onRequestClose: this.onClose
+      }, React.default.createElement(ReactNative.View, {
+        style: h.container
+      }, React.default.createElement(ReactNative.ScrollView, null, React.default.createElement(ReactNative.View, {
+        style: {
+          height: constants.STATUS_BAR_HEIGHT
         }
-      }
-    }, {
-      key: "componentWillUnmount",
-      value: function () {
-        ReactNative.StatusBar.setHidden(false);
-      }
-    }, {
-      key: "render",
-      value: function () {
-        var e = this,
-          t = this.state,
-          r = t.lyric,
-          n = t.img,
-          a = t.songName,
-          i = t.qrcode;
-        return React.default.createElement(ReactNative.Modal, {
-          animationType: "fade",
-          transparent: true,
-          onRequestClose: this.onClose
-        }, React.default.createElement(ReactNative.View, {
-          style: h.container
-        }, React.default.createElement(ReactNative.ScrollView, null, React.default.createElement(ReactNative.View, {
-          style: {
-            height: constants.STATUS_BAR_HEIGHT
-          }
-        }), React.default.createElement(ReactNative.View, {
-          style: h.cover
-        }, n ? React.default.createElement(ReactNative.Image, {
-          style: h.coverImg,
-          source: {
-            uri: n
-          }
-        }) : null, i ? React.default.createElement(ReactNative.Image, {
-          source: {
-            uri: i
-          },
-          style: h.qrcode
-        }) : null), r.map(function (t, r) {
-          return e.renderItem({
-            item: t,
-            index: r
-          });
-        }), React.default.createElement(ReactNative.View, {
-          style: h.info
-        }, React.default.createElement(ReactNative.Text, {
-          style: [h.text, h.songName]
-        }, "\u2014\u2014 ", a)), React.default.createElement(ReactNative.View, {
-          style: {
-            height: constants.STATUS_BAR_HEIGHT
-          }
-        }))));
-      }
-    }]);
-    babelHelpers.inherits(t, e);
-    return t;
-  }(React.PureComponent),
+      }), React.default.createElement(ReactNative.View, {
+        style: h.cover
+      }, n ? React.default.createElement(ReactNative.Image, {
+        style: h.coverImg,
+        source: {
+          uri: n
+        }
+      }) : null, i ? React.default.createElement(ReactNative.Image, {
+        source: {
+          uri: i
+        },
+        style: h.qrcode
+      }) : null), r.map(function (t, r) {
+        return e.renderItem({
+          item: t,
+          index: r
+        });
+      }), React.default.createElement(ReactNative.View, {
+        style: h.info
+      }, React.default.createElement(_default, {
+        style: [h.text, h.songName]
+      }, "\u2014\u2014 ", a)), React.default.createElement(ReactNative.View, {
+        style: {
+          height: constants.STATUS_BAR_HEIGHT
+        }
+      }))));
+    }
+  },
   h = ReactNative.StyleSheet.create({
     container: {
       flex: 1,

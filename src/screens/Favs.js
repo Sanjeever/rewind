@@ -1,23 +1,25 @@
+const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+const _defineProperty = require("@babel/runtime/helpers/defineProperty");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
 var i,
-  React = babelHelpers.interopRequireWildcard(require("react")),
+  React = _interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
   components = require("../components/index"),
-  TabbedViewPager = babelHelpers.interopRequireDefault(require("../native/TabbedViewPager")),
+  TabbedViewPager = _interopRequireDefault(require("../native/TabbedViewPager")),
   constants = require("../theme/constants"),
-  locales = babelHelpers.interopRequireDefault(require("../locales/index")),
-  module878 = babelHelpers.interopRequireDefault(require("../modules/module-878")),
+  locales = _interopRequireDefault(require("../locales/index")),
+  Subscriptions = _interopRequireDefault(require("./../modules/Subscriptions.js")),
   f = [locales.default.ARTIST, locales.default.ALBUM],
-  b = (i = {}, babelHelpers.defineProperty(i, locales.default.ARTIST, '1'), babelHelpers.defineProperty(i, locales.default.ALBUM, '2'), i),
-  g = function (e) {
-    function t() {
+  b = (i = {}, _defineProperty(i, locales.default.ARTIST, '1'), _defineProperty(i, locales.default.ALBUM, '2'), i),
+  g = class t extends React.PureComponent {
+    constructor() {
       var e, n, a;
-      babelHelpers.classCallCheck(this, t);
       for (var r = arguments.length, i = new Array(r), o = 0; o < r; o++) i[o] = arguments[o];
-      return babelHelpers.possibleConstructorReturn(a, (n = a = babelHelpers.possibleConstructorReturn(this, (e = babelHelpers.getPrototypeOf(t)).call.apply(e, [this].concat(i))), a.state = {
+      return n = a = super(...i), a.state = {
         index: 0,
         searchText: ''
       }, a.onTop = function () {
@@ -34,7 +36,7 @@ var i,
       }, a._renderScene = function (e) {
         switch (e.route.key) {
           case '1':
-            return React.default.createElement(module878.default, {
+            return React.default.createElement(Subscriptions.default, {
               type: "artist",
               onArtist: a.onArtist,
               index: a.state.index,
@@ -45,7 +47,7 @@ var i,
               }
             });
           case '2':
-            return React.default.createElement(module878.default, {
+            return React.default.createElement(Subscriptions.default, {
               type: "album",
               onAlbum: a.onAlbum,
               index: a.state.index,
@@ -61,7 +63,7 @@ var i,
       }, a._renderScenes = function (e) {
         switch (e) {
           case '1':
-            return React.default.createElement(module878.default, {
+            return React.default.createElement(Subscriptions.default, {
               type: "artist",
               onArtist: a.onArtist,
               scrolling: a.state.scrolling,
@@ -78,7 +80,7 @@ var i,
               }
             });
           case '2':
-            return React.default.createElement(module878.default, {
+            return React.default.createElement(Subscriptions.default, {
               type: "album",
               onAlbum: a.onAlbum,
               scrolling: a.state.scrolling,
@@ -107,46 +109,41 @@ var i,
           item: e,
           api: t
         });
-      }, n));
+      }, n;
     }
-    babelHelpers.createClass(t, [{
-      key: "render",
-      value: function () {
-        var e = this;
-        return React.default.createElement(components.PageContainer, {
-          title: locales.default.FAVS,
-          goBack: function () {
-            return e.props.navigation.goBack();
-          },
-          onTop: this.onTop,
-          textInput: true,
-          onChangeText: function (t) {
-            return e.searchSong(t);
-          },
-          text: this.state.searchText,
-          disabledTopFadingEdge: true
-        }, React.default.createElement(TabbedViewPager.default, {
-          tabNames: f,
-          style: [h.container, {
-            padding: 5
-          }],
-          onPageSelected: function (t) {
-            return e._handleIndexChange(t.nativeEvent.position);
+    "render"() {
+      var e = this;
+      return React.default.createElement(components.PageContainer, {
+        title: locales.default.FAVS,
+        goBack: function () {
+          return e.props.navigation.goBack();
+        },
+        onTop: this.onTop,
+        textInput: true,
+        onChangeText: function (t) {
+          return e.searchSong(t);
+        },
+        text: this.state.searchText,
+        disabledTopFadingEdge: true
+      }, React.default.createElement(TabbedViewPager.default, {
+        tabNames: f,
+        style: [h.container, {
+          padding: 5
+        }],
+        onPageSelected: function (t) {
+          return e._handleIndexChange(t.nativeEvent.position);
+        }
+      }, f.map(function (t, n) {
+        return React.default.createElement(ReactNative.View, {
+          key: n,
+          style: {
+            flex: 1,
+            paddingBottom: 45
           }
-        }, f.map(function (t, n) {
-          return React.default.createElement(ReactNative.View, {
-            key: n,
-            style: {
-              flex: 1,
-              paddingBottom: 45
-            }
-          }, e._renderScenes(b[t]));
-        })));
-      }
-    }]);
-    babelHelpers.inherits(t, e);
-    return t;
-  }(React.PureComponent),
+        }, e._renderScenes(b[t]));
+      })));
+    }
+  },
   h = ReactNative.StyleSheet.create({
     container: {
       flex: 1,

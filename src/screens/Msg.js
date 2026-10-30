@@ -1,52 +1,42 @@
+const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var React = babelHelpers.interopRequireWildcard(require("react")),
-  reactNativeSpringScrollview = require("react-native-spring-scrollview"),
+var React = _interopRequireWildcard(require("react")),
+  reactNativeSpringScrollview = require("./../components/Scrolling.js"),
   components = require("../components/index"),
-  locales = babelHelpers.interopRequireDefault(require("../locales/index")),
+  locales = _interopRequireDefault(require("../locales/index")),
   services = require("../services/index"),
   utils = require("../utils/index"),
-  f = function (e) {
-    function t() {
+  f = class t extends React.PureComponent {
+    constructor() {
       var e, r, n;
-      babelHelpers.classCallCheck(this, t);
       for (var a = arguments.length, i = new Array(a), f = 0; f < a; f++) i[f] = arguments[f];
-      return babelHelpers.possibleConstructorReturn(n, (r = n = babelHelpers.possibleConstructorReturn(this, (e = babelHelpers.getPrototypeOf(t)).call.apply(e, [this].concat(i))), n.state = {
+      return r = n = super(...i), n.state = {
         data: [],
         loaded: false,
         msgModalShow: false,
         pickedItem: null
-      }, n.getMsg = function () {
-        var e, t;
-        return regeneratorRuntime.async(function (r) {
-          for (;;) switch (r.prev = r.next) {
-            case 0:
-              r.next = 2;
-              return regeneratorRuntime.awrap(services.Netease.msg());
-            case 2:
-              if (e = r.sent, !(0, utils.usable)(e)) {
-                r.next = 10;
-                break;
-              }
-              if (t = e.msgs, 301 !== e.code) {
-                r.next = 9;
-                break;
-              }
-              toast(locales.default.NETEASE_NOT_LOGIN);
-              n.props.navigation.navigate('NeteaseLogin');
-              return r.abrupt("return");
-            case 9:
-              t && n.setState({
-                data: t,
-                loaded: true
-              });
-            case 10:
-            case "end":
-              return r.stop();
+      }, n.getMsg = async function () {
+        try {
+          const response = await services.Netease.msg();
+          if (response?.code === 301) {
+            toast(locales.default.NETEASE_NOT_LOGIN);
+            n.props.navigation.navigate('NeteaseLogin');
+            return;
           }
-        }, null, this);
+          if (response?.msgs) n.setState({
+            data: response.msgs
+          });
+        } catch (error) {
+          toast(error.message);
+        } finally {
+          n.setState({
+            loaded: true
+          });
+        }
       }, n.onTop = function () {
         var e, t;
         null === (e = (t = n._scrollView).scrollToBegin) || void 0 === e || e.call(t);
@@ -82,38 +72,31 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
         n.props.navigation.navigate('MsgHistory', {
           item: e
         });
-      }, r));
+      }, r;
     }
-    babelHelpers.createClass(t, [{
-      key: "componentDidMount",
-      value: function () {
-        this.getMsg();
-      }
-    }, {
-      key: "render",
-      value: function () {
-        var e = this,
-          t = this.state.data;
-        return React.default.createElement(components.PageContainer, {
-          title: locales.default.INBOX,
-          goBack: function () {
-            return e.props.navigation.goBack();
-          },
-          onTop: this.onTop
-        }, false === this.state.loaded ? React.default.createElement(components.Spinkit, null) : React.default.createElement(reactNativeSpringScrollview.SpringScrollView, {
-          ref: function (t) {
-            return e._scrollView = t;
-          },
-          showsVerticalScrollIndicator: false
-        }, t.map(function (t, r) {
-          return e.renderItem({
-            item: t,
-            index: r
-          });
-        })));
-      }
-    }]);
-    babelHelpers.inherits(t, e);
-    return t;
-  }(React.PureComponent);
+    "componentDidMount"() {
+      this.getMsg();
+    }
+    "render"() {
+      var e = this,
+        t = this.state.data;
+      return React.default.createElement(components.PageContainer, {
+        title: locales.default.INBOX,
+        goBack: function () {
+          return e.props.navigation.goBack();
+        },
+        onTop: this.onTop
+      }, false === this.state.loaded ? React.default.createElement(components.Spinkit, null) : React.default.createElement(reactNativeSpringScrollview.SpringScrollView, {
+        ref: function (t) {
+          return e._scrollView = t;
+        },
+        showsVerticalScrollIndicator: false
+      }, t.map(function (t, r) {
+        return e.renderItem({
+          item: t,
+          index: r
+        });
+      })));
+    }
+  };
 exports.default = f;

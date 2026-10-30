@@ -1,8 +1,10 @@
+const _default = require("./../../components/Text.js").default;
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var React = babelHelpers.interopRequireDefault(require("react")),
+var React = _interopRequireDefault(require("react")),
   ReactNative = require("react-native"),
   components = require("../../components/index"),
   utils = require("../../utils/index"),
@@ -62,7 +64,7 @@ var React = babelHelpers.interopRequireDefault(require("react")),
       style: [d.content, s !== f && {
         minWidth: 100
       }]
-    }, React.default.createElement(ReactNative.Text, {
+    }, React.default.createElement(_default, {
       style: [d.text, d.msg, s !== f && {
         alignSelf: 'flex-end'
       }]
@@ -91,7 +93,7 @@ var React = babelHelpers.interopRequireDefault(require("react")),
       subtitle: l.song.album.name,
       containerStyle: d.albumItem,
       onPress: u
-    }) : null, React.default.createElement(ReactNative.Text, {
+    }) : null, React.default.createElement(_default, {
       style: [d.text, {
         fontSize: 12,
         color: '#eee',

@@ -1,18 +1,20 @@
+const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var React = babelHelpers.interopRequireWildcard(require("react")),
+var React = _interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
-  reactNativeSpringScrollview = require("react-native-spring-scrollview"),
+  reactNativeSpringScrollview = require("./../components/Scrolling.js"),
   components = require("../components/index"),
   constants = require("../theme/constants"),
-  icons = babelHelpers.interopRequireDefault(require("../theme/icons")),
-  locales = babelHelpers.interopRequireDefault(require("../locales/index")),
+  icons = _interopRequireDefault(require("../theme/icons")),
+  locales = _interopRequireDefault(require("../locales/index")),
   services = require("../services/index"),
   utils = require("../utils/index"),
-  queue = babelHelpers.interopRequireDefault(require("../events/queue")),
-  module893 = babelHelpers.interopRequireDefault(require("../modules/module-893")),
+  queue = _interopRequireDefault(require("../events/queue")),
+  ArtistHeader = _interopRequireDefault(require("./../modules/ArtistHeader.js")),
   h = function (e) {
     var t = [0];
     e.forEach(function (n, r) {
@@ -23,51 +25,29 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
     });
     return t;
   },
-  b = function (e) {
-    function t() {
+  b = class t extends React.PureComponent {
+    constructor() {
       var e, n, r;
-      babelHelpers.classCallCheck(this, t);
       for (var a = arguments.length, l = new Array(a), c = 0; c < a; c++) l[c] = arguments[c];
-      return babelHelpers.possibleConstructorReturn(r, (n = r = babelHelpers.possibleConstructorReturn(this, (e = babelHelpers.getPrototypeOf(t)).call.apply(e, [this].concat(l))), r.state = {
+      return n = r = super(...l), r.state = {
         songData: [],
         mvData: [],
         dateIds: [],
         showingMV: false
-      }, r.loadSongs = function () {
-        var e, t;
-        return regeneratorRuntime.async(function (n) {
-          for (;;) switch (n.prev = n.next) {
-            case 0:
-              n.next = 2;
-              return regeneratorRuntime.awrap(services.Netease.sub_new_songs());
-            case 2:
-              e = n.sent;
-              (t = e.data.newWorks).length > 0 && r.setState({
-                songData: t,
-                dateIds: h(t)
-              });
-            case 5:
-            case "end":
-              return n.stop();
-          }
-        }, null, this);
-      }, r.loadMV = function () {
-        var e, t;
-        return regeneratorRuntime.async(function (n) {
-          for (;;) switch (n.prev = n.next) {
-            case 0:
-              n.next = 2;
-              return regeneratorRuntime.awrap(services.Netease.sub_new_mv());
-            case 2:
-              e = n.sent;
-              (t = e.data.newWorks).length > 0 && r.setState({
-                mvData: t
-              });
-            case 5:
-            case "end":
-              return n.stop();
-          }
-        }, null, this);
+      }, r.loadSongs = async function () {
+        const response = await services.Netease.sub_new_songs();
+        if (Array.isArray(response?.data?.newWorks)) {
+          const songData = response.data.newWorks;
+          r.setState({
+            songData,
+            dateIds: h(songData)
+          });
+        }
+      }, r.loadMV = async function () {
+        const response = await services.Netease.sub_new_mv();
+        if (Array.isArray(response?.data?.newWorks)) r.setState({
+          mvData: response.data.newWorks
+        });
       }, r.onTop = function () {
         var e;
         null === (e = r.scrollView) || void 0 === e || e.scrollToBegin();
@@ -121,7 +101,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
           return React.default.createElement(React.default.Fragment, null, n.indexOf(t) > -1 && r.renderSection({
             index: t,
             publishTime: e.publishTime
-          }), React.default.createElement(module893.default, {
+          }), React.default.createElement(ArtistHeader.default, {
             item: e,
             onAlbum: function () {
               return r.onAlbum(e);
@@ -143,43 +123,36 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
           item: t[0].ar[0],
           api: 'netEase'
         });
-      }, n));
+      }, n;
     }
-    babelHelpers.createClass(t, [{
-      key: "componentDidMount",
-      value: function () {
-        this.loadSongs();
-        this.loadMV();
-      }
-    }, {
-      key: "render",
-      value: function () {
-        var e = this,
-          t = this.state,
-          n = t.songData,
-          r = t.showingMV;
-        return React.default.createElement(components.PageContainer, {
-          title: r ? locales.default.ARTIST_MV : locales.default.SUB_NEW_SONGS,
-          goBack: this.props.navigation.goBack,
-          onTop: this.onTop,
-          rightIcon: r ? {
-            name: icons.default.MUSIC_CIRCLE_OUTLINE,
-            onPress: this.onShowingMV
-          } : {
-            name: icons.default.VIDEO_OUTLINE,
-            onPress: this.onShowingMV
-          }
-        }, (null === n || void 0 === n ? void 0 : n.length) > 0 ? React.default.createElement(reactNativeSpringScrollview.SpringScrollView, {
-          style: v.container,
-          ref: function (t) {
-            return e.scrollView = t;
-          }
-        }, r ? this.renderMV() : this.renderSongs()) : React.default.createElement(components.Spinkit, null));
-      }
-    }]);
-    babelHelpers.inherits(t, e);
-    return t;
-  }(React.PureComponent),
+    "componentDidMount"() {
+      this.loadSongs();
+      this.loadMV();
+    }
+    "render"() {
+      var e = this,
+        t = this.state,
+        n = t.songData,
+        r = t.showingMV;
+      return React.default.createElement(components.PageContainer, {
+        title: r ? locales.default.ARTIST_MV : locales.default.SUB_NEW_SONGS,
+        goBack: this.props.navigation.goBack,
+        onTop: this.onTop,
+        rightIcon: r ? {
+          name: icons.default.MUSIC_CIRCLE_OUTLINE,
+          onPress: this.onShowingMV
+        } : {
+          name: icons.default.VIDEO_OUTLINE,
+          onPress: this.onShowingMV
+        }
+      }, (null === n || void 0 === n ? void 0 : n.length) > 0 ? React.default.createElement(reactNativeSpringScrollview.SpringScrollView, {
+        style: v.container,
+        ref: function (t) {
+          return e.scrollView = t;
+        }
+      }, r ? this.renderMV() : this.renderSongs()) : React.default.createElement(components.Spinkit, null));
+    }
+  },
   v = ReactNative.StyleSheet.create({
     container: {
       padding: 20

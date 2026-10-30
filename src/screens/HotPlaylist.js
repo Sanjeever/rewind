@@ -1,24 +1,25 @@
+const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var React = babelHelpers.interopRequireWildcard(require("react")),
-  reactNativeLargelist = require("react-native-largelist"),
+var React = _interopRequireWildcard(require("react")),
+  reactNativeLargelist = require("./../components/Scrolling.js"),
   components = require("../components/index"),
-  ParallaxList = babelHelpers.interopRequireDefault(require("../components/ParallaxList")),
-  providers = babelHelpers.interopRequireDefault(require("../services/providers")),
+  ParallaxList = _interopRequireDefault(require("../components/ParallaxList")),
+  providers = _interopRequireDefault(require("../services/providers")),
   constants = require("../theme/constants"),
-  icons = babelHelpers.interopRequireDefault(require("../theme/icons")),
-  module880 = babelHelpers.interopRequireDefault(require("../modules/module-880")),
+  icons = _interopRequireDefault(require("../theme/icons")),
+  PlaylistSearchResults = _interopRequireDefault(require("./../modules/PlaylistSearchResults.js")),
   services = require("../services/index"),
-  module883 = babelHelpers.interopRequireDefault(require("../modules/module-883")),
+  PlaylistFilters = _interopRequireDefault(require("./../modules/PlaylistFilters.js")),
   g = '\u5168\u90e8\u6b4c\u5355',
-  m = function (e) {
-    function t() {
+  m = class t extends React.PureComponent {
+    constructor() {
       var e, a, n;
-      babelHelpers.classCallCheck(this, t);
       for (var i = arguments.length, o = new Array(i), s = 0; s < i; s++) o[s] = arguments[s];
-      return babelHelpers.possibleConstructorReturn(n, (a = n = babelHelpers.possibleConstructorReturn(this, (e = babelHelpers.getPrototypeOf(t)).call.apply(e, [this].concat(o))), n._savedType = null, n.onTop = function () {
+      return a = n = super(...o), n._savedType = null, n.onTop = function () {
         var e;
         null === (e = n._list) || void 0 === e || e.scrollTo({
           x: 0,
@@ -125,85 +126,78 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
             return n.Playlist(t, providers.default.netEase);
           }
         });
-      }, a));
+      }, a;
     }
-    babelHelpers.createClass(t, [{
-      key: "componentDidMount",
-      value: function () {
-        this.getPlaylists();
-      }
-    }, {
-      key: "render",
-      value: function () {
-        var e = this,
-          t = this.state,
-          a = t.loading,
-          n = t.type,
-          i = t.data,
-          f = t.mainModalShow,
-          g = t.search;
-        return React.default.createElement(components.PageContainer, {
-          goBack: function () {
-            return e.props.navigation.goBack();
-          },
-          onTop: this.onTop,
-          title: n,
-          rightIcon: {
-            name: icons.default.TAG_OUTLINE,
-            onPress: function () {
-              return e.setState({
-                mainModalShow: !f
-              });
-            }
-          },
-          textInput: 'search' === n,
-          onChangeText: this.onChangeText,
-          onSubmitEditing: this.onSubmitEditing,
-          searchText: g,
-          forceShowTextInput: 'search' === n,
-          disabledTextInputBtn: true,
-          headerBlur: true
-        }, a && React.default.createElement(components.Spinkit, {
-          style: {
-            position: 'absolute',
-            top: 100,
-            bottom: 0,
-            left: 0,
-            right: 0
-          }
-        }), 'search' === n ? React.default.createElement(module880.default, {
-          api: providers.default.netEase,
-          onRef: function (t) {
-            return e._searcher = t;
-          },
-          navigation: this.props.navigation
-        }) : React.default.createElement(reactNativeLargelist.LargeList, {
-          ref: function (t) {
-            return e._list = t;
-          },
-          data: [{
-            items: i
-          }],
-          onLoading: this.getMore,
-          loadingFooter: ParallaxList.default,
-          renderIndexPath: this._renderIndexPath,
-          heightForIndexPath: function () {
-            return constants.ITEM_HEIGHT;
-          }
-        }), React.default.createElement(module883.default, {
-          visible: f,
-          onClose: function () {
+    "componentDidMount"() {
+      this.getPlaylists();
+    }
+    "render"() {
+      var e = this,
+        t = this.state,
+        a = t.loading,
+        n = t.type,
+        i = t.data,
+        f = t.mainModalShow,
+        g = t.search;
+      return React.default.createElement(components.PageContainer, {
+        goBack: function () {
+          return e.props.navigation.goBack();
+        },
+        onTop: this.onTop,
+        title: n,
+        rightIcon: {
+          name: icons.default.TAG_OUTLINE,
+          onPress: function () {
             return e.setState({
-              mainModalShow: false
+              mainModalShow: !f
             });
-          },
-          onType: this.onType,
-          currentType: n,
-          onSearch: this.onSearch
-        }));
-      }
-    }]);
-    babelHelpers.inherits(t, e);
-    return t;
-  }(React.PureComponent);
+          }
+        },
+        textInput: 'search' === n,
+        onChangeText: this.onChangeText,
+        onSubmitEditing: this.onSubmitEditing,
+        searchText: g,
+        forceShowTextInput: 'search' === n,
+        disabledTextInputBtn: true,
+        headerBlur: true
+      }, a && React.default.createElement(components.Spinkit, {
+        style: {
+          position: 'absolute',
+          top: 100,
+          bottom: 0,
+          left: 0,
+          right: 0
+        }
+      }), 'search' === n ? React.default.createElement(PlaylistSearchResults.default, {
+        api: providers.default.netEase,
+        onRef: function (t) {
+          return e._searcher = t;
+        },
+        navigation: this.props.navigation
+      }) : React.default.createElement(reactNativeLargelist.LargeList, {
+        ref: function (t) {
+          return e._list = t;
+        },
+        data: [{
+          items: i
+        }],
+        onLoading: this.getMore,
+        loadingFooter: ParallaxList.default,
+        renderIndexPath: this._renderIndexPath,
+        heightForIndexPath: function () {
+          return constants.ITEM_HEIGHT;
+        }
+      }), React.default.createElement(PlaylistFilters.default, {
+        visible: f,
+        onClose: function () {
+          return e.setState({
+            mainModalShow: false
+          });
+        },
+        onType: this.onType,
+        currentType: n,
+        onSearch: this.onSearch
+      }));
+    }
+  };
 exports.default = m;

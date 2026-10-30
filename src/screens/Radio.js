@@ -1,20 +1,21 @@
+const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var React = babelHelpers.interopRequireWildcard(require("react")),
+var React = _interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
-  reactNativeSpringScrollview = require("react-native-spring-scrollview"),
+  reactNativeSpringScrollview = require("./../components/Scrolling.js"),
   components = require("../components/index"),
-  icons = babelHelpers.interopRequireDefault(require("../theme/icons")),
-  locales = babelHelpers.interopRequireDefault(require("../locales/index")),
+  icons = _interopRequireDefault(require("../theme/icons")),
+  locales = _interopRequireDefault(require("../locales/index")),
   services = require("../services/index"),
-  p = function (e) {
-    function t() {
+  p = class t extends React.PureComponent {
+    constructor() {
       var e, a, o;
-      babelHelpers.classCallCheck(this, t);
       for (var n = arguments.length, r = new Array(n), l = 0; l < n; l++) r[l] = arguments[l];
-      return babelHelpers.possibleConstructorReturn(o, (a = o = babelHelpers.possibleConstructorReturn(this, (e = babelHelpers.getPrototypeOf(t)).call.apply(e, [this].concat(r))), o.state = {
+      return a = o = super(...r), o.state = {
         loaded: false,
         radios: [],
         type: 0,
@@ -82,48 +83,41 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
         o.props.navigation.navigate('RadioDetail', {
           item: e
         });
-      }, a));
+      }, a;
     }
-    babelHelpers.createClass(t, [{
-      key: "componentDidMount",
-      value: function () {
-        this.getUserRadio();
-      }
-    }, {
-      key: "render",
-      value: function () {
-        var e = this,
-          t = this.state,
-          a = t.loaded,
-          o = t.radios;
-        return React.default.createElement(components.PageContainer, {
-          title: locales.default.RADIOS,
-          goBack: function () {
-            return e.props.navigation.goBack();
-          },
-          onTop: this.onTop,
-          rightIcon: {
-            name: icons.default.FILTER_VARIANT,
-            onPress: this.getHotRadio
-          }
-        }, false === a ? React.default.createElement(components.Spinkit, {
-          style: g.loading
-        }) : null, React.default.createElement(reactNativeSpringScrollview.SpringScrollView, {
-          ref: function (t) {
-            return e._scrollView = t;
-          },
-          onLoading: this.getMore
-        }, o.map(function (t, a) {
-          return e._renderItem({
-            item: t,
-            index: a
-          });
-        })));
-      }
-    }]);
-    babelHelpers.inherits(t, e);
-    return t;
-  }(React.PureComponent),
+    "componentDidMount"() {
+      this.getUserRadio();
+    }
+    "render"() {
+      var e = this,
+        t = this.state,
+        a = t.loaded,
+        o = t.radios;
+      return React.default.createElement(components.PageContainer, {
+        title: locales.default.RADIOS,
+        goBack: function () {
+          return e.props.navigation.goBack();
+        },
+        onTop: this.onTop,
+        rightIcon: {
+          name: icons.default.FILTER_VARIANT,
+          onPress: this.getHotRadio
+        }
+      }, false === a ? React.default.createElement(components.Spinkit, {
+        style: g.loading
+      }) : null, React.default.createElement(reactNativeSpringScrollview.SpringScrollView, {
+        ref: function (t) {
+          return e._scrollView = t;
+        },
+        onLoading: this.getMore
+      }, o.map(function (t, a) {
+        return e._renderItem({
+          item: t,
+          index: a
+        });
+      })));
+    }
+  },
   g = ReactNative.StyleSheet.create({
     loading: {
       position: 'absolute',

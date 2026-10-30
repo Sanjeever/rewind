@@ -1,27 +1,29 @@
+const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+const _toConsumableArray = require("@babel/runtime/helpers/toConsumableArray");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
 var immer = require("immer"),
-  React = babelHelpers.interopRequireWildcard(require("react")),
+  React = _interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
-  reactNativeSpringScrollview = require("react-native-spring-scrollview"),
+  reactNativeSpringScrollview = require("./../components/Scrolling.js"),
   components = require("../components/index"),
   modals = require("../modals/index"),
-  providers = babelHelpers.interopRequireDefault(require("../services/providers")),
-  names = babelHelpers.interopRequireDefault(require("../events/names")),
-  icons = babelHelpers.interopRequireDefault(require("../theme/icons")),
-  locales = babelHelpers.interopRequireDefault(require("../locales/index")),
+  providers = _interopRequireDefault(require("../services/providers")),
+  names = _interopRequireDefault(require("../events/names")),
+  icons = _interopRequireDefault(require("../theme/icons")),
+  locales = _interopRequireDefault(require("../locales/index")),
   events = require("../events/index"),
   utils = require("../utils/index"),
-  types = babelHelpers.interopRequireWildcard(require("../utils/types")),
-  usersModule = babelHelpers.interopRequireDefault(require("../storage/users")),
-  U = function (e) {
-    function t() {
+  types = _interopRequireWildcard(require("../utils/types")),
+  usersModule = _interopRequireDefault(require("../storage/users")),
+  U = class t extends React.PureComponent {
+    constructor() {
       var e, r, n;
-      babelHelpers.classCallCheck(this, t);
       for (var s = arguments.length, l = new Array(s), i = 0; i < s; i++) l[i] = arguments[i];
-      return babelHelpers.possibleConstructorReturn(n, (r = n = babelHelpers.possibleConstructorReturn(this, (e = babelHelpers.getPrototypeOf(t)).call.apply(e, [this].concat(l))), n.state = {
+      return r = n = super(...l), n.state = {
         users: [],
         showSearchUser: false,
         activeUserId: null,
@@ -34,28 +36,14 @@ var immer = require("immer"),
       }, n.saveUsers = function () {
         var e = n.state.users;
         types.isArray(e) && e.length > 0 && usersModule.default.saveRestUsers(e.slice(1));
-      }, n.getInfo = function () {
-        var e, t, r, s;
-        return regeneratorRuntime.async(function (a) {
-          for (;;) switch (a.prev = a.next) {
-            case 0:
-              a.next = 2;
-              return regeneratorRuntime.awrap(usersModule.default.getUserInfo());
-            case 2:
-              e = a.sent;
-              a.next = 5;
-              return regeneratorRuntime.awrap(usersModule.default.getRestUsers());
-            case 5:
-              t = a.sent;
-              types.isObject(e) && (r = e.netEase, s = [], types.isObject(r) && types.isString(r.avatarUrl) && (s.push(r), types.isArray(t) && t.length > 0 && (s = babelHelpers.toConsumableArray(s).concat(babelHelpers.toConsumableArray(t))), n.setState({
-                users: s,
-                activeUserId: r.userId
-              })));
-            case 7:
-            case "end":
-              return a.stop();
-          }
-        }, null, this);
+      }, n.getInfo = async function () {
+        const accounts = await usersModule.default.getUserInfo();
+        const rest = await usersModule.default.getRestUsers();
+        const active = accounts?.netEase;
+        n.setState({
+          users: [...(active?.avatarUrl ? [active] : []), ...(Array.isArray(rest) ? rest : [])],
+          activeUserId: active?.userId
+        });
       }, n.onClosed = function () {
         n.props.navigation.goBack();
       }, n.onSearchUser = function () {
@@ -97,7 +85,7 @@ var immer = require("immer"),
               });
             });
             n.setState({
-              users: babelHelpers.toConsumableArray(s).concat([e])
+              users: _toConsumableArray(s).concat([e])
             });
           }
         } else toast(locales.default.ALREADY_IN_TOGGLE_LIST);
@@ -126,64 +114,55 @@ var immer = require("immer"),
             return n.onChangeUser(t, r);
           }
         });
-      }, r));
+      }, r;
     }
-    babelHelpers.createClass(t, [{
-      key: "componentDidMount",
-      value: function () {
-        var e = this;
-        this.getInfo();
-        this.onSelectedUser = events.emitter.addListener(names.default.SelectedUser, function (t) {
-          e.onSelected(t);
+    "componentDidMount"() {
+      var e = this;
+      this.getInfo();
+      this.onSelectedUser = events.emitter.addListener(names.default.SelectedUser, function (t) {
+        e.onSelected(t);
+      });
+      this.backSubscription = ReactNative.BackHandler.addEventListener('hardwareBackPress', this.onBackPress);
+    }
+    "componentWillUnmount"() {
+      this.saveUsers();
+      this.onSelectedUser.remove();
+      this.backSubscription?.remove();
+    }
+    "render"() {
+      var e = this,
+        t = this.state,
+        r = t.users,
+        n = t.showSearchUser,
+        s = t.deleting;
+      return React.default.createElement(components.PageContainer, {
+        title: true === s ? locales.default.REMOVE : locales.default.TOGGLE,
+        goBack: this.onClosed,
+        backIcon: {
+          name: icons.default.WINDOW_CLOSE
+        },
+        rightIcon: [{
+          name: icons.default.ACCOUNT_PLUS,
+          onPress: this.onSearchUser
+        }, {
+          name: true === s ? icons.default.DELETE_OUTLINE : icons.default.DELETE,
+          onPress: this.onDelete
+        }],
+        blur: true
+      }, React.default.createElement(reactNativeSpringScrollview.SpringScrollView, null, r.map(function (t, r) {
+        return e.renderItem({
+          item: t,
+          index: r
         });
-        ReactNative.BackHandler.addEventListener('hardwareBackPress', this.onBackPress);
-      }
-    }, {
-      key: "componentWillUnmount",
-      value: function () {
-        this.saveUsers();
-        this.onSelectedUser.remove();
-        ReactNative.BackHandler.removeEventListener('hardwareBackPress', this.onBackPress);
-      }
-    }, {
-      key: "render",
-      value: function () {
-        var e = this,
-          t = this.state,
-          r = t.users,
-          n = t.showSearchUser,
-          s = t.deleting;
-        return React.default.createElement(components.PageContainer, {
-          title: true === s ? locales.default.REMOVE : locales.default.TOGGLE,
-          goBack: this.onClosed,
-          backIcon: {
-            name: icons.default.WINDOW_CLOSE
-          },
-          rightIcon: [{
-            name: icons.default.ACCOUNT_PLUS,
-            onPress: this.onSearchUser
-          }, {
-            name: true === s ? icons.default.DELETE_OUTLINE : icons.default.DELETE,
-            onPress: this.onDelete
-          }],
-          blur: true
-        }, React.default.createElement(reactNativeSpringScrollview.SpringScrollView, null, r.map(function (t, r) {
-          return e.renderItem({
-            item: t,
-            index: r
+      })), React.default.createElement(modals.SearchUser, {
+        isOpen: n,
+        onModalClose: function () {
+          return e.setState({
+            showSearchUser: false
           });
-        })), React.default.createElement(modals.SearchUser, {
-          isOpen: n,
-          onModalClose: function () {
-            return e.setState({
-              showSearchUser: false
-            });
-          },
-          onSelected: this.onSelected
-        }));
-      }
-    }]);
-    babelHelpers.inherits(t, e);
-    return t;
-  }(React.PureComponent);
+        },
+        onSelected: this.onSelected
+      }));
+    }
+  };
 exports.default = U;

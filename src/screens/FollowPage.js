@@ -1,26 +1,28 @@
+const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+const _extends = require("@babel/runtime/helpers/extends");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var React = babelHelpers.interopRequireWildcard(require("react")),
+var React = _interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
   reactNativeTabView = require("react-native-tab-view"),
   components = require("../components/index"),
-  ParallaxList = babelHelpers.interopRequireDefault(require("../components/ParallaxList")),
+  ParallaxList = _interopRequireDefault(require("../components/ParallaxList")),
   constants = require("../theme/constants"),
-  names = babelHelpers.interopRequireDefault(require("../events/names")),
-  locales = babelHelpers.interopRequireDefault(require("../locales/index")),
+  names = _interopRequireDefault(require("../events/names")),
+  locales = _interopRequireDefault(require("../locales/index")),
   services = require("../services/index"),
   events = require("../events/index"),
-  types = babelHelpers.interopRequireWildcard(require("../utils/types")),
-  module919 = babelHelpers.interopRequireDefault(require("../modules/module-919")),
+  types = _interopRequireWildcard(require("../utils/types")),
+  UserHeader = _interopRequireDefault(require("./../modules/UserHeader.js")),
   h = constants.DEVICE_HEIGHT - constants.DEVICE_WIDTH - constants.ITEM_HEIGHT,
-  v = function (e) {
-    function t() {
+  v = class t extends React.PureComponent {
+    constructor() {
       var e, n, r;
-      babelHelpers.classCallCheck(this, t);
       for (var a = arguments.length, u = new Array(a), g = 0; g < a; g++) u[g] = arguments[g];
-      return babelHelpers.possibleConstructorReturn(r, (n = r = babelHelpers.possibleConstructorReturn(this, (e = babelHelpers.getPrototypeOf(t)).call.apply(e, [this].concat(u))), r._nativeOffset = {
+      return n = r = super(...u), r._nativeOffset = {
         x: new ReactNative.Animated.Value(0),
         y: new ReactNative.Animated.Value(0)
       }, r._tabViewHeights = [0, 0], r.state = {
@@ -38,40 +40,22 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
           key: '2',
           title: locales.default.FOLLOWER
         }]
-      }, r.getFollows = function (e, t) {
-        var n, a, l, o, i;
-        return regeneratorRuntime.async(function (s) {
-          for (;;) switch (s.prev = s.next) {
-            case 0:
-              s.next = 2;
-              return regeneratorRuntime.awrap(services.Netease.user_follows(e, t));
-            case 2:
-              n = s.sent;
-              types.isObject(n) && (a = n.code, l = n.follow, 200 === a && (r.setState({
-                follows: babelHelpers.toConsumableArray(r.state.follows).concat(babelHelpers.toConsumableArray(l))
-              }), null === (o = (i = r._list).endLoading) || void 0 === o || o.call(i)));
-            case 4:
-            case "end":
-              return s.stop();
-          }
-        }, null, this);
-      }, r.getFolloweds = function (e, t) {
-        var n, a, l, o, i;
-        return regeneratorRuntime.async(function (s) {
-          for (;;) switch (s.prev = s.next) {
-            case 0:
-              s.next = 2;
-              return regeneratorRuntime.awrap(services.Netease.user_followeds(e, t));
-            case 2:
-              n = s.sent;
-              types.isObject(n) && (a = n.code, l = n.followeds, 200 === a && (r.setState({
-                followeds: babelHelpers.toConsumableArray(r.state.followeds).concat(babelHelpers.toConsumableArray(l))
-              }), null === (o = (i = r._list).endLoading) || void 0 === o || o.call(i)));
-            case 4:
-            case "end":
-              return s.stop();
-          }
-        }, null, this);
+      }, r.getFollows = async function (id, offset) {
+        const response = await services.Netease.user_follows(id, offset);
+        if (response?.code === 200) {
+          r.setState(previous => ({
+            follows: [...previous.follows, ...response.follow]
+          }));
+          r._list?.endLoading?.();
+        }
+      }, r.getFolloweds = async function (id, offset) {
+        const response = await services.Netease.user_followeds(id, offset);
+        if (response?.code === 200) {
+          r.setState(previous => ({
+            followeds: [...previous.followeds, ...response.followeds]
+          }));
+          r._list?.endLoading?.();
+        }
       }, r.getMore = function () {
         var e = r.state,
           t = e.follows,
@@ -91,7 +75,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
           tabViewHeight: r._tabViewHeights[e]
         });
       }, r._renderHeader = function (e) {
-        return React.default.createElement(reactNativeTabView.TabBar, babelHelpers.extends({
+        return React.default.createElement(reactNativeTabView.TabBar, _extends({
           pressColor: 'rgba(0,0,0,0.3)',
           renderText: r._renderText,
           tabStyle: {
@@ -145,30 +129,22 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
         n && (0 === t && r.setState({
           tabViewHeight: n
         }), r._tabViewHeights[t] = n);
-      }, r.onHeart = function () {
-        var e, t, n, a, l;
-        return regeneratorRuntime.async(function (o) {
-          for (;;) switch (o.prev = o.next) {
-            case 0:
-              e = r.state;
-              t = e.followed;
-              n = e.userId;
-              a = true === t ? 0 : 1;
-              o.next = 4;
-              return regeneratorRuntime.awrap(services.Netease.follow_user({
-                uid: n,
-                type: a
-              }));
-            case 4:
-              (l = o.sent) && 200 !== l.code && toast(locales.default.ERROR);
-              r.setState({
-                followed: !t
-              });
-            case 7:
-            case "end":
-              return o.stop();
-          }
-        }, null, this);
+      }, r.onHeart = async function () {
+        const {
+          followed,
+          userId
+        } = r.state;
+        const response = await services.Netease.follow_user({
+          uid: userId,
+          type: followed ? 0 : 1
+        });
+        if (response?.code !== 200) {
+          toast(locales.default.ERROR);
+          return;
+        }
+        r.setState({
+          followed: !followed
+        });
       }, r.onUserInfo = function (e) {
         r.props.navigation.navigate('UserInfo', {
           userId: e.userId
@@ -189,63 +165,56 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
             return r.onSelectedUser(t);
           }
         });
-      }, n));
+      }, n;
     }
-    babelHelpers.createClass(t, [{
-      key: "componentDidMount",
-      value: function () {
-        var e = this.props.navigation.state.params;
-        if (types.isObject(e)) {
-          var t = e.profile;
-          if (types.isObject(t)) {
-            var n = t.userId,
-              r = t.followed;
-            this.setState({
-              profile: t,
-              userId: n,
-              followed: r
-            });
-            this.getFollows(n);
-            this.getFolloweds(n);
-          }
+    "componentDidMount"() {
+      var e = this.props.route.params;
+      if (types.isObject(e)) {
+        var t = e.profile;
+        if (types.isObject(t)) {
+          var n = t.userId,
+            r = t.followed;
+          this.setState({
+            profile: t,
+            userId: n,
+            followed: r
+          });
+          this.getFollows(n);
+          this.getFolloweds(n);
         }
       }
-    }, {
-      key: "render",
-      value: function () {
-        var e = this,
-          t = this.state,
-          n = t.profile,
-          r = t.followed,
-          a = t.tabViewHeight;
-        return React.default.createElement(ReactNative.View, {
-          style: m.container
-        }, React.default.createElement(components.Background, null), React.default.createElement(components.ParallaxScrollView, {
-          onRef: function (t) {
-            return e._list = t;
-          },
-          onLoading: this.getMore,
-          onNativeContentOffsetExtract: this._nativeOffset,
-          loadingFooter: ParallaxList.default
-        }, React.default.createElement(module919.default, {
-          nativeOffset: this._nativeOffset,
-          profile: n,
-          followed: r,
-          onHeart: this.onHeart
-        }), React.default.createElement(reactNativeTabView.TabViewAnimated, {
-          style: {
-            height: a + 50
-          },
-          navigationState: this.state,
-          renderScene: this._renderScene,
-          renderHeader: this._renderHeader,
-          onIndexChange: this._handleIndexChange
-        })));
-      }
-    }]);
-    babelHelpers.inherits(t, e);
-    return t;
-  }(React.PureComponent);
+    }
+    "render"() {
+      var e = this,
+        t = this.state,
+        n = t.profile,
+        r = t.followed,
+        a = t.tabViewHeight;
+      return React.default.createElement(ReactNative.View, {
+        style: m.container
+      }, React.default.createElement(components.Background, null), React.default.createElement(components.ParallaxScrollView, {
+        onRef: function (t) {
+          return e._list = t;
+        },
+        onLoading: this.getMore,
+        onNativeContentOffsetExtract: this._nativeOffset,
+        loadingFooter: ParallaxList.default
+      }, React.default.createElement(UserHeader.default, {
+        nativeOffset: this._nativeOffset,
+        profile: n,
+        followed: r,
+        onHeart: this.onHeart
+      }), React.default.createElement(reactNativeTabView.TabView, {
+        style: {
+          height: a + 50
+        },
+        navigationState: this.state,
+        renderScene: this._renderScene,
+        renderTabBar: this._renderHeader,
+        onIndexChange: this._handleIndexChange
+      })));
+    }
+  };
 exports.default = v;
 var m = ReactNative.StyleSheet.create({
   container: {

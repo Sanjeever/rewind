@@ -1,29 +1,31 @@
+const _default = require("@react-native-clipboard/clipboard").default;
+const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var React = babelHelpers.interopRequireWildcard(require("react")),
+var React = _interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
   reactNativePopupMenu = require("react-native-popup-menu"),
   components = require("../components/index"),
-  VideoPlayer = babelHelpers.interopRequireDefault(require("../player/VideoPlayer")),
-  providers = babelHelpers.interopRequireDefault(require("../services/providers")),
-  names = babelHelpers.interopRequireDefault(require("../events/names")),
-  icons = babelHelpers.interopRequireDefault(require("../theme/icons")),
-  locales = babelHelpers.interopRequireDefault(require("../locales/index")),
+  VideoPlayer = _interopRequireDefault(require("../player/VideoPlayer")),
+  providers = _interopRequireDefault(require("../services/providers")),
+  names = _interopRequireDefault(require("../events/names")),
+  icons = _interopRequireDefault(require("../theme/icons")),
+  locales = _interopRequireDefault(require("../locales/index")),
   services = require("../services/index"),
   events = require("../events/index"),
-  intentVideo = babelHelpers.interopRequireDefault(require("../native/intentVideo")),
-  orientation = babelHelpers.interopRequireDefault(require("../native/orientation")),
+  intentVideo = _interopRequireDefault(require("../native/intentVideo")),
+  orientation = _interopRequireDefault(require("../native/orientation")),
   y = function (e) {
     return e[1080] || e[720] || e[480] || e[240];
   },
-  R = function (e) {
-    function t() {
+  R = class t extends React.Component {
+    constructor() {
       var e, n, r;
-      babelHelpers.classCallCheck(this, t);
       for (var a = arguments.length, l = new Array(a), i = 0; i < a; i++) l[i] = arguments[i];
-      return babelHelpers.possibleConstructorReturn(r, (n = r = babelHelpers.possibleConstructorReturn(this, (e = babelHelpers.getPrototypeOf(t)).call.apply(e, [this].concat(l))), r.state = {
+      return n = r = super(...l), r.state = {
         isFullscreen: false,
         hideStatus: false,
         url: void 0,
@@ -33,42 +35,24 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
           r.exitFullscreen();
           return true;
         }
-      }, r.getMVUrl = function (e, t) {
-        var n, a, l, i, o, u, s;
-        return regeneratorRuntime.async(function (d) {
-          for (;;) switch (d.prev = d.next) {
-            case 0:
-              d.t0 = t;
-              d.next = d.t0 === providers.default.netEase ? 3 : d.t0 === providers.default.qqMusic ? 11 : 15;
-              break;
-            case 3:
-              d.next = 5;
-              return regeneratorRuntime.awrap(services.Netease.mv(e));
-            case 5:
-              l = d.sent;
-              i = l.data;
-              o = i.brs;
-              u = i.name;
-              s = i.artistName;
-              n = y(o);
-              a = u + " - " + s;
-              return d.abrupt("break", 15);
-            case 11:
-              d.next = 13;
-              return regeneratorRuntime.awrap(services.QQMusic.getMV(e));
-            case 13:
-              n = d.sent;
-              return d.abrupt("break", 15);
-            case 15:
-              n ? r.setState({
-                url: n,
-                title: a
-              }) : toast(locales.default.MV_PLAYER_ERROR);
-            case 16:
-            case "end":
-              return d.stop();
-          }
-        }, null, this);
+      }, r.getMVUrl = async function (id, api) {
+        try {
+          let url, title;
+          if (api === providers.default.netEase) {
+            const response = await services.Netease.mv(id);
+            if (response?.data) {
+              url = y(response.data.brs);
+              title = response.data.name + ' - ' + response.data.artistName;
+            }
+          } else if (api === providers.default.qqMusic) url = await services.QQMusic.getMV(id);
+          if (!url) throw new Error(locales.default.MV_PLAYER_ERROR);
+          r.setState({
+            url,
+            title
+          });
+        } catch (error) {
+          toast(error.message);
+        }
       }, r.fullscreen = function () {
         orientation.default.lockToLandscape();
         r.setState({
@@ -79,84 +63,75 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
           isFullscreen: false
         });
         orientation.default.lockToPortrait();
-      }, n));
+      }, n;
     }
-    babelHelpers.createClass(t, [{
-      key: "componentDidMount",
-      value: function () {
-        ReactNative.BackHandler.addEventListener('hardwareBackPress', this.onBackPress);
-        var e = (this.props.navigation.state || {}).params || {},
-          t = e.mvid,
-          n = e.api;
-        this.getMVUrl(t, n);
-        events.emitter.emit(names.default.HidePlayer, {
-          hide: true
-        });
-      }
-    }, {
-      key: "componentWillUnmount",
-      value: function () {
-        this.exitFullscreen();
-        ReactNative.BackHandler.removeEventListener('hardwareBackPress', this.onBackPress);
-        events.emitter.emit(names.default.HidePlayer, {
-          hide: false
-        });
-      }
-    }, {
-      key: "render",
-      value: function () {
-        var e = this,
-          t = this.state,
-          n = t.url,
-          r = t.title,
-          a = t.isFullscreen,
-          o = t.hideStatus;
-        return React.default.createElement(ReactNative.View, {
-          style: [C.container, a && {
-            paddingTop: 0
-          }]
-        }, React.default.createElement(VideoPlayer.default, {
-          title: r,
-          source: {
-            uri: n
+    "componentDidMount"() {
+      this.backSubscription = ReactNative.BackHandler.addEventListener('hardwareBackPress', this.onBackPress);
+      var e = (this.props.route || {}).params || {},
+        t = e.mvid,
+        n = e.api;
+      this.getMVUrl(t, n);
+      events.emitter.emit(names.default.HidePlayer, {
+        hide: true
+      });
+    }
+    "componentWillUnmount"() {
+      this.exitFullscreen();
+      this.backSubscription?.remove();
+      events.emitter.emit(names.default.HidePlayer, {
+        hide: false
+      });
+    }
+    "render"() {
+      var e = this,
+        t = this.state,
+        n = t.url,
+        r = t.title,
+        a = t.isFullscreen,
+        o = t.hideStatus;
+      return React.default.createElement(ReactNative.View, {
+        style: [C.container, a && {
+          paddingTop: 0
+        }]
+      }, React.default.createElement(VideoPlayer.default, {
+        title: r,
+        source: {
+          uri: n
+        },
+        onBack: this.props.navigation.goBack,
+        onEnterFullscreen: this.fullscreen,
+        onExitFullscreen: this.exitFullscreen,
+        onShowControls: function () {
+          e.setState({
+            hideStatus: false
+          });
+        },
+        onHideControls: function () {
+          e.setState({
+            hideStatus: true
+          });
+        },
+        toggleResizeModeOnFullscreen: false,
+        TopRight: React.default.createElement(E, {
+          onCopy: function () {
+            toast(locales.default.MV_URL_CLIPBOARD);
+            _default.setString(n);
           },
-          onBack: this.props.navigation.goBack,
-          onEnterFullscreen: this.fullscreen,
-          onExitFullscreen: this.exitFullscreen,
-          onShowControls: function () {
-            e.setState({
-              hideStatus: false
-            });
+          onOpenUrl: function () {
+            ReactNative.Linking.openURL(n);
           },
-          onHideControls: function () {
-            e.setState({
-              hideStatus: true
-            });
-          },
-          toggleResizeModeOnFullscreen: false,
-          TopRight: React.default.createElement(E, {
-            onCopy: function () {
-              toast(locales.default.MV_URL_CLIPBOARD);
-              ReactNative.Clipboard.setString(n);
-            },
-            onOpenUrl: function () {
-              ReactNative.Linking.openURL(n);
-            },
-            onIntentVideo: function () {
-              intentVideo.default.playVideo(n);
-            }
-          }),
-          isFullscreen: a,
-          doubleTapTime: 200,
-          playInBackground: true
-        }), React.default.createElement(ReactNative.StatusBar, {
-          hidden: o
-        }));
-      }
-    }]);
-    babelHelpers.inherits(t, e);
-    return t;
-  }(React.Component),
+          onIntentVideo: function () {
+            intentVideo.default.playVideo(n);
+          }
+        }),
+        isFullscreen: a,
+        doubleTapTime: 200,
+        playInBackground: true
+      }), React.default.createElement(ReactNative.StatusBar, {
+        hidden: o
+      }));
+    }
+  },
   E = function (e) {
     var t = e.onCopy,
       n = e.onOpenUrl,

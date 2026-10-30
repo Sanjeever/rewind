@@ -1,99 +1,57 @@
+const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+const _defineProperty = require("@babel/runtime/helpers/defineProperty");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
 var l,
-  React = babelHelpers.interopRequireWildcard(require("react")),
+  React = _interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
-  reactNativeLargelist = require("react-native-largelist"),
+  reactNativeLargelist = require("./../components/Scrolling.js"),
   components = require("../components/index"),
-  TabbedViewPager = babelHelpers.interopRequireDefault(require("../native/TabbedViewPager")),
-  providers = babelHelpers.interopRequireDefault(require("../services/providers")),
+  TabbedViewPager = _interopRequireDefault(require("../native/TabbedViewPager")),
+  providers = _interopRequireDefault(require("../services/providers")),
   constants = require("../theme/constants"),
-  locales = babelHelpers.interopRequireDefault(require("../locales/index")),
+  locales = _interopRequireDefault(require("../locales/index")),
   services = require("../services/index"),
   events = require("../events/index"),
   trackInfo = require("../services/trackInfo"),
   y = [locales.default.WEEKLY, locales.default.ALL],
-  g = (l = {}, babelHelpers.defineProperty(l, locales.default.WEEKLY, '1'), babelHelpers.defineProperty(l, locales.default.ALL, '2'), l),
+  g = (l = {}, _defineProperty(l, locales.default.WEEKLY, '1'), _defineProperty(l, locales.default.ALL, '2'), l),
   h = function (e) {
     return e.map(function (e) {
       e.song.playCount = e.playCount;
       return e.song;
     });
   },
-  v = function (e) {
-    function t() {
+  v = class t extends React.PureComponent {
+    constructor() {
       var e, a, n;
-      babelHelpers.classCallCheck(this, t);
       for (var r = arguments.length, l = new Array(r), o = 0; o < r; o++) l[o] = arguments[o];
-      return babelHelpers.possibleConstructorReturn(n, (a = n = babelHelpers.possibleConstructorReturn(this, (e = babelHelpers.getPrototypeOf(t)).call.apply(e, [this].concat(l))), n.state = {
+      return a = n = super(...l), n.state = {
         index: 0,
         weekData: [],
         allData: [],
         profile: {}
       }, n.init = function () {
-        var e = n.props.navigation.state.params;
+        var e = n.props.route.params;
         if (e) {
           var t = e.profile;
           t && (n.setState({
             profile: t
           }), n.loadWeekData(t.userId), n.loadAllData(t.userId));
         }
-      }, n.loadWeekData = function (e) {
-        var t, a;
-        return regeneratorRuntime.async(function (r) {
-          for (;;) switch (r.prev = r.next) {
-            case 0:
-              r.next = 2;
-              return regeneratorRuntime.awrap(services.Netease.listen_record(e, 1));
-            case 2:
-              if (!(t = r.sent)) {
-                r.next = 9;
-                break;
-              }
-              if (200 === t.code) {
-                r.next = 7;
-                break;
-              }
-              return r.abrupt("return");
-            case 7:
-              a = h(t.weekData);
-              n.setState({
-                weekData: a
-              });
-            case 9:
-            case "end":
-              return r.stop();
-          }
-        }, null, this);
-      }, n.loadAllData = function (e) {
-        var t, a;
-        return regeneratorRuntime.async(function (r) {
-          for (;;) switch (r.prev = r.next) {
-            case 0:
-              r.next = 2;
-              return regeneratorRuntime.awrap(services.Netease.listen_record(e, 0));
-            case 2:
-              if (!(t = r.sent)) {
-                r.next = 9;
-                break;
-              }
-              if (200 === t.code) {
-                r.next = 7;
-                break;
-              }
-              return r.abrupt("return");
-            case 7:
-              a = h(t.allData);
-              n.setState({
-                allData: a
-              });
-            case 9:
-            case "end":
-              return r.stop();
-          }
-        }, null, this);
+      }, n.loadWeekData = async function (id) {
+        const response = await services.Netease.listen_record(id, 1);
+        if (response?.code === 200) n.setState({
+          weekData: h(response.weekData)
+        });
+      }, n.loadAllData = async function (id) {
+        const response = await services.Netease.listen_record(id, 0);
+        if (response?.code === 200) n.setState({
+          allData: h(response.allData)
+        });
       }, n.handlePageSelected = function (e) {
         var t = e.nativeEvent.position;
         n.setState({
@@ -202,42 +160,35 @@ var l,
           index: a,
           api: providers.default.netEase
         });
-      }, a));
+      }, a;
     }
-    babelHelpers.createClass(t, [{
-      key: "componentDidMount",
-      value: function () {
-        this.init();
-      }
-    }, {
-      key: "render",
-      value: function () {
-        var e = this;
+    "componentDidMount"() {
+      this.init();
+    }
+    "render"() {
+      var e = this;
+      return React.default.createElement(ReactNative.View, {
+        style: D.container
+      }, React.default.createElement(components.Background, null), React.default.createElement(components.HeaderBar, {
+        title: locales.default.LISTEN_RECORD,
+        goBack: this.props.navigation.goBack,
+        onTop: this.onTop
+      }), React.default.createElement(ReactNative.View, {
+        style: D.content
+      }, React.default.createElement(TabbedViewPager.default, {
+        tabNames: y,
+        onPageSelected: this.handlePageSelected
+      }, y.map(function (t, a) {
         return React.default.createElement(ReactNative.View, {
-          style: D.container
-        }, React.default.createElement(components.Background, null), React.default.createElement(components.HeaderBar, {
-          title: locales.default.LISTEN_RECORD,
-          goBack: this.props.navigation.goBack,
-          onTop: this.onTop
-        }), React.default.createElement(ReactNative.View, {
-          style: D.content
-        }, React.default.createElement(TabbedViewPager.default, {
-          tabNames: y,
-          onPageSelected: this.handlePageSelected
-        }, y.map(function (t, a) {
-          return React.default.createElement(ReactNative.View, {
-            key: a,
-            style: {
-              flex: 1,
-              paddingBottom: 50
-            }
-          }, e.renderScenes(g[t]));
-        }))));
-      }
-    }]);
-    babelHelpers.inherits(t, e);
-    return t;
-  }(React.PureComponent);
+          key: a,
+          style: {
+            flex: 1,
+            paddingBottom: 50
+          }
+        }, e.renderScenes(g[t]));
+      }))));
+    }
+  };
 exports.default = v;
 var D = ReactNative.StyleSheet.create({
   container: {

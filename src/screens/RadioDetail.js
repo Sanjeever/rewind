@@ -1,24 +1,25 @@
+const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var React = babelHelpers.interopRequireWildcard(require("react")),
+var React = _interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
-  reactNativeSpringScrollview = require("react-native-spring-scrollview"),
+  reactNativeSpringScrollview = require("./../components/Scrolling.js"),
   components = require("../components/index"),
-  ParallaxList = babelHelpers.interopRequireDefault(require("../components/ParallaxList")),
-  providers = babelHelpers.interopRequireDefault(require("../services/providers")),
+  ParallaxList = _interopRequireDefault(require("../components/ParallaxList")),
+  providers = _interopRequireDefault(require("../services/providers")),
   constants = require("../theme/constants"),
-  names = babelHelpers.interopRequireDefault(require("../events/names")),
-  icons = babelHelpers.interopRequireDefault(require("../theme/icons")),
+  names = _interopRequireDefault(require("../events/names")),
+  icons = _interopRequireDefault(require("../theme/icons")),
   services = require("../services/index"),
   events = require("../events/index"),
-  h = function (e) {
-    function t() {
+  h = class t extends React.PureComponent {
+    constructor() {
       var e, a, n;
-      babelHelpers.classCallCheck(this, t);
       for (var r = arguments.length, l = new Array(r), i = 0; i < r; i++) l[i] = arguments[i];
-      return babelHelpers.possibleConstructorReturn(n, (a = n = babelHelpers.possibleConstructorReturn(this, (e = babelHelpers.getPrototypeOf(t)).call.apply(e, [this].concat(l))), n.state = {
+      return a = n = super(...l), n.state = {
         title: '',
         loaded: false,
         data: [],
@@ -93,61 +94,54 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
           index: t,
           api: providers.default.netEase
         });
-      }, a));
+      }, a;
     }
-    babelHelpers.createClass(t, [{
-      key: "componentDidMount",
-      value: function () {
-        var e = this.props.navigation.state.params;
-        if (e) {
-          var t = e.item;
-          t && (this.setState({
-            title: t.name,
-            id: t.id
-          }), this.getData(t.id));
+    "componentDidMount"() {
+      var e = this.props.route.params;
+      if (e) {
+        var t = e.item;
+        t && (this.setState({
+          title: t.name,
+          id: t.id
+        }), this.getData(t.id));
+      }
+    }
+    "render"() {
+      var e = this,
+        t = this.state,
+        a = t.loaded,
+        n = t.data,
+        r = t.title,
+        u = t.asc;
+      return React.default.createElement(ReactNative.View, {
+        style: m.container
+      }, React.default.createElement(components.Background, null), false === a ? React.default.createElement(components.Spinkit, {
+        style: m.loading
+      }) : null, React.default.createElement(reactNativeSpringScrollview.SpringScrollView, {
+        ref: function (t) {
+          return e._scrollView = t;
+        },
+        onLoading: this.getMore,
+        loadingFooter: ParallaxList.default
+      }, n.map(function (t, a) {
+        return e._renderItem({
+          item: t,
+          index: a
+        });
+      })), React.default.createElement(components.HeaderBar, {
+        headerStyle: m.header,
+        title: r,
+        goBack: function () {
+          return e.props.navigation.goBack();
+        },
+        onTop: this.onTop,
+        rightIcon: {
+          name: false === u ? icons.default.ARROW_DOWN : icons.default.ARROW_UP,
+          onPress: this.onChangeOrder
         }
-      }
-    }, {
-      key: "render",
-      value: function () {
-        var e = this,
-          t = this.state,
-          a = t.loaded,
-          n = t.data,
-          r = t.title,
-          u = t.asc;
-        return React.default.createElement(ReactNative.View, {
-          style: m.container
-        }, React.default.createElement(components.Background, null), false === a ? React.default.createElement(components.Spinkit, {
-          style: m.loading
-        }) : null, React.default.createElement(reactNativeSpringScrollview.SpringScrollView, {
-          ref: function (t) {
-            return e._scrollView = t;
-          },
-          onLoading: this.getMore,
-          loadingFooter: ParallaxList.default
-        }, n.map(function (t, a) {
-          return e._renderItem({
-            item: t,
-            index: a
-          });
-        })), React.default.createElement(components.HeaderBar, {
-          headerStyle: m.header,
-          title: r,
-          goBack: function () {
-            return e.props.navigation.goBack();
-          },
-          onTop: this.onTop,
-          rightIcon: {
-            name: false === u ? icons.default.ARROW_DOWN : icons.default.ARROW_UP,
-            onPress: this.onChangeOrder
-          }
-        }));
-      }
-    }]);
-    babelHelpers.inherits(t, e);
-    return t;
-  }(React.PureComponent),
+      }));
+    }
+  },
   m = ReactNative.StyleSheet.create({
     container: {
       flex: 1,

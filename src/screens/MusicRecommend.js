@@ -1,29 +1,31 @@
+const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+const _defineProperty = require("@babel/runtime/helpers/defineProperty");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
 var l,
   immer = require("immer"),
-  React = babelHelpers.interopRequireWildcard(require("react")),
+  React = _interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
-  reactNativeSpringScrollview = require("react-native-spring-scrollview"),
+  reactNativeSpringScrollview = require("./../components/Scrolling.js"),
   components = require("../components/index"),
-  TabbedViewPager = babelHelpers.interopRequireDefault(require("../native/TabbedViewPager")),
-  providers = babelHelpers.interopRequireDefault(require("../services/providers")),
-  icons = babelHelpers.interopRequireDefault(require("../theme/icons")),
-  locales = babelHelpers.interopRequireDefault(require("../locales/index")),
+  TabbedViewPager = _interopRequireDefault(require("../native/TabbedViewPager")),
+  providers = _interopRequireDefault(require("../services/providers")),
+  icons = _interopRequireDefault(require("../theme/icons")),
+  locales = _interopRequireDefault(require("../locales/index")),
   services = require("../services/index"),
   events = require("../events/index"),
   utils = require("../utils/index"),
   trackInfo = require("../services/trackInfo"),
   S = [locales.default.ARTIST_SONGS, locales.default.MIX],
-  k = (l = {}, babelHelpers.defineProperty(l, locales.default.ARTIST_SONGS, '1'), babelHelpers.defineProperty(l, locales.default.MIX, '2'), l),
-  E = function (e) {
-    function t() {
+  k = (l = {}, _defineProperty(l, locales.default.ARTIST_SONGS, '1'), _defineProperty(l, locales.default.MIX, '2'), l),
+  E = class t extends React.Component {
+    constructor() {
       var e, n, a;
-      babelHelpers.classCallCheck(this, t);
       for (var r = arguments.length, l = new Array(r), s = 0; s < r; s++) l[s] = arguments[s];
-      return babelHelpers.possibleConstructorReturn(a, (n = a = babelHelpers.possibleConstructorReturn(this, (e = babelHelpers.getPrototypeOf(t)).call.apply(e, [this].concat(l))), a.state = {
+      return n = a = super(...l), a.state = {
         api: providers.default.netEase,
         data: [],
         loaded: false,
@@ -35,52 +37,32 @@ var l,
         return !!e && (a.setState({
           dislikeMode: !e
         }), true);
-      }, a.getRe = function () {
-        var e, t;
-        return regeneratorRuntime.async(function (n) {
-          for (;;) switch (n.prev = n.next) {
-            case 0:
-              n.next = 2;
-              return regeneratorRuntime.awrap(services.Netease.recommend_songs());
-            case 2:
-              if (e = n.sent, !(0, utils.usable)(e)) {
-                n.next = 10;
-                break;
-              }
-              if (t = e.recommend, 301 !== e.code) {
-                n.next = 9;
-                break;
-              }
-              toast(locales.default.NETEASE_NOT_LOGIN);
-              a.props.navigation.navigate('NeteaseLogin');
-              return n.abrupt("return");
-            case 9:
-              t && (a.getRePlaylist(), a.setState({
-                loaded: true,
-                data: t
-              }));
-            case 10:
-            case "end":
-              return n.stop();
+      }, a.getRe = async function () {
+        try {
+          const response = await services.Netease.recommend_songs();
+          if (response?.code === 301) {
+            toast(locales.default.NETEASE_NOT_LOGIN);
+            a.props.navigation.navigate('NeteaseLogin');
+            return;
           }
-        }, null, this);
-      }, a.getRePlaylist = function () {
-        var e, t;
-        return regeneratorRuntime.async(function (n) {
-          for (;;) switch (n.prev = n.next) {
-            case 0:
-              n.next = 2;
-              return regeneratorRuntime.awrap(services.Netease.recommend_playlists());
-            case 2:
-              e = n.sent;
-              (0, utils.usable)(e) && (t = e.recommend, 200 === e.code && a.setState({
-                playlistData: t
-              }));
-            case 4:
-            case "end":
-              return n.stop();
+          if (response?.recommend) {
+            a.setState({
+              data: response.recommend
+            });
+            await a.getRePlaylist();
           }
-        }, null, this);
+        } catch (error) {
+          toast(error.message);
+        } finally {
+          a.setState({
+            loaded: true
+          });
+        }
+      }, a.getRePlaylist = async function () {
+        const response = await services.Netease.recommend_playlists();
+        if (response?.code === 200) a.setState({
+          playlistData: response.recommend
+        });
       }, a.onTop = function () {
         var e, t, n, r;
         0 === a.state.tabIndex ? null === (e = (t = a._songScrollView).scrollToBegin) || void 0 === e || e.call(t) : null === (n = (r = a._playlistScrollView).scrollToBegin) || void 0 === n || n.call(r);
@@ -173,79 +155,58 @@ var l,
           playlist: e,
           api: providers.default.netEase
         });
-      }, a.onDisklikeSong = function (e, t) {
-        var n, r, l, o, s;
-        return regeneratorRuntime.async(function (u) {
-          for (;;) switch (u.prev = u.next) {
-            case 0:
-              u.next = 2;
-              return regeneratorRuntime.awrap(services.Netease.recommend_dislike({
-                id: e.id
-              }));
-            case 2:
-              n = u.sent;
-              r = n.code;
-              l = n.data;
-              o = n.message;
-              s = (0, immer.produce)(a.state.data, function (e) {
-                200 === r ? e[t] = l : (toast(o), e.splice(t, 1));
-              });
-              a.setState({
-                data: s
-              });
-            case 6:
-            case "end":
-              return u.stop();
+      }, a.onDisklikeSong = async function (song, index) {
+        const response = await services.Netease.recommend_dislike({
+          id: song.id
+        });
+        const data = immer.produce(a.state.data, draft => {
+          if (response.code === 200) draft[index] = response.data;else {
+            toast(response.message);
+            draft.splice(index, 1);
           }
-        }, null, this);
-      }, n));
+        });
+        a.setState({
+          data
+        });
+      }, n;
     }
-    babelHelpers.createClass(t, [{
-      key: "componentDidMount",
-      value: function () {
-        ReactNative.BackHandler.addEventListener('hardwareBackPress', this.onBackPress);
-        this.getRe();
-      }
-    }, {
-      key: "componentWillUnmount",
-      value: function () {
-        ReactNative.BackHandler.removeEventListener('hardwareBackPress', this.onBackPress);
-      }
-    }, {
-      key: "render",
-      value: function () {
-        var e = this,
-          t = this.state.dislikeMode;
-        return React.default.createElement(components.PageContainer, {
-          title: utils.timeFormatter.localeString(),
-          goBack: function () {
-            return e.props.navigation.goBack();
-          },
-          onTop: this.onTop,
-          rightIcon: {
-            name: t ? icons.default.DELETE_OUTLINE : icons.default.DELETE,
-            onPress: function () {
-              return e.setState({
-                dislikeMode: !t
-              });
-            }
-          },
-          disabledTopFadingEdge: true
-        }, React.default.createElement(TabbedViewPager.default, {
-          tabNames: S,
-          onPageSelected: this.handlePageSelected
-        }, S.map(function (t, n) {
-          return React.default.createElement(ReactNative.View, {
-            key: n,
-            style: {
-              flex: 1,
-              paddingBottom: 50
-            }
-          }, e._renderScenes(k[t]));
-        })));
-      }
-    }]);
-    babelHelpers.inherits(t, e);
-    return t;
-  }(React.Component);
+    "componentDidMount"() {
+      this.backSubscription = ReactNative.BackHandler.addEventListener('hardwareBackPress', this.onBackPress);
+      this.getRe();
+    }
+    "componentWillUnmount"() {
+      this.backSubscription?.remove();
+    }
+    "render"() {
+      var e = this,
+        t = this.state.dislikeMode;
+      return React.default.createElement(components.PageContainer, {
+        title: utils.timeFormatter.localeString(),
+        goBack: function () {
+          return e.props.navigation.goBack();
+        },
+        onTop: this.onTop,
+        rightIcon: {
+          name: t ? icons.default.DELETE_OUTLINE : icons.default.DELETE,
+          onPress: function () {
+            return e.setState({
+              dislikeMode: !t
+            });
+          }
+        },
+        disabledTopFadingEdge: true
+      }, React.default.createElement(TabbedViewPager.default, {
+        tabNames: S,
+        onPageSelected: this.handlePageSelected
+      }, S.map(function (t, n) {
+        return React.default.createElement(ReactNative.View, {
+          key: n,
+          style: {
+            flex: 1,
+            paddingBottom: 50
+          }
+        }, e._renderScenes(k[t]));
+      })));
+    }
+  };
 exports.default = E;

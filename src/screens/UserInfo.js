@@ -1,76 +1,50 @@
+const _default = require("./../components/Text.js").default;
+const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var React = babelHelpers.interopRequireWildcard(require("react")),
+var React = _interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
   components = require("../components/index"),
-  providers = babelHelpers.interopRequireDefault(require("../services/providers")),
+  providers = _interopRequireDefault(require("../services/providers")),
   constants = require("../theme/constants"),
-  names = babelHelpers.interopRequireDefault(require("../events/names")),
-  icons = babelHelpers.interopRequireDefault(require("../theme/icons")),
-  locales = babelHelpers.interopRequireDefault(require("../locales/index")),
+  names = _interopRequireDefault(require("../events/names")),
+  icons = _interopRequireDefault(require("../theme/icons")),
+  locales = _interopRequireDefault(require("../locales/index")),
   services = require("../services/index"),
   events = require("../events/index"),
-  types = babelHelpers.interopRequireWildcard(require("../utils/types")),
-  styles = babelHelpers.interopRequireDefault(require("./users/styles")),
-  y = function (e) {
-    function t() {
+  types = _interopRequireWildcard(require("../utils/types")),
+  styles = _interopRequireDefault(require("./users/styles")),
+  y = class t extends React.PureComponent {
+    constructor() {
       var e, n, a;
-      babelHelpers.classCallCheck(this, t);
       for (var r = arguments.length, y = new Array(r), I = 0; I < r; I++) y[I] = arguments[I];
-      return babelHelpers.possibleConstructorReturn(a, (n = a = babelHelpers.possibleConstructorReturn(this, (e = babelHelpers.getPrototypeOf(t)).call.apply(e, [this].concat(y))), a.state = {
+      return n = a = super(...y), a.state = {
         profile: {},
         playlist: [],
         listenSongs: 0,
         peopleCanSeeMyPlayRecord: false
-      }, a.getInfo = function (e) {
-        var t, n, r, l, i;
-        return regeneratorRuntime.async(function (o) {
-          for (;;) switch (o.prev = o.next) {
-            case 0:
-              o.next = 2;
-              return regeneratorRuntime.awrap(services.Netease.user_detail(e));
-            case 2:
-              if (t = o.sent, !types.isObject(t)) {
-                o.next = 10;
-                break;
-              }
-              if (n = t.profile, r = t.code, l = t.listenSongs, i = t.peopleCanSeeMyPlayRecord, 301 !== r) {
-                o.next = 8;
-                break;
-              }
-              toast(locales.default.NETEASE_NOT_LOGIN);
-              return o.abrupt("return");
-            case 8:
-              a.setState({
-                profile: n,
-                listenSongs: l,
-                peopleCanSeeMyPlayRecord: i
-              });
-              a.getPlaylist(e);
-            case 10:
-            case "end":
-              return o.stop();
-          }
-        }, null, this);
-      }, a.getPlaylist = function (e) {
-        var t, n;
-        return regeneratorRuntime.async(function (r) {
-          for (;;) switch (r.prev = r.next) {
-            case 0:
-              r.next = 2;
-              return regeneratorRuntime.awrap(services.Netease.user_playlist(e));
-            case 2:
-              t = r.sent;
-              types.isObject(t) && (n = t.playlist, a.setState({
-                playlist: n
-              }));
-            case 4:
-            case "end":
-              return r.stop();
-          }
-        }, null, this);
+      }, a.getInfo = async function (id) {
+        const response = await services.Netease.user_detail(id);
+        if (!response) return;
+        if (response.code === 301) {
+          toast(locales.default.NETEASE_NOT_LOGIN);
+          return;
+        }
+        if (!response.profile) throw new Error(response.message || locales.default.ERROR);
+        a.setState({
+          profile: response.profile,
+          listenSongs: response.listenSongs,
+          peopleCanSeeMyPlayRecord: response.peopleCanSeeMyPlayRecord
+        });
+        await a.getPlaylist(id);
+      }, a.getPlaylist = async function (id) {
+        const response = await services.Netease.user_playlist(id);
+        if (response?.playlist) a.setState({
+          playlist: response.playlist
+        });
       }, a.onFollow = function () {
         var e = a.state.profile;
         a.props.navigation.navigate('FollowPage', {
@@ -133,10 +107,10 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
               extrapolate: 'clamp'
             })
           }
-        }, f ? React.default.createElement(ReactNative.Text, {
+        }, f ? React.default.createElement(_default, {
           numberOfLines: 1,
           style: [E.title]
-        }, f) : null, g ? React.default.createElement(ReactNative.Text, {
+        }, f) : null, g ? React.default.createElement(_default, {
           numberOfLines: 2,
           style: [E.subtitle]
         }, g) : null))), React.default.createElement(ReactNative.View, {
@@ -187,39 +161,32 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
         a.props.navigation.navigate('PlaylistIntersection', {
           item: e
         });
-      }, n));
+      }, n;
     }
-    babelHelpers.createClass(t, [{
-      key: "componentDidMount",
-      value: function () {
-        var e = this.props.navigation.state.params;
-        if (types.isObject(e)) {
-          var t = e.userId;
-          types.isNumber(t) && this.getInfo(t);
-        }
+    "componentDidMount"() {
+      var e = this.props.route.params;
+      if (types.isObject(e)) {
+        var t = e.userId;
+        types.isNumber(t) && this.getInfo(t);
       }
-    }, {
-      key: "render",
-      value: function () {
-        var e = this,
-          t = this.state.playlist;
-        return React.default.createElement(ReactNative.View, {
-          style: E.container
-        }, React.default.createElement(components.Background, null), React.default.createElement(components.ParallaxScrollView, {
-          renderForeground: this.renderForeground
-        }, (null === t || void 0 === t ? void 0 : t.length) > 0 ? t.map(function (t, n) {
-          return e.renderItem({
-            item: t,
-            index: n
-          });
-        }) : React.default.createElement(components.Spinkit, {
-          style: E.spinkit
-        }), React.default.createElement(components.EmptyFooter, null)));
-      }
-    }]);
-    babelHelpers.inherits(t, e);
-    return t;
-  }(React.PureComponent);
+    }
+    "render"() {
+      var e = this,
+        t = this.state.playlist;
+      return React.default.createElement(ReactNative.View, {
+        style: E.container
+      }, React.default.createElement(components.Background, null), React.default.createElement(components.ParallaxScrollView, {
+        renderForeground: this.renderForeground
+      }, (null === t || void 0 === t ? void 0 : t.length) > 0 ? t.map(function (t, n) {
+        return e.renderItem({
+          item: t,
+          index: n
+        });
+      }) : React.default.createElement(components.Spinkit, {
+        style: E.spinkit
+      }), React.default.createElement(components.EmptyFooter, null)));
+    }
+  };
 exports.default = y;
 var E = ReactNative.StyleSheet.create({
   container: {
