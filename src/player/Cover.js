@@ -1,23 +1,26 @@
+const _default = require("./../components/Pager.js").default;
+const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+const _extends = require("@babel/runtime/helpers/extends");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var React = babelHelpers.interopRequireWildcard(require("react")),
+var React = _interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
   components = require("../components/index"),
   constants = require("../theme/constants"),
-  names = babelHelpers.interopRequireDefault(require("../events/names")),
+  names = _interopRequireDefault(require("../events/names")),
   events = require("../events/index"),
   utils = require("../utils/index"),
   trackInfo = require("../services/trackInfo"),
   playOrder = require("./playOrder"),
-  TrackTitle = babelHelpers.interopRequireDefault(require("./TrackTitle")),
-  g = function (e) {
-    function t() {
+  TrackTitle = _interopRequireDefault(require("./TrackTitle")),
+  g = class t extends React.PureComponent {
+    constructor() {
       var e, n, r;
-      babelHelpers.classCallCheck(this, t);
       for (var a = arguments.length, g = new Array(a), y = 0; y < a; y++) g[y] = arguments[y];
-      return babelHelpers.possibleConstructorReturn(r, (n = r = babelHelpers.possibleConstructorReturn(this, (e = babelHelpers.getPrototypeOf(t)).call.apply(e, [this].concat(g))), r._onPanResponderRelease = function (e, t) {
+      return n = r = super(...g), r._onPanResponderRelease = function (e, t) {
         var n = r.props,
           a = n.onTap,
           o = n.playerClose,
@@ -151,47 +154,40 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
           img: e,
           song: t
         });
-      }, n));
+      }, n;
     }
-    babelHelpers.createClass(t, [{
-      key: "shouldComponentUpdate",
-      value: function (e) {
-        var t = this.props,
-          n = t.song,
-          r = t.showTool,
-          a = t.url,
-          o = t.playState;
-        return n !== e.song || r !== e.showTool || a !== e.url || o !== e.playState;
-      }
-    }, {
-      key: "render",
-      value: function () {
-        var e = this,
-          t = this.props,
-          n = t.url,
-          r = t.containerStyle;
-        return React.default.createElement(ReactNative.View, {
-          style: [m.container, r]
-        }, React.default.createElement(ReactNative.View, babelHelpers.extends({
-          onLongPress: this.props.onTap,
-          style: m.coverCon
-        }, this._panResponder.panHandlers), '' !== n ? this.renderCoverImage() : null), React.default.createElement(ReactNative.ViewPagerAndroid, {
-          ref: function (t) {
-            return e.pager = t;
-          },
-          onPageSelected: this.onPageSelected,
-          initialPage: 1,
-          style: {
-            height: constants.DEVICE_HEIGHT - constants.DEVICE_WIDTH - 150,
-            width: constants.DEVICE_WIDTH,
-            flex: 1
-          }
-        }, this.renderItem(0), this.renderItem(1), this.renderItem(2)));
-      }
-    }]);
-    babelHelpers.inherits(t, e);
-    return t;
-  }(React.PureComponent),
+    "shouldComponentUpdate"(e) {
+      var t = this.props,
+        n = t.song,
+        r = t.showTool,
+        a = t.url,
+        o = t.playState;
+      return n !== e.song || r !== e.showTool || a !== e.url || o !== e.playState;
+    }
+    "render"() {
+      var e = this,
+        t = this.props,
+        n = t.url,
+        r = t.containerStyle;
+      return React.default.createElement(ReactNative.View, {
+        style: [m.container, r]
+      }, React.default.createElement(ReactNative.View, _extends({
+        onLongPress: this.props.onTap,
+        style: m.coverCon
+      }, this._panResponder.panHandlers), '' !== n ? this.renderCoverImage() : null), React.default.createElement(_default, {
+        ref: function (t) {
+          return e.pager = t;
+        },
+        onPageSelected: this.onPageSelected,
+        initialPage: 1,
+        style: {
+          height: constants.DEVICE_HEIGHT - constants.DEVICE_WIDTH - 150,
+          width: constants.DEVICE_WIDTH,
+          flex: 1
+        }
+      }, this.renderItem(0), this.renderItem(1), this.renderItem(2)));
+    }
+  },
   m = ReactNative.StyleSheet.create({
     container: {
       height: '100%',

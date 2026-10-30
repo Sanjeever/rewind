@@ -1,10 +1,12 @@
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+const _appStorage = require("./../storage/index.js");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var keys = babelHelpers.interopRequireDefault(require("../storage/keys")),
+var keys = _interopRequireDefault(require("../storage/keys")),
   c = function (t) {
-    storage.load({
+    _appStorage.storage.load({
       key: keys.default.showTrans
     }).then(function (e) {
       t.setState({
@@ -15,7 +17,7 @@ var keys = babelHelpers.interopRequireDefault(require("../storage/keys")),
     });
   },
   l = function (t) {
-    storage.load({
+    _appStorage.storage.load({
       key: keys.default.showToolBtnStatus
     }).then(function (e) {
       t.setState({
@@ -26,7 +28,7 @@ var keys = babelHelpers.interopRequireDefault(require("../storage/keys")),
     });
   },
   f = function (t) {
-    storage.load({
+    _appStorage.storage.load({
       key: keys.default.lyricFontSize
     }).then(function (e) {
       t.setState({
@@ -37,7 +39,7 @@ var keys = babelHelpers.interopRequireDefault(require("../storage/keys")),
     });
   },
   i = function (t) {
-    storage.load({
+    _appStorage.storage.load({
       key: keys.default.lastPlayMode
     }).then(function (e) {
       t.setState({

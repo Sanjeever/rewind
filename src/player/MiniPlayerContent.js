@@ -1,26 +1,28 @@
+const _default = require("./../components/Pager.js").default;
+const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var React = babelHelpers.interopRequireWildcard(require("react")),
+var React = _interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
-  TouchableScale = babelHelpers.interopRequireDefault(require("../components/TouchableScale")),
+  TouchableScale = _interopRequireDefault(require("../components/TouchableScale")),
   components = require("../components/index"),
   constants = require("../theme/constants"),
-  icons = babelHelpers.interopRequireDefault(require("../theme/icons")),
+  icons = _interopRequireDefault(require("../theme/icons")),
   utils = require("../utils/index"),
   types = require("../utils/types"),
   trackInfo = require("../services/trackInfo"),
   playOrder = require("./playOrder"),
-  TrackTitle = babelHelpers.interopRequireDefault(require("./TrackTitle")),
+  TrackTitle = _interopRequireDefault(require("./TrackTitle")),
   m = 50,
   b = 60,
-  y = function (e) {
-    function t() {
+  y = class t extends React.PureComponent {
+    constructor() {
       var e, r, n;
-      babelHelpers.classCallCheck(this, t);
       for (var a = arguments.length, u = new Array(a), y = 0; y < a; y++) u[y] = arguments[y];
-      return babelHelpers.possibleConstructorReturn(n, (r = n = babelHelpers.possibleConstructorReturn(this, (e = babelHelpers.getPrototypeOf(t)).call.apply(e, [this].concat(u))), n.scrollState = 'idle', n.triggerImage = false, n.onTouchEnd = function () {
+      return r = n = super(...u), n.scrollState = 'idle', n.triggerImage = false, n.onTouchEnd = function () {
         'idle' === n.scrollState && false === n.triggerImage && n.props.playerOpen();
       }, n.onImage = function () {
         n.triggerImage = true;
@@ -95,7 +97,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
             justifyContent: 'center'
           }
         }, React.default.createElement(ReactNative.Image, {
-          ref: "img",
+          ref: instance => this.img = instance,
           style: [{
             width: '90%',
             height: '90%',
@@ -126,29 +128,24 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
           numberOfLines: 1,
           alias: P.alias
         }));
-      }, r));
+      }, r;
     }
-    babelHelpers.createClass(t, [{
-      key: "render",
-      value: function () {
-        var e = this;
-        return React.default.createElement(ReactNative.ViewPagerAndroid, {
-          ref: function (t) {
-            return e.pager = t;
-          },
-          onPageSelected: this.onPageSelected,
-          initialPage: 1,
-          style: {
-            flex: 1,
-            width: constants.DEVICE_WIDTH - 50,
-            height: b
-          },
-          onPageScrollStateChanged: this.onPageScrollStateChanged,
-          onTouchEnd: this.onTouchEnd
-        }, this.renderCovers());
-      }
-    }]);
-    babelHelpers.inherits(t, e);
-    return t;
-  }(React.PureComponent);
+    "render"() {
+      var e = this;
+      return React.default.createElement(_default, {
+        ref: function (t) {
+          return e.pager = t;
+        },
+        onPageSelected: this.onPageSelected,
+        initialPage: 1,
+        style: {
+          flex: 1,
+          width: constants.DEVICE_WIDTH - 50,
+          height: b
+        },
+        onPageScrollStateChanged: this.onPageScrollStateChanged,
+        onTouchEnd: this.onTouchEnd
+      }, this.renderCovers());
+    }
+  };
 exports.default = y;

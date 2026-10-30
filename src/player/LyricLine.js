@@ -1,20 +1,22 @@
+const _default = require("./../components/Text.js").default;
+const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var React = babelHelpers.interopRequireWildcard(require("react")),
+var React = _interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
-  module756 = babelHelpers.interopRequireWildcard(require("./module-756")),
+  LyricList = _interopRequireWildcard(require("./LyricList.js")),
   constants = require("../theme/constants"),
-  locales = babelHelpers.interopRequireDefault(require("../locales/index")),
+  locales = _interopRequireDefault(require("../locales/index")),
   u = 'Nothing is true',
   p = '\u4e07\u7269\u7686\u865a',
-  d = function (e) {
-    function t() {
+  d = class t extends React.PureComponent {
+    constructor() {
       var e, n, r;
-      babelHelpers.classCallCheck(this, t);
       for (var l = arguments.length, o = new Array(l), s = 0; s < l; s++) o[s] = arguments[s];
-      return babelHelpers.possibleConstructorReturn(r, (n = r = babelHelpers.possibleConstructorReturn(this, (e = babelHelpers.getPrototypeOf(t)).call.apply(e, [this].concat(o))), r.dragged = false, r.state = {
+      return n = r = super(...o), r.dragged = false, r.state = {
         index: null
       }, r.scroll = function (e, t) {
         var n = r.props.getIndex(e, t);
@@ -69,7 +71,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
           }
         }, r.props.hasTrans && React.default.createElement(ReactNative.TouchableOpacity, {
           onPress: r.props.changeShowTrans
-        }, React.default.createElement(ReactNative.Text, {
+        }, React.default.createElement(_default, {
           style: h.text
         }, r.props.showTrans ? locales.default.HIDE_TRANS : locales.default.SHOW_TRANS)), React.default.createElement(ReactNative.View, {
           style: {
@@ -81,7 +83,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
           onPress: function () {
             return r.props.changeFontSize(r.props.fontSize > 1 ? r.props.fontSize - 1 : 0);
           }
-        }, React.default.createElement(ReactNative.Text, {
+        }, React.default.createElement(_default, {
           style: [h.text, {
             padding: 5
           }]
@@ -89,13 +91,13 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
           style: {
             padding: 20
           }
-        }, React.default.createElement(ReactNative.Text, {
+        }, React.default.createElement(_default, {
           style: h.text
         }, r.props.fontSize - 15)), React.default.createElement(ReactNative.TouchableOpacity, {
           onPress: function () {
             return r.props.changeFontSize(r.props.fontSize < 25 ? r.props.fontSize + 1 : 25);
           }
-        }, React.default.createElement(ReactNative.Text, {
+        }, React.default.createElement(_default, {
           style: [h.text, {
             padding: 5
           }]
@@ -124,108 +126,93 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
         r.dragged = false;
       }, r.renderTxt = function (e) {
         return e.replace(/&apos;/gm, "'").replace(/\/\//g, '').replace(/&quot;/g, '"').replace(/\[.+\]/gi, '');
-      }, n));
+      }, n;
     }
-    babelHelpers.createClass(t, [{
-      key: "componentDidMount",
-      value: function () {
-        this.scrollToCurrentLine();
-      }
-    }, {
-      key: "componentDidUpdate",
-      value: function (e) {
-        var t = this.props,
-          n = t.currentTime,
-          r = t.lyric;
-        n !== e.currentTime && (!r || r.length < 2 || n !== e.currentTime && r.length > 0 && this.scroll(r, n));
-      }
-    }, {
-      key: "render",
-      value: function () {
-        var e = this,
-          t = this.props.lyric,
-          n = new module756.DataSource(t, function (e, t) {
-            return String(t);
-          });
-        return React.default.createElement(ReactNative.View, {
-          style: [h.container, this.props.viewStyle]
-        }, React.default.createElement(ReactNative.View, {
-          style: [ReactNative.StyleSheet.absoluteFill, h.overlay],
-          onTouchStart: this.props.onTap
-        }), t && t.length > 0 && n ? React.default.createElement(module756.default, {
-          style: {
-            flex: 1,
-            width: '80%',
-            height: '100%'
-          },
-          dataSource: n,
-          renderItem: this._renderItem,
-          ref: function (t) {
-            return e._list = t;
-          },
-          showVerticalScrollBar: false,
-          isScrollOverMode: false,
-          ListHeaderComponent: this.btns,
-          ListFooterComponent: this.emptyComp,
-          onTouchStart: this.scrollDragBegin,
-          onScrollEndDrag: this.scrollEndDrag,
-          onVisibleItemsChange: this.onVisibleItemsChange
-        }) : React.default.createElement(ReactNative.View, {
-          style: h.empty,
-          onTouchStart: function () {
-            return e.props.onTap();
-          }
-        }, React.default.createElement(f, {
-          fontSize: 16,
-          lyric: u,
-          trans: p,
-          highlight: true
-        })));
-      }
-    }]);
-    babelHelpers.inherits(t, e);
-    return t;
-  }(React.PureComponent),
-  f = function (e) {
-    function t() {
-      babelHelpers.classCallCheck(this, t);
-      return babelHelpers.possibleConstructorReturn(this, babelHelpers.getPrototypeOf(t).apply(this, arguments));
+    "componentDidMount"() {
+      this.scrollToCurrentLine();
     }
-    babelHelpers.createClass(t, [{
-      key: "render",
-      value: function () {
-        var e = this.props,
-          t = e.lyric,
-          n = void 0 === t ? '' : t,
-          r = e.trans,
-          l = void 0 === r ? '' : r,
-          o = e.highlight,
-          s = e.onPress,
-          c = e.style,
-          u = e.fontSize;
-        return React.default.createElement(ReactNative.TouchableOpacity, {
-          onLongPress: s,
-          activeOpacity: .6
-        }, React.default.createElement(ReactNative.View, {
-          style: [h.textCon, c]
-        }, React.default.createElement(ReactNative.Text, {
-          style: [h.text, {
-            opacity: o ? 1 : .6,
-            fontSize: u
-          }, l && {
-            fontSize: u - 2
-          }]
-        }, l && React.default.createElement(ReactNative.Text, {
-          style: [h.text, {
-            opacity: o ? 1 : .6,
-            fontSize: u
-          }]
-        }, l + "\n"), n)));
-      }
-    }]);
-    babelHelpers.inherits(t, e);
-    return t;
-  }(React.PureComponent),
+    "componentDidUpdate"(e) {
+      var t = this.props,
+        n = t.currentTime,
+        r = t.lyric;
+      n !== e.currentTime && (!r || r.length < 2 || n !== e.currentTime && r.length > 0 && this.scroll(r, n));
+    }
+    "render"() {
+      var e = this,
+        t = this.props.lyric,
+        n = new LyricList.DataSource(t, function (e, t) {
+          return String(t);
+        });
+      return React.default.createElement(ReactNative.View, {
+        style: [h.container, this.props.viewStyle]
+      }, React.default.createElement(ReactNative.View, {
+        style: [ReactNative.StyleSheet.absoluteFill, h.overlay],
+        onTouchStart: this.props.onTap
+      }), t && t.length > 0 && n ? React.default.createElement(LyricList.default, {
+        style: {
+          flex: 1,
+          width: '80%',
+          height: '100%'
+        },
+        dataSource: n,
+        renderItem: this._renderItem,
+        ref: function (t) {
+          return e._list = t;
+        },
+        showVerticalScrollBar: false,
+        isScrollOverMode: false,
+        ListHeaderComponent: this.btns,
+        ListFooterComponent: this.emptyComp,
+        onTouchStart: this.scrollDragBegin,
+        onScrollEndDrag: this.scrollEndDrag,
+        onVisibleItemsChange: this.onVisibleItemsChange
+      }) : React.default.createElement(ReactNative.View, {
+        style: h.empty,
+        onTouchStart: function () {
+          return e.props.onTap();
+        }
+      }, React.default.createElement(f, {
+        fontSize: 16,
+        lyric: u,
+        trans: p,
+        highlight: true
+      })));
+    }
+  },
+  f = class t extends React.PureComponent {
+    constructor() {
+      return super(...arguments);
+    }
+    "render"() {
+      var e = this.props,
+        t = e.lyric,
+        n = void 0 === t ? '' : t,
+        r = e.trans,
+        l = void 0 === r ? '' : r,
+        o = e.highlight,
+        s = e.onPress,
+        c = e.style,
+        u = e.fontSize;
+      return React.default.createElement(ReactNative.TouchableOpacity, {
+        onLongPress: s,
+        activeOpacity: .6
+      }, React.default.createElement(ReactNative.View, {
+        style: [h.textCon, c]
+      }, React.default.createElement(_default, {
+        style: [h.text, {
+          opacity: o ? 1 : .6,
+          fontSize: u
+        }, l && {
+          fontSize: u - 2
+        }]
+      }, l && React.default.createElement(_default, {
+        style: [h.text, {
+          opacity: o ? 1 : .6,
+          fontSize: u
+        }]
+      }, l + "\n"), n)));
+    }
+  },
   h = ReactNative.StyleSheet.create({
     container: {
       height: '100%',

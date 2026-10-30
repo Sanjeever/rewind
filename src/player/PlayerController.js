@@ -1,47 +1,51 @@
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+const _assertThisInitialized = require("@babel/runtime/helpers/assertThisInitialized");
+const _appStorage = require("./../storage/index.js");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
 var React = require("react"),
   ReactNative = require("react-native"),
-  providers = babelHelpers.interopRequireDefault(require("../services/providers")),
+  providers = _interopRequireDefault(require("../services/providers")),
   constants = require("../theme/constants"),
-  names = babelHelpers.interopRequireDefault(require("../events/names")),
-  keys = babelHelpers.interopRequireDefault(require("../storage/keys")),
-  locales = babelHelpers.interopRequireDefault(require("../locales/index")),
+  names = _interopRequireDefault(require("../events/names")),
+  keys = _interopRequireDefault(require("../storage/keys")),
+  locales = _interopRequireDefault(require("../locales/index")),
   services = require("../services/index"),
   events = require("../events/index"),
   utils = require("../utils/index"),
-  types = babelHelpers.interopRequireWildcard(require("../utils/types")),
+  types = _interopRequireWildcard(require("../utils/types")),
   trackInfo = require("../services/trackInfo"),
-  audioPlayer = babelHelpers.interopRequireDefault(require("../native/audioPlayer")),
-  timer = babelHelpers.interopRequireDefault(require("../native/timer")),
-  mediaStore = babelHelpers.interopRequireDefault(require("../native/mediaStore")),
-  shutdown = babelHelpers.interopRequireDefault(require("../native/shutdown")),
-  wakeLock = babelHelpers.interopRequireDefault(require("../native/wakeLock")),
+  audioPlayer = _interopRequireDefault(require("../native/audioPlayer")),
+  timer = _interopRequireDefault(require("../native/timer")),
+  mediaStore = _interopRequireDefault(require("../native/mediaStore")),
+  shutdown = _interopRequireDefault(require("../native/shutdown")),
+  wakeLock = _interopRequireDefault(require("../native/wakeLock")),
   files = require("../storage/files"),
-  lastSong = babelHelpers.interopRequireDefault(require("../storage/lastSong")),
-  lastTime = babelHelpers.interopRequireDefault(require("../storage/lastTime")),
-  lastQueue = babelHelpers.interopRequireDefault(require("../storage/lastQueue")),
+  lastSong = _interopRequireDefault(require("../storage/lastSong")),
+  lastTime = _interopRequireDefault(require("../storage/lastTime")),
+  lastQueue = _interopRequireDefault(require("../storage/lastQueue")),
   history = require("../storage/history"),
-  cache = babelHelpers.interopRequireDefault(require("./cache")),
-  lyricPreferences = babelHelpers.interopRequireDefault(require("./lyricPreferences")),
-  queue = babelHelpers.interopRequireDefault(require("./queue")),
-  playModeModule = babelHelpers.interopRequireDefault(require("./playMode")),
-  lyrics = babelHelpers.interopRequireDefault(require("./lyrics")),
-  trackUrl = babelHelpers.interopRequireDefault(require("./trackUrl")),
-  notification = babelHelpers.interopRequireDefault(require("./notification")),
-  queueActions = babelHelpers.interopRequireDefault(require("./queueActions")),
-  gestures = babelHelpers.interopRequireDefault(require("./gestures")),
+  cache = _interopRequireDefault(require("./cache")),
+  lyricPreferences = _interopRequireDefault(require("./lyricPreferences")),
+  queue = _interopRequireDefault(require("./queue")),
+  playModeModule = _interopRequireDefault(require("./playMode")),
+  lyrics = _interopRequireDefault(require("./lyrics")),
+  trackUrl = _interopRequireDefault(require("./trackUrl")),
+  notification = _interopRequireDefault(require("./notification")),
+  queueActions = _interopRequireDefault(require("./queueActions")),
+  gestures = _interopRequireDefault(require("./gestures")),
   playOrder = require("./playOrder"),
   F = null,
   H = 600,
-  U = function (t) {
-    function a() {
+  U = class a extends React.PureComponent {
+    lyricRequest = 0;
+    constructor() {
       var e, t, n;
-      babelHelpers.classCallCheck(this, a);
       for (var r = arguments.length, i = new Array(r), M = 0; M < r; M++) i[M] = arguments[M];
-      return babelHelpers.possibleConstructorReturn(n, (t = n = babelHelpers.possibleConstructorReturn(this, (e = babelHelpers.getPrototypeOf(a)).call.apply(e, [this].concat(i))), n.ANIMATION_CONFIG = ReactNative.LayoutAnimation.create(400, ReactNative.LayoutAnimation.Types.easeOut, ReactNative.LayoutAnimation.Properties.opacity), n.TEMP_DATA = {}, n.animatedOpacity = new ReactNative.Animated.Value(1), n.AUDIO_FOCUS_TYPE = null, n.state = {
+      return t = n = super(...i), n.ANIMATION_CONFIG = ReactNative.LayoutAnimation.create(400, ReactNative.LayoutAnimation.Types.easeOut, ReactNative.LayoutAnimation.Properties.opacity), n.TEMP_DATA = {}, n.animatedOpacity = new ReactNative.Animated.Value(1), n.AUDIO_FOCUS_TYPE = null, n.state = {
         url: '',
         playState: 'paused',
         currentTime: 0,
@@ -80,48 +84,31 @@ var React = require("react"),
             a = n.state.currentTime;
           (null === (t = n.props.settings) || void 0 === t ? void 0 : t.autoLoadLastPlayedTracks) && lastTime.default.save(a);
         }
-      }, n.preparePlay = function (e) {
-        var t = n.props.songItem,
-          a = n.state.pid;
-        types.isString(e) ? (n.initialPlay(e), lastSong.default.save(a, t), n.saveLastPlayedTracks()) : n.errorWhenPlay();
-      }, n.saveLastPlayedTracks = function () {
-        var e;
-        if (null === (e = n.props.settings) || void 0 === e ? void 0 : e.autoLoadLastPlayedTracks) {
-          var t = n.props,
-            a = t.api,
-            r = t.tracks,
-            i = t.playingIndex;
-          lastQueue.default.save({
-            tracks: r,
-            index: i,
-            api: a
-          });
+      }, n.preparePlay = function (url) {
+        if (!types.isString(url)) {
+          n.errorWhenPlay();
+          return;
         }
-      }, n.recordPlayed = function (e) {
-        var t, a, r, i, s, l, u, d, f, y, g;
-        return regeneratorRuntime.async(function (m) {
-          for (;;) switch (m.prev = m.next) {
-            case 0:
-              if (r = n.props, i = r.api, s = r.settings.recordPlayCount, i === providers.default.netEase && s) {
-                m.next = 3;
-                break;
-              }
-              return m.abrupt("return");
-            case 3:
-              l = e.id;
-              u = e.dt;
-              d = (null === (t = e.album) || void 0 === t ? void 0 : t.id) || (null === (a = e.al) || void 0 === a ? void 0 : a.id);
-              f = Math.floor(u / 1e3);
-              m.next = 8;
-              return regeneratorRuntime.awrap(services.Netease.play_count(l, d, f));
-            case 8:
-              y = m.sent;
-              (g = y.code) && 200 === g || toast(locales.default.ERROR);
-            case 11:
-            case "end":
-              return m.stop();
-          }
-        }, null, this);
+        n.initialPlay(url);
+        lastSong.default.save(n.props.api, n.props.songItem).catch(error => toast('保存播放记录失败：' + error.message));
+        n.saveLastPlayedTracks();
+      }, n.saveLastPlayedTracks = function () {
+        if (n.props.settings?.autoLoadLastPlayedTracks) {
+          const {
+            api,
+            tracks,
+            playingIndex
+          } = n.props;
+          return lastQueue.default.save({
+            tracks,
+            index: playingIndex,
+            api
+          }).catch(error => toast('保存队列失败：' + error.message));
+        }
+      }, n.recordPlayed = async function (song) {
+        if (n.props.api !== providers.default.netEase || !n.props.settings.recordPlayCount) return;
+        const result = await services.Netease.play_count(song.id, song.album?.id || song.al?.id, Math.floor(song.dt / 1000));
+        if (result?.code !== 200) toast(locales.default.ERROR);
       }, n.errorWhenPlay = function () {
         var e = arguments.length > 0 && void 0 !== arguments[0] && arguments[0],
           t = n.state.retriedTimes;
@@ -166,12 +153,16 @@ var React = require("react"),
         !n.state.lastPlayedTracksLoaded && (null === (e = n.props.settings) || void 0 === e ? void 0 : e.autoLoadLastPlayedTracks) ? (n.seekToLastPlayedTime(), n.setState({
           lastPlayedTracksLoaded: true
         })) : n.playSound();
-      }, n.seekToLastPlayedTime = function () {
-        lastTime.default.get().then(function (e) {
-          n.seekTo(e, false);
+      }, n.seekToLastPlayedTime = async function () {
+        try {
+          const seconds = await lastTime.default.get();
+          n.seekTo(seconds, false);
           n.pauseSound();
-          lastTime.default.save(0);
-        });
+          await lastTime.default.save(0);
+        } catch (error) {
+          n.pauseSound();
+          toast('恢复进度失败：' + error.message);
+        }
       }, n.onlyPause = function () {
         try {
           var e;
@@ -191,11 +182,16 @@ var React = require("react"),
           loaded: false,
           currentMiniLyric: ''
         });
-      }, n.exit = function () {
-        var e;
-        (null === (e = n.props.settings) || void 0 === e ? void 0 : e.autoLoadLastPlayedTracks) ? lastTime.default.save(n.state.currentTime).then(function () {
+      }, n.exit = async function () {
+        try {
+          if (n.props.settings?.autoLoadLastPlayedTracks) {
+            const seconds = F?.isLoaded() ? await new Promise(resolve => F.getCurrentTime(resolve)) : n.state.currentTime;
+            await lastTime.default.save(seconds);
+          }
           shutdown.default.fire();
-        }) : shutdown.default.fire();
+        } catch (error) {
+          toast('保存进度失败：' + error.message);
+        }
       }, n.setVolume = function (e) {
         var t;
         null === (t = F) || void 0 === t || t.setVolume(e);
@@ -231,7 +227,7 @@ var React = require("react"),
             i = t.songItem(e, e.data),
             s = t.data(e, e.data, i),
             o = (0, trackInfo.extractFullInfo)(i, true === n.state.expanded ? 'big' : 'small');
-          'random' === n.state.playMode && s.length !== n.props.tracks.length && (0, playOrder.getRandomArray)(babelHelpers.assertThisInitialized(babelHelpers.assertThisInitialized(n)), s.length);
+          'random' === n.state.playMode && s.length !== n.props.tracks.length && (0, playOrder.getRandomArray)(_assertThisInitialized(_assertThisInitialized(n)), s.length);
           n.loadPlayerResource({
             api: a,
             obj: o,
@@ -308,24 +304,20 @@ var React = require("react"),
         });
         n.loadLikelist(r, t);
         n.getLyric(t, a, r);
-      }, n.getLyric = function (e, t, a) {
-        var r, i, s;
-        return regeneratorRuntime.async(function (o) {
-          for (;;) switch (o.prev = o.next) {
-            case 0:
-              o.next = 2;
-              return regeneratorRuntime.awrap(lyrics.default.getLyric({
-                api: e,
-                obj: t,
-                songItem: a
-              }));
-            case 2:
-              (null === (r = o.sent) || void 0 === r ? void 0 : r.lyric) && (i = r.lyric, s = r.hasTrans, n.setLyric(i, s));
-            case 4:
-            case "end":
-              return o.stop();
-          }
-        }, null, this);
+      }, n.getLyric = async function (api, obj, songItem) {
+        const request = ++n.lyricRequest;
+        try {
+          const result = await lyrics.default.getLyric({
+            api,
+            obj,
+            songItem
+          });
+          if (request === n.lyricRequest) n.setLyric(result.lyric, result.hasTrans);
+        } catch (error) {
+          if (request !== n.lyricRequest || error.code === 'ERR_CANCELED') return;
+          n.setLyric(null, false);
+          toast('歌词加载失败：' + error.message);
+        }
       }, n.setLyric = function (e, t) {
         n.props.setLyric(e, t);
       }, n._volumeOnPanResponderRelease = function (e, t) {
@@ -359,7 +351,7 @@ var React = require("react"),
         n.sliding = null;
         n.fallBackPlayType = null;
       }, n.loadLikelist = function (e, t) {
-        e && storage.load({
+        e && _appStorage.storage.load({
           key: keys.default.likelist
         }).then(function (a) {
           var r,
@@ -386,121 +378,51 @@ var React = require("react"),
             isLike: false
           });
         });
-      }, n.matchLocalImg = function (e) {
-        var t, a, r, i, s, o, l, u, d;
-        return regeneratorRuntime.async(function (c) {
-          for (;;) switch (c.prev = c.next) {
-            case 0:
-              t = e.title;
-              a = e.singer;
-              r = e.duration;
-              i = t;
-              i += ' ' + a;
-              c.next = 5;
-              return regeneratorRuntime.awrap(services.Netease.search({
-                keywords: i
-              }));
-            case 5:
-              if (s = c.sent, types.isObject(s)) {
-                c.next = 8;
-                break;
-              }
-              return c.abrupt("return");
-            case 8:
-              if (!(o = s.result.songs)) {
-                c.next = 13;
-                break;
-              }
-              l = o[0];
-              c.next = 17;
-              break;
-            case 13:
-              c.next = 15;
-              return regeneratorRuntime.awrap(services.QQMusic.searchSong(i));
-            case 15:
-              (u = c.sent).length > 0 && (l = u.find(function (e) {
-                return e.interval === Math.floor(r / 1e3);
-              }));
-            case 17:
-              if (l) {
-                c.next = 19;
-                break;
-              }
-              return c.abrupt("return");
-            case 19:
-              d = (0, trackInfo.extractFullInfo)(l);
-              n.setState({
-                url: d.img
-              });
-              audioPlayer.default.updatePlayback({
-                title: d.song,
-                artwork: d.img,
-                artist: (0, utils.parseArtist)(d.singer)
-              });
-            case 22:
-            case "end":
-              return c.stop();
+      }, n.matchLocalImg = async function (song) {
+        const keywords = song.title + ' ' + song.singer;
+        const response = await services.Netease.search({
+          keywords
+        });
+        if (!types.isObject(response)) return;
+        let match = response.result?.songs?.[0];
+        if (!response.result?.songs) {
+          const songs = await services.QQMusic.searchSong(keywords);
+          match = songs?.find(item => item.interval === Math.floor(song.duration / 1000));
+        }
+        if (!match) return;
+        const info = trackInfo.extractFullInfo(match);
+        n.setState({
+          url: info.img
+        });
+        audioPlayer.default.updatePlayback({
+          title: info.song,
+          artwork: info.img,
+          artist: utils.parseArtist(info.singer)
+        });
+      }, n.prepareMusic = async function (request, info, api) {
+        const uid = n.state.playingSongUID;
+        try {
+          const local = request.song.localPath;
+          if (local?.length && (await files.isUsableFile(local))) {
+            n.preparePlay(local);
+            return;
           }
-        }, null, this);
-      }, n.prepareMusic = function (e, t, a) {
-        var r, i, s, o;
-        return regeneratorRuntime.async(function (l) {
-          for (;;) switch (l.prev = l.next) {
-            case 0:
-              if (r = n.state.playingSongUID, !((null === (i = e.song.localPath) || void 0 === i ? void 0 : i.length) > 0)) {
-                l.next = 9;
-                break;
-              }
-              l.next = 5;
-              return regeneratorRuntime.awrap((0, files.isUsableFile)(i));
-            case 5:
-              if (!l.sent) {
-                l.next = 9;
-                break;
-              }
-              n.preparePlay(i);
-              return l.abrupt("return");
-            case 9:
-              if ('local' !== a) {
-                l.next = 14;
-                break;
-              }
-              s = e.song.path;
-              n.setLocalArtWork(t.localAlbumId, e.song);
-              n.preparePlay(s);
-              return l.abrupt("return");
-            case 14:
-              l.next = 16;
-              return regeneratorRuntime.awrap(n.cachedGetWebMusicUrl(e, a));
-            case 16:
-              if (o = l.sent, r === n.props.songItemInfo.uid) {
-                l.next = 19;
-                break;
-              }
-              return l.abrupt("return");
-            case 19:
-              n.preparePlay(o);
-            case 20:
-            case "end":
-              return l.stop();
+          if (api === 'local') {
+            n.setLocalArtWork(info.localAlbumId, request.song);
+            n.preparePlay(request.song.path);
+            return;
           }
-        }, null, this);
-      }, n.getWebMusicUrl = function (e, t) {
-        var a, r;
-        return regeneratorRuntime.async(function (i) {
-          for (;;) switch (i.prev = i.next) {
-            case 0:
-              a = n.props.settings.defaultHighQuality;
-              i.next = 3;
-              return regeneratorRuntime.awrap(trackUrl.default.getUrl(t, e, a));
-            case 3:
-              r = i.sent;
-              return i.abrupt("return", r);
-            case 5:
-            case "end":
-              return i.stop();
-          }
-        }, null, this);
+          const url = await n.cachedGetWebMusicUrl(request, api);
+          if (uid !== n.props.songItemInfo.uid) return;
+          if (!url) throw new Error('未取得可播放地址');
+          n.preparePlay(url);
+        } catch (error) {
+          if (uid !== n.props.songItemInfo.uid) return;
+          n.pauseSound();
+          toast('音源加载失败：' + error.message);
+        }
+      }, n.getWebMusicUrl = async function (request, api) {
+        return trackUrl.default.getUrl(api, request, n.props.settings.defaultHighQuality);
       }, n.setLocalArtWork = function (e, t) {
         e && mediaStore.default.getArtWork(e).then(function (e) {
           if (e) {
@@ -512,7 +434,7 @@ var React = require("react"),
             }), audioPlayer.default.updatePlayback({
               title: r.song,
               artwork: e,
-              base64: true,
+              base64: false,
               artist: (0, utils.parseArtist)(r.singer)
             })) : n.matchLocalImg(t);
           }
@@ -557,34 +479,15 @@ var React = require("react"),
           r = e.isBackground,
           i = n.props.settings.hideMiniLyric;
         r || 'playing' === t && F && (n.getMusicTimeInfo('currentTime'), timer.default.setTimeout(n.intervalCurrentTimeGetter, H), a || i || n.getCurrentMiniLyric());
-      }, n.getMusicTimeInfo = function (e) {
-        var t;
-        return regeneratorRuntime.async(function (a) {
-          for (;;) switch (a.prev = a.next) {
-            case 0:
-              a.t0 = e;
-              a.next = 'currentTime' === a.t0 ? 3 : 'duration' === a.t0 ? 5 : 7;
-              break;
-            case 3:
-              null === (t = F) || void 0 === t || t.getCurrentTime(function (e) {
-                n.setState({
-                  currentTime: e
-                });
-              });
-              return a.abrupt("break", 7);
-            case 5:
-              F && n.setState({
-                duration: F.getDuration()
-              });
-              return a.abrupt("break", 7);
-            case 7:
-            case "end":
-              return a.stop();
-          }
-        }, null, this);
+      }, n.getMusicTimeInfo = function (type) {
+        if (type === 'currentTime') F?.getCurrentTime(seconds => n.setState({
+          currentTime: seconds
+        }));else if (type === 'duration' && F) n.setState({
+          duration: F.getDuration()
+        });
       }, n.getLyricIndex = function (e, t) {
         if (e && !(e.length < 1)) {
-          if (t < e[0].time) return 0;
+          if (t < e[0].total) return 0;
           var a = null,
             n = t + .3;
           try {
@@ -731,28 +634,25 @@ var React = require("react"),
         wakeLock.default.deactivate();
       }, n.onFmMode = function () {
         events.emitter.emit(names.default.FM_MODE);
-      }, n.startFM = function () {
-        var e, t, a, r;
-        return regeneratorRuntime.async(function (i) {
-          for (;;) switch (i.prev = i.next) {
-            case 0:
-              i.next = 2;
-              return regeneratorRuntime.awrap(services.Netease.personal_fm());
-            case 2:
-              (e = i.sent) && (t = e.code, a = e.data, 405 === t && (toast(locales.default.NETEASE_NOT_LOGIN), utils.universalNavigator.navigate('NeteaseLogin')), (r = a.map(function (e) {
-                e.isFM = true;
-                return e;
-              })) && n.musicPlayerEmitter({
-                song: r[0],
-                data: r,
-                index: 0,
-                api: providers.default.netEase
-              }));
-            case 4:
-            case "end":
-              return i.stop();
-          }
-        }, null, this);
+      }, n.startFM = async function () {
+        const response = await services.Netease.personal_fm();
+        if (!response) return;
+        if (response.code === 405) {
+          toast(locales.default.NETEASE_NOT_LOGIN);
+          utils.universalNavigator.navigate('NeteaseLogin');
+          return;
+        }
+        if (!Array.isArray(response.data) || !response.data.length) return;
+        const tracks = response.data.map(song => ({
+          ...song,
+          isFM: true
+        }));
+        n.musicPlayerEmitter({
+          song: tracks[0],
+          data: tracks,
+          index: 0,
+          api: providers.default.netEase
+        });
       }, n.stopFM = function () {
         if (n.TEMP_DATA) {
           var e = n.TEMP_DATA,
@@ -769,18 +669,11 @@ var React = require("react"),
       }, n.onTimer = function () {
         utils.stopTimer.open();
       }, n.onCheck = function () {
-        var e, t;
-        return regeneratorRuntime.async(function (a) {
-          for (;;) switch (a.prev = a.next) {
-            case 0:
-              e = n.props;
-              t = e.songItem;
-              e.api === providers.default.netEase ? (toast(locales.default.LIFE_PLUS_ONE), n.recordPlayed(t)) : toast(locales.default.PLAY_COUNT_ONLY_SUPPORT_NETEASE);
-            case 2:
-            case "end":
-              return a.stop();
-          }
-        }, null, this);
+        if (n.props.api === providers.default.netEase) {
+          toast(locales.default.LIFE_PLUS_ONE);
+          return n.recordPlayed(n.props.songItem);
+        }
+        toast(locales.default.PLAY_COUNT_ONLY_SUPPORT_NETEASE);
       }, n.onTap = function () {
         var e = n.state.showLyric;
         n.setState({
@@ -807,7 +700,7 @@ var React = require("react"),
           });
         });
       }, n.saveShowToolStatus = function () {
-        storage.save({
+        _appStorage.storage.save({
           key: keys.default.showToolBtnStatus,
           data: n.state.showTool
         }).then(function (e) {
@@ -825,7 +718,7 @@ var React = require("react"),
         n.setState({
           lyricFontSize: e
         });
-        storage.save({
+        _appStorage.storage.save({
           key: keys.default.lyricFontSize,
           data: e
         }).then(function (e) {
@@ -836,7 +729,7 @@ var React = require("react"),
         n.setState({
           showTrans: e
         });
-        storage.save({
+        _appStorage.storage.save({
           key: keys.default.showTrans,
           data: e
         }).then(function (e) {
@@ -854,11 +747,11 @@ var React = require("react"),
           case 'list':
             e = 'random';
         }
-        'random' === e && (0, playOrder.getRandomArray)(babelHelpers.assertThisInitialized(babelHelpers.assertThisInitialized(n)), n.props.tracks.length || 0);
+        'random' === e && (0, playOrder.getRandomArray)(_assertThisInitialized(_assertThisInitialized(n)), n.props.tracks.length || 0);
         n.setState({
           playMode: e
         });
-        storage.save({
+        _appStorage.storage.save({
           key: keys.default.lastPlayMode,
           data: e
         }).then(function (e) {
@@ -877,134 +770,134 @@ var React = require("react"),
       }, n.slidingEnd = function (e) {
         var t;
         true === n.state.showTool ? n.seekTo(e) : Math.abs(e - n.sliderValue0) < 5 ? n.togglePlay() : n.seekTo(e);
-        null === (t = n.refs.slidingTimeText) || void 0 === t || t.fadeOut(500);
+        null === (t = n.slidingTimeText) || void 0 === t || t.fadeOut(500);
         setTimeout(function () {
           n.sliding = null;
         }, 500);
-      }, t));
+      }, t;
     }
-    babelHelpers.createClass(a, [{
-      key: "componentDidMount",
-      value: function () {
-        var t = this;
-        lyricPreferences.default.loadAll(this);
-        notification.default.init(this);
-        ReactNative.BackHandler.addEventListener('hardwareBackPress', this.onBackPress);
-        ReactNative.AppState.addEventListener('change', this.handleAppStateChange);
-        this._sliderPanResponder = ReactNative.PanResponder.create({
-          onStartShouldSetPanResponder: function () {
-            return true;
-          },
-          onMoveShouldSetPanResponder: function () {
-            return false;
-          },
-          onPanResponderGrant: function (e, a) {
-            t.y0 = a.moveY;
-            t.fallBackPlayType = t.state.playState;
-          },
-          onPanResponderMove: this._sliderOnPanResponderMove,
-          onPanResponderRelease: this._sliderOnPanResponderRelease,
-          onPanResponderTerminationRequest: function () {
-            return false;
-          }
+    "componentDidMount"() {
+      var t = this;
+      lyricPreferences.default.loadAll(this);
+      notification.default.init(this);
+      audioPlayer.default.setHandleAudioFocus(!this.props.settings.playWithOthers);
+      this.backSubscription = ReactNative.BackHandler.addEventListener('hardwareBackPress', this.onBackPress);
+      this.appStateSubscription = ReactNative.AppState.addEventListener('change', this.handleAppStateChange);
+      this._sliderPanResponder = ReactNative.PanResponder.create({
+        onStartShouldSetPanResponder: function () {
+          return true;
+        },
+        onMoveShouldSetPanResponder: function () {
+          return false;
+        },
+        onPanResponderGrant: function (e, a) {
+          t.y0 = a.moveY;
+          t.fallBackPlayType = t.state.playState;
+        },
+        onPanResponderMove: this._sliderOnPanResponderMove,
+        onPanResponderRelease: this._sliderOnPanResponderRelease,
+        onPanResponderTerminationRequest: function () {
+          return false;
+        }
+      });
+      this._volumePanResponder = ReactNative.PanResponder.create({
+        onStartShouldSetPanResponder: function () {
+          return true;
+        },
+        onMoveShouldSetPanResponder: function () {
+          return false;
+        },
+        onPanResponderGrant: function () {
+          return null;
+        },
+        onPanResponderMove: function () {
+          return null;
+        },
+        onPanResponderRelease: this._volumeOnPanResponderRelease,
+        onPanResponderTerminationRequest: function () {
+          return false;
+        }
+      });
+      events.emitter.on(names.default.Player, this.musicPlayerEmitter);
+      this.hidePlayerListener = events.emitter.addListener(names.default.HidePlayer, function (e) {
+        var a = (e || {}).hide;
+        t.setState({
+          hidePlayer: !!a
         });
-        this._volumePanResponder = ReactNative.PanResponder.create({
-          onStartShouldSetPanResponder: function () {
-            return true;
-          },
-          onMoveShouldSetPanResponder: function () {
-            return false;
-          },
-          onPanResponderGrant: function () {
-            return null;
-          },
-          onPanResponderMove: function () {
-            return null;
-          },
-          onPanResponderRelease: this._volumeOnPanResponderRelease,
-          onPanResponderTerminationRequest: function () {
-            return false;
-          }
-        });
-        events.emitter.on(names.default.Player, this.musicPlayerEmitter);
-        this.hidePlayerListener = events.emitter.addListener(names.default.HidePlayer, function (e) {
-          var a = (e || {}).hide;
-          t.setState({
-            hidePlayer: !!a
+      });
+      this.playerCloseListener = events.emitter.addListener(names.default.PlayerClose, function () {
+        true === t.state.expanded && t._playerClose(true);
+      });
+      this.pushToQueueListener = events.emitter.addListener(names.default.InsertToList, function (e) {
+        return (0, queueActions.default)(t, e);
+      });
+      this.deleteFromQueueListener = events.emitter.addListener(names.default.DeleteFromQueue, function (e) {
+        var a = e.item,
+          n = t.props.tracks.filter(function (e) {
+            return (0, trackInfo.extractFullInfo)(e).song !== (0, trackInfo.extractFullInfo)(a).song;
+          }),
+          r = n.findIndex(function (e) {
+            return (0, trackInfo.extractFullInfo)(e).song === (0, trackInfo.extractFullInfo)(t.props.songItem).song;
           });
+        t.props.setPlayerData({
+          tracks: n,
+          playingIndex: r
         });
-        this.playerCloseListener = events.emitter.addListener(names.default.PlayerClose, function () {
-          true === t.state.expanded && t._playerClose(true);
+      });
+      this.fmModeListener = events.emitter.addListener(names.default.FM_MODE, function () {
+        var a = t.state.isFM;
+        false === a ? (global.toast(locales.default.FM_MODE_ENTER), t.saveDataBeforeIsFM(!a), t.startFM()) : (global.toast(locales.default.FM_MODE_QUIT), t.stopFM());
+        t.setState({
+          isFM: !a
         });
-        this.pushToQueueListener = events.emitter.addListener(names.default.InsertToList, function (e) {
-          return (0, queueActions.default)(t, e);
-        });
-        this.deleteFromQueueListener = events.emitter.addListener(names.default.DeleteFromQueue, function (e) {
-          var a = e.item,
-            n = t.props.tracks.filter(function (e) {
-              return (0, trackInfo.extractFullInfo)(e).song !== (0, trackInfo.extractFullInfo)(a).song;
-            }),
-            r = n.findIndex(function (e) {
-              return (0, trackInfo.extractFullInfo)(e).song === (0, trackInfo.extractFullInfo)(t.props.songItem).song;
-            });
-          t.props.setPlayerData({
-            tracks: n,
-            playingIndex: r
-          });
-        });
-        this.fmModeListener = events.emitter.addListener(names.default.FM_MODE, function () {
-          var a = t.state.isFM;
-          false === a ? (global.toast(locales.default.FM_MODE_ENTER), t.saveDataBeforeIsFM(!a), t.startFM()) : (global.toast(locales.default.FM_MODE_QUIT), t.stopFM());
-          t.setState({
-            isFM: !a
-          });
-        });
-        this.audioNoisyListener = events.emitter.addListener(names.default.AUDIO_NOISY, function () {
-          t.pauseSound();
-        });
-        this.audioFocusListener = ReactNative.DeviceEventEmitter.addListener(names.default.NATIVE_AUDIO_FOCUS, function (e) {
-          var a = true;
-          'HeadSetReceiver' === e.type && t.pauseSound();
-          true !== t.props.settings.playWithOthers && ('AUDIOFOCUS_LOSS' === e.type && t.pauseSound(), 'AUDIOFOCUS_LOSS_TRANSIENT' === e.type && ('paused' === t.state.playState && (a = false), t.pauseSound()), 'AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK' === e.type && t.setVolume(.4), 'AUDIOFOCUS_GAIN' === e.type && ('AUDIOFOCUS_LOSS_TRANSIENT' === t.AUDIO_FOCUS_TYPE && t.playSound(), t.setVolume(t.state.volume)), true === a && (t.AUDIO_FOCUS_TYPE = e.type));
-        });
-        this.closeTimerListener = events.emitter.addListener(names.default.CloseTimerEvent, function (e) {
-          if (e < 1) {
-            t.closeTimer && timer.default.clearTimeout(t.closeTimer);
-            return void toast(locales.default.COUNTDOWN_CANCELED);
-          }
-          if (t.state.url) {
-            var a = 60 * e * 1e3,
-              n = Math.floor(e / 60),
-              r = e - 60 * n;
-            toast(n > 0 ? n + "\u5c0f\u65f6" + r + "\u5206\u949f\u540e\u505c\u6b62" : r + "\u5206\u949f\u540e\u505c\u6b62");
-            t.closeTimer && timer.default.clearTimeout(t.closeTimer);
-            t.closeTimer = timer.default.setTimeout(function () {
-              true === t.state.isBackground ? t.exit() : t.pauseSound();
-              toast(locales.default.PLAY_STOPPED);
-            }, a);
-          } else toast(locales.default.NOT_PLAYED);
-        });
-        this.cachedGetWebMusicUrl = (0, cache.default)(this.getWebMusicUrl);
+      });
+      this.audioNoisyListener = events.emitter.addListener(names.default.AUDIO_NOISY, function () {
+        t.pauseSound();
+      });
+      this.audioFocusListener = ReactNative.DeviceEventEmitter.addListener(names.default.NATIVE_AUDIO_FOCUS, function (e) {
+        var a = true;
+        'HeadSetReceiver' === e.type && t.pauseSound();
+        true !== t.props.settings.playWithOthers && ('AUDIOFOCUS_LOSS' === e.type && t.pauseSound(), 'AUDIOFOCUS_LOSS_TRANSIENT' === e.type && ('paused' === t.state.playState && (a = false), t.pauseSound()), 'AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK' === e.type && t.setVolume(.4), 'AUDIOFOCUS_GAIN' === e.type && ('AUDIOFOCUS_LOSS_TRANSIENT' === t.AUDIO_FOCUS_TYPE && t.playSound(), t.setVolume(t.state.volume)), true === a && (t.AUDIO_FOCUS_TYPE = e.type));
+      });
+      this.closeTimerListener = events.emitter.addListener(names.default.CloseTimerEvent, function (e) {
+        if (e < 1) {
+          t.closeTimer && timer.default.clearTimeout(t.closeTimer);
+          return void toast(locales.default.COUNTDOWN_CANCELED);
+        }
+        if (t.state.url) {
+          var a = 60 * e * 1e3,
+            n = Math.floor(e / 60),
+            r = e - 60 * n;
+          toast(n > 0 ? n + "\u5c0f\u65f6" + r + "\u5206\u949f\u540e\u505c\u6b62" : r + "\u5206\u949f\u540e\u505c\u6b62");
+          t.closeTimer && timer.default.clearTimeout(t.closeTimer);
+          t.closeTimer = timer.default.setTimeout(function () {
+            true === t.state.isBackground ? t.exit() : t.pauseSound();
+            toast(locales.default.PLAY_STOPPED);
+          }, a);
+        } else toast(locales.default.NOT_PLAYED);
+      });
+      this.cachedGetWebMusicUrl = (0, cache.default)(this.getWebMusicUrl);
+    }
+    componentDidUpdate(previous) {
+      if (previous.settings.playWithOthers !== this.props.settings.playWithOthers) {
+        audioPlayer.default.setHandleAudioFocus(!this.props.settings.playWithOthers);
       }
-    }, {
-      key: "componentWillUnmount",
-      value: function () {
-        var e;
-        events.emitter.off(names.default.Player, this.musicPlayerEmitter);
-        this.playerCloseListener.remove();
-        this.pushToQueueListener.remove();
-        this.fmModeListener.remove();
-        this.audioFocusListener.remove();
-        this.audioNoisyListener.remove();
-        this.closeTimerListener.remove();
-        this.deleteFromQueueListener.remove();
-        this.hidePlayerListener.remove();
-        ReactNative.BackHandler.removeEventListener('hardwareBackPress', this.onBackPress);
-        ReactNative.AppState.removeEventListener('change', this.handleAppStateChange);
-        null === (e = F) || void 0 === e || e.release();
-      }
-    }]);
-    babelHelpers.inherits(a, t);
-    return a;
-  }(React.PureComponent);
+    }
+    "componentWillUnmount"() {
+      this.lyricRequest++;
+      var e;
+      events.emitter.off(names.default.Player, this.musicPlayerEmitter);
+      this.playerCloseListener.remove();
+      this.pushToQueueListener.remove();
+      this.fmModeListener.remove();
+      this.audioFocusListener.remove();
+      this.audioNoisyListener.remove();
+      this.closeTimerListener.remove();
+      this.deleteFromQueueListener.remove();
+      this.hidePlayerListener.remove();
+      this.backSubscription?.remove();
+      this.appStateSubscription?.remove();
+      null === (e = F) || void 0 === e || e.release();
+    }
+  };
 exports.default = U;

@@ -1,10 +1,11 @@
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = exports.BOTTOM_BAR_HEIGHT = exports.SOFT_MENU_HEIGHT = void 0;
 var ReactNative = require("react-native"),
   constants = require("../theme/constants"),
-  r = babelHelpers.interopRequireDefault(require("../native/dimensions")).default.get('SOFT_MENU_BAR_HEIGHT');
+  r = _interopRequireDefault(require("../native/dimensions")).default.get('SOFT_MENU_BAR_HEIGHT');
 exports.SOFT_MENU_HEIGHT = r;
 exports.BOTTOM_BAR_HEIGHT = 60;
 var d = ReactNative.StyleSheet.create({

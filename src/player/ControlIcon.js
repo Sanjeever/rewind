@@ -1,10 +1,11 @@
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var React = babelHelpers.interopRequireDefault(require("react")),
+var React = _interopRequireDefault(require("react")),
   ReactNative = require("react-native"),
-  TouchableScale = babelHelpers.interopRequireDefault(require("../components/TouchableScale")),
+  TouchableScale = _interopRequireDefault(require("../components/TouchableScale")),
   components = require("../components/index"),
   s = function (e) {
     var t = e.name,

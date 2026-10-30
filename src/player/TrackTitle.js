@@ -1,8 +1,10 @@
+const _default = require("./../components/Text.js").default;
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var React = babelHelpers.interopRequireDefault(require("react")),
+var React = _interopRequireDefault(require("react")),
   ReactNative = require("react-native"),
   components = require("../components/index"),
   constants = require("../theme/constants"),
@@ -43,12 +45,12 @@ var React = babelHelpers.interopRequireDefault(require("react")),
         justifyContent: 'center',
         alignItems: 'center'
       }]
-    }, t ? React.default.createElement(ReactNative.Text, {
+    }, t ? React.default.createElement(_default, {
       style: [f.songTitle, ReactNative.StyleSheet.flatten(i)],
       numberOfLines: g || 1
-    }, t, d && React.default.createElement(ReactNative.Text, {
+    }, t, d && React.default.createElement(_default, {
       style: f.alias
-    }, " (", d, ")")) : null, (null === l || void 0 === l ? void 0 : l.length) > 0 ? React.default.createElement(ReactNative.Text, {
+    }, " (", d, ")")) : null, (null === l || void 0 === l ? void 0 : l.length) > 0 ? React.default.createElement(_default, {
       numberOfLines: g || 1,
       style: [f.songAuthor, ReactNative.StyleSheet.flatten(s)]
     }, l) : null, Boolean(c) && React.default.createElement(components.TouchableBorderless, {

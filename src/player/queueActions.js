@@ -1,9 +1,11 @@
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+const _toConsumableArray = require("@babel/runtime/helpers/toConsumableArray");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
 var immer = require("immer"),
-  locales = babelHelpers.interopRequireDefault(require("../locales/index")),
+  locales = _interopRequireDefault(require("../locales/index")),
   utils = require("../utils/index"),
   trackInfo = require("../services/trackInfo"),
   p = function (a, e, t, r) {
@@ -33,7 +35,7 @@ var immer = require("immer"),
       var c = (0, trackInfo.extractFullInfo)(t);
       if (c.uid !== o.uid) {
         var f = e.props.api,
-          y = babelHelpers.toConsumableArray(n),
+          y = _toConsumableArray(n),
           v = y[d],
           g = false;
         if (r !== f) {
@@ -80,8 +82,8 @@ var immer = require("immer"),
         break;
       case 'array':
         if (null == t && (null === t || void 0 === t ? void 0 : t.length) < 1) return;
-        var p = babelHelpers.toConsumableArray(l);
-        p.splice.apply(p, [o + 1, 0].concat(babelHelpers.toConsumableArray(t)));
+        var p = _toConsumableArray(l);
+        p.splice.apply(p, [o + 1, 0].concat(_toConsumableArray(t)));
         0 === (null === l || void 0 === l ? void 0 : l.length) ? a.musicPlayerEmitter({
           song: t[0],
           data: t,

@@ -1,28 +1,32 @@
+const _default = require("./../components/Text.js").default;
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+const _extends = require("@babel/runtime/helpers/extends");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.renderPlayerComponent = exports.MiniPlayerWrapper = void 0;
-var React = babelHelpers.interopRequireDefault(require("react")),
+var React = _interopRequireDefault(require("react")),
   ReactNative = require("react-native"),
-  reactNativeAnimatable = babelHelpers.interopRequireWildcard(require("react-native-animatable")),
+  reactNativeAnimatable = _interopRequireWildcard(require("react-native-animatable")),
   components = require("../components/index"),
   constants = require("../theme/constants"),
-  buttons = babelHelpers.interopRequireDefault(require("./buttons")),
-  styles = babelHelpers.interopRequireDefault(require("./styles")),
+  buttons = _interopRequireDefault(require("./buttons")),
+  styles = _interopRequireDefault(require("./styles")),
   utils = require("../utils/index"),
-  dimensions = babelHelpers.interopRequireDefault(require("../native/dimensions")),
-  PlaybackTime = babelHelpers.interopRequireDefault(require("./PlaybackTime")),
-  Cover = babelHelpers.interopRequireDefault(require("./Cover")),
-  TrackTitle = babelHelpers.interopRequireDefault(require("./TrackTitle")),
-  ControlIcon = babelHelpers.interopRequireDefault(require("./ControlIcon")),
-  Toolbar = babelHelpers.interopRequireDefault(require("./Toolbar")),
-  LyricsView = babelHelpers.interopRequireDefault(require("./LyricsView")),
-  MiniPlayer = babelHelpers.interopRequireDefault(require("./MiniPlayer")),
-  PlaybackControls = babelHelpers.interopRequireDefault(require("./PlaybackControls")),
-  QueuePosition = babelHelpers.interopRequireDefault(require("./QueuePosition")),
-  SeekBar = babelHelpers.interopRequireDefault(require("./SeekBar")),
-  LyricTime = babelHelpers.interopRequireDefault(require("./LyricTime")),
-  module768 = babelHelpers.interopRequireDefault(require("./module-768"));
+  dimensions = _interopRequireDefault(require("../native/dimensions")),
+  PlaybackTime = _interopRequireDefault(require("./PlaybackTime")),
+  Cover = _interopRequireDefault(require("./Cover")),
+  TrackTitle = _interopRequireDefault(require("./TrackTitle")),
+  ControlIcon = _interopRequireDefault(require("./ControlIcon")),
+  Toolbar = _interopRequireDefault(require("./Toolbar")),
+  LyricsView = _interopRequireDefault(require("./LyricsView")),
+  MiniPlayer = _interopRequireDefault(require("./MiniPlayer")),
+  PlaybackControls = _interopRequireDefault(require("./PlaybackControls")),
+  QueuePosition = _interopRequireDefault(require("./QueuePosition")),
+  SeekBar = _interopRequireDefault(require("./SeekBar")),
+  LyricTime = _interopRequireDefault(require("./LyricTime")),
+  ExtraPlaybackControls = _interopRequireDefault(require("./ExtraPlaybackControls.js"));
 exports.MiniPlayerWrapper = function (e) {
   var t = e.that,
     a = t.state,
@@ -163,7 +167,7 @@ exports.renderPlayerComponent = function (e, t) {
       })));
       break;
     case 'TOTAL_TOOLS':
-      k && !I && (ee = React.default.createElement(module768.default, {
+      k && !I && (ee = React.default.createElement(ExtraPlaybackControls.default, {
         animatedOpacity: e.animatedOpacity,
         onLike: e.onLike,
         onComment: e.onComment,
@@ -215,13 +219,13 @@ exports.renderPlayerComponent = function (e, t) {
       }));
       break;
     case 'LEFT_RESPONDER':
-      $.left && (ee = React.default.createElement(ReactNative.View, babelHelpers.extends({
+      $.left && (ee = React.default.createElement(ReactNative.View, _extends({
         pointerEvents: I || k ? 'none' : 'auto',
         style: styles.default.vertical
       }, $.left.panHandlers)));
       break;
     case 'RIGHT_RESPONDER':
-      $.right && (ee = React.default.createElement(ReactNative.View, babelHelpers.extends({
+      $.right && (ee = React.default.createElement(ReactNative.View, _extends({
         pointerEvents: I || k ? 'none' : 'auto',
         style: [styles.default.vertical, {
           left: null,
@@ -276,7 +280,7 @@ exports.renderPlayerComponent = function (e, t) {
           bottom: 100,
           alignSelf: 'center'
         }]
-      }, React.default.createElement(ReactNative.Text, {
+      }, React.default.createElement(_default, {
         style: [styles.default.text, {
           fontSize: 16
         }]

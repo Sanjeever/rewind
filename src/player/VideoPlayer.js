@@ -1,21 +1,26 @@
+const _SafeAreaView = require("react-native-safe-area-context").SafeAreaView;
+const _default = require("./../components/Text.js").default;
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+const _assertThisInitialized = require("@babel/runtime/helpers/assertThisInitialized");
+const _extends = require("@babel/runtime/helpers/extends");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var slider = babelHelpers.interopRequireDefault(require("@react-native-community/slider")),
-  Runtime927 = babelHelpers.interopRequireDefault(require("@runtime/927")),
-  React = babelHelpers.interopRequireWildcard(require("react")),
+var slider = _interopRequireDefault(require("@react-native-community/slider")),
+  Runtime927 = _interopRequireDefault(require("lodash/padStart")),
+  React = _interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
-  reactNativeTextTicker = babelHelpers.interopRequireDefault(require("react-native-text-ticker")),
-  reactNativeVideo = babelHelpers.interopRequireDefault(require("react-native-video")),
+  reactNativeTextTicker = _interopRequireDefault(require("react-native-text-ticker")),
+  reactNativeVideo = _interopRequireDefault(require("react-native-video")),
   constants = require("../theme/constants"),
-  icons = babelHelpers.interopRequireDefault(require("../theme/icons")),
+  icons = _interopRequireDefault(require("../theme/icons")),
   components = require("../components/index"),
-  m = function (e) {
-    function n(e) {
+  m = class n extends React.Component {
+    constructor(e) {
       var t;
-      babelHelpers.classCallCheck(this, n);
-      (t = babelHelpers.possibleConstructorReturn(this, babelHelpers.getPrototypeOf(n).call(this, e))).lastTouch = Date.now();
+      (t = super(e)).lastTouch = Date.now();
       t.layoutHeight = 0;
       t.componentDidUpdate = function (e) {
         var n = t.props.isFullscreen;
@@ -60,26 +65,26 @@ var slider = babelHelpers.interopRequireDefault(require("@react-native-community
         title: t.props.title
       };
       t.events = {
-        onError: t.props.onError || t._onError.bind(babelHelpers.assertThisInitialized(babelHelpers.assertThisInitialized(t))),
-        onBack: t.props.onBack || t._onBack.bind(babelHelpers.assertThisInitialized(babelHelpers.assertThisInitialized(t))),
-        onEnd: t.props.onEnd || t._onEnd.bind(babelHelpers.assertThisInitialized(babelHelpers.assertThisInitialized(t))),
-        onScreenTouch: t._onScreenTouch.bind(babelHelpers.assertThisInitialized(babelHelpers.assertThisInitialized(t))),
+        onError: t.props.onError || t._onError.bind(_assertThisInitialized(_assertThisInitialized(t))),
+        onBack: t.props.onBack || t._onBack.bind(_assertThisInitialized(_assertThisInitialized(t))),
+        onEnd: t.props.onEnd || t._onEnd.bind(_assertThisInitialized(_assertThisInitialized(t))),
+        onScreenTouch: t._onScreenTouch.bind(_assertThisInitialized(_assertThisInitialized(t))),
         onEnterFullscreen: t.props.onEnterFullscreen,
         onExitFullscreen: t.props.onExitFullscreen,
         onShowControls: t.props.onShowControls,
         onHideControls: t.props.onHideControls,
-        onLoadStart: t._onLoadStart.bind(babelHelpers.assertThisInitialized(babelHelpers.assertThisInitialized(t))),
-        onProgress: t._onProgress.bind(babelHelpers.assertThisInitialized(babelHelpers.assertThisInitialized(t))),
-        onSeek: t._onSeek.bind(babelHelpers.assertThisInitialized(babelHelpers.assertThisInitialized(t))),
-        onLoad: t._onLoad.bind(babelHelpers.assertThisInitialized(babelHelpers.assertThisInitialized(t))),
+        onLoadStart: t._onLoadStart.bind(_assertThisInitialized(_assertThisInitialized(t))),
+        onProgress: t._onProgress.bind(_assertThisInitialized(_assertThisInitialized(t))),
+        onSeek: t._onSeek.bind(_assertThisInitialized(_assertThisInitialized(t))),
+        onLoad: t._onLoad.bind(_assertThisInitialized(_assertThisInitialized(t))),
         onPause: t.props.onPause,
         onPlay: t.props.onPlay
       };
       t.methods = {
-        toggleFullscreen: t._toggleFullscreen.bind(babelHelpers.assertThisInitialized(babelHelpers.assertThisInitialized(t))),
-        togglePlayPause: t._togglePlayPause.bind(babelHelpers.assertThisInitialized(babelHelpers.assertThisInitialized(t))),
-        toggleControls: t._toggleControls.bind(babelHelpers.assertThisInitialized(babelHelpers.assertThisInitialized(t))),
-        toggleTimer: t._toggleTimer.bind(babelHelpers.assertThisInitialized(babelHelpers.assertThisInitialized(t)))
+        toggleFullscreen: t._toggleFullscreen.bind(_assertThisInitialized(_assertThisInitialized(t))),
+        togglePlayPause: t._togglePlayPause.bind(_assertThisInitialized(_assertThisInitialized(t))),
+        toggleControls: t._toggleControls.bind(_assertThisInitialized(_assertThisInitialized(t))),
+        toggleTimer: t._toggleTimer.bind(_assertThisInitialized(_assertThisInitialized(t)))
       };
       t.player = {
         controlTimeoutDelay: t.props.controlTimeout || 15e3,
@@ -115,462 +120,375 @@ var slider = babelHelpers.interopRequireDefault(require("@react-native-community
       };
       return t;
     }
-    babelHelpers.createClass(n, [{
-      key: "_onLoadStart",
-      value: function () {
-        var e,
-          t = this.state;
-        (t.loading = true, this.loadAnimation(), this.setState(t), 'function' == typeof this.props.onLoadStart) && (e = this.props).onLoadStart.apply(e, arguments);
-      }
-    }, {
-      key: "_onLoad",
-      value: function () {
-        var e,
-          t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {},
-          n = this.state;
-        (n.duration = t.duration, n.loading = false, this.setState(n), n.showControls && this.setControlTimeout(), 'function' == typeof this.props.onLoad) && (e = this.props).onLoad.apply(e, arguments);
-      }
-    }, {
-      key: "_onProgress",
-      value: function () {
-        var e = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {},
-          t = this.state;
-        if (!t.scrubbing) {
-          if (t.currentTime = e.currentTime, !t.seeking) {
-            var n = this.calculateSeekerPosition();
-            this.setSeekerPosition(n);
-          }
-          var o;
-          if ('function' == typeof this.props.onProgress) (o = this.props).onProgress.apply(o, arguments);
-          this.setState(t);
+    "_onLoadStart"() {
+      var e,
+        t = this.state;
+      (t.loading = true, this.loadAnimation(), this.setState(t), 'function' == typeof this.props.onLoadStart) && (e = this.props).onLoadStart.apply(e, arguments);
+    }
+    "_onLoad"() {
+      var e,
+        t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {},
+        n = this.state;
+      (n.duration = t.duration, n.loading = false, this.setState(n), n.showControls && this.setControlTimeout(), 'function' == typeof this.props.onLoad) && (e = this.props).onLoad.apply(e, arguments);
+    }
+    "_onProgress"() {
+      var e = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {},
+        t = this.state;
+      if (!t.scrubbing) {
+        if (t.currentTime = e.currentTime, !t.seeking) {
+          var n = this.calculateSeekerPosition();
+          this.setSeekerPosition(n);
         }
-      }
-    }, {
-      key: "_onSeek",
-      value: function () {
-        var e = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {},
-          t = this.state;
-        t.scrubbing && (t.scrubbing = false, t.currentTime = e.currentTime, t.seeking || (this.setControlTimeout(), t.paused = t.originallyPaused), this.setState(t));
-      }
-    }, {
-      key: "_onEnd",
-      value: function () {}
-    }, {
-      key: "_onError",
-      value: function (e) {
-        var t = this.state;
-        t.error = true;
-        t.loading = false;
+        var o;
+        if ('function' == typeof this.props.onProgress) (o = this.props).onProgress.apply(o, arguments);
         this.setState(t);
       }
-    }, {
-      key: "_onScreenTouch",
-      value: function () {
-        var e = this;
-        this.player.tapActionTimeout ? (clearTimeout(this.player.tapActionTimeout), this.methods.togglePlayPause(), this.player.tapActionTimeout = null) : this.player.tapActionTimeout = setTimeout(function () {
-          e.methods.toggleControls();
-          e.player.tapActionTimeout = null;
-        }, this.props.doubleTapTime);
-      }
-    }, {
-      key: "setControlTimeout",
-      value: function () {
-        var e = this;
-        this.player.controlTimeout = setTimeout(function () {
-          e._hideControls();
-        }, this.player.controlTimeoutDelay);
-      }
-    }, {
-      key: "clearControlTimeout",
-      value: function () {
-        clearTimeout(this.player.controlTimeout);
-      }
-    }, {
-      key: "resetControlTimeout",
-      value: function () {
-        this.clearControlTimeout();
-        this.setControlTimeout();
-      }
-    }, {
-      key: "hideControlAnimation",
-      value: function () {
-        ReactNative.Animated.parallel([ReactNative.Animated.timing(this.animations.topControl.opacity, {
-          toValue: 0,
-          duration: this.props.controlAnimationTiming,
-          useNativeDriver: false
-        }), ReactNative.Animated.timing(this.animations.topControl.marginTop, {
-          toValue: -100,
-          duration: this.props.controlAnimationTiming,
-          useNativeDriver: false
-        }), ReactNative.Animated.timing(this.animations.bottomControl.opacity, {
-          toValue: 0,
-          duration: this.props.controlAnimationTiming,
-          useNativeDriver: false
-        }), ReactNative.Animated.timing(this.animations.bottomControl.marginBottom, {
-          toValue: -100,
-          duration: this.props.controlAnimationTiming,
-          useNativeDriver: false
-        })]).start();
-      }
-    }, {
-      key: "showControlAnimation",
-      value: function () {
-        ReactNative.Animated.parallel([ReactNative.Animated.timing(this.animations.topControl.opacity, {
-          toValue: 1,
-          useNativeDriver: false,
-          duration: this.props.controlAnimationTiming
-        }), ReactNative.Animated.timing(this.animations.topControl.marginTop, {
-          toValue: 0,
-          useNativeDriver: false,
-          duration: this.props.controlAnimationTiming
-        }), ReactNative.Animated.timing(this.animations.bottomControl.opacity, {
-          toValue: 1,
-          useNativeDriver: false,
-          duration: this.props.controlAnimationTiming
-        }), ReactNative.Animated.timing(this.animations.bottomControl.marginBottom, {
-          toValue: 0,
-          useNativeDriver: false,
-          duration: this.props.controlAnimationTiming
-        })]).start();
-      }
-    }, {
-      key: "loadAnimation",
-      value: function () {
-        this.state.loading && ReactNative.Animated.sequence([ReactNative.Animated.timing(this.animations.loader.rotate, {
-          toValue: this.animations.loader.MAX_VALUE,
-          duration: 1500,
-          easing: ReactNative.Easing.linear,
-          useNativeDriver: false
-        }), ReactNative.Animated.timing(this.animations.loader.rotate, {
-          toValue: 0,
-          duration: 0,
-          easing: ReactNative.Easing.linear,
-          useNativeDriver: false
-        })]).start(this.loadAnimation.bind(this));
-      }
-    }, {
-      key: "_hideControls",
-      value: function () {
-        if (this.mounted) {
-          var e = this.state;
-          e.showControls = false;
-          this.hideControlAnimation();
-          'function' == typeof this.events.onHideControls && this.events.onHideControls();
-          this.setState(e);
-        }
-      }
-    }, {
-      key: "_toggleControls",
-      value: function () {
+    }
+    "_onSeek"() {
+      var e = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {},
+        t = this.state;
+      t.scrubbing && (t.scrubbing = false, t.currentTime = e.currentTime, t.seeking || (this.setControlTimeout(), t.paused = t.originallyPaused), this.setState(t));
+    }
+    "_onEnd"() {}
+    "_onError"(e) {
+      var t = this.state;
+      t.error = true;
+      t.loading = false;
+      this.setState(t);
+    }
+    "_onScreenTouch"() {
+      var e = this;
+      this.player.tapActionTimeout ? (clearTimeout(this.player.tapActionTimeout), this.methods.togglePlayPause(), this.player.tapActionTimeout = null) : this.player.tapActionTimeout = setTimeout(function () {
+        e.methods.toggleControls();
+        e.player.tapActionTimeout = null;
+      }, this.props.doubleTapTime);
+    }
+    "setControlTimeout"() {
+      var e = this;
+      this.player.controlTimeout = setTimeout(function () {
+        e._hideControls();
+      }, this.player.controlTimeoutDelay);
+    }
+    "clearControlTimeout"() {
+      clearTimeout(this.player.controlTimeout);
+    }
+    "resetControlTimeout"() {
+      this.clearControlTimeout();
+      this.setControlTimeout();
+    }
+    "hideControlAnimation"() {
+      ReactNative.Animated.parallel([ReactNative.Animated.timing(this.animations.topControl.opacity, {
+        toValue: 0,
+        duration: this.props.controlAnimationTiming,
+        useNativeDriver: false
+      }), ReactNative.Animated.timing(this.animations.topControl.marginTop, {
+        toValue: -100,
+        duration: this.props.controlAnimationTiming,
+        useNativeDriver: false
+      }), ReactNative.Animated.timing(this.animations.bottomControl.opacity, {
+        toValue: 0,
+        duration: this.props.controlAnimationTiming,
+        useNativeDriver: false
+      }), ReactNative.Animated.timing(this.animations.bottomControl.marginBottom, {
+        toValue: -100,
+        duration: this.props.controlAnimationTiming,
+        useNativeDriver: false
+      })]).start();
+    }
+    "showControlAnimation"() {
+      ReactNative.Animated.parallel([ReactNative.Animated.timing(this.animations.topControl.opacity, {
+        toValue: 1,
+        useNativeDriver: false,
+        duration: this.props.controlAnimationTiming
+      }), ReactNative.Animated.timing(this.animations.topControl.marginTop, {
+        toValue: 0,
+        useNativeDriver: false,
+        duration: this.props.controlAnimationTiming
+      }), ReactNative.Animated.timing(this.animations.bottomControl.opacity, {
+        toValue: 1,
+        useNativeDriver: false,
+        duration: this.props.controlAnimationTiming
+      }), ReactNative.Animated.timing(this.animations.bottomControl.marginBottom, {
+        toValue: 0,
+        useNativeDriver: false,
+        duration: this.props.controlAnimationTiming
+      })]).start();
+    }
+    "loadAnimation"() {
+      this.state.loading && ReactNative.Animated.sequence([ReactNative.Animated.timing(this.animations.loader.rotate, {
+        toValue: this.animations.loader.MAX_VALUE,
+        duration: 1500,
+        easing: ReactNative.Easing.linear,
+        useNativeDriver: false
+      }), ReactNative.Animated.timing(this.animations.loader.rotate, {
+        toValue: 0,
+        duration: 0,
+        easing: ReactNative.Easing.linear,
+        useNativeDriver: false
+      })]).start(this.loadAnimation.bind(this));
+    }
+    "_hideControls"() {
+      if (this.mounted) {
         var e = this.state;
-        e.showControls = !e.showControls;
-        e.showControls ? (this.showControlAnimation(), this.setControlTimeout(), 'function' == typeof this.events.onShowControls && this.events.onShowControls()) : (this.hideControlAnimation(), this.clearControlTimeout(), 'function' == typeof this.events.onHideControls && this.events.onHideControls());
+        e.showControls = false;
+        this.hideControlAnimation();
+        'function' == typeof this.events.onHideControls && this.events.onHideControls();
         this.setState(e);
       }
-    }, {
-      key: "_toggleFullscreen",
-      value: function () {
-        var e = this.state;
-        e.isFullscreen = !e.isFullscreen;
-        this.props.toggleResizeModeOnFullscreen && (e.resizeMode = true === e.isFullscreen ? 'cover' : 'contain');
-        e.isFullscreen ? 'function' == typeof this.events.onEnterFullscreen && this.events.onEnterFullscreen() : 'function' == typeof this.events.onExitFullscreen && this.events.onExitFullscreen();
-        this.setState(e);
+    }
+    "_toggleControls"() {
+      var e = this.state;
+      e.showControls = !e.showControls;
+      e.showControls ? (this.showControlAnimation(), this.setControlTimeout(), 'function' == typeof this.events.onShowControls && this.events.onShowControls()) : (this.hideControlAnimation(), this.clearControlTimeout(), 'function' == typeof this.events.onHideControls && this.events.onHideControls());
+      this.setState(e);
+    }
+    "_toggleFullscreen"() {
+      var e = this.state;
+      e.isFullscreen = !e.isFullscreen;
+      this.props.toggleResizeModeOnFullscreen && (e.resizeMode = true === e.isFullscreen ? 'cover' : 'contain');
+      e.isFullscreen ? 'function' == typeof this.events.onEnterFullscreen && this.events.onEnterFullscreen() : 'function' == typeof this.events.onExitFullscreen && this.events.onExitFullscreen();
+      this.setState(e);
+    }
+    "_togglePlayPause"() {
+      var e = this.state;
+      e.paused = !e.paused;
+      e.paused ? 'function' == typeof this.events.onPause && this.events.onPause() : 'function' == typeof this.events.onPlay && this.events.onPlay();
+      this.setState(e);
+    }
+    "_toggleTimer"() {
+      var e = this.state;
+      e.showTimeRemaining = !e.showTimeRemaining;
+      this.setState(e);
+    }
+    "_onBack"() {
+      this.props.navigator && this.props.navigator.pop && this.props.navigator.pop();
+    }
+    "calculateTime"() {
+      if (this.state.showTimeRemaining) {
+        var e = this.state.duration - this.state.currentTime;
+        return "" + this.formatTime(e);
       }
-    }, {
-      key: "_togglePlayPause",
-      value: function () {
-        var e = this.state;
-        e.paused = !e.paused;
-        e.paused ? 'function' == typeof this.events.onPause && this.events.onPause() : 'function' == typeof this.events.onPlay && this.events.onPlay();
-        this.setState(e);
-      }
-    }, {
-      key: "_toggleTimer",
-      value: function () {
-        var e = this.state;
-        e.showTimeRemaining = !e.showTimeRemaining;
-        this.setState(e);
-      }
-    }, {
-      key: "_onBack",
-      value: function () {
-        this.props.navigator && this.props.navigator.pop && this.props.navigator.pop();
-      }
-    }, {
-      key: "calculateTime",
-      value: function () {
-        if (this.state.showTimeRemaining) {
-          var e = this.state.duration - this.state.currentTime;
-          return "" + this.formatTime(e);
-        }
-        return this.formatTime(this.state.currentTime);
-      }
-    }, {
-      key: "formatTime",
-      value: function () {
-        var e = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : 0,
-          t = this.state.showRemainingTime ? '-' : '';
-        e = Math.min(Math.max(e, 0), this.state.duration);
-        return this.state.showHours ? "" + t + (0, Runtime927.default)(Math.floor(e / 3600).toFixed(0), 2, 0) + ":" + (0, Runtime927.default)((Math.floor(e / 60) % 60).toFixed(0), 2, 0) + ":" + (0, Runtime927.default)(Math.floor(e % 60).toFixed(0), 2, 0) : "" + t + (0, Runtime927.default)(Math.floor(e / 60).toFixed(0), 2, 0) + ":" + (0, Runtime927.default)(Math.floor(e % 60).toFixed(0), 2, 0);
-      }
-    }, {
-      key: "setSeekerPosition",
-      value: function () {
-        var e = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : 0,
-          t = this.state;
-        e = this.constrainToSeekerMinMax(e);
-        t.seekerFillWidth = e;
-        t.seekerPosition = e;
-        t.seeking || (t.seekerOffset = e);
-        this.setState(t);
-      }
-    }, {
-      key: "constrainToSeekerMinMax",
-      value: function () {
-        var e = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : 0;
-        return e <= 0 ? 0 : e >= this.player.seekerWidth ? this.player.seekerWidth : e;
-      }
-    }, {
-      key: "calculateSeekerPosition",
-      value: function () {
-        var e = this.state.currentTime / this.state.duration;
-        return this.player.seekerWidth * e;
-      }
-    }, {
-      key: "calculateTimeFromSeekerPosition",
-      value: function () {
-        var e = this.state.seekerPosition / this.player.seekerWidth;
-        return this.state.duration * e;
-      }
-    }, {
-      key: "seekTo",
-      value: function () {
-        var e = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : 0,
-          t = this.state;
-        t.currentTime = e;
-        this.player.ref.seek(e);
-        this.setState(t);
-      }
-    }, {
-      key: "UNSAFE_componentWillReceiveProps",
-      value: function (e) {
-        this.state.paused !== e.paused && this.setState({
-          paused: e.paused
-        });
-        this.styles.videoStyle !== e.videoStyle && (this.styles.videoStyle = e.videoStyle);
-        this.styles.containerStyle !== e.style && (this.styles.containerStyle = e.style);
-      }
-    }, {
-      key: "componentDidMount",
-      value: function () {
-        this.mounted = true;
-      }
-    }, {
-      key: "componentWillUnmount",
-      value: function () {
-        this.mounted = false;
-        this.clearControlTimeout();
-      }
-    }, {
-      key: "renderControl",
-      value: function (e, t) {
-        var n = this,
-          o = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {};
-        return React.default.createElement(ReactNative.TouchableHighlight, {
-          underlayColor: "transparent",
-          activeOpacity: .3,
-          onPress: function () {
-            n.resetControlTimeout();
-            t();
-          },
-          style: [g.controls.control, o]
-        }, e);
-      }
-    }, {
-      key: "renderNullControl",
-      value: function () {
-        return React.default.createElement(ReactNative.View, {
-          style: [g.controls.control]
-        });
-      }
-    }, {
-      key: "renderTopControls",
-      value: function () {
-        var e = this.props.disableBack ? this.renderNullControl() : this.renderBack(),
-          n = this.props.TopRight ? this.renderControl(this.props.TopRight, this.methods.toggleTimer) : this.renderNullControl();
-        return React.default.createElement(ReactNative.Animated.View, {
-          style: [g.controls.top, {
-            opacity: this.animations.topControl.opacity,
-            marginTop: this.animations.topControl.marginTop
-          }]
-        }, React.default.createElement(ReactNative.ImageBackground, {
-          source: require("../modules/module-934"),
-          style: [g.controls.column],
-          imageStyle: [g.controls.vignette]
-        }, React.default.createElement(ReactNative.SafeAreaView, {
-          style: g.controls.topControlGroup
-        }, e, this.renderTitle(), n)));
-      }
-    }, {
-      key: "renderBack",
-      value: function () {
-        return this.renderControl(React.default.createElement(components.Icon, {
-          name: this.state.isFullscreen ? icons.default.CHEVRON_DOWN : icons.default.WINDOW_CLOSE,
-          style: g.controls.back
-        }), this.state.isFullscreen ? this.events.onExitFullscreen : this.events.onBack, g.controls.back);
-      }
-    }, {
-      key: "renderFullscreen",
-      value: function () {
-        var e = true === this.state.isFullscreen ? icons.default.FULLSCREEN_EXIT : icons.default.FULLSCREEN;
-        return this.renderControl(React.default.createElement(components.Icon, {
-          name: e
-        }), this.methods.toggleFullscreen, g.controls.fullscreen);
-      }
-    }, {
-      key: "renderBottomControls",
-      value: function () {
-        var e = this.props.disableSeekbar ? this.renderNullControl() : this.renderSeekbar(),
-          n = this.props.disablePlayPause ? this.renderNullControl() : this.renderPlayPause(),
-          o = this.props.disableFullscreen ? this.renderNullControl() : this.renderFullscreen(),
-          r = this.props.disableTimer ? this.renderNullControl() : this.renderTimer();
-        return React.default.createElement(ReactNative.Animated.View, {
-          style: [g.controls.bottom, {
-            opacity: this.animations.bottomControl.opacity,
-            marginBottom: this.animations.bottomControl.marginBottom
-          }]
-        }, React.default.createElement(ReactNative.ImageBackground, {
-          source: require("../modules/module-935"),
-          style: [g.controls.column],
-          imageStyle: [g.controls.vignette]
-        }, e, React.default.createElement(ReactNative.SafeAreaView, {
-          style: [g.controls.row, g.controls.bottomControlGroup]
-        }, n, r, o)));
-      }
-    }, {
-      key: "renderSeekbar",
-      value: function () {
-        var e = this;
-        return React.default.createElement(ReactNative.View, {
-          style: g.seekbar.container,
-          collapsable: false
-        }, React.default.createElement(slider.default, {
-          style: {
-            width: '100%'
-          },
-          value: this.state.seekerPosition,
-          minimumValue: 0,
-          maximumValue: 1,
-          minimumTrackTintColor: constants.COLORS.primary,
-          maximumTrackTintColor: constants.COLORS.primaryAlpha50,
-          onSlidingStart: function (t) {
-            var n = e.state;
-            e.clearControlTimeout();
-            e.setSeekerPosition(t);
-            n.seeking = true;
-            n.originallyPaused = n.paused;
-            n.scrubbing = false;
-            e.player.scrubbingTimeStep > 0 && (n.paused = true);
-            e.setState(n);
-          },
-          onValueChange: function (t) {
-            e.setSeekerPosition(t);
-            var n = e.state;
-            if (e.player.scrubbingTimeStep > 0 && !n.loading && !n.scrubbing) {
-              var o = e.calculateTimeFromSeekerPosition(),
-                i = 1e3 * Math.abs(n.currentTime - o);
-              o < n.duration && i >= e.player.scrubbingTimeStep && (n.scrubbing = true, e.setState(n), setTimeout(function () {
-                e.player.ref.seek(o, e.player.scrubbingTimeStep);
-              }, 1));
-            }
-          },
-          onSlidingComplete: function (t) {
-            e.setSeekerPosition(t);
-            var n = e.calculateTimeFromSeekerPosition(),
-              o = e.state;
-            n >= o.duration && !o.loading ? (o.paused = true, e.events.onEnd()) : o.scrubbing ? o.seeking = false : (e.seekTo(n), e.setControlTimeout(), o.paused = o.originallyPaused, o.seeking = false);
-            e.setState(o);
+      return this.formatTime(this.state.currentTime);
+    }
+    "formatTime"() {
+      var e = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : 0,
+        t = this.state.showRemainingTime ? '-' : '';
+      e = Math.min(Math.max(e, 0), this.state.duration);
+      return this.state.showHours ? "" + t + (0, Runtime927.default)(Math.floor(e / 3600).toFixed(0), 2, 0) + ":" + (0, Runtime927.default)((Math.floor(e / 60) % 60).toFixed(0), 2, 0) + ":" + (0, Runtime927.default)(Math.floor(e % 60).toFixed(0), 2, 0) : "" + t + (0, Runtime927.default)(Math.floor(e / 60).toFixed(0), 2, 0) + ":" + (0, Runtime927.default)(Math.floor(e % 60).toFixed(0), 2, 0);
+    }
+    "setSeekerPosition"() {
+      var e = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : 0,
+        t = this.state;
+      e = this.constrainToSeekerMinMax(e);
+      t.seekerFillWidth = e;
+      t.seekerPosition = e;
+      t.seeking || (t.seekerOffset = e);
+      this.setState(t);
+    }
+    "constrainToSeekerMinMax"() {
+      var e = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : 0;
+      return e <= 0 ? 0 : e >= this.player.seekerWidth ? this.player.seekerWidth : e;
+    }
+    "calculateSeekerPosition"() {
+      var e = this.state.currentTime / this.state.duration;
+      return this.player.seekerWidth * e;
+    }
+    "calculateTimeFromSeekerPosition"() {
+      var e = this.state.seekerPosition / this.player.seekerWidth;
+      return this.state.duration * e;
+    }
+    "seekTo"() {
+      var e = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : 0,
+        t = this.state;
+      t.currentTime = e;
+      this.player.ref.seek(e);
+      this.setState(t);
+    }
+    "UNSAFE_componentWillReceiveProps"(e) {
+      this.state.paused !== e.paused && this.setState({
+        paused: e.paused
+      });
+      this.styles.videoStyle !== e.videoStyle && (this.styles.videoStyle = e.videoStyle);
+      this.styles.containerStyle !== e.style && (this.styles.containerStyle = e.style);
+    }
+    "componentDidMount"() {
+      this.mounted = true;
+    }
+    "componentWillUnmount"() {
+      this.mounted = false;
+      this.clearControlTimeout();
+    }
+    "renderControl"(e, t) {
+      var n = this,
+        o = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {};
+      return React.default.createElement(ReactNative.TouchableHighlight, {
+        underlayColor: "transparent",
+        activeOpacity: .3,
+        onPress: function () {
+          n.resetControlTimeout();
+          t();
+        },
+        style: [g.controls.control, o]
+      }, e);
+    }
+    "renderNullControl"() {
+      return React.default.createElement(ReactNative.View, {
+        style: [g.controls.control]
+      });
+    }
+    "renderTopControls"() {
+      var e = this.props.disableBack ? this.renderNullControl() : this.renderBack(),
+        n = this.props.TopRight ? this.renderControl(this.props.TopRight, this.methods.toggleTimer) : this.renderNullControl();
+      return React.default.createElement(ReactNative.Animated.View, {
+        style: [g.controls.top, {
+          opacity: this.animations.topControl.opacity,
+          marginTop: this.animations.topControl.marginTop
+        }]
+      }, React.default.createElement(ReactNative.ImageBackground, {
+        source: require("./../../assets/images/top-vignette.png"),
+        style: [g.controls.column],
+        imageStyle: [g.controls.vignette]
+      }, React.default.createElement(_SafeAreaView, {
+        style: g.controls.topControlGroup
+      }, e, this.renderTitle(), n)));
+    }
+    "renderBack"() {
+      return this.renderControl(React.default.createElement(components.Icon, {
+        name: this.state.isFullscreen ? icons.default.CHEVRON_DOWN : icons.default.WINDOW_CLOSE,
+        style: g.controls.back
+      }), this.state.isFullscreen ? this.events.onExitFullscreen : this.events.onBack, g.controls.back);
+    }
+    "renderFullscreen"() {
+      var e = true === this.state.isFullscreen ? icons.default.FULLSCREEN_EXIT : icons.default.FULLSCREEN;
+      return this.renderControl(React.default.createElement(components.Icon, {
+        name: e
+      }), this.methods.toggleFullscreen, g.controls.fullscreen);
+    }
+    "renderBottomControls"() {
+      var e = this.props.disableSeekbar ? this.renderNullControl() : this.renderSeekbar(),
+        n = this.props.disablePlayPause ? this.renderNullControl() : this.renderPlayPause(),
+        o = this.props.disableFullscreen ? this.renderNullControl() : this.renderFullscreen(),
+        r = this.props.disableTimer ? this.renderNullControl() : this.renderTimer();
+      return React.default.createElement(ReactNative.Animated.View, {
+        style: [g.controls.bottom, {
+          opacity: this.animations.bottomControl.opacity,
+          marginBottom: this.animations.bottomControl.marginBottom
+        }]
+      }, React.default.createElement(ReactNative.ImageBackground, {
+        source: require("./../../assets/images/bottom-vignette.png"),
+        style: [g.controls.column],
+        imageStyle: [g.controls.vignette]
+      }, e, React.default.createElement(_SafeAreaView, {
+        style: [g.controls.row, g.controls.bottomControlGroup]
+      }, n, r, o)));
+    }
+    "renderSeekbar"() {
+      var e = this;
+      return React.default.createElement(ReactNative.View, {
+        style: g.seekbar.container,
+        collapsable: false
+      }, React.default.createElement(slider.default, {
+        style: {
+          width: '100%'
+        },
+        value: this.state.seekerPosition,
+        minimumValue: 0,
+        maximumValue: 1,
+        minimumTrackTintColor: constants.COLORS.primary,
+        maximumTrackTintColor: constants.COLORS.primaryAlpha50,
+        onSlidingStart: function (t) {
+          var n = e.state;
+          e.clearControlTimeout();
+          e.setSeekerPosition(t);
+          n.seeking = true;
+          n.originallyPaused = n.paused;
+          n.scrubbing = false;
+          e.player.scrubbingTimeStep > 0 && (n.paused = true);
+          e.setState(n);
+        },
+        onValueChange: function (t) {
+          e.setSeekerPosition(t);
+          var n = e.state;
+          if (e.player.scrubbingTimeStep > 0 && !n.loading && !n.scrubbing) {
+            var o = e.calculateTimeFromSeekerPosition(),
+              i = 1e3 * Math.abs(n.currentTime - o);
+            o < n.duration && i >= e.player.scrubbingTimeStep && (n.scrubbing = true, e.setState(n), setTimeout(function () {
+              e.player.ref.seek(o, e.player.scrubbingTimeStep);
+            }, 1));
           }
-        }));
-      }
-    }, {
-      key: "renderPlayPause",
-      value: function () {
-        var e = true === this.state.paused ? icons.default.PLAY : icons.default.PAUSE;
-        return this.renderControl(React.default.createElement(components.Icon, {
-          name: e
-        }), this.methods.togglePlayPause, g.controls.playPause);
-      }
-    }, {
-      key: "renderTitle",
-      value: function () {
-        return this.props.title ? React.default.createElement(ReactNative.View, {
-          style: [g.controls.title]
-        }, React.default.createElement(reactNativeTextTicker.default, {
-          style: [g.controls.text, g.controls.titleText],
-          disabled: !this.state.showControls
-        }, this.props.title || '')) : null;
-      }
-    }, {
-      key: "renderTimer",
-      value: function () {
-        return this.renderControl(React.default.createElement(ReactNative.Text, {
-          style: g.controls.timerText
-        }, this.calculateTime()), this.methods.toggleTimer, g.controls.timer);
-      }
-    }, {
-      key: "renderLoader",
-      value: function () {
-        return this.state.loading ? React.default.createElement(ReactNative.View, {
-          style: g.loader.container
-        }, React.default.createElement(components.Spinkit, {
-          style: g.loader.icon
-        })) : null;
-      }
-    }, {
-      key: "renderError",
-      value: function () {
-        return this.state.error ? React.default.createElement(ReactNative.View, {
-          style: g.error.container
-        }, React.default.createElement(ReactNative.Image, {
-          style: g.error.icon
-        }), React.default.createElement(ReactNative.Text, {
-          style: g.error.text
-        }, "Video unavailable")) : null;
-      }
-    }, {
-      key: "render",
-      value: function () {
-        var e = this;
-        return React.default.createElement(ReactNative.View, babelHelpers.extends({
-          style: [g.player.container, this.styles.containerStyle]
-        }, this._panResponder.panHandlers, {
-          onLayout: function (t) {
-            e.layoutHeight = t.nativeEvent.layout.height;
-          }
-        }), React.default.createElement(reactNativeVideo.default, babelHelpers.extends({}, this.props, {
-          ref: function (t) {
-            var n, o;
-            null === (n = (o = e.props).onRef) || void 0 === n || n.call(o, t);
-            e.player.ref = t;
-          },
-          resizeMode: this.state.resizeMode,
-          paused: this.state.paused,
-          rate: this.state.rate,
-          onLoadStart: this.events.onLoadStart,
-          onProgress: this.events.onProgress,
-          onError: this.events.onError,
-          onLoad: this.events.onLoad,
-          onEnd: this.events.onEnd,
-          onSeek: this.events.onSeek,
-          style: [g.player.video, this.styles.videoStyle],
-          source: this.props.source
-        })), this.renderError(), this.renderLoader(), this.renderTopControls(), this.renderBottomControls());
-      }
-    }]);
-    babelHelpers.inherits(n, e);
-    return n;
-  }(React.Component);
+        },
+        onSlidingComplete: function (t) {
+          e.setSeekerPosition(t);
+          var n = e.calculateTimeFromSeekerPosition(),
+            o = e.state;
+          n >= o.duration && !o.loading ? (o.paused = true, e.events.onEnd()) : o.scrubbing ? o.seeking = false : (e.seekTo(n), e.setControlTimeout(), o.paused = o.originallyPaused, o.seeking = false);
+          e.setState(o);
+        }
+      }));
+    }
+    "renderPlayPause"() {
+      var e = true === this.state.paused ? icons.default.PLAY : icons.default.PAUSE;
+      return this.renderControl(React.default.createElement(components.Icon, {
+        name: e
+      }), this.methods.togglePlayPause, g.controls.playPause);
+    }
+    "renderTitle"() {
+      return this.props.title ? React.default.createElement(ReactNative.View, {
+        style: [g.controls.title]
+      }, React.default.createElement(reactNativeTextTicker.default, {
+        style: [g.controls.text, g.controls.titleText],
+        disabled: !this.state.showControls
+      }, this.props.title || '')) : null;
+    }
+    "renderTimer"() {
+      return this.renderControl(React.default.createElement(_default, {
+        style: g.controls.timerText
+      }, this.calculateTime()), this.methods.toggleTimer, g.controls.timer);
+    }
+    "renderLoader"() {
+      return this.state.loading ? React.default.createElement(ReactNative.View, {
+        style: g.loader.container
+      }, React.default.createElement(components.Spinkit, {
+        style: g.loader.icon
+      })) : null;
+    }
+    "renderError"() {
+      return this.state.error ? React.default.createElement(ReactNative.View, {
+        style: g.error.container
+      }, React.default.createElement(ReactNative.Image, {
+        style: g.error.icon
+      }), React.default.createElement(_default, {
+        style: g.error.text
+      }, "Video unavailable")) : null;
+    }
+    "render"() {
+      var e = this;
+      return React.default.createElement(ReactNative.View, _extends({
+        style: [g.player.container, this.styles.containerStyle]
+      }, this._panResponder.panHandlers, {
+        onLayout: function (t) {
+          e.layoutHeight = t.nativeEvent.layout.height;
+        }
+      }), React.default.createElement(reactNativeVideo.default, _extends({}, this.props, {
+        ref: function (t) {
+          var n, o;
+          null === (n = (o = e.props).onRef) || void 0 === n || n.call(o, t);
+          e.player.ref = t;
+        },
+        resizeMode: this.state.resizeMode,
+        paused: this.state.paused,
+        rate: this.state.rate,
+        onLoadStart: this.events.onLoadStart,
+        onProgress: this.events.onProgress,
+        onError: this.events.onError,
+        onLoad: this.events.onLoad,
+        onEnd: this.events.onEnd,
+        onSeek: this.events.onSeek,
+        style: [g.player.video, this.styles.videoStyle],
+        source: this.props.source
+      })), this.renderError(), this.renderLoader(), this.renderTopControls(), this.renderBottomControls());
+    }
+  };
 exports.default = m;
 m.defaultProps = {
   toggleResizeModeOnFullscreen: true,

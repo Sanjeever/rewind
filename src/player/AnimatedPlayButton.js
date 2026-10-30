@@ -1,10 +1,11 @@
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var React = babelHelpers.interopRequireDefault(require("react")),
-  buttons = babelHelpers.interopRequireDefault(require("./buttons")),
-  ControlIcon = babelHelpers.interopRequireDefault(require("./ControlIcon")),
+var React = _interopRequireDefault(require("react")),
+  buttons = _interopRequireDefault(require("./buttons")),
+  ControlIcon = _interopRequireDefault(require("./ControlIcon")),
   d = function (e) {
     var a,
       t = e.playMode,
