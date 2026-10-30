@@ -1,17 +1,21 @@
+const _default = require("./../components/Text.js").default;
+const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+const _objectSpread = require("@babel/runtime/helpers/objectSpread2");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var React = babelHelpers.interopRequireWildcard(require("react")),
+var React = _interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
-  FadingEdge = babelHelpers.interopRequireDefault(require("../components/FadingEdge")),
-  reactNativeLargelist = require("react-native-largelist"),
+  FadingEdge = _interopRequireDefault(require("../components/FadingEdge")),
+  reactNativeLargelist = require("./../components/Scrolling.js"),
   components = require("../components/index"),
-  providers = babelHelpers.interopRequireDefault(require("../services/providers")),
+  providers = _interopRequireDefault(require("../services/providers")),
   constants = require("../theme/constants"),
-  names = babelHelpers.interopRequireDefault(require("../events/names")),
-  icons = babelHelpers.interopRequireDefault(require("../theme/icons")),
-  locales = babelHelpers.interopRequireDefault(require("../locales/index")),
+  names = _interopRequireDefault(require("../events/names")),
+  icons = _interopRequireDefault(require("../theme/icons")),
+  locales = _interopRequireDefault(require("../locales/index")),
   services = require("../services/index"),
   events = require("../events/index"),
   trackInfo = require("../services/trackInfo"),
@@ -33,12 +37,11 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
       return Number(e.slice(1));
     }
   },
-  E = function (e) {
-    function t() {
+  E = class t extends React.PureComponent {
+    constructor() {
       var e, a, n;
-      babelHelpers.classCallCheck(this, t);
       for (var r = arguments.length, o = new Array(r), s = 0; s < r; s++) o[s] = arguments[s];
-      return babelHelpers.possibleConstructorReturn(n, (a = n = babelHelpers.possibleConstructorReturn(this, (e = babelHelpers.getPrototypeOf(t)).call.apply(e, [this].concat(o))), n.state = {
+      return a = n = super(...o), n.state = {
         checked: {},
         showModal: false
       }, n.handleClose = function () {
@@ -90,44 +93,35 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
           checked: {},
           showModal: false
         }), n.props.onClose());
-      }, n.deleteFromPlaylist = function () {
-        var e, t, a, r, l, o, s, c, i, d;
-        return regeneratorRuntime.async(function (p) {
-          for (;;) switch (p.prev = p.next) {
-            case 0:
-              if (e = n.props, t = e.api, a = e.playlistId, r = e.isCustom, l = false, t !== providers.default.netEase || !a) {
-                p.next = 12;
-                break;
-              }
-              o = n.getCheckedData();
-              s = o.map(function (e) {
-                return e.id;
-              });
-              p.next = 7;
-              return regeneratorRuntime.awrap(services.Netease.playlist_tracks({
-                op: 'del',
-                pid: a,
-                tracks: s
-              }));
-            case 7:
-              c = p.sent;
-              200 === c.code && (events.emitter.emit(names.default.DeleteFromPlaylist), l = true);
-              p.next = 13;
-              break;
-            case 12:
-              true === r && (i = n.getCheckedData(), (d = i.map(function (e) {
-                return e.id;
-              })).length > 0 && (n.props.onDeleteCustom(d), l = true));
-            case 13:
-              l && (n.setState({
-                checked: {},
-                showModal: false
-              }), toast(locales.default.DELETE_SUCCESS));
-            case 14:
-            case "end":
-              return p.stop();
+      }, n.deleteFromPlaylist = async function () {
+        const {
+          api,
+          playlistId,
+          isCustom
+        } = n.props;
+        const ids = n.getCheckedData().map(song => song.id);
+        try {
+          let deleted = false;
+          if (api === providers.default.netEase && playlistId) {
+            const response = await services.Netease.playlist_tracks({
+              op: 'del',
+              pid: playlistId,
+              tracks: ids
+            });
+            if (response.code !== 200) throw new Error(locales.default.ERROR);
+            events.emitter.emit(names.default.DeleteFromPlaylist);
+            deleted = true;
+          } else if (isCustom && ids.length) {
+            await n.props.onDeleteCustom(ids);
+            deleted = true;
           }
-        }, null, this);
+          if (deleted) n.setState({
+            checked: {},
+            showModal: false
+          });
+        } catch (error) {
+          toast('删除失败：' + error.message);
+        }
       }, n.onCollectModal = function () {
         var e = n.props.api,
           t = n.getCheckedData();
@@ -147,7 +141,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
         });
         n.forceUpdate();
       }, n.onCheck = function (e) {
-        var t = babelHelpers.objectSpread({}, n.state.checked);
+        var t = _objectSpread({}, n.state.checked);
         t[y.encode(e)] ^= 1;
         n.setState({
           checked: t
@@ -180,105 +174,100 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
             return n.onCheck(a);
           }
         });
-      }, a));
+      }, a;
     }
-    babelHelpers.createClass(t, [{
-      key: "render",
-      value: function () {
-        var e = this,
-          t = this.props,
-          a = t.visible,
-          n = t.data;
-        if (!a) return null;
-        var r = this.state,
-          u = r.checked,
-          f = r.showModal,
-          k = Object.values(u).filter(function (e) {
-            return e > 0;
-          }).length,
-          b = 0 === k ? locales.default.MULT_SELECT : k + " " + locales.default.SELECTED,
-          m = [{
-            name: 0 === k ? icons.default.CHECK_ALL : icons.default.CANCEL,
-            onPress: this.onCheckAll
-          }, {
-            name: icons.default.DOTS_VERTICAL,
-            onPress: function () {
-              return e.onDots(k);
-            }
-          }];
-        return React.default.createElement(ReactNative.Modal, {
-          animationType: "fade",
-          transparent: true,
-          onRequestClose: this.handleClose,
-          visible: a
-        }, React.default.createElement(ReactNative.View, {
-          style: v.container
-        }, React.default.createElement(components.Background, null), React.default.createElement(components.HeaderBar, {
-          title: b,
-          goBack: this.handleClose,
-          backIcon: {
-            name: icons.default.WINDOW_CLOSE
-          },
-          rightIcon: m,
-          onTop: this.onTop
-        }), React.default.createElement(FadingEdge.default, {
-          top: 30
-        }, React.default.createElement(reactNativeLargelist.LargeList, {
-          ref: function (t) {
-            return e._list = t;
-          },
-          data: [{
-            items: n
-          }],
-          heightForIndexPath: function () {
-            return constants.ITEM_HEIGHT;
-          },
-          renderIndexPath: this._renderIndexPath
-        })), React.default.createElement(ReactNative.Modal, {
-          animationType: "fade",
-          transparent: true,
-          onRequestClose: function () {
-            return e.setState({
-              showModal: false
-            });
-          },
-          visible: f
+    "render"() {
+      var e = this,
+        t = this.props,
+        a = t.visible,
+        n = t.data;
+      if (!a) return null;
+      var r = this.state,
+        u = r.checked,
+        f = r.showModal,
+        k = Object.values(u).filter(function (e) {
+          return e > 0;
+        }).length,
+        b = 0 === k ? locales.default.MULT_SELECT : k + " " + locales.default.SELECTED,
+        m = [{
+          name: 0 === k ? icons.default.CHECK_ALL : icons.default.CANCEL,
+          onPress: this.onCheckAll
+        }, {
+          name: icons.default.DOTS_VERTICAL,
+          onPress: function () {
+            return e.onDots(k);
+          }
+        }];
+      return React.default.createElement(ReactNative.Modal, {
+        animationType: "fade",
+        transparent: true,
+        onRequestClose: this.handleClose,
+        visible: a
+      }, React.default.createElement(ReactNative.View, {
+        style: v.container
+      }, React.default.createElement(components.Background, null), React.default.createElement(components.HeaderBar, {
+        title: b,
+        goBack: this.handleClose,
+        backIcon: {
+          name: icons.default.WINDOW_CLOSE
+        },
+        rightIcon: m,
+        onTop: this.onTop
+      }), React.default.createElement(FadingEdge.default, {
+        top: 30
+      }, React.default.createElement(reactNativeLargelist.LargeList, {
+        ref: function (t) {
+          return e._list = t;
+        },
+        data: [{
+          items: n
+        }],
+        heightForIndexPath: function () {
+          return constants.ITEM_HEIGHT;
+        },
+        renderIndexPath: this._renderIndexPath
+      })), React.default.createElement(ReactNative.Modal, {
+        animationType: "fade",
+        transparent: true,
+        onRequestClose: function () {
+          return e.setState({
+            showModal: false
+          });
+        },
+        visible: f
+      }, React.default.createElement(ReactNative.View, {
+        style: {
+          flex: 1,
+          backgroundColor: '#000',
+          justifyContent: 'center',
+          alignItems: 'center'
+        }
+      }, React.default.createElement(ReactNative.TouchableWithoutFeedback, {
+        onPress: function () {
+          return e.setState({
+            showModal: false
+          });
+        }
+      }, React.default.createElement(ReactNative.View, {
+        style: [ReactNative.StyleSheet.absoluteFill]
+      })), C.map(function (t, a) {
+        return React.default.createElement(ReactNative.TouchableNativeFeedback, {
+          key: a,
+          onPress: function () {
+            return e.onTask(t.key);
+          }
         }, React.default.createElement(ReactNative.View, {
           style: {
-            flex: 1,
-            backgroundColor: '#000',
-            justifyContent: 'center',
-            alignItems: 'center'
+            padding: 20
           }
-        }, React.default.createElement(ReactNative.TouchableWithoutFeedback, {
-          onPress: function () {
-            return e.setState({
-              showModal: false
-            });
+        }, React.default.createElement(_default, {
+          style: {
+            fontSize: 18
           }
-        }, React.default.createElement(ReactNative.View, {
-          style: [ReactNative.StyleSheet.absoluteFill]
-        })), C.map(function (t, a) {
-          return React.default.createElement(ReactNative.TouchableNativeFeedback, {
-            key: a,
-            onPress: function () {
-              return e.onTask(t.key);
-            }
-          }, React.default.createElement(ReactNative.View, {
-            style: {
-              padding: 20
-            }
-          }, React.default.createElement(ReactNative.Text, {
-            style: {
-              fontSize: 18
-            }
-          }, t.name)));
-        })))));
-      }
-    }]);
-    babelHelpers.inherits(t, e);
-    return t;
-  }(React.PureComponent);
+        }, t.name)));
+      })))));
+    }
+  };
 exports.default = E;
 var v = ReactNative.StyleSheet.create({
   container: {

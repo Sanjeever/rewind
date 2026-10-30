@@ -1,17 +1,20 @@
+const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+const _extends = require("@babel/runtime/helpers/extends");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var React = babelHelpers.interopRequireWildcard(require("react")),
+var React = _interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
-  FadingEdge = babelHelpers.interopRequireDefault(require("../components/FadingEdge")),
-  reactNativeLargelist = require("react-native-largelist"),
+  FadingEdge = _interopRequireDefault(require("../components/FadingEdge")),
+  reactNativeLargelist = require("./../components/Scrolling.js"),
   components = require("../components/index"),
   constants = require("../theme/constants"),
-  names = babelHelpers.interopRequireDefault(require("../events/names")),
-  icons = babelHelpers.interopRequireDefault(require("../theme/icons")),
-  tabIcons = babelHelpers.interopRequireDefault(require("../theme/tabIcons")),
-  locales = babelHelpers.interopRequireDefault(require("../locales/index")),
+  names = _interopRequireDefault(require("../events/names")),
+  icons = _interopRequireDefault(require("../theme/icons")),
+  tabIcons = _interopRequireDefault(require("../theme/tabIcons")),
+  locales = _interopRequireDefault(require("../locales/index")),
   events = require("../events/index"),
   utils = require("../utils/index"),
   b = (require("../utils/types"), require("../services/trackInfo")),
@@ -20,12 +23,11 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
     deleting: 'deleting',
     filtering: 'filtering'
   },
-  y = function (e) {
-    function t() {
+  y = class t extends React.PureComponent {
+    constructor() {
       var e, n, a;
-      babelHelpers.classCallCheck(this, t);
       for (var r = arguments.length, o = new Array(r), i = 0; i < r; i++) o[i] = arguments[i];
-      return babelHelpers.possibleConstructorReturn(a, (n = a = babelHelpers.possibleConstructorReturn(this, (e = babelHelpers.getPrototypeOf(t)).call.apply(e, [this].concat(o))), a.state = {
+      return n = a = super(...o), a.state = {
         filterText: '',
         filterList: [],
         mode: x.normal
@@ -155,7 +157,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
           o = (0, b.extractFullInfo)(t),
           i = a.getSongRowExtra(t, n),
           u = a.props.api;
-        return React.default.createElement(components.SongRow, babelHelpers.extends({
+        return React.default.createElement(components.SongRow, _extends({
           song: o.song,
           singer: o.singer,
           album: o.album,
@@ -235,117 +237,108 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
           index: t,
           api: n
         });
-      }, n));
+      }, n;
     }
-    babelHelpers.createClass(t, [{
-      key: "componentDidMount",
-      value: function () {
-        var e = this;
-        this.sub = events.emitter.addListener(names.default.NowPlayingModal, function (t) {
-          true === t.forceClose && e.forceClose();
-        });
-      }
-    }, {
-      key: "componentWillUnmount",
-      value: function () {
-        var e, t;
-        null === (e = (t = this.sub).remove) || void 0 === e || e.call(t);
-      }
-    }, {
-      key: "render",
-      value: function () {
-        var e = this,
-          t = this.props,
-          n = t.show,
-          a = t.songItem,
-          r = t.data,
-          c = t.isRound,
-          f = this.state,
-          m = f.filterList,
-          p = f.filterText;
-        if (!a) return null;
-        var g = (0, b.extractFullInfo)(a, 'big'),
-          h = p.length > 0;
-        return React.default.createElement(ReactNative.Modal, {
-          animationType: "fade",
-          transparent: true,
-          onRequestClose: this.onClose,
-          visible: n
-        }, React.default.createElement(ReactNative.View, {
-          style: [E.container, {
-            backgroundColor: '#000'
-          }]
-        }, g && React.default.createElement(components.Background, {
-          imageStyle: {
-            opacity: .5
-          },
-          coverUrl: g.img,
-          blur: true
-        }), React.default.createElement(ReactNative.TouchableWithoutFeedback, {
-          onPress: this.forceClose
-        }, React.default.createElement(ReactNative.View, {
-          style: {
-            width: '100%',
-            height: '35%',
-            position: 'absolute'
-          }
-        })), g && React.default.createElement(ReactNative.View, {
-          style: E.title
-        }, React.default.createElement(ReactNative.TouchableOpacity, {
-          onPress: this.onCover
-        }, React.default.createElement(ReactNative.Image, {
-          source: {
-            uri: g.img
-          },
-          style: {
-            height: 150,
-            width: 150,
-            borderRadius: c ? 75 : 5
-          }
-        })), React.default.createElement(ReactNative.TouchableOpacity, {
-          onPress: function () {
-            return e.scrollTo();
-          },
-          style: {
-            alignItems: 'center'
-          }
-        }, React.default.createElement(components.Selectable, {
-          numberOfLines: 3,
-          style: [E.text, {
-            fontSize: 18,
-            fontWeight: 'bold',
-            marginTop: 5,
-            textAlign: 'center'
-          }]
-        }, g.song), React.default.createElement(components.Selectable, {
-          style: [E.text, {
-            fontSize: 13,
-            textAlign: 'center'
-          }]
-        }, g.album))), React.default.createElement(ReactNative.View, {
-          style: E.btnsBar
-        }, this.renderTools()), React.default.createElement(FadingEdge.default, {
-          top: 30
-        }, React.default.createElement(reactNativeLargelist.LargeList, {
-          ref: function (t) {
-            return e._list = t;
-          },
-          data: [{
-            items: h ? m : r
-          }],
-          heightForIndexPath: function () {
-            return constants.ITEM_HEIGHT;
-          },
-          renderIndexPath: this._renderIndexPath,
-          renderEmpty: function () {
-            return React.default.createElement(components.Spinkit, null);
-          }
-        }))));
-      }
-    }]);
-    babelHelpers.inherits(t, e);
-    return t;
-  }(React.PureComponent),
+    "componentDidMount"() {
+      var e = this;
+      this.sub = events.emitter.addListener(names.default.NowPlayingModal, function (t) {
+        true === t.forceClose && e.forceClose();
+      });
+    }
+    "componentWillUnmount"() {
+      var e, t;
+      null === (e = (t = this.sub).remove) || void 0 === e || e.call(t);
+    }
+    "render"() {
+      var e = this,
+        t = this.props,
+        n = t.show,
+        a = t.songItem,
+        r = t.data,
+        c = t.isRound,
+        f = this.state,
+        m = f.filterList,
+        p = f.filterText;
+      if (!a) return null;
+      var g = (0, b.extractFullInfo)(a, 'big'),
+        h = p.length > 0;
+      return React.default.createElement(ReactNative.Modal, {
+        animationType: "fade",
+        transparent: true,
+        onRequestClose: this.onClose,
+        visible: n
+      }, React.default.createElement(ReactNative.View, {
+        style: [E.container, {
+          backgroundColor: '#000'
+        }]
+      }, g && React.default.createElement(components.Background, {
+        imageStyle: {
+          opacity: .5
+        },
+        coverUrl: g.img,
+        blur: true
+      }), React.default.createElement(ReactNative.TouchableWithoutFeedback, {
+        onPress: this.forceClose
+      }, React.default.createElement(ReactNative.View, {
+        style: {
+          width: '100%',
+          height: '35%',
+          position: 'absolute'
+        }
+      })), g && React.default.createElement(ReactNative.View, {
+        style: E.title
+      }, React.default.createElement(ReactNative.TouchableOpacity, {
+        onPress: this.onCover
+      }, React.default.createElement(ReactNative.Image, {
+        source: {
+          uri: g.img
+        },
+        style: {
+          height: 150,
+          width: 150,
+          borderRadius: c ? 75 : 5
+        }
+      })), React.default.createElement(ReactNative.TouchableOpacity, {
+        onPress: function () {
+          return e.scrollTo();
+        },
+        style: {
+          alignItems: 'center'
+        }
+      }, React.default.createElement(components.Selectable, {
+        numberOfLines: 3,
+        style: [E.text, {
+          fontSize: 18,
+          fontWeight: 'bold',
+          marginTop: 5,
+          textAlign: 'center'
+        }]
+      }, g.song), React.default.createElement(components.Selectable, {
+        style: [E.text, {
+          fontSize: 13,
+          textAlign: 'center'
+        }]
+      }, g.album))), React.default.createElement(ReactNative.View, {
+        style: E.btnsBar
+      }, this.renderTools()), React.default.createElement(FadingEdge.default, {
+        top: 30
+      }, React.default.createElement(reactNativeLargelist.LargeList, {
+        ref: function (t) {
+          return e._list = t;
+        },
+        data: [{
+          items: h ? m : r
+        }],
+        heightForIndexPath: function () {
+          return constants.ITEM_HEIGHT;
+        },
+        renderIndexPath: this._renderIndexPath,
+        renderEmpty: function () {
+          return React.default.createElement(components.Spinkit, null);
+        }
+      }))));
+    }
+  },
   E = ReactNative.StyleSheet.create({
     container: {
       flex: 1

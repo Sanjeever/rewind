@@ -1,25 +1,27 @@
+const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var React = babelHelpers.interopRequireWildcard(require("react")),
+var React = _interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
-  reactNativeSpringScrollview = require("react-native-spring-scrollview"),
-  rnFetchBlob = babelHelpers.interopRequireDefault(require("rn-fetch-blob")),
+  reactNativeSpringScrollview = require("./../components/Scrolling.js"),
+  rnFetchBlob = _interopRequireDefault(require("react-native-blob-util")),
   components = require("../components/index"),
-  providers = babelHelpers.interopRequireDefault(require("../services/providers")),
+  providers = _interopRequireDefault(require("../services/providers")),
   constants = require("../theme/constants"),
-  module719 = babelHelpers.interopRequireDefault(require("../modules/module-719")),
-  names = babelHelpers.interopRequireDefault(require("../events/names")),
-  icons = babelHelpers.interopRequireDefault(require("../theme/icons")),
-  locales = babelHelpers.interopRequireDefault(require("../locales/index")),
-  downloadModule = babelHelpers.interopRequireDefault(require("../services/download")),
+  TrackActions = _interopRequireDefault(require("./../modules/TrackActions.js")),
+  names = _interopRequireDefault(require("../events/names")),
+  icons = _interopRequireDefault(require("../theme/icons")),
+  locales = _interopRequireDefault(require("../locales/index")),
+  downloadModule = _interopRequireDefault(require("../services/download")),
   events = require("../events/index"),
   utils = require("../utils/index"),
   trackInfo = require("../services/trackInfo"),
-  queue = babelHelpers.interopRequireDefault(require("../events/queue")),
-  module723 = babelHelpers.interopRequireDefault(require("../modules/module-723")),
-  module724 = babelHelpers.interopRequireDefault(require("../modules/module-724")),
+  queue = _interopRequireDefault(require("../events/queue")),
+  ActionRow = _interopRequireDefault(require("./../modules/ActionRow.js")),
+  CloseButton = _interopRequireDefault(require("./../modules/CloseButton.js")),
   C = {
     title: locales.default.DELETE_FROM_LOCAL,
     icon: {
@@ -34,15 +36,14 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
       color: constants.COLORS.secondary
     }
   },
-  T = function (e) {
-    function t() {
+  T = class t extends React.PureComponent {
+    constructor() {
       var e, a, l;
-      babelHelpers.classCallCheck(this, t);
       for (var n = arguments.length, r = new Array(n), u = 0; u < n; u++) r[u] = arguments[u];
-      return babelHelpers.possibleConstructorReturn(l, (a = l = babelHelpers.possibleConstructorReturn(this, (e = babelHelpers.getPrototypeOf(t)).call.apply(e, [this].concat(r))), l.actionsMap = null, l.state = {
+      return a = l = super(...r), l.actionsMap = null, l.state = {
         song: null,
         api: '',
-        tools: module719.default,
+        tools: TrackActions.default,
         artists: [],
         mainModalShow: false,
         sonModalShow: false,
@@ -71,12 +72,12 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
           song: (0, trackInfo.extractFullInfo)(e.song, 'small'),
           songItem: e.song,
           index: e.index,
-          tools: [module719.default[0], C]
+          tools: [TrackActions.default[0], C]
         });
       }, l.onClose = function () {
         l.setState({
           song: null,
-          tools: module719.default,
+          tools: TrackActions.default,
           artists: [],
           api: '',
           mainModalShow: false,
@@ -84,7 +85,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
         });
       }, l.renderTools = function (e) {
         return e.map(function (e, t) {
-          return e.needCheck && !Boolean(e.value) ? null : React.default.createElement(module723.default, {
+          return e.needCheck && !Boolean(e.value) ? null : React.default.createElement(ActionRow.default, {
             key: t,
             title: e.title,
             value: e.value,
@@ -104,25 +105,20 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
           text: locales.default.CONFIRM,
           onPress: l.deleteFromLocal
         }]);
-      }, l.deleteFromLocal = function () {
+      }, l.deleteFromLocal = async function () {
         var e = l.state,
           t = e.songItem,
           a = e.index,
           n = t.path;
-        rnFetchBlob.default.fs.unlink(n).then(function () {
-          rnFetchBlob.default.fs.scanFile([{
-            path: n,
-            mime: 'audio/mpeg'
-          }]).then(function () {
-            toast(locales.default.DELETE_SUCCESS);
-          }).catch(function () {
-            toast(locales.default.DELETE_FAILED);
-          });
-        });
-        events.emitter.emit(names.default.DeleteFromLocal, {
-          deleteIndex: a
-        });
-        l.onClose();
+        try {
+          const removed = await require('../native/mediaStore').default.deleteAudio(t.id);
+          if (removed) {
+            events.emitter.emit(names.default.DeleteFromLocal, {deleteIndex: a});
+            l.onClose();
+          }
+        } catch (error) {
+          toast(locales.default.DELETE_FAILED + '：' + error.message);
+        }
       }, l.alertDeleteFromPlaylist = function () {
         ReactNative.Alert.alert(locales.default.WARN, locales.default.CONFIRM_DELETE_FROM_PLAYLIST, [{
           text: locales.default.CANCEL,
@@ -278,146 +274,137 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
         });
       }, l.songName = function (e, t) {
         return (t[0].name + ' - ' + e).replace(/\//gi, 'x');
-      }, a));
+      }, a;
     }
-    babelHelpers.createClass(t, [{
-      key: "componentDidMount",
-      value: function () {
-        var e = this;
-        this.sub = events.emitter.addListener(names.default.DetailModal, function (t) {
-          e.setState({
-            mainModalShow: true
-          });
-          e.getData(t);
+    "componentDidMount"() {
+      var e = this;
+      this.sub = events.emitter.addListener(names.default.DetailModal, function (t) {
+        e.setState({
+          mainModalShow: true
         });
-      }
-    }, {
-      key: "componentWillUnmount",
-      value: function () {
-        var e, t;
-        null === (e = (t = this.sub).remove) || void 0 === e || e.call(t);
-      }
-    }, {
-      key: "render",
-      value: function () {
-        var e = this,
-          t = this.state,
-          a = t.song,
-          l = t.playlistId,
-          n = t.mvid,
-          s = t.mainModalShow,
-          d = t.sonModalShow,
-          f = t.tools,
-          m = t.artists,
-          g = this.props.isRound;
-        return React.default.createElement(ReactNative.Modal, {
-          animationType: "fade",
-          onRequestClose: this.onClose,
-          visible: s,
-          style: s && {
-            height: constants.DEVICE_HEIGHT,
-            width: constants.DEVICE_WIDTH
-          }
-        }, React.default.createElement(ReactNative.View, {
-          style: w.container
-        }, React.default.createElement(components.Background, {
-          imageStyle: {
-            opacity: .5
-          },
-          coverUrl: null === a || void 0 === a ? void 0 : a.img,
-          blur: true
-        }), React.default.createElement(reactNativeSpringScrollview.SpringScrollView, {
-          style: {
-            padding: 10,
-            flex: 1,
-            width: '100%',
-            paddingBottom: 0
-          },
-          showsVerticalScrollIndicator: false,
-          overScrollMode: "never"
-        }, React.default.createElement(ReactNative.TouchableWithoutFeedback, {
-          onPress: this.onClose
-        }, React.default.createElement(ReactNative.View, {
-          style: [ReactNative.StyleSheet.absoluteFill]
-        })), React.default.createElement(ReactNative.View, {
-          style: {
-            height: .1 * constants.DEVICE_HEIGHT,
-            width: '100%'
-          }
-        }), a ? React.default.createElement(ReactNative.View, {
-          style: w.songAvatar
-        }, React.default.createElement(ReactNative.TouchableOpacity, {
-          onPress: this.saveCover
-        }, React.default.createElement(ReactNative.Image, {
-          source: {
-            uri: a.img
-          },
-          style: {
-            height: 150,
-            width: 150,
-            borderRadius: g ? 75 : 5
-          }
-        })), n ? React.default.createElement(module724.default, {
-          onPress: this.onMV,
-          isRound: g
-        }) : null, React.default.createElement(components.Selectable, {
-          numberOfLines: 3,
-          style: [w.text, {
-            flex: 1,
-            fontSize: 18,
-            fontWeight: 'bold',
-            marginTop: 10
-          }]
-        }, a.song), React.default.createElement(components.Selectable, {
-          style: [w.text, {
-            fontSize: 13
-          }]
-        }, a.album)) : null, React.default.createElement(ReactNative.View, {
-          style: w.tool
-        }, l && React.default.createElement(module723.default, {
-          title: D.title,
-          onPress: this.alertDeleteFromPlaylist
-        }), this.renderTools(f)), React.default.createElement(ReactNative.View, {
-          style: {
-            height: .1 * constants.DEVICE_HEIGHT,
-            width: '100%'
-          }
-        })), React.default.createElement(ReactNative.Modal, {
-          animationType: "fade",
-          transparent: true,
-          onRequestClose: function () {
-            return e.setState({
-              sonModalShow: false
-            });
-          },
-          visible: d
-        }, React.default.createElement(ReactNative.View, {
-          style: [w.container, {
-            paddingTop: '80%'
-          }]
-        }, React.default.createElement(ReactNative.TouchableWithoutFeedback, {
-          onPress: function () {
-            return e.setState({
-              sonModalShow: false
-            });
-          }
-        }, React.default.createElement(ReactNative.View, {
-          style: [ReactNative.StyleSheet.absoluteFill]
-        })), null === m || void 0 === m ? void 0 : m.map(function (t, a) {
-          return React.default.createElement(module723.default, {
-            key: a,
-            value: t.name,
-            title: a + 1,
-            onPress: function () {
-              return e.onSingleArtist(t);
-            }
+        e.getData(t);
+      });
+    }
+    "componentWillUnmount"() {
+      var e, t;
+      null === (e = (t = this.sub).remove) || void 0 === e || e.call(t);
+    }
+    "render"() {
+      var e = this,
+        t = this.state,
+        a = t.song,
+        l = t.playlistId,
+        n = t.mvid,
+        s = t.mainModalShow,
+        d = t.sonModalShow,
+        f = t.tools,
+        m = t.artists,
+        g = this.props.isRound;
+      return React.default.createElement(ReactNative.Modal, {
+        animationType: "fade",
+        onRequestClose: this.onClose,
+        visible: s,
+        style: s && {
+          height: constants.DEVICE_HEIGHT,
+          width: constants.DEVICE_WIDTH
+        }
+      }, React.default.createElement(ReactNative.View, {
+        style: w.container
+      }, React.default.createElement(components.Background, {
+        imageStyle: {
+          opacity: .5
+        },
+        coverUrl: null === a || void 0 === a ? void 0 : a.img,
+        blur: true
+      }), React.default.createElement(reactNativeSpringScrollview.SpringScrollView, {
+        style: {
+          padding: 10,
+          flex: 1,
+          width: '100%',
+          paddingBottom: 0
+        },
+        showsVerticalScrollIndicator: false,
+        overScrollMode: "never"
+      }, React.default.createElement(ReactNative.TouchableWithoutFeedback, {
+        onPress: this.onClose
+      }, React.default.createElement(ReactNative.View, {
+        style: [ReactNative.StyleSheet.absoluteFill]
+      })), React.default.createElement(ReactNative.View, {
+        style: {
+          height: .1 * constants.DEVICE_HEIGHT,
+          width: '100%'
+        }
+      }), a ? React.default.createElement(ReactNative.View, {
+        style: w.songAvatar
+      }, React.default.createElement(ReactNative.TouchableOpacity, {
+        onPress: this.saveCover
+      }, React.default.createElement(ReactNative.Image, {
+        source: {
+          uri: a.img
+        },
+        style: {
+          height: 150,
+          width: 150,
+          borderRadius: g ? 75 : 5
+        }
+      })), n ? React.default.createElement(CloseButton.default, {
+        onPress: this.onMV,
+        isRound: g
+      }) : null, React.default.createElement(components.Selectable, {
+        numberOfLines: 3,
+        style: [w.text, {
+          flex: 1,
+          fontSize: 18,
+          fontWeight: 'bold',
+          marginTop: 10
+        }]
+      }, a.song), React.default.createElement(components.Selectable, {
+        style: [w.text, {
+          fontSize: 13
+        }]
+      }, a.album)) : null, React.default.createElement(ReactNative.View, {
+        style: w.tool
+      }, l && React.default.createElement(ActionRow.default, {
+        title: D.title,
+        onPress: this.alertDeleteFromPlaylist
+      }), this.renderTools(f)), React.default.createElement(ReactNative.View, {
+        style: {
+          height: .1 * constants.DEVICE_HEIGHT,
+          width: '100%'
+        }
+      })), React.default.createElement(ReactNative.Modal, {
+        animationType: "fade",
+        transparent: true,
+        onRequestClose: function () {
+          return e.setState({
+            sonModalShow: false
           });
-        })))));
-      }
-    }]);
-    babelHelpers.inherits(t, e);
-    return t;
-  }(React.PureComponent);
+        },
+        visible: d
+      }, React.default.createElement(ReactNative.View, {
+        style: [w.container, {
+          paddingTop: '80%'
+        }]
+      }, React.default.createElement(ReactNative.TouchableWithoutFeedback, {
+        onPress: function () {
+          return e.setState({
+            sonModalShow: false
+          });
+        }
+      }, React.default.createElement(ReactNative.View, {
+        style: [ReactNative.StyleSheet.absoluteFill]
+      })), null === m || void 0 === m ? void 0 : m.map(function (t, a) {
+        return React.default.createElement(ActionRow.default, {
+          key: a,
+          value: t.name,
+          title: a + 1,
+          onPress: function () {
+            return e.onSingleArtist(t);
+          }
+        });
+      })))));
+    }
+  };
 exports.default = T;
 var w = ReactNative.StyleSheet.create({
   container: {

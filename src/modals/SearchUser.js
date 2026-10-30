@@ -1,19 +1,20 @@
+const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var React = babelHelpers.interopRequireWildcard(require("react")),
+var React = _interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
-  reactNativeSpringScrollview = require("react-native-spring-scrollview"),
+  reactNativeSpringScrollview = require("./../components/Scrolling.js"),
   components = require("../components/index"),
-  icons = babelHelpers.interopRequireDefault(require("../theme/icons")),
+  icons = _interopRequireDefault(require("../theme/icons")),
   services = require("../services/index"),
-  p = function (e) {
-    function t() {
+  p = class t extends React.PureComponent {
+    constructor() {
       var e, r, n;
-      babelHelpers.classCallCheck(this, t);
       for (var a = arguments.length, s = new Array(a), i = 0; i < a; i++) s[i] = arguments[i];
-      return babelHelpers.possibleConstructorReturn(n, (r = n = babelHelpers.possibleConstructorReturn(this, (e = babelHelpers.getPrototypeOf(t)).call.apply(e, [this].concat(s))), n.state = {
+      return r = n = super(...s), n.state = {
         data: [],
         search: ''
       }, n.searchUser = function (e) {
@@ -47,46 +48,41 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
         });
       }, n.onSelect = function (e) {
         n.props.onSelected(e);
-      }, r));
+      }, r;
     }
-    babelHelpers.createClass(t, [{
-      key: "render",
-      value: function () {
-        var e = this,
-          t = this.props,
-          r = t.isOpen,
-          n = t.onModalClose,
-          a = this.state.search;
-        return React.default.createElement(ReactNative.Modal, {
-          visible: r,
-          onRequestClose: n,
-          animationType: "fade"
-        }, React.default.createElement(components.PageContainer, {
-          goBack: n,
-          searchText: a,
-          onChangeText: function (t) {
-            return e.setState({
-              search: t
-            });
-          },
-          onSubmitEditing: function () {
-            return e.searchUser(a);
-          },
-          backIcon: {
-            name: icons.default.WINDOW_CLOSE
-          },
-          textInput: true,
-          forceShowTextInput: true,
-          disabledTextInputBtn: true
-        }, React.default.createElement(reactNativeSpringScrollview.SpringScrollView, null, this.state.data.map(function (t, r) {
-          return e._renderItem({
-            item: t,
-            index: r
+    "render"() {
+      var e = this,
+        t = this.props,
+        r = t.isOpen,
+        n = t.onModalClose,
+        a = this.state.search;
+      return React.default.createElement(ReactNative.Modal, {
+        visible: r,
+        onRequestClose: n,
+        animationType: "fade"
+      }, React.default.createElement(components.PageContainer, {
+        goBack: n,
+        searchText: a,
+        onChangeText: function (t) {
+          return e.setState({
+            search: t
           });
-        }))));
-      }
-    }]);
-    babelHelpers.inherits(t, e);
-    return t;
-  }(React.PureComponent);
+        },
+        onSubmitEditing: function () {
+          return e.searchUser(a);
+        },
+        backIcon: {
+          name: icons.default.WINDOW_CLOSE
+        },
+        textInput: true,
+        forceShowTextInput: true,
+        disabledTextInputBtn: true
+      }, React.default.createElement(reactNativeSpringScrollview.SpringScrollView, null, this.state.data.map(function (t, r) {
+        return e._renderItem({
+          item: t,
+          index: r
+        });
+      }))));
+    }
+  };
 exports.default = p;

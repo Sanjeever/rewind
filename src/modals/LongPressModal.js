@@ -1,16 +1,19 @@
+const _default = require("@react-native-clipboard/clipboard").default;
+const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var React = babelHelpers.interopRequireWildcard(require("react")),
+var React = _interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
-  reactNativeAnimatable = babelHelpers.interopRequireWildcard(require("react-native-animatable")),
+  reactNativeAnimatable = _interopRequireWildcard(require("react-native-animatable")),
   components = require("../components/index"),
-  providers = babelHelpers.interopRequireDefault(require("../services/providers")),
+  providers = _interopRequireDefault(require("../services/providers")),
   constants = require("../theme/constants"),
-  names = babelHelpers.interopRequireDefault(require("../events/names")),
-  icons = babelHelpers.interopRequireDefault(require("../theme/icons")),
-  locales = babelHelpers.interopRequireDefault(require("../locales/index")),
+  names = _interopRequireDefault(require("../events/names")),
+  icons = _interopRequireDefault(require("../theme/icons")),
+  locales = _interopRequireDefault(require("../locales/index")),
   events = require("../events/index"),
   trackInfo = require("../services/trackInfo"),
   sharedUrlsModule = require("../services/sharedUrls"),
@@ -20,12 +23,11 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
   C = 'song',
   y = 'artist',
   I = 'album',
-  v = function (e) {
-    function t() {
+  v = class t extends React.PureComponent {
+    constructor() {
       var e, n, a;
-      babelHelpers.classCallCheck(this, t);
       for (var l = arguments.length, r = new Array(l), o = 0; o < l; o++) r[o] = arguments[o];
-      return babelHelpers.possibleConstructorReturn(a, (n = a = babelHelpers.possibleConstructorReturn(this, (e = babelHelpers.getPrototypeOf(t)).call.apply(e, [this].concat(r))), a.state = {
+      return n = a = super(...r), a.state = {
         visible: false,
         defaultType: true
       }, a.onClose = function () {
@@ -56,98 +58,89 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
         l === providers.default.netEase ? n = sharedUrlsModule.sharedUrls.netEase[t] + r : l === providers.default.qqMusic && (n = sharedUrlsModule.sharedUrls.qqMusic[t] + r + '.html');
         a.linking(n);
       }, a.copy = function (e) {
-        ReactNative.Clipboard.setString(e);
+        _default.setString(e);
         toast(locales.default.COPIED + " " + e);
       }, a.linking = function (e) {
         ReactNative.Linking.openURL(e);
-      }, n));
+      }, n;
     }
-    babelHelpers.createClass(t, [{
-      key: "componentDidMount",
-      value: function () {
-        var e = this;
-        this.sub = events.emitter.addListener(names.default.LongPressModal, function (t) {
-          var n = t.item;
-          e.setState({
-            item: n,
-            obj: (0, trackInfo.extractFullInfo)(n),
-            visible: true
-          });
+    "componentDidMount"() {
+      var e = this;
+      this.sub = events.emitter.addListener(names.default.LongPressModal, function (t) {
+        var n = t.item;
+        e.setState({
+          item: n,
+          obj: (0, trackInfo.extractFullInfo)(n),
+          visible: true
         });
-      }
-    }, {
-      key: "componentWillUnmount",
-      value: function () {
-        var e, t;
-        null === (e = (t = this.sub).remove) || void 0 === e || e.call(t);
-      }
-    }, {
-      key: "render",
-      value: function () {
-        var e = this,
-          t = this.state,
-          n = t.visible,
-          a = t.item,
-          l = this.getImg(a);
-        return React.default.createElement(ReactNative.Modal, {
-          animationType: "fade",
-          onRequestClose: this.onClose,
-          visible: n
-        }, React.default.createElement(ReactNative.View, {
-          style: H.container
-        }, l && React.default.createElement(components.Background, {
-          blur: true,
-          coverUrl: l
-        }), React.default.createElement(ReactNative.TouchableWithoutFeedback, {
-          onPress: this.onClose
-        }, React.default.createElement(ReactNative.View, {
-          style: [ReactNative.StyleSheet.absoluteFill]
-        })), React.default.createElement(reactNativeAnimatable.View, {
-          useNativeDriver: true,
-          animation: "bounceIn",
-          easing: 'ease-out',
-          style: H.imgCon
-        }, React.default.createElement(ReactNative.Image, {
-          style: H.img,
-          source: {
-            uri: l
-          }
-        }), React.default.createElement(ReactNative.View, {
-          style: {
-            flex: 1,
-            alignItems: 'center',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            paddingHorizontal: 20
-          }
-        }, React.default.createElement(components.Icon, {
-          name: this.state.defaultType ? icons.default.CONTENT_COPY : icons.default.LINK_VARIANT,
-          onPress: this.onChangeType,
-          color: "#000"
-        }), React.default.createElement(components.Icon, {
-          name: icons.default.MUSIC_CIRCLE_OUTLINE,
-          onPress: function () {
-            return e.onPressIcon(C);
-          },
-          color: "#000"
-        }), React.default.createElement(components.Icon, {
-          name: icons.default.ACCOUNT_MUSIC_OUTLINE,
-          onPress: function () {
-            return e.onPressIcon(y);
-          },
-          color: "#000"
-        }), React.default.createElement(components.Icon, {
-          name: icons.default.ALBUM,
-          onPress: function () {
-            return e.onPressIcon(I);
-          },
-          color: "#000"
-        })))));
-      }
-    }]);
-    babelHelpers.inherits(t, e);
-    return t;
-  }(React.PureComponent),
+      });
+    }
+    "componentWillUnmount"() {
+      var e, t;
+      null === (e = (t = this.sub).remove) || void 0 === e || e.call(t);
+    }
+    "render"() {
+      var e = this,
+        t = this.state,
+        n = t.visible,
+        a = t.item,
+        l = this.getImg(a);
+      return React.default.createElement(ReactNative.Modal, {
+        animationType: "fade",
+        onRequestClose: this.onClose,
+        visible: n
+      }, React.default.createElement(ReactNative.View, {
+        style: H.container
+      }, l && React.default.createElement(components.Background, {
+        blur: true,
+        coverUrl: l
+      }), React.default.createElement(ReactNative.TouchableWithoutFeedback, {
+        onPress: this.onClose
+      }, React.default.createElement(ReactNative.View, {
+        style: [ReactNative.StyleSheet.absoluteFill]
+      })), React.default.createElement(reactNativeAnimatable.View, {
+        useNativeDriver: true,
+        animation: "bounceIn",
+        easing: 'ease-out',
+        style: H.imgCon
+      }, React.default.createElement(ReactNative.Image, {
+        style: H.img,
+        source: {
+          uri: l
+        }
+      }), React.default.createElement(ReactNative.View, {
+        style: {
+          flex: 1,
+          alignItems: 'center',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          paddingHorizontal: 20
+        }
+      }, React.default.createElement(components.Icon, {
+        name: this.state.defaultType ? icons.default.CONTENT_COPY : icons.default.LINK_VARIANT,
+        onPress: this.onChangeType,
+        color: "#000"
+      }), React.default.createElement(components.Icon, {
+        name: icons.default.MUSIC_CIRCLE_OUTLINE,
+        onPress: function () {
+          return e.onPressIcon(C);
+        },
+        color: "#000"
+      }), React.default.createElement(components.Icon, {
+        name: icons.default.ACCOUNT_MUSIC_OUTLINE,
+        onPress: function () {
+          return e.onPressIcon(y);
+        },
+        color: "#000"
+      }), React.default.createElement(components.Icon, {
+        name: icons.default.ALBUM,
+        onPress: function () {
+          return e.onPressIcon(I);
+        },
+        color: "#000"
+      })))));
+    }
+  },
   E = function (e, t) {
     switch (t) {
       case 'song':
