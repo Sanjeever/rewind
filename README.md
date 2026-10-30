@@ -4,15 +4,15 @@
 
 ## 工程恢复进度
 
-当前完成仓库检查、项目约定、四包逐项清单和 JavaScript 模块图。源码工程尚未建立。交接目标见 [handoff.md](handoff.md)，开发约定见 [AGENTS.md](AGENTS.md)。
+当前完成四包清单、自有 JavaScript 模块恢复和依赖关系检查，Android 工程正在构建验证。交接目标见 [handoff.md](handoff.md)，开发约定见 [AGENTS.md](AGENTS.md)。
 
 | 项目 | 当前状态 |
 | --- | --- |
 | 原始发布材料 | 四个 APK 与 output-metadata.json 保持跟踪，禁止修改 |
 | JavaScript 与原生依赖 | JS 与原生版本常量均为 RN 0.56.1；AGP 4.2.2；min / target / compile SDK 为 21 / 32 / 32；第三方依赖精确版本待核对 |
-| 模块图 | Babel AST 解析出 938 个模块，记录 ID、依赖、导出与桥接引用，业务分类待完成 |
+| 模块图 | 共 938 个模块，其中 265 个自有模块进入正常源码目录，673 个运行库模块暂用兼容映射；包名映射为识别线索，精确版本待核对 |
 | 存储 | 模块 663 使用 react-native-storage 接 AsyncStorage，容量 2048、默认不过期、关闭内存缓存；数据库结构待核对 |
-| 源码与 Android 工程 | 待建立 |
+| 源码与 Android 工程 | 自有 JS 模块已恢复，原生源码通过独立 Java 编译；Android 工程构建进行中 |
 | 构建、安装、实际运行 | 尚未验证 |
 | 播放、歌单、歌词、登录、设置与持久化 | 尚未验证 |
 
@@ -32,6 +32,21 @@ pnpm inventory
 `recovery/inventory.json` 记录每个 APK 及内部文件的大小与 SHA-256。四包 JS 均为 1,808,058 字节，SHA-256 为 `6f47d21b5321aabdd5311fd64c8bf27a25ecfd671ddb4dc68da464e8738ae159`。
 
 当前没有可用的源码构建命令。构建和运行命令将在 Android 工程建立并实际执行后补充。临时提取、分析材料和工具放在被忽略的 `.recovery/`，项目本地 SDK 路径与开发签名不提交。
+
+## JavaScript 源码
+
+入口为 `index.js` 和 `src/App.js`。页面路由位于 `src/navigation/index.js`，主要页面在 `src/screens/`，播放器在 `src/player/`，网络服务在 `src/services/`，存储在 `src/storage/`，原生调用封装在 `src/native/`。尚未确定语义的内部模块使用 `module-编号.js` 命名，后续继续整理。
+
+```powershell
+pnpm bundle:android
+pnpm check:modules
+```
+
+两条命令已执行成功。打包器读取自有源码和 `recovery/module-map.json`，生成 `.recovery/generated/assets/index.android.bundle`。检查覆盖全部 938 个模块依赖、自有源码路径和运行库 factory 一致性，并对照原版执行四组真实歌词解析输入。这些检查尚不能证明 Android 运行效果。
+
+673 个运行库模块暂从原版公共 JavaScript 运行库加载到临时构建目录，包含框架、polyfill、第三方库。自有源码之间使用相对路径；第三方入口使用包名，尚未识别的内部依赖使用 `@runtime/编号`。当前不是标准 Metro 依赖安装流程，精确依赖版本与上游替换仍在进行。React 的实际版本常量为 16.8.3，不依据 RN 默认 peer dependency 推定版本。
+
+`scripts/restore-modules.cjs` 是初次源码结构转换工具，默认拒绝覆盖已有源码。正常修改应用时运行打包命令，避免重新生成并覆盖手工改动。
 
 恢复构建使用本地开发签名，并以独立测试环境或开发包名运行。原版安装与数据兼容性尚未验证。远端服务可用性和账号相关功能待实测。
 

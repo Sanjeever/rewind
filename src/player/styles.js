@@ -1,0 +1,122 @@
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = exports.BOTTOM_BAR_HEIGHT = exports.SOFT_MENU_HEIGHT = void 0;
+var ReactNative = require("react-native"),
+  constants = require("../theme/constants"),
+  r = babelHelpers.interopRequireDefault(require("../native/dimensions")).default.get('SOFT_MENU_BAR_HEIGHT');
+exports.SOFT_MENU_HEIGHT = r;
+exports.BOTTOM_BAR_HEIGHT = 60;
+var d = ReactNative.StyleSheet.create({
+  container: {
+    height: 60,
+    width: '100%',
+    alignSelf: 'center',
+    backgroundColor: '#000000',
+    elevation: 10
+  },
+  text: {
+    color: '#fff'
+  },
+  footer: {
+    position: 'absolute',
+    bottom: 10,
+    height: 150,
+    justifyContent: 'center',
+    paddingBottom: 10 + r
+  },
+  softKeyFooterHeight: {
+    bottom: 20
+  },
+  progressBar: {
+    height: 30,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    width: constants.DEVICE_WIDTH,
+    position: 'absolute',
+    top: constants.DEVICE_WIDTH
+  },
+  toolBar: {
+    alignSelf: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    width: constants.DEVICE_WIDTH,
+    flexDirection: 'row',
+    justifyContent: 'space-around'
+  },
+  lyric: {
+    position: 'absolute',
+    height: constants.DEVICE_HEIGHT - 130,
+    top: 0,
+    alignItems: 'center',
+    width: constants.DEVICE_WIDTH
+  },
+  songTitleCon: {
+    position: 'absolute',
+    width: constants.DEVICE_WIDTH,
+    top: constants.STATUS_BAR_HEIGHT - 5,
+    justifyContent: 'center',
+    paddingLeft: 45,
+    paddingRight: 50
+  },
+  songTitle: {
+    fontWeight: 'bold',
+    fontSize: 16
+  },
+  songAuthor: {
+    opacity: .8
+  },
+  topBtn: {
+    position: 'absolute',
+    top: constants.STATUS_BAR_HEIGHT,
+    height: 30,
+    width: 30,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  totalTool: {
+    position: 'absolute',
+    top: constants.DEVICE_WIDTH - 50,
+    height: 50,
+    width: '100%'
+  },
+  sliderHide: {
+    top: null,
+    bottom: 0
+  },
+  toolHide: {
+    height: '100%',
+    paddingBottom: 30
+  },
+  blankLyric: {
+    position: 'absolute',
+    bottom: r + 30,
+    alignSelf: 'center',
+    opacity: 1,
+    alignItems: 'center'
+  },
+  roundStyle: {
+    opacity: .8,
+    top: null
+  },
+  soft: {
+    bottom: r
+  },
+  softPadding: {
+    paddingBottom: r
+  },
+  timeSoftPadding: {
+    bottom: r > 30 ? (r - 30) / 2 : 0
+  },
+  vertical: {
+    position: 'absolute',
+    height: constants.DEVICE_HEIGHT - constants.DEVICE_WIDTH,
+    bottom: 0,
+    left: 0,
+    width: .15 * constants.DEVICE_WIDTH,
+    backgroundColor: 'rgba(255,255,255,0)'
+  }
+});
+exports.default = d;

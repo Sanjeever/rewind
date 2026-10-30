@@ -1,0 +1,64 @@
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var React = babelHelpers.interopRequireWildcard(require("react")),
+  ReactNative = require("react-native"),
+  components = require("../components/index"),
+  buttons = babelHelpers.interopRequireDefault(require("./buttons")),
+  module752 = babelHelpers.interopRequireDefault(require("./module-752")),
+  u = {
+    playing: {
+      name: buttons.default.PAUSE.name,
+      type: buttons.default.PAUSE.type
+    },
+    paused: {
+      name: buttons.default.PLAY.name,
+      type: buttons.default.PLAY.type
+    }
+  },
+  d = function (e) {
+    function t() {
+      babelHelpers.classCallCheck(this, t);
+      return babelHelpers.possibleConstructorReturn(this, babelHelpers.getPrototypeOf(t).apply(this, arguments));
+    }
+    babelHelpers.createClass(t, [{
+      key: "render",
+      value: function () {
+        var e = this.props,
+          t = e.playState,
+          l = e.disabled,
+          a = e.loaded,
+          r = e.color,
+          o = e.onPress,
+          d = e.onLongPress,
+          b = e.size,
+          f = void 0 === b ? 55 : b,
+          c = e.spinSize,
+          y = void 0 === c ? 50 : c;
+        return true === a ? React.default.createElement(module752.default, {
+          color: r,
+          name: u[t].name,
+          type: u[t].type,
+          size: f,
+          onPress: o,
+          onLongPress: d,
+          disabled: l,
+          style: !f && {
+            padding: 0
+          }
+        }) : React.default.createElement(ReactNative.View, {
+          style: {
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: f + 12
+          }
+        }, React.default.createElement(components.Spinkit, {
+          size: y
+        }));
+      }
+    }]);
+    babelHelpers.inherits(t, e);
+    return t;
+  }(React.PureComponent);
+exports.default = d;

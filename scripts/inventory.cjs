@@ -8,6 +8,7 @@ const traverse = require('@babel/traverse').default;
 
 const hash = data => crypto.createHash('sha256').update(data).digest('hex');
 const metadata = JSON.parse(fs.readFileSync('output-metadata.json', 'utf8'));
+const previousMap = fs.existsSync('recovery/module-map.json') ? JSON.parse(fs.readFileSync('recovery/module-map.json', 'utf8')).modules : [];
 const packages = metadata.elements.map(element => {
   const zip = new Zip(element.outputFile);
   const entries = zip.getEntries().filter(entry => !entry.isDirectory);
@@ -51,7 +52,8 @@ for (const statement of ast.program.body) {
       if (node.object.type === 'MemberExpression' && node.object.property.name === 'NativeModules') natives.add(node.property.name);
     },
   });
-  modules.push({ id: id.value, dependencies: deps, classification: 'unknown', source: null, exports: [...exports], native_modules: [...natives] });
+  const previous = previousMap.find(item => item.id === id.value);
+  modules.push({ id: id.value, dependencies: deps, classification: previous?.classification || 'unknown', source: previous?.source || null, package: previous?.package || null, exports: [...exports], native_modules: [...natives] });
 }
 fs.mkdirSync('recovery', { recursive: true });
 fs.writeFileSync('recovery/module-map.json', JSON.stringify({ bundle_sha256: hash(Buffer.from(bundle)), modules }, null, 2) + '\n');

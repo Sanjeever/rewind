@@ -1,0 +1,621 @@
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var React = babelHelpers.interopRequireWildcard(require("react")),
+  ReactNative = require("react-native"),
+  reactNativeLargelist = require("react-native-largelist"),
+  components = require("../components/index"),
+  modals = require("../modals/index"),
+  PlaylistTabs = babelHelpers.interopRequireDefault(require("../components/PlaylistTabs")),
+  providers = babelHelpers.interopRequireDefault(require("../services/providers")),
+  constants = require("../theme/constants"),
+  names = babelHelpers.interopRequireDefault(require("../events/names")),
+  keys = babelHelpers.interopRequireDefault(require("../storage/keys")),
+  locales = babelHelpers.interopRequireDefault(require("../locales/index")),
+  events = require("../events/index"),
+  utils = require("../utils/index"),
+  mediaStore = babelHelpers.interopRequireDefault(require("../native/mediaStore")),
+  lastSong = babelHelpers.interopRequireDefault(require("../storage/lastSong")),
+  sortModes = require("./playlist/sortModes"),
+  module896 = babelHelpers.interopRequireDefault(require("../modules/module-896")),
+  T = function (e) {
+    function t() {
+      var e, a, r;
+      babelHelpers.classCallCheck(this, t);
+      for (var n = arguments.length, l = new Array(n), u = 0; u < n; u++) l[u] = arguments[u];
+      return babelHelpers.possibleConstructorReturn(r, (a = r = babelHelpers.possibleConstructorReturn(this, (e = babelHelpers.getPrototypeOf(t)).call.apply(e, [this].concat(l))), r._nativeOffset = {
+        x: new ReactNative.Animated.Value(0),
+        y: new ReactNative.Animated.Value(0)
+      }, r.state = {
+        title: '',
+        playlist: [],
+        playlistId: null,
+        oriList: [],
+        loading: true,
+        searching: false,
+        index: null,
+        showList: true,
+        showMult: false,
+        showRestore: false,
+        subscribed: true,
+        userId: 0,
+        searchText: '',
+        api: '',
+        trackCount: 0,
+        orderText: '',
+        heartMode: true,
+        sortMode: 'time',
+        lastPlayedSong: null,
+        playingIndex: -1,
+        isCreatedByMe: true,
+        isTopList: false
+      }, r.loadLastPlayedSong = function (e, t) {
+        var a;
+        return regeneratorRuntime.async(function (n) {
+          for (;;) switch (n.prev = n.next) {
+            case 0:
+              n.next = 2;
+              return regeneratorRuntime.awrap(lastSong.default.get(e));
+            case 2:
+              if (a = n.sent) {
+                n.next = 5;
+                break;
+              }
+              return n.abrupt("return");
+            case 5:
+              t.some(function (e) {
+                return e.id === a.id;
+              }) && r.setState({
+                lastPlayedSong: a
+              });
+            case 7:
+            case "end":
+              return n.stop();
+          }
+        }, null, this);
+      }, r.collectPlaylistOrder = function () {
+        var e = r.state,
+          t = e.playlistIndex,
+          a = e.api;
+        t && events.emitter.emit(names.default.PlaylistSetOrder, {
+          index: t,
+          api: a
+        });
+      }, r.switchPlaylist = function (e) {
+        var t,
+          a,
+          n,
+          s,
+          i,
+          l,
+          o = e.api,
+          u = e.index,
+          d = e.subscribed,
+          p = e.playlist;
+        switch (o === providers.default.netEase ? (a = p.trackCount, n = p.coverImgUrl || p.picUrl, s = p.name, i = p.id, l = p.creator) : o === providers.default.qqMusic && (n = p.picurl || p.imgurl, s = p.title || p.dissname, a = r.state.trackCount, i = p.dissid || p.id), r.setState({
+          api: o,
+          playlistIndex: u,
+          subscribed: d || false,
+          isTopList: r.getIsTopList(e.playlist),
+          coverImgUrl: n,
+          name: s,
+          trackCount: a,
+          id: i,
+          creator: l
+        }), o) {
+          case providers.default.netEase:
+            r.netEaseStorageList(null === (t = e.playlist) || void 0 === t ? void 0 : t.id);
+            r.switchNetease(e);
+            break;
+          case providers.default.qqMusic:
+            r.switchQQMusic(e);
+        }
+      }, r.switchNetease = function (e) {
+        var t, a, n, s, i;
+        return regeneratorRuntime.async(function (l) {
+          for (;;) switch (l.prev = l.next) {
+            case 0:
+              if (t = e.playlist, a = e.userId, n = t.id) {
+                l.next = 4;
+                break;
+              }
+              return l.abrupt("return");
+            case 4:
+              l.next = 6;
+              return regeneratorRuntime.awrap(module896.default.getFromNetease(n));
+            case 6:
+              (s = l.sent) && r.setData(s);
+              i = r.getIsCreatedByMe(a, t);
+              r.setState({
+                userId: a,
+                isCreatedByMe: i
+              });
+              r.loadMoreThanThousands(s.moreFunc);
+            case 11:
+            case "end":
+              return l.stop();
+          }
+        }, null, this);
+      }, r.loadMoreThanThousands = function (e) {
+        var t, a, n;
+        return regeneratorRuntime.async(function (s) {
+          for (;;) switch (s.prev = s.next) {
+            case 0:
+              if (!e) {
+                s.next = 6;
+                break;
+              }
+              s.next = 3;
+              return regeneratorRuntime.awrap(e());
+            case 3:
+              t = s.sent;
+              (null === (a = t.songs) || void 0 === a ? void 0 : a.length) > 0 && (n = babelHelpers.toConsumableArray(r.state.oriList).concat(babelHelpers.toConsumableArray(a)), r.setState({
+                oriList: n,
+                playlist: n
+              }));
+            case 6:
+            case "end":
+              return s.stop();
+          }
+        }, null, this);
+      }, r.getIsTopList = function (e) {
+        if (!e) return false;
+        var t = e.name,
+          a = e.title,
+          r = e.dissname;
+        return (t || a || r).includes('\u699c');
+      }, r.getIsCreatedByMe = function (e, t) {
+        return !!e && e === t.creator.userId;
+      }, r.switchQQMusic = function (e) {
+        var t, a, n;
+        return regeneratorRuntime.async(function (s) {
+          for (;;) switch (s.prev = s.next) {
+            case 0:
+              if (t = e.playlist, a = t.id || t.dissid) {
+                s.next = 4;
+                break;
+              }
+              return s.abrupt("return");
+            case 4:
+              s.next = 6;
+              return regeneratorRuntime.awrap(module896.default.getFromQQMusic(a));
+            case 6:
+              (n = s.sent) && (r.setData(n), r.setState({
+                isCreatedByMe: false
+              }));
+            case 8:
+            case "end":
+              return s.stop();
+          }
+        }, null, this);
+      }, r.setData = function (e) {
+        var t = e.name,
+          a = e.id,
+          n = e.tracks,
+          s = e.trackCount,
+          i = void 0 === s ? 0 : s;
+        r.setState({
+          playlist: n,
+          oriList: n,
+          name: t,
+          loading: false,
+          playlistId: a,
+          sortMode: 'time',
+          trackCount: i
+        }, function () {
+          var e, t;
+          null === (e = (t = r._list).endRefresh) || void 0 === e || e.call(t);
+          r.attachLocalPath(n);
+          r.loadLastPlayedSong(a, n);
+        });
+      }, r.netEaseStorageList = function (e) {
+        e && storage.load({
+          key: keys.default.netEasePlaylistCache
+        }).then(function (t) {
+          var a = t.find(function (t) {
+              return t.id === e;
+            }),
+            n = a.tracks,
+            s = a.name;
+          n.length > 0 && r.setData({
+            id: e,
+            name: s,
+            tracks: n
+          });
+        });
+      }, r.attachLocalPath = function (e) {
+        e.length < 1 || mediaStore.default.attachLocalPath(e).then(function (e) {
+          r.setState({
+            playlist: e,
+            oriList: e
+          });
+        });
+      }, r.searchSong = function (e) {
+        var t,
+          a = !(arguments.length > 1 && void 0 !== arguments[1]) || arguments[1],
+          n = !(arguments.length > 2 && void 0 !== arguments[2]) || arguments[2],
+          s = r.state,
+          i = s.playlist,
+          l = s.oriList,
+          o = s.searchText;
+        i ? (t = e.match(':0') || e.length < 1 ? utils.filterHelper.search(babelHelpers.toConsumableArray(l), e) : utils.filterHelper.search(i, e), r.setState({
+          playlist: t,
+          searching: '' !== e,
+          showRestore: a && '' !== e,
+          searchText: n ? e : o,
+          orderText: '' === e ? '' : r.state.orderText
+        }), r.syncPlayingIndex(i, t)) : r.setState({
+          searchText: null
+        });
+      }, r.syncPlayingIndex = function (e, t) {
+        var a = r.state.playingIndex;
+        if (-1 !== a) {
+          var n = e[a],
+            s = t.findIndex(function (e) {
+              return e.id === n.id;
+            });
+          r.setState({
+            playingIndex: s
+          });
+        }
+      }, r.onRestore = function () {
+        var e = r.state.oriList;
+        r.setState({
+          playlist: e,
+          showRestore: false,
+          searchText: '',
+          orderText: '',
+          playingIndex: -1
+        });
+      }, r.onRefresh = function () {
+        var e = r.props.navigation.state.params;
+        e && r.switchPlaylist(e, true);
+      }, r.onSort = function () {
+        var e,
+          t = r.state.sortMode,
+          a = sortModes.sortModeMap[t];
+        switch (a) {
+          case 'time':
+            e = '';
+            r.searchSong(r.state.searchText + ":0", false, false);
+            break;
+          case 'song':
+            e = sortModes.orderTexts.song;
+            r.searchSong(utils.filterHelper.searchTypesMap.bySong, false, false);
+            break;
+          case 'singer':
+            e = sortModes.orderTexts.singer;
+            r.searchSong(utils.filterHelper.searchTypesMap.byArtist, false, false);
+            break;
+          case 'album':
+            e = sortModes.orderTexts.album;
+            r.searchSong(utils.filterHelper.searchTypesMap.byAlbum, false, false);
+            break;
+          case 'random':
+            e = sortModes.orderTexts.random;
+            r.searchSong(utils.filterHelper.searchTypesMap.byRandom, false, false);
+        }
+        r.setState({
+          orderText: e,
+          sortMode: a
+        });
+      }, r.onSortText = function () {
+        var e = r.state,
+          t = e.orderText,
+          a = e.playlist;
+        switch (t) {
+          case sortModes.orderTexts.song:
+          case sortModes.orderTexts.singer:
+          case sortModes.orderTexts.album:
+            r.setState({
+              playlist: babelHelpers.toConsumableArray(a).reverse()
+            });
+            break;
+          case sortModes.orderTexts.random:
+            r.searchSong(':4', false, false);
+        }
+      }, r.onUser = function () {
+        var e = r.state,
+          t = e.api,
+          a = e.creator;
+        if (t === providers.default.netEase) {
+          var n = a.userId;
+          n && r.props.navigation.navigate('UserInfo', {
+            userId: n
+          });
+        }
+      }, r._renderIndexPath = function (e) {
+        var t = e.row;
+        return r._renderItem({
+          item: r.state.playlist[t],
+          index: t
+        });
+      }, r.onSubscribe = function (e) {
+        var t = r.state,
+          a = t.api,
+          n = t.subscribed,
+          s = n ? 'unsubscribe' : 'subscribe';
+        module896.default.onSubscribe(e, s, a);
+        r.setState({
+          subscribed: !n
+        });
+      }, r.onScroll = function (e) {
+        var t = e.nativeEvent.contentOffset.y,
+          a = sortModes.FOREGROUND_HEIGHT - 100;
+        t < a ? r.setState({
+          title: ''
+        }) : t > a && r.setState({
+          title: r.state.name
+        });
+      }, r.onLastPlay = function () {
+        var e = r.state,
+          t = e.lastPlayedSong,
+          a = e.playlist;
+        if (!((null === a || void 0 === a ? void 0 : a.length) <= 0)) if (t) {
+          var n,
+            s = a.findIndex(function (e) {
+              return e.id === t.id;
+            });
+          if (s >= 0) {
+            module896.default.playMusic(t, s, babelHelpers.assertThisInitialized(babelHelpers.assertThisInitialized(r)));
+            null === (n = r._list) || void 0 === n || n.scrollTo({
+              x: 0,
+              y: (s + 1) * constants.ITEM_HEIGHT
+            });
+          }
+          r.setState({
+            lastPlayedSong: null
+          });
+        } else module896.default.playMusic(a[0], 0, babelHelpers.assertThisInitialized(babelHelpers.assertThisInitialized(r)));
+      }, r._renderItem = function (e) {
+        var t = e.item,
+          a = e.index,
+          n = r.state,
+          i = n.api,
+          l = n.playingIndex,
+          u = n.isTopList,
+          d = module896.default.formatItemData(t, i);
+        return React.default.createElement(components.SongRow, {
+          lastRank: t.lastRank,
+          showRank: u,
+          songItem: t,
+          index: a,
+          song: d.song,
+          album: d.album,
+          singer: d.artist,
+          alias: d.alias,
+          onPress: function () {
+            return module896.default.playMusic(t, a, babelHelpers.assertThisInitialized(babelHelpers.assertThisInitialized(r)));
+          },
+          detail: function () {
+            return module896.default.onDetail(t, a, babelHelpers.assertThisInitialized(babelHelpers.assertThisInitialized(r)));
+          },
+          addToQueue: function () {
+            return module896.default.addToQueue(t, i);
+          },
+          isExist: t.localPath,
+          onMV: function () {
+            return module896.default.onMV(t, i);
+          },
+          showMV: d.showMV,
+          playing: a === l
+        });
+      }, r.onTop = function () {
+        var e;
+        null === (e = r._list) || void 0 === e || e.scrollTo({
+          x: 0,
+          y: 0
+        });
+      }, r.goBack = function () {
+        r.props.navigation.goBack();
+      }, r.onInsertLastPlayed = function () {
+        var e = r.state,
+          t = e.lastPlayedSong,
+          a = e.api;
+        t && module896.default.addToQueue(t, a);
+      }, r.getPlaylistUrl = function () {
+        var e,
+          t = r.state,
+          a = t.api,
+          n = t.playlistId;
+        switch (a) {
+          case providers.default.netEase:
+            e = "https://music.163.com/#/playlist?id=" + n;
+            break;
+          case providers.default.qqMusic:
+            e = "https://y.qq.com/n/yqq/playlist/" + n + ".html";
+        }
+        return e;
+      }, r.onWebview = function () {
+        var e = r.getPlaylistUrl();
+        r.props.navigation.navigate('WebViewPage', {
+          url: e
+        });
+      }, r.onCopy = function () {
+        var e = r.getPlaylistUrl();
+        ReactNative.Clipboard.setString(e);
+        toast(locales.default.COPIED + " " + e);
+      }, r.onOpenUrl = function () {
+        var e = r.getPlaylistUrl();
+        ReactNative.Linking.openURL(e);
+      }, r.onShare = function () {
+        var e = r.getPlaylistUrl();
+        ReactNative.Share.share({
+          message: e
+        });
+      }, a));
+    }
+    babelHelpers.createClass(t, [{
+      key: "componentDidMount",
+      value: function () {
+        var e = this,
+          t = this.props.navigation.state.params;
+        this.switchPlaylist(t);
+        this.deleteSub = events.emitter.addListener(names.default.DeleteFromPlaylist, function (a) {
+          var r = a.api,
+            n = a.trackid,
+            s = e.state.playlistId;
+          if (r) {
+            var i;
+            if (r === providers.default.netEase) {
+              module896.default.deleteFromNetease({
+                playlistId: s,
+                trackid: n
+              });
+              i = e.state.playlist.filter(function (e) {
+                return e.id !== n;
+              });
+            } else if (r === providers.default.qqMusic) {
+              var l = t.playlist;
+              module896.default.deleteFromQQMusic(n, l.dirid);
+              i = e.state.playlist.filter(function (e) {
+                return e.songid !== n;
+              });
+            }
+            e.setState({
+              playlist: i
+            });
+            toast(locales.default.DELETE_SUCCESS);
+          } else e.onRefresh();
+        });
+        this.playerSub = events.emitter.addListener(names.default.Player, function (t) {
+          var a = t.song,
+            r = t.api;
+          if ('clearPlayingList' !== t.type) {
+            var n = e.state.playlist;
+            if (a && r === providers.default.netEase) {
+              var s = n.findIndex(function (e) {
+                return e.id === a.id;
+              });
+              s >= 0 && e.setState({
+                playingIndex: s
+              });
+            }
+          } else e.setState({
+            playingIndex: -1
+          });
+        });
+      }
+    }, {
+      key: "componentWillUnmount",
+      value: function () {
+        this.deleteSub.remove();
+        this.playerSub.remove();
+      }
+    }, {
+      key: "render",
+      value: function () {
+        var e = this,
+          t = this.state,
+          a = t.api,
+          r = t.coverImgUrl,
+          n = t.name,
+          c = t.trackCount,
+          f = t.id,
+          h = t.creator;
+        return React.default.createElement(ReactNative.View, {
+          style: I.container
+        }, React.default.createElement(components.Background, null), React.default.createElement(reactNativeLargelist.LargeList, {
+          ref: function (t) {
+            return e._list = t;
+          },
+          data: [{
+            items: this.state.playlist
+          }],
+          heightForIndexPath: function () {
+            return constants.ITEM_HEIGHT;
+          },
+          renderIndexPath: this._renderIndexPath,
+          onScroll: this.onScroll,
+          onRefresh: this.onRefresh,
+          refreshHeader: PlaylistTabs.default,
+          renderEmpty: function () {
+            return React.default.createElement(components.Spinkit, null);
+          },
+          onNativeContentOffsetExtract: this._nativeOffset,
+          renderHeader: function () {
+            return React.default.createElement(ReactNative.View, null, React.default.createElement(components.PlaylistForeground, {
+              coverImgUrl: r + '?param=800y800',
+              name: n,
+              api: a,
+              trackCount: c,
+              onRestore: e.onRestore,
+              showRestore: e.state.showRestore,
+              subscribed: e.state.subscribed,
+              onSubscribe: function () {
+                return e.onSubscribe(f);
+              },
+              savePic: function () {
+                return module896.default.savePic(r, e.state.name);
+              },
+              onSort: e.onSort,
+              orderText: e.state.orderText,
+              onSortText: function () {
+                return e.onSortText(e.state.sortMode);
+              },
+              onHeartMode: function () {
+                return module896.default.onHeartMode(e);
+              },
+              heartMode: e.state.heartMode,
+              onMult: function () {
+                return e.setState({
+                  showMult: true
+                });
+              },
+              lastPlayedSong: e.state.lastPlayedSong,
+              onPlay: e.onLastPlay,
+              onInsert: e.onInsertLastPlayed,
+              isCreatedByMe: e.state.isCreatedByMe,
+              onWebview: e.onWebview,
+              creator: h,
+              onUser: e.onUser,
+              onCopy: e.onCopy,
+              onOpenUrl: e.onOpenUrl,
+              onShare: e.onShare
+            }));
+          }
+        }), React.default.createElement(components.HeaderBar, {
+          opacity: this._nativeOffset.y.interpolate({
+            inputRange: [0, sortModes.FOREGROUND_HEIGHT - 100],
+            outputRange: [0, 1],
+            extrapolate: 'clamp'
+          }),
+          headerStyle: I.header,
+          title: this.state.title,
+          goBack: this.goBack,
+          onTop: this.onTop,
+          textInput: !this.state.loading,
+          onChangeText: function (t) {
+            return e.searchSong(t);
+          },
+          searchText: this.state.searchText,
+          blur: true,
+          bold: true
+        }), React.default.createElement(modals.MultiplySelectModal, {
+          visible: this.state.showMult,
+          onClose: function () {
+            return e.setState({
+              showMult: false
+            });
+          },
+          data: this.state.playlist,
+          api: this.state.api,
+          playlistId: this.state.playlistId
+        }));
+      }
+    }]);
+    babelHelpers.inherits(t, e);
+    return t;
+  }(React.PureComponent),
+  I = ReactNative.StyleSheet.create({
+    container: {
+      flex: 1
+    },
+    header: {
+      position: 'absolute',
+      top: 0
+    }
+  }),
+  M = T;
+exports.default = M;

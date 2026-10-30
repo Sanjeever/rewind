@@ -1,0 +1,24 @@
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+Object.defineProperty(exports, "Netease", {
+  enumerable: true,
+  get: function () {
+    return netease.default;
+  }
+});
+Object.defineProperty(exports, "provider", {
+  enumerable: true,
+  get: function () {
+    return provider.default;
+  }
+});
+Object.defineProperty(exports, "QQMusic", {
+  enumerable: true,
+  get: function () {
+    return qqmusic.default;
+  }
+});
+var netease = babelHelpers.interopRequireDefault(require("./netease/index")),
+  provider = babelHelpers.interopRequireDefault(require("./provider")),
+  qqmusic = babelHelpers.interopRequireDefault(require("./qqmusic/index"));

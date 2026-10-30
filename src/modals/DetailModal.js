@@ -1,0 +1,446 @@
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var React = babelHelpers.interopRequireWildcard(require("react")),
+  ReactNative = require("react-native"),
+  reactNativeSpringScrollview = require("react-native-spring-scrollview"),
+  rnFetchBlob = babelHelpers.interopRequireDefault(require("rn-fetch-blob")),
+  components = require("../components/index"),
+  providers = babelHelpers.interopRequireDefault(require("../services/providers")),
+  constants = require("../theme/constants"),
+  module719 = babelHelpers.interopRequireDefault(require("../modules/module-719")),
+  names = babelHelpers.interopRequireDefault(require("../events/names")),
+  icons = babelHelpers.interopRequireDefault(require("../theme/icons")),
+  locales = babelHelpers.interopRequireDefault(require("../locales/index")),
+  download = babelHelpers.interopRequireDefault(require("../services/download")),
+  events = require("../events/index"),
+  utils = require("../utils/index"),
+  trackInfo = require("../services/trackInfo"),
+  queue = babelHelpers.interopRequireDefault(require("../events/queue")),
+  module723 = babelHelpers.interopRequireDefault(require("../modules/module-723")),
+  module724 = babelHelpers.interopRequireDefault(require("../modules/module-724")),
+  C = {
+    title: locales.default.DELETE_FROM_LOCAL,
+    icon: {
+      name: icons.default.DELETE,
+      color: constants.COLORS.secondary
+    }
+  },
+  D = {
+    title: locales.default.DELETE_FROM_PLAYLIST,
+    icon: {
+      name: icons.default.DELETE,
+      color: constants.COLORS.secondary
+    }
+  },
+  T = function (e) {
+    function t() {
+      var e, a, l;
+      babelHelpers.classCallCheck(this, t);
+      for (var n = arguments.length, r = new Array(n), u = 0; u < n; u++) r[u] = arguments[u];
+      return babelHelpers.possibleConstructorReturn(l, (a = l = babelHelpers.possibleConstructorReturn(this, (e = babelHelpers.getPrototypeOf(t)).call.apply(e, [this].concat(r))), l.actionsMap = null, l.state = {
+        song: null,
+        api: '',
+        tools: module719.default,
+        artists: [],
+        mainModalShow: false,
+        sonModalShow: false,
+        mvid: null
+      }, l.getData = function (e) {
+        var t;
+        if ('local' !== e.api) {
+          var a = l.state.tools,
+            n = (0, trackInfo.extractSingerItem)(e.song, e.api);
+          a[2].value = (0, trackInfo.extractSingerName)(e.song, e.api);
+          a[3].value = (0, trackInfo.extractAlbumName)(e.song, e.api);
+          var o = (null === (t = e.song.mv) || void 0 === t ? void 0 : t.vid) || e.song.vid || e.song.mvid || e.song.mv,
+            i = (0, trackInfo.extractFullInfo)(e.song, 'big');
+          l.setState({
+            song: i,
+            songItem: e.song,
+            index: e.index,
+            api: e.api,
+            tools: a,
+            artists: n,
+            playlistId: e.playlistId,
+            mvid: o
+          });
+        } else l.setState({
+          api: e.api,
+          song: (0, trackInfo.extractFullInfo)(e.song, 'small'),
+          songItem: e.song,
+          index: e.index,
+          tools: [module719.default[0], C]
+        });
+      }, l.onClose = function () {
+        l.setState({
+          song: null,
+          tools: module719.default,
+          artists: [],
+          api: '',
+          mainModalShow: false,
+          sonModalShow: false
+        });
+      }, l.renderTools = function (e) {
+        return e.map(function (e, t) {
+          return e.needCheck && !Boolean(e.value) ? null : React.default.createElement(module723.default, {
+            key: t,
+            title: e.title,
+            value: e.value,
+            onPress: function () {
+              return l.onListItem(t);
+            }
+          });
+        });
+      }, l.deleteFromLocalAlert = function () {
+        ReactNative.Alert.alert(locales.default.DELETE_THIS_SONG, locales.default.CAN_NOT_RECOVER, [{
+          text: locales.default.CANCEL,
+          onPress: function () {
+            return null;
+          },
+          style: 'cancel'
+        }, {
+          text: locales.default.CONFIRM,
+          onPress: l.deleteFromLocal
+        }]);
+      }, l.deleteFromLocal = function () {
+        var e = l.state,
+          t = e.songItem,
+          a = e.index,
+          n = t.path;
+        rnFetchBlob.default.fs.unlink(n).then(function () {
+          rnFetchBlob.default.fs.scanFile([{
+            path: n,
+            mime: 'audio/mpeg'
+          }]).then(function () {
+            toast(locales.default.DELETE_SUCCESS);
+          }).catch(function () {
+            toast(locales.default.DELETE_FAILED);
+          });
+        });
+        events.emitter.emit(names.default.DeleteFromLocal, {
+          deleteIndex: a
+        });
+        l.onClose();
+      }, l.alertDeleteFromPlaylist = function () {
+        ReactNative.Alert.alert(locales.default.WARN, locales.default.CONFIRM_DELETE_FROM_PLAYLIST, [{
+          text: locales.default.CANCEL,
+          onPress: function () {
+            return null;
+          },
+          style: 'cancel'
+        }, {
+          text: locales.default.CONFIRM,
+          onPress: function () {
+            return l.deleteFromPlaylist();
+          }
+        }]);
+      }, l.deleteFromPlaylist = function () {
+        var e,
+          t = l.state,
+          a = t.api,
+          n = t.songItem;
+        switch (a) {
+          case providers.default.netEase:
+            e = n.id;
+            events.emitter.emit(names.default.DeleteFromPlaylist, {
+              api: a,
+              trackid: e
+            });
+            break;
+          case providers.default.qqMusic:
+            e = n.songid;
+            events.emitter.emit(names.default.DeleteFromPlaylist, {
+              api: a,
+              trackid: e
+            });
+        }
+      }, l.onListItem = function (e) {
+        var t,
+          a = l.state.api,
+          n = {
+            0: l.insertToQueue,
+            1: 'local' === a ? l.deleteFromLocalAlert : l.onCollect,
+            2: l.onArtist,
+            3: l.onAlbum,
+            4: l.onComment,
+            5: l.onShare,
+            6: l.onLyric,
+            7: l.onDownload,
+            8: l.onMV
+          };
+        null === (t = n[e]) || void 0 === t || t.call(n);
+      }, l.onCollect = function () {
+        var e = l.state,
+          t = e.api,
+          a = e.songItem;
+        events.emitter.emit(names.default.CollectModal, {
+          api: t,
+          song: a
+        });
+      }, l.onMV = function () {
+        var e = l.state,
+          t = e.mvid,
+          a = e.api;
+        t && (queue.default.playMV(t, a), l.onClose());
+      }, l.onLyric = function () {
+        var e = l.state,
+          t = e.api,
+          a = e.songItem,
+          n = (0, trackInfo.extractFullInfo)(a).uid;
+        l.navigateTo('LyricPage', {
+          id: n,
+          item: a,
+          api: t
+        });
+      }, l.onShare = function () {
+        var e,
+          t = l.state,
+          a = t.api,
+          n = t.songItem,
+          o = (0, trackInfo.extractFullInfo)(n),
+          r = (0, utils.parseArtist)(o.singer),
+          s = o.uid;
+        switch (a) {
+          case providers.default.netEase:
+            e = r + " - " + o.song + " : http://music.163.com/song?id=" + s + " (@\u7f51\u6613\u4e91\u97f3\u4e50)";
+            break;
+          case providers.default.qqMusic:
+            e = r + " - " + o.song + " : https://y.qq.com/n/yqq/song/" + s + ".html (@QQ\u97f3\u4e50)";
+        }
+        ReactNative.Share.share({
+          message: e
+        });
+      }, l.navigateTo = function (e, t) {
+        utils.universalNavigator.navigate(e, t);
+        events.emitter.emit(names.default.PlayerClose);
+        events.emitter.emit(names.default.NowPlayingModal, {
+          forceClose: true
+        });
+        l.onClose();
+      }, l.onArtist = function () {
+        var e = l.state.artists;
+        e.length > 1 ? l.setState({
+          sonModalShow: true
+        }) : e.length > 0 && l.onSingleArtist(e[0]);
+      }, l.onSingleArtist = function (e) {
+        if (e) {
+          var t = l.state.api;
+          l.navigateTo('ArtistPage', {
+            item: e,
+            api: t
+          });
+        }
+      }, l.onAlbum = function () {
+        var e = l.state,
+          t = e.api,
+          a = e.songItem,
+          n = (0, trackInfo.extractAlbumItem)(a, t);
+        l.navigateTo('AlbumPage', {
+          item: n,
+          api: t
+        });
+      }, l.onComment = function () {
+        var e = l.state,
+          t = e.songItem,
+          a = e.api;
+        l.navigateTo('CommentPage', {
+          api: a,
+          song: t
+        });
+        l.onClose();
+      }, l.insertToQueue = function () {
+        var e = l.state,
+          t = e.songItem,
+          a = e.api;
+        t && events.emitter.emit(names.default.InsertToList, {
+          data: t,
+          type: 'item',
+          api: a
+        });
+      }, l.onDownload = function () {
+        var e = l.state,
+          t = e.songItem,
+          a = e.api,
+          n = l.props.cloneThroughLinking,
+          o = (0, trackInfo.extractFullInfo)(t.mainSong ? t.mainSong : t),
+          i = l.songName(o.song, o.singer),
+          r = o.uid;
+        download.default.download(i, r, a, o, n);
+      }, l.saveCover = function () {
+        var e = l.state,
+          t = e.song,
+          a = e.songItem;
+        events.emitter.emit(names.default.SavePicModal, {
+          img: t.img,
+          song: a.name
+        });
+      }, l.songName = function (e, t) {
+        return (t[0].name + ' - ' + e).replace(/\//gi, 'x');
+      }, a));
+    }
+    babelHelpers.createClass(t, [{
+      key: "componentDidMount",
+      value: function () {
+        var e = this;
+        this.sub = events.emitter.addListener(names.default.DetailModal, function (t) {
+          e.setState({
+            mainModalShow: true
+          });
+          e.getData(t);
+        });
+      }
+    }, {
+      key: "componentWillUnmount",
+      value: function () {
+        var e, t;
+        null === (e = (t = this.sub).remove) || void 0 === e || e.call(t);
+      }
+    }, {
+      key: "render",
+      value: function () {
+        var e = this,
+          t = this.state,
+          a = t.song,
+          l = t.playlistId,
+          n = t.mvid,
+          s = t.mainModalShow,
+          d = t.sonModalShow,
+          f = t.tools,
+          m = t.artists,
+          g = this.props.isRound;
+        return React.default.createElement(ReactNative.Modal, {
+          animationType: "fade",
+          onRequestClose: this.onClose,
+          visible: s,
+          style: s && {
+            height: constants.DEVICE_HEIGHT,
+            width: constants.DEVICE_WIDTH
+          }
+        }, React.default.createElement(ReactNative.View, {
+          style: w.container
+        }, React.default.createElement(components.Background, {
+          imageStyle: {
+            opacity: .5
+          },
+          coverUrl: null === a || void 0 === a ? void 0 : a.img,
+          blur: true
+        }), React.default.createElement(reactNativeSpringScrollview.SpringScrollView, {
+          style: {
+            padding: 10,
+            flex: 1,
+            width: '100%',
+            paddingBottom: 0
+          },
+          showsVerticalScrollIndicator: false,
+          overScrollMode: "never"
+        }, React.default.createElement(ReactNative.TouchableWithoutFeedback, {
+          onPress: this.onClose
+        }, React.default.createElement(ReactNative.View, {
+          style: [ReactNative.StyleSheet.absoluteFill]
+        })), React.default.createElement(ReactNative.View, {
+          style: {
+            height: .1 * constants.DEVICE_HEIGHT,
+            width: '100%'
+          }
+        }), a ? React.default.createElement(ReactNative.View, {
+          style: w.songAvatar
+        }, React.default.createElement(ReactNative.TouchableOpacity, {
+          onPress: this.saveCover
+        }, React.default.createElement(ReactNative.Image, {
+          source: {
+            uri: a.img
+          },
+          style: {
+            height: 150,
+            width: 150,
+            borderRadius: g ? 75 : 5
+          }
+        })), n ? React.default.createElement(module724.default, {
+          onPress: this.onMV,
+          isRound: g
+        }) : null, React.default.createElement(components.Selectable, {
+          numberOfLines: 3,
+          style: [w.text, {
+            flex: 1,
+            fontSize: 18,
+            fontWeight: 'bold',
+            marginTop: 10
+          }]
+        }, a.song), React.default.createElement(components.Selectable, {
+          style: [w.text, {
+            fontSize: 13
+          }]
+        }, a.album)) : null, React.default.createElement(ReactNative.View, {
+          style: w.tool
+        }, l && React.default.createElement(module723.default, {
+          title: D.title,
+          onPress: this.alertDeleteFromPlaylist
+        }), this.renderTools(f)), React.default.createElement(ReactNative.View, {
+          style: {
+            height: .1 * constants.DEVICE_HEIGHT,
+            width: '100%'
+          }
+        })), React.default.createElement(ReactNative.Modal, {
+          animationType: "fade",
+          transparent: true,
+          onRequestClose: function () {
+            return e.setState({
+              sonModalShow: false
+            });
+          },
+          visible: d
+        }, React.default.createElement(ReactNative.View, {
+          style: [w.container, {
+            paddingTop: '80%'
+          }]
+        }, React.default.createElement(ReactNative.TouchableWithoutFeedback, {
+          onPress: function () {
+            return e.setState({
+              sonModalShow: false
+            });
+          }
+        }, React.default.createElement(ReactNative.View, {
+          style: [ReactNative.StyleSheet.absoluteFill]
+        })), null === m || void 0 === m ? void 0 : m.map(function (t, a) {
+          return React.default.createElement(module723.default, {
+            key: a,
+            value: t.name,
+            title: a + 1,
+            onPress: function () {
+              return e.onSingleArtist(t);
+            }
+          });
+        })))));
+      }
+    }]);
+    babelHelpers.inherits(t, e);
+    return t;
+  }(React.PureComponent);
+exports.default = T;
+var w = ReactNative.StyleSheet.create({
+  container: {
+    height: constants.DEVICE_HEIGHT,
+    width: constants.DEVICE_WIDTH,
+    flex: 1,
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,1)'
+  },
+  text: {
+    fontSize: 16,
+    textAlign: 'center'
+  },
+  songAvatar: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 24,
+    marginBottom: 10
+  },
+  tool: {
+    flex: 1,
+    width: '80%',
+    alignSelf: 'center',
+    alignItems: 'center'
+  }
+});

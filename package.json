@@ -4,7 +4,9 @@
   "private": true,
   "packageManager": "pnpm@11.5.2",
   "scripts": {
-    "inventory": "node scripts/inventory.cjs"
+    "inventory": "node scripts/inventory.cjs",
+    "bundle:android": "node scripts/bundle.cjs",
+    "check:modules": "node scripts/check-modules.cjs"
   },
   "devDependencies": {
     "@babel/generator": "7.26.10",
