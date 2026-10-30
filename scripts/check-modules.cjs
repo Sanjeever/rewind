@@ -15,7 +15,10 @@ function factories(ast) {
 const before = factories(original);
 const after = factories(rebuilt);
 assert.equal(before.size,938);
-assert.equal(after.size,938);
+assert(after.size>=938);
+for (const [id,args] of after) {
+  assert((args[2]?.elements||[]).every(item=>after.has(item.value)),`模块 ${id} 存在无效依赖`);
+}
 const applicationPaths = map.modules.filter(m=>m.source).map(m=>path.resolve(m.source));
 assert.equal(new Set(applicationPaths).size,applicationPaths.length,'自有源码路径重复');
 for (const m of map.modules) {

@@ -6,12 +6,15 @@
   "scripts": {
     "inventory": "node scripts/inventory.cjs",
     "bundle:android": "node scripts/bundle.cjs",
-    "check:modules": "node scripts/check-modules.cjs",
+    "check:modules": "node scripts/bundle.cjs && node scripts/check-modules.cjs",
     "prepare:runtime": "pwsh -NoProfile -File scripts/prepare-runtime.ps1"
   },
   "devDependencies": {
+    "@babel/core": "7.26.10",
     "@babel/generator": "7.26.10",
     "@babel/parser": "7.26.10",
+    "@babel/preset-env": "7.26.9",
+    "@babel/preset-react": "7.26.3",
     "@babel/traverse": "7.26.10",
     "@babel/types": "7.26.10",
     "adm-zip": "0.5.16"

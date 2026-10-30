@@ -77,7 +77,11 @@ pnpm bundle:android
 pnpm check:modules
 ```
 
-两条命令已执行成功。打包器读取自有源码和 `recovery/module-map.json`，生成 `.recovery/generated/assets/index.android.bundle`。检查覆盖全部 938 个模块依赖、自有源码路径和运行库 factory 一致性，并对照原版执行四组真实歌词解析输入。这些检查尚不能证明 Android 运行效果。
+两条命令已执行成功。打包器读取自有源码和 `recovery/module-map.json`，生成 `.recovery/generated/assets/index.android.bundle`。检查先重新编译源码，再核对模块引用、自有源码路径、运行库 factory、四组歌词对照和两套包名的存储路径。
+
+应用源码使用 Babel 7 编译，支持 JSX、ES 模块与 JSON。新增 JS / JSON 文件通过相对路径引用，打包器自动分配新增模块 ID，无需手改模块表。编译目标兼容当前 JSC，未迁移 React Native 版本。新增第三方入口仍须先核对兼容版本和运行库映射。
+
+已临时新增 JSX 组件与 JSON 配置，重新构建安装后，关于页实际显示 `3.5.0-dev · JSX链路验证`，证明新增文件也进入运行 APK。截图在 `.recovery/validation/dev-jsx-proof.png`，临时组件、配置和文字均已撤回。
 
 673 个运行库模块暂从原版公共 JavaScript 运行库加载到临时构建目录，包含框架、polyfill、第三方库。自有源码之间使用相对路径；第三方入口使用包名，尚未识别的内部依赖使用 `@runtime/编号`。当前不是标准 Metro 依赖安装流程，精确依赖版本与上游替换仍在进行。React 的实际版本常量为 16.8.3，不依据 RN 默认 peer dependency 推定版本。
 

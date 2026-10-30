@@ -48,7 +48,7 @@ task bundleJavaScript(type: Exec) {
     workingDir projectRoot
     commandLine 'node', 'scripts/bundle.cjs'
     inputs.files fileTree(new File(projectRoot, 'src')), fileTree(new File(projectRoot, 'assets'))
-    inputs.files new File(projectRoot, 'index.js'), new File(projectRoot, 'recovery/module-map.json'), new File(projectRoot, 'scripts/bundle.cjs')
+    inputs.files new File(projectRoot, 'index.js'), new File(projectRoot, 'babel.config.cjs'), new File(projectRoot, 'recovery/module-map.json'), new File(projectRoot, 'scripts/bundle.cjs')
     outputs.file new File(projectRoot, '.recovery/generated/assets/index.android.bundle')
 }
 preBuild.dependsOn bundleJavaScript
