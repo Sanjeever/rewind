@@ -81,6 +81,7 @@ pnpm bundle:android
 - **单一播放队列。** JS 维护队列与业务播放模式，Media3 服务持有当前音频、媒体会话和音频焦点，避免通知与页面各自维护队列导致不同步。关闭时释放媒体资源，由 Activity 正常生命周期卸载界面；提前销毁 ReactHost 曾触发 Fabric Surface 生命周期断言。
 - **队列归属。** `App.state.playerInfo` 持有唯一业务队列。`setPlayerData` 接受基于最新队列的更新函数，提交回调获得最终队列，播放控制器在提交后加载歌曲。队列更新回归见 [App 测试](src/App.test.cjs)。
 - **播放指令与状态。** `PlayerController` 处理播放指令、队列操作和资源加载，原生 `rewind.playbackState` 通知更新播放状态，不再次调用播放或暂停。切歌、清空和卸载使旧音源请求及准备回调失效；前台播放时每 600 毫秒读取进度，暂停和后台停止界面轮询。通知控制接收明确的操作回调，卸载时解除绑定。控制器回归见 [播放状态与请求竞态测试](src/player/PlayerController.test.cjs)。
+- **播放器视图。** `player/index` 连接控制器与视图，`PlayerView` 和 `MiniPlayerView` 接收播放状态、队列、设置和命名操作回调，不读取控制器实例。展开布局直接用 JSX 表达，调整视图无需修改播放命令处理。
 - **歌曲结构与身份。** `trackInfo.normalizeTrack` 提供来源、标题、歌手数组、专辑、封面、毫秒时长和 `source` 原始数据，页面展示使用该结构，旧接口与持久化继续使用原始歌曲。队列身份使用来源加歌曲 ID，本地歌曲使用媒体路径；同名歌曲和跨来源相同 ID 不合并。队列选择、插入、删除与播放顺序计算为纯函数，不修改输入歌曲。
 - **搜索到播放。** `SearchPage` 保存输入和已提交关键词，`SongSearchResults` 负责结果状态与分页，`services/search` 统一来源响应。关键词或来源改变时丢弃旧请求结果；空结果、请求失败与加载分别展示。搜索通过 `player/commands` 发出播放或队列插入指令，旧页面的 `events.toPlayer` 汇入同一入口。新增逻辑的测试见 [搜索服务](src/services/search.test.cjs)、[结果状态](src/modules/SongSearchResults.test.cjs)与[播放命令](src/player/commands.test.cjs)。组件测试用现有 Babel 转换源码，隔离原生与网络边界，不代替 React 渲染和设备验收。
 - **保留旧数据格式。** 旧 `RKStorage` 包含业务包装值、索引与未知键，不能按普通业务 JSON 重建。[迁移逻辑](src/storage/migrate.cjs)原样复制并读回校验，成功后标记完成，保留旧数据库。迁移或歌单校验失败时停止启动并显示错误，不能用清空数据、改包名或更换目录规避问题。
