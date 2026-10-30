@@ -1,10 +1,13 @@
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+const _asyncRuntime = require("regenerator-runtime");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.removeBackground = exports.getBackgroundCache = exports.moveToFiles = exports.clearCache = exports.getCurrentCache = exports.bytesToSize = exports.isUsableFile = void 0;
-var rnFetchBlob = babelHelpers.interopRequireDefault(require("rn-fetch-blob")),
+var rnFetchBlob = _interopRequireDefault(require("react-native-blob-util")),
   paths = require("./paths"),
-  types = babelHelpers.interopRequireWildcard(require("../utils/types")),
+  types = _interopRequireWildcard(require("../utils/types")),
   o = rnFetchBlob.default.fs,
   s = o.cp,
   f = o.unlink,
@@ -41,14 +44,14 @@ exports.getCurrentCache = function e() {
     i,
     o,
     s = arguments;
-  return regeneratorRuntime.async(function (f) {
+  return _asyncRuntime.async(function (f) {
     for (;;) switch (f.prev = f.next) {
       case 0:
         r = s.length > 0 && void 0 !== s[0] ? s[0] : paths.audio_cache;
         t = 0;
         f.prev = 2;
         f.next = 5;
-        return regeneratorRuntime.awrap(l(r));
+        return _asyncRuntime.awrap(l(r));
       case 5:
         if ((n = f.sent) || types.isArray(n)) {
           f.next = 8;
@@ -71,7 +74,7 @@ exports.getCurrentCache = function e() {
         break;
       case 15:
         f.next = 17;
-        return regeneratorRuntime.awrap(e(i.path));
+        return _asyncRuntime.awrap(e(i.path));
       case 17:
         o = f.sent;
         t += 0 | o;
@@ -98,7 +101,7 @@ exports.clearCache = function () {
 };
 exports.moveToFiles = function (e) {
   var r, t, n, a, i, c, o, l, p;
-  return regeneratorRuntime.async(function (v) {
+  return _asyncRuntime.async(function (v) {
     for (;;) switch (v.prev = v.next) {
       case 0:
         r = e.from;
@@ -111,7 +114,7 @@ exports.moveToFiles = function (e) {
         l = paths.files_dir + t;
         p = l + '/' + a + o;
         v.next = 6;
-        return regeneratorRuntime.awrap(h(r));
+        return _asyncRuntime.awrap(h(r));
       case 6:
         if (true !== v.sent) {
           v.next = 23;
@@ -119,7 +122,7 @@ exports.moveToFiles = function (e) {
         }
         c && f(l);
         v.next = 11;
-        return regeneratorRuntime.awrap(g(l));
+        return _asyncRuntime.awrap(g(l));
       case 11:
         if (v.sent) {
           v.next = 16;
@@ -127,11 +130,11 @@ exports.moveToFiles = function (e) {
         }
         b();
         v.next = 16;
-        return regeneratorRuntime.awrap(d(l));
+        return _asyncRuntime.awrap(d(l));
       case 16:
         v.prev = 16;
         v.next = 19;
-        return regeneratorRuntime.awrap(s(r, p));
+        return _asyncRuntime.awrap(s(r, p));
       case 19:
         return v.abrupt("return", p);
       case 20:

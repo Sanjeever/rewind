@@ -1,13 +1,18 @@
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.storage = void 0;
-var ReactNative = require("react-native"),
-  n = new (babelHelpers.interopRequireDefault(require("react-native-storage")).default)({
-    size: 2048,
-    storageBackend: ReactNative.AsyncStorage,
-    defaultExpires: null,
-    enableCache: false
+import {NativeModules} from 'react-native';
+import {createAsyncStorage} from '@react-native-async-storage/async-storage';
+import Storage from 'react-native-storage';
+import {migrateStorage} from './migrate.cjs';
+import playlistFiles from './playlistFiles';
+
+const backend = createAsyncStorage('rewind');
+export let storage;
+
+export async function initializeStorage() {
+  await migrateStorage({
+    readLegacy: () => NativeModules.RewindStorage.readLegacy(),
+    destination: backend,
+    validatePlaylists: () => playlistFiles.validate(),
   });
-exports.storage = n;
-global.storage = n;
+  storage = new Storage({size: 2048, storageBackend: backend, defaultExpires: null, enableCache: false});
+  await storage._mapPromise;
+}

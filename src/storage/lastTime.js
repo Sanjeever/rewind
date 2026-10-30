@@ -1,12 +1,14 @@
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+const _appStorage = require("./index.js");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var keys = babelHelpers.interopRequireDefault(require("./keys")),
+var keys = _interopRequireDefault(require("./keys")),
   o = {
     get: function () {
       return new Promise(function (e) {
-        storage.load({
+        _appStorage.storage.load({
           key: keys.default.lastPlayedTime
         }).then(function (t) {
           return e(t);
@@ -18,7 +20,7 @@ var keys = babelHelpers.interopRequireDefault(require("./keys")),
     save: function () {
       var e = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : 0;
       return new Promise(function (t) {
-        storage.save({
+        _appStorage.storage.save({
           key: keys.default.lastPlayedTime,
           data: e
         }).then(function () {

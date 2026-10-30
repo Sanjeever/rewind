@@ -1,9 +1,11 @@
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+const _appStorage = require("./index.js");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.searchHistory = exports.musicHistory = exports.cleanedData = void 0;
-var providers = babelHelpers.interopRequireDefault(require("../services/providers")),
-  keys = babelHelpers.interopRequireDefault(require("./keys")),
+var providers = _interopRequireDefault(require("../services/providers")),
+  keys = _interopRequireDefault(require("./keys")),
   u = function (e) {
     return e.songmid || e.mid;
   },
@@ -34,7 +36,7 @@ exports.musicHistory = function (e, a) {
   if (e) {
     var t = {},
       s = [];
-    storage.load({
+    _appStorage.storage.load({
       key: keys.default.musicHistory
     }).then(function (c) {
       var u = c[a];
@@ -55,7 +57,7 @@ exports.musicHistory = function (e, a) {
             t.netEase = c.netEase;
             t.local = s;
         }
-        storage.save({
+        _appStorage.storage.save({
           key: keys.default.musicHistory,
           data: t
         }).catch(function (e) {
@@ -79,7 +81,7 @@ exports.musicHistory = function (e, a) {
           t.netEase = [];
           t.local = s;
       }
-      storage.save({
+      _appStorage.storage.save({
         key: keys.default.musicHistory,
         data: t
       }).catch(function (e) {
@@ -89,7 +91,7 @@ exports.musicHistory = function (e, a) {
   }
 };
 exports.searchHistory = function (e, a) {
-  storage.load({
+  _appStorage.storage.load({
     key: keys.default.searchHistory
   }).then(function (t) {
     var s = t,
@@ -101,7 +103,7 @@ exports.searchHistory = function (e, a) {
       return a.text !== e;
     })).push(c);
     s.reverse();
-    storage.save({
+    _appStorage.storage.save({
       key: keys.default.searchHistory,
       data: s
     });
@@ -110,7 +112,7 @@ exports.searchHistory = function (e, a) {
       text: e,
       api: a
     }];
-    storage.save({
+    _appStorage.storage.save({
       key: keys.default.searchHistory,
       data: t
     });

@@ -1,18 +1,22 @@
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+const _asyncRuntime = require("regenerator-runtime");
+const _appStorage = require("./index.js");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var providers = babelHelpers.interopRequireDefault(require("../services/providers")),
-  keys = babelHelpers.interopRequireDefault(require("./keys")),
-  types = babelHelpers.interopRequireWildcard(require("../utils/types")),
+var providers = _interopRequireDefault(require("../services/providers")),
+  keys = _interopRequireDefault(require("./keys")),
+  types = _interopRequireWildcard(require("../utils/types")),
   c = function (e) {
     var t;
-    return regeneratorRuntime.async(function (a) {
+    return _asyncRuntime.async(function (a) {
       for (;;) switch (a.prev = a.next) {
         case 0:
           a.prev = 0;
           a.next = 3;
-          return regeneratorRuntime.awrap(storage.load({
+          return _asyncRuntime.awrap(_appStorage.storage.load({
             key: e
           }));
         case 3:
@@ -64,18 +68,18 @@ var providers = babelHelpers.interopRequireDefault(require("../services/provider
     },
     saveUserStorage: function (e, t) {
       var a, r;
-      return regeneratorRuntime.async(function (n) {
+      return _asyncRuntime.async(function (n) {
         for (;;) switch (n.prev = n.next) {
           case 0:
             a = {};
             n.next = 3;
-            return regeneratorRuntime.awrap(c(keys.default.userInfo));
+            return _asyncRuntime.awrap(c(keys.default.userInfo));
           case 3:
             r = n.sent;
-            types.isObject(r) ? (a = l(r, e, t), storage.save({
+            types.isObject(r) ? (a = l(r, e, t), _appStorage.storage.save({
               key: keys.default.userInfo,
               data: a
-            })) : (a = l(a, e, t), storage.save({
+            })) : (a = l(a, e, t), _appStorage.storage.save({
               key: keys.default.userInfo,
               data: a
             }));
@@ -87,7 +91,7 @@ var providers = babelHelpers.interopRequireDefault(require("../services/provider
     },
     saveUserPlayList: function (e, t) {
       var a = {};
-      storage.load({
+      _appStorage.storage.load({
         key: keys.default.playlist
       }).then(function (r) {
         switch (a = r, t) {
@@ -97,7 +101,7 @@ var providers = babelHelpers.interopRequireDefault(require("../services/provider
           case providers.default.qqMusic:
             a.qqMusic = e;
         }
-        storage.save({
+        _appStorage.storage.save({
           key: keys.default.playlist,
           data: a
         });
@@ -109,7 +113,7 @@ var providers = babelHelpers.interopRequireDefault(require("../services/provider
           case providers.default.qqMusic:
             a.qqMusic = e;
         }
-        storage.save({
+        _appStorage.storage.save({
           key: keys.default.playlist,
           data: a
         });
@@ -117,12 +121,12 @@ var providers = babelHelpers.interopRequireDefault(require("../services/provider
     },
     saveUserLikeList: function (e, t) {
       var a, r;
-      return regeneratorRuntime.async(function (n) {
+      return _asyncRuntime.async(function (n) {
         for (;;) switch (n.prev = n.next) {
           case 0:
             a = {};
             n.next = 3;
-            return regeneratorRuntime.awrap(c(keys.default.likelist));
+            return _asyncRuntime.awrap(c(keys.default.likelist));
           case 3:
             r = n.sent;
             types.isObject(r) && (a = r);
@@ -136,7 +140,7 @@ var providers = babelHelpers.interopRequireDefault(require("../services/provider
             a.qqMusic = e;
             return n.abrupt("break", 12);
           case 12:
-            storage.save({
+            _appStorage.storage.save({
               key: keys.default.likelist,
               data: a
             });
@@ -148,12 +152,12 @@ var providers = babelHelpers.interopRequireDefault(require("../services/provider
     },
     saveNeteasePlayListCache: function (e, t, a) {
       var r, n, s;
-      return regeneratorRuntime.async(function (l) {
+      return _asyncRuntime.async(function (l) {
         for (;;) switch (l.prev = l.next) {
           case 0:
             r = [];
             l.next = 3;
-            return regeneratorRuntime.awrap(c(keys.default.netEasePlaylistCache));
+            return _asyncRuntime.awrap(c(keys.default.netEasePlaylistCache));
           case 3:
             (n = l.sent) && types.isArray(n) && (r = n.filter(function (t) {
               return t.id !== e;
@@ -165,7 +169,7 @@ var providers = babelHelpers.interopRequireDefault(require("../services/provider
               id: e
             };
             r.push(s);
-            storage.save({
+            _appStorage.storage.save({
               key: keys.default.netEasePlaylistCache,
               data: r
             });
@@ -177,7 +181,7 @@ var providers = babelHelpers.interopRequireDefault(require("../services/provider
     },
     removeNetEasePlaylistCache: function (e) {
       var t, a, r, n, s, l;
-      return regeneratorRuntime.async(function (o) {
+      return _asyncRuntime.async(function (o) {
         for (;;) switch (o.prev = o.next) {
           case 0:
             if (e) {
@@ -185,7 +189,7 @@ var providers = babelHelpers.interopRequireDefault(require("../services/provider
               break;
             }
             o.next = 3;
-            return regeneratorRuntime.awrap(c(keys.default.playlist));
+            return _asyncRuntime.awrap(c(keys.default.playlist));
           case 3:
             if (!(t = o.sent)) {
               o.next = 11;
@@ -196,12 +200,12 @@ var providers = babelHelpers.interopRequireDefault(require("../services/provider
               break;
             }
             o.next = 9;
-            return regeneratorRuntime.awrap(c(keys.default.netEasePlaylistCache));
+            return _asyncRuntime.awrap(c(keys.default.netEasePlaylistCache));
           case 9:
             r = o.sent;
             types.isArray(r) && (n = r.filter(function (e) {
               return e.id !== a[0].id;
-            }), storage.save({
+            }), _appStorage.storage.save({
               key: keys.default.netEasePlaylistCache,
               data: n
             }));
@@ -210,12 +214,12 @@ var providers = babelHelpers.interopRequireDefault(require("../services/provider
             break;
           case 13:
             o.next = 15;
-            return regeneratorRuntime.awrap(c(keys.default.netEasePlaylistCache));
+            return _asyncRuntime.awrap(c(keys.default.netEasePlaylistCache));
           case 15:
             s = o.sent;
             types.isArray(s) && (l = s.filter(function (t) {
               return t.id !== e;
-            }), storage.save({
+            }), _appStorage.storage.save({
               key: keys.default.netEasePlaylistCache,
               data: l
             }));
@@ -232,7 +236,7 @@ var providers = babelHelpers.interopRequireDefault(require("../services/provider
       return c(keys.default.charts);
     },
     saveCharts: function (e) {
-      storage.save({
+      _appStorage.storage.save({
         key: keys.default.charts,
         data: e
       });
@@ -241,7 +245,7 @@ var providers = babelHelpers.interopRequireDefault(require("../services/provider
       return c(keys.default.restUsers);
     },
     saveRestUsers: function (e) {
-      storage.save({
+      _appStorage.storage.save({
         key: keys.default.restUsers,
         data: e
       });

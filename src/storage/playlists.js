@@ -1,12 +1,15 @@
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+const _asyncRuntime = require("regenerator-runtime");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
 var immer = require("immer"),
-  providers = babelHelpers.interopRequireDefault(require("../services/providers")),
+  providers = _interopRequireDefault(require("../services/providers")),
   utils = require("../utils/index"),
-  types = babelHelpers.interopRequireWildcard(require("../utils/types")),
-  users = babelHelpers.interopRequireDefault(require("./users")),
+  types = _interopRequireWildcard(require("../utils/types")),
+  users = _interopRequireDefault(require("./users")),
   l = function (e) {
     var r = e.api,
       t = e.newItem,
@@ -21,13 +24,13 @@ var immer = require("immer"),
   },
   p = function (e) {
     var r, t, n, a;
-    return regeneratorRuntime.async(function (u) {
+    return _asyncRuntime.async(function (u) {
       for (;;) switch (u.prev = u.next) {
         case 0:
           r = e.api;
           t = e.newArr;
           u.next = 3;
-          return regeneratorRuntime.awrap(users.default.getUserPlayList());
+          return _asyncRuntime.awrap(users.default.getUserPlayList());
         case 3:
           if (n = u.sent, types.isObject(n)) {
             u.next = 6;
@@ -60,7 +63,7 @@ var immer = require("immer"),
   d = {
     collect: function (e) {
       var r, t, n, a, i, l;
-      return regeneratorRuntime.async(function (p) {
+      return _asyncRuntime.async(function (p) {
         for (;;) switch (p.prev = p.next) {
           case 0:
             if (r = e.playlist, t = e.api, n = e.index, a = r, !n || !types.isObject(a)) {
@@ -84,7 +87,7 @@ var immer = require("immer"),
     },
     newOrder: function (e) {
       var r, t, n, a;
-      return regeneratorRuntime.async(function (u) {
+      return _asyncRuntime.async(function (u) {
         for (;;) switch (u.prev = u.next) {
           case 0:
             if (r = e.api, t = e.newArr, false !== (void 0 === (n = e.on) || n)) {
@@ -94,7 +97,7 @@ var immer = require("immer"),
             return u.abrupt("return", t);
           case 3:
             u.next = 5;
-            return regeneratorRuntime.awrap(p({
+            return _asyncRuntime.awrap(p({
               api: r,
               newArr: t
             }));
@@ -109,7 +112,7 @@ var immer = require("immer"),
     },
     collectCharts: function (e) {
       var r, t, n;
-      return regeneratorRuntime.async(function (a) {
+      return _asyncRuntime.async(function (a) {
         for (;;) switch (a.prev = a.next) {
           case 0:
             r = e.list;
