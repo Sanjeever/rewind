@@ -1,4 +1,3 @@
-const {test} = require('node:test');
 const assert = require('node:assert/strict');
 const {createHash} = require('node:crypto');
 const md5 = require('./md5');

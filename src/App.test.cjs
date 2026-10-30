@@ -1,6 +1,4 @@
-const {test} = require('node:test');
 const assert = require('node:assert/strict');
-const loadModule = require('./test/loadModule.cjs');
 
 test('连续队列更新基于最新状态计算，提交回调取得最终队列', () => {
   const dependencies = Object.fromEntries([
@@ -11,7 +9,9 @@ test('连续队列更新基于最新状态计算，提交回调取得最终队�
   ].map(name => [name, {}]));
   dependencies['./settings/defaults'] = {defaultSettings: {}};
   dependencies['./utils'] = {extractKeyValue: () => ({})};
-  const {default: App} = loadModule('src/App.js', dependencies);
+  for (const [name, value] of Object.entries(dependencies)) jest.doMock(name, () => value);
+  let App;
+  jest.isolateModules(() => { App = require('./App.js').default; });
   const app = new App({});
   const pending = [];
   const observed = [];

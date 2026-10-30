@@ -1,19 +1,19 @@
-const {test} = require('node:test');
 const assert = require('node:assert/strict');
-const loadModule = require('../test/loadModule.cjs');
 
 function suggestions(storage = {load: async () => [], remove: async () => {}}) {
   const requests = [];
   const request = api => new Promise((resolve, reject) => requests.push({api, resolve, reject}));
-  const {default: Suggestions} = loadModule('src/modules/SearchSuggestions.js', {
+  const dependencies = {
     'react-native': {StyleSheet: {create: value => value}},
     'lodash/debounce': callback => Object.assign(callback, {cancel() {}}),
     '../components/FadingEdge': {}, '../components/Scrolling': {}, '../components': {}, '../components/Text': {},
-    '../services/providers': {__esModule: true, default: require('../services/providers.js').default},
     '../theme/constants': {}, '../theme/icons': {}, '../storage': {storage}, '../storage/keys': {},
     '../services': {Netease: {search_suggest: () => request('netEase')}, QQMusic: {search_suggest: () => request('qqMusic')}},
     '../screens/search/sections': {SECTION_KEYS: {songs: 'songs', artists: 'artists', albums: 'albums', history: 'history'}},
-  });
+  };
+  for (const [name, value] of Object.entries(dependencies)) jest.doMock(name, () => value);
+  let Suggestions;
+  jest.isolateModules(() => { Suggestions = require('./SearchSuggestions.js').default; });
   const component = new Suggestions({query: '关键词', api: 'netEase', focusing: true, historyVersion: 0});
   component.setState = update => { component.state = {...component.state, ...update}; };
   return {component, requests};

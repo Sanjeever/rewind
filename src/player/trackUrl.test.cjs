@@ -1,12 +1,10 @@
-const {test} = require('node:test');
 const assert = require('node:assert/strict');
-const loadModule = require('../test/loadModule.cjs');
 
 function resolver(services) {
-  return loadModule('src/player/trackUrl.js', {
-    '../services/providers': {__esModule: true, default: require('../services/providers.js').default},
-    '../services': services,
-  }).default;
+  jest.doMock('../services', () => services);
+  let urls;
+  jest.isolateModules(() => { urls = require('./trackUrl.js').default; });
+  return urls;
 }
 
 test('主音源报错时仍尝试既有备用来源，备用成功后返回地址', async () => {

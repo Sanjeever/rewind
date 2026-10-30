@@ -1,7 +1,7 @@
-const {test} = require('node:test');
 const assert = require('node:assert/strict');
-const loadModule = require('../test/loadModule.cjs');
 const asDefault = value => ({__esModule: true, default: value});
+
+afterEach(() => { delete global.toast; });
 
 function controller() {
   const calls = {prepared: [], play: 0, pause: 0, release: 0, clearedTimers: [], toasts: [], history: []};
@@ -23,10 +23,8 @@ function controller() {
       Animated: {Value: class {}},
       LayoutAnimation: {create() {}, Types: {}, Properties: {}},
     },
-    '../services/providers': asDefault(require('../services/providers.js').default),
     '../theme/constants': {}, '../events/names': asDefault({}), '../storage/keys': asDefault({}),
     '../locales': asDefault({}), '../services': {}, '../events': {},
-    '../services/trackInfo': require('../services/trackInfo.js'),
     '../utils/parseArtist': asDefault(value => value), '../utils/universalNavigator': asDefault({}), '../utils/stopTimer': asDefault({}),
     '../native/audioPlayer': asDefault(Audio),
     '../native/timer': asDefault({
@@ -39,12 +37,14 @@ function controller() {
     '../storage/lastQueue': asDefault({save: async () => {}}),
     '../storage/history': {musicHistory: song => calls.history.push(song)},
     './cache': asDefault(request => request), './lyricPreferences': asDefault({}),
-    './queue': require('./queue.js'), './playMode': asDefault({}), './lyrics': asDefault({}),
+    './playMode': asDefault({}), './lyrics': asDefault({}),
     './trackUrl': asDefault({getUrl: () => new Promise(resolve => requests.push(resolve))}),
     './notification': asDefault({}), './gestures': asDefault({}),
-    './playOrder': require('./playOrder.js'), './commands': {},
+    './commands': {},
   };
-  const {default: Controller} = loadModule('src/player/PlayerController.js', dependencies);
+  for (const [name, value] of Object.entries(dependencies)) jest.doMock(name, () => value);
+  let Controller;
+  jest.isolateModules(() => { Controller = require('./PlayerController.js').default; });
   const player = new Controller({tracks: [], songItem: null, api: null, settings: {}, setLyric() {}});
   player.setState = (update, callback) => {
     player.state = {...player.state, ...(typeof update === 'function' ? update(player.state) : update)};

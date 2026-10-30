@@ -1,14 +1,11 @@
-const {test} = require('node:test');
 const assert = require('node:assert/strict');
-const loadModule = require('../test/loadModule.cjs');
-const asDefault = value => ({__esModule: true, default: value});
 
 function provider(Netease, QQMusic) {
-  return loadModule('src/services/provider.js', {
-    './providers': asDefault(require('./providers.js').default),
-    './netease': asDefault(Netease), './qqmusic': asDefault(QQMusic),
-    './trackFields': require('./trackFields.js'),
-  }).default;
+  jest.doMock('./netease', () => Netease);
+  jest.doMock('./qqmusic', () => QQMusic);
+  let resolver;
+  jest.isolateModules(() => { resolver = require('./provider.js').default; });
+  return resolver;
 }
 
 test('QQ 备用请求报错后仍尝试网易云同长度替代歌曲', async () => {

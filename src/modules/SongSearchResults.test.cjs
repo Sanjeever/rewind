@@ -1,16 +1,17 @@
-const {test} = require('node:test');
 const assert = require('node:assert/strict');
-const loadModule = require('../test/loadModule.cjs');
 
 function screen(searchSongs) {
   const commands = [];
-  const {default: Results} = loadModule('src/modules/SongSearchResults.js', {
+  const dependencies = {
     'react-native': {StyleSheet: {create: value => value}},
     '../components/Scrolling': {}, '../components': {}, '../components/Text': {},
     '../theme/constants': {}, '../services/search': {searchSongs},
     '../services/trackFields': {}, '../events': {},
     '../player/commands': {playTracks: value => commands.push(value)},
-  });
+  };
+  for (const [name, value] of Object.entries(dependencies)) jest.doMock(name, () => value);
+  let Results;
+  jest.isolateModules(() => { Results = require('./SongSearchResults.js').default; });
   const instance = new Results({search: '同一个关键词', api: 'netEase'});
   instance.setState = (update, callback) => {
     instance.state = {...instance.state, ...(typeof update === 'function' ? update(instance.state) : update)};

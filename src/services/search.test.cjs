@@ -1,14 +1,10 @@
-const {test} = require('node:test');
 const assert = require('node:assert/strict');
-const loadModule = require('../test/loadModule.cjs');
-const {normalizeTrack} = require('./trackInfo.js');
 
 function searchWith(services) {
-  return loadModule('src/services/search.js', {
-    './index': services,
-    './providers': {__esModule: true, default: require('./providers.js').default},
-    './trackInfo': {normalizeTrack},
-  }).searchSongs;
+  jest.doMock('./index', () => services);
+  let searchSongs;
+  jest.isolateModules(() => { searchSongs = require('./search.js').searchSongs; });
+  return searchSongs;
 }
 
 test('搜索服务统一两种来源结构，并保留正确分页偏移', async () => {

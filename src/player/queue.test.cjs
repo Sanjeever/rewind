@@ -1,4 +1,3 @@
-const {test} = require('node:test');
 const assert = require('node:assert/strict');
 const {selectQueue, insertNext, removeFromQueue} = require('./queue.js');
 const {createPlayOrder, reconcilePlayOrder, getNextPlayIndex, getRandomIndex, getNextPlayIndexByPagerPos} = require('./playOrder.js');

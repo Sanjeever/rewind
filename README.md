@@ -69,7 +69,7 @@ pnpm test
 pnpm bundle:android
 ```
 
-单元测试使用 Node 内置测试框架，覆盖[迁移纯逻辑](src/storage/migrate.test.cjs)、[设置合并](src/settings/merge.test.cjs)、[旧字符编码的签名摘要](src/utils/md5.test.cjs)、[歌词时间解析](src/utils/parseLyric.test.cjs)、[歌曲结构](src/services/trackInfo.test.cjs)与[队列和播放顺序](src/player/queue.test.cjs)。迁移测试使用内存后端，不替代 SQLite、原生文件写入、播放器或网络的设备验证。
+单元测试使用 Jest 与 React Native 官方 preset，自动发现 `src/**/*.test.cjs`，无需逐项维护测试文件列表。覆盖[迁移纯逻辑](src/storage/migrate.test.cjs)、[设置合并](src/settings/merge.test.cjs)、[旧字符编码的签名摘要](src/utils/md5.test.cjs)、[歌词时间解析](src/utils/parseLyric.test.cjs)、[歌曲结构](src/services/trackInfo.test.cjs)与[队列和播放顺序](src/player/queue.test.cjs)。迁移测试使用内存后端，不替代 SQLite、原生文件写入、播放器或网络的设备验证。
 
 单独 Metro 包写入 `.cache/metro/`。常规 Android 构建由 Gradle 插件管理打包，无需预先执行 `pnpm bundle:android`。
 
@@ -83,7 +83,7 @@ pnpm bundle:android
 - **播放指令与状态。** `PlayerController` 处理播放指令、队列操作和资源加载，原生 `rewind.playbackState` 通知更新播放状态，不再次调用播放或暂停。切歌、清空和卸载使旧音源请求及准备回调失效；前台播放时每 600 毫秒读取进度，暂停和后台停止界面轮询。通知控制接收明确的操作回调，卸载时解除绑定。控制器回归见 [播放状态与请求竞态测试](src/player/PlayerController.test.cjs)。
 - **播放器视图。** `player/index` 连接控制器与视图，`PlayerView` 和 `MiniPlayerView` 接收播放状态、队列、设置和命名操作回调，不读取控制器实例。展开布局直接用 JSX 表达，调整视图无需修改播放命令处理。
 - **歌曲结构与身份。** `trackInfo.normalizeTrack` 提供来源、标题、歌手数组、专辑、封面、毫秒时长和 `source` 原始数据，页面展示使用该结构，旧接口与持久化继续使用原始歌曲。队列身份使用来源加歌曲 ID，本地歌曲使用媒体路径；同名歌曲和跨来源相同 ID 不合并。队列选择、插入、删除与播放顺序计算为纯函数，不修改输入歌曲。
-- **搜索到播放。** `SearchPage` 保存输入和已提交关键词，`SongSearchResults` 负责结果状态与分页，`services/search` 统一来源响应。关键词或来源改变时丢弃旧请求结果；空结果、请求失败与加载分别展示。搜索通过 `player/commands` 发出播放或队列插入指令，旧页面的 `events.toPlayer` 汇入同一入口。新增逻辑的测试见 [搜索服务](src/services/search.test.cjs)、[结果状态](src/modules/SongSearchResults.test.cjs)与[播放命令](src/player/commands.test.cjs)。组件测试用现有 Babel 转换源码，隔离原生与网络边界，不代替 React 渲染和设备验收。
+- **搜索到播放。** `SearchPage` 保存输入和已提交关键词，`SongSearchResults` 负责结果状态与分页，`services/search` 统一来源响应。关键词或来源改变时丢弃旧请求结果；空结果、请求失败与加载分别展示。搜索通过 `player/commands` 发出播放或队列插入指令，旧页面的 `events.toPlayer` 汇入同一入口。新增逻辑的测试见 [搜索服务](src/services/search.test.cjs)、[结果状态](src/modules/SongSearchResults.test.cjs)与[播放命令](src/player/commands.test.cjs)。组件状态测试通过 Jest 复用现有 Babel 配置，用模块 mock 隔离原生与网络边界，不代替 React 渲染和设备验收。
 - **搜索建议。** 建议组件通过 props 接收输入、来源和聚焦状态，内部取消防抖任务并丢弃旧响应；页面不调用建议组件实例。提交搜索沿用串行历史写入，历史清空后旧读取不能恢复已删除记录。回归见 [建议状态测试](src/modules/SearchSuggestions.test.cjs)。
 - **保留旧数据格式。** 旧 `RKStorage` 包含业务包装值、索引与未知键，不能按普通业务 JSON 重建。[迁移逻辑](src/storage/migrate.cjs)原样复制并读回校验，成功后标记完成，保留旧数据库。迁移或歌单校验失败时停止启动并显示错误，不能用清空数据、改包名或更换目录规避问题。
 - **保留文件位置。** 歌单继续使用同一应用外部 files 目录下的 `playlist/playlist.json`，更新串行写入并原子替换，降低中断写入损坏文件的风险。音频缓存继续使用应用外部 cache 目录中的 `audio-cache`；路径以 [src/storage/paths.js](src/storage/paths.js) 为准。
@@ -122,6 +122,8 @@ pnpm bundle:android
 | 搜索界面 | 网易云真实建议和歌曲结果显示，建议包含歌手；无匹配关键词显示“无搜索结果”。同词切换 QQ 时显示搜索模块 `2001` 与重试入口，未把服务错误显示为空列表 |
 
 本轮未重新执行全新安装、完整旧数据库升级、实体机、真实账号、耳机/蓝牙和长时间后台验收；上述 2026-10-30 记录保留为历史证据，不能替代变更后相应业务的重新验收。
+
+2026-10-31 测试框架迁移验证：macOS、Node.js 26.11.0、pnpm 11.5.2 下，`pnpm install --frozen-lockfile --offline` 通过，`pnpm test` 与 `pnpm test --runInBand` 均通过，共 16 个测试文件、47 项测试。源码转换和模块 mock 已交由 Jest，自写加载器已删除。本次未执行 Android 构建或设备验收。
 
 Windows 构建入口、Wrapper 换行与可执行权限已检查，Windows 干净检出尚未实测。实体机播放与听感、耳机/蓝牙、跨应用音频焦点、长时间后台，以及其他 Android 版本的运行仍未验收。
 
