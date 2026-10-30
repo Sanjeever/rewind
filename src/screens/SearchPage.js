@@ -1,7 +1,6 @@
 import React from 'react';
 import {Image, Keyboard, StyleSheet, View} from 'react-native';
 import {TabBar, TabView} from 'react-native-tab-view';
-import debounce from 'lodash/debounce';
 import {Background, Icon, Input, TouchableBorderless} from '../components';
 import providers from '../services/providers';
 import {STATUS_BAR_HEIGHT, COLORS} from '../theme/constants';
@@ -14,6 +13,7 @@ import PlaylistSearchResults from '../modules/PlaylistSearchResults';
 import ArtistSearchResults from '../modules/ArtistSearchResults';
 import SongSearchResults from '../modules/SongSearchResults';
 import SearchSuggestions from '../modules/SearchSuggestions';
+import {searchHistory} from '../storage/history';
 
 const providerImages = {
   netEase: require('../../assets/images/netease.png'),
@@ -29,6 +29,7 @@ export default class SearchPage extends React.PureComponent {
     query: '',
     focusing: true,
     show: false,
+    historyVersion: 0,
     routes: [
       {key: '0', title: locales.ARTIST_SONGS},
       {key: '1', title: locales.ARTIST},
@@ -38,38 +39,26 @@ export default class SearchPage extends React.PureComponent {
     ],
   };
 
-  updateSuggestions = debounce(text => {
-    if (text.trim()) this.suggestions?.search_suggest(text.trim());
-    else this.suggestions?.clearAllSuggestions();
-  }, 100);
-
-  componentDidMount() {
-    if (this.state.text) this.updateSuggestions(this.state.text);
-  }
-
-  componentWillUnmount() {
-    this.updateSuggestions.cancel();
-  }
+  componentDidMount() { this.mounted = true; }
+  componentWillUnmount() { this.mounted = false; }
 
   submit = () => {
     const query = this.state.text.trim();
     if (!query) return;
-    this.updateSuggestions.cancel();
     this.setState({query, show: true, focusing: false});
-    this.suggestions?.insertHistoryItem(query, this.state.api);
+    searchHistory(query, this.state.api)
+      .then(() => { if (this.mounted) this.setState(state => ({historyVersion: state.historyVersion + 1})); })
+      .catch(error => toast('保存搜索历史失败：' + error.message));
     Keyboard.dismiss();
   };
 
   changeProvider = () => {
-    this.updateSuggestions.cancel();
     const api = this.state.api === providers.netEase ? providers.qqMusic : providers.netEase;
-    this.suggestions?.clearAllSuggestions();
     this.setState({api}, this.submit);
   };
 
   changeText = text => {
     this.setState({text});
-    this.updateSuggestions(text);
   };
 
   selectSuggestion = (item, section) => {
@@ -110,7 +99,7 @@ export default class SearchPage extends React.PureComponent {
           </View>
         </TouchableBorderless>
       </View>
-      <SearchSuggestions focusing={focusing} onRef={suggestions => { this.suggestions = suggestions; }}
+      <SearchSuggestions query={text} focusing={focusing} historyVersion={this.state.historyVersion}
         api={api} onSuggest={this.selectSuggestion} />
       {show && !focusing && <TabView style={styles.container} navigationState={this.state}
         renderScene={this.renderScene} renderTabBar={this.renderTabBar}

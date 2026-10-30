@@ -1,211 +1,136 @@
-const _default = require("./../components/Text.js").default;
-const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
-const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
-const _appStorage = require("./../storage/index.js");
-const _toConsumableArray = require("@babel/runtime/helpers/toConsumableArray");
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-var React = _interopRequireWildcard(require("react")),
-  ReactNative = require("react-native"),
-  FadingEdge = _interopRequireDefault(require("../components/FadingEdge")),
-  reactNativeSpringScrollview = require("./../components/Scrolling.js"),
-  components = require("../components/index"),
-  providers = _interopRequireDefault(require("../services/providers")),
-  constants = require("../theme/constants"),
-  icons = _interopRequireDefault(require("../theme/icons")),
-  keys = _interopRequireDefault(require("../storage/keys")),
-  services = require("../services/index"),
-  types = _interopRequireWildcard(require("../utils/types")),
-  historyModule = require("../storage/history"),
-  sections = require("../screens/search/sections"),
-  S = class t extends React.PureComponent {
-    constructor() {
-      var e, a, r;
-      for (var n = arguments.length, u = new Array(n), l = 0; l < n; l++) u[l] = arguments[l];
-      return a = r = super(...u), r.state = {
-        songs: [],
-        albums: [],
-        artists: [],
-        history: []
-      }, r.loadHistory = function () {
-        _appStorage.storage.load({
-          key: keys.default.searchHistory
-        }).then(function (e) {
-          r.setState({
-            history: e
-          });
-        }).catch(function () {
-          return null;
-        });
-      }, r.clearAllSuggestions = function () {
-        r.setState({
-          songs: [],
-          albums: [],
-          artists: []
-        });
-      }, r.insertHistoryItem = function (e, t) {
-        var a = {
-            text: e,
-            api: t
-          },
-          n = r.state.history;
-        r.setState({
-          history: [a].concat(_toConsumableArray(n))
-        });
-        (0, historyModule.searchHistory)(e, t);
-      }, r.search_suggest = function (e) {
-        switch (r.props.api) {
-          case providers.default.netEase:
-            r.suggest_netEase(e);
-            break;
-          case providers.default.qqMusic:
-            r.suggest_qqMusic(e);
-        }
-      }, r.suggest_netEase = async function (keywords) {
-        const response = await services.Netease.search_suggest(keywords);
-        if (response?.code === 200) r.setState({
-          songs: response.result.songs || [],
-          albums: response.result.albums || [],
-          artists: response.result.artists || []
-        });
-      }, r.suggest_qqMusic = async function (keywords) {
-        const response = await services.QQMusic.search_suggest(keywords);
-        if (response?.code === 0) r.setState({
-          songs: response.data.song.itemlist || [],
-          albums: response.data.album.itemlist || [],
-          artists: response.data.singer.itemlist || []
-        });
-      }, r._renderContent = function () {
-        return sections.SECTIONS.map(function (e) {
-          return React.default.createElement(React.default.Fragment, null, r._renderSection(e), r._renderItem(e));
-        });
-      }, r._renderSection = function (e) {
-        var t = e === sections.SECTIONS[3];
-        return r.getSectionDataLength(e) <= 0 ? null : React.default.createElement(ReactNative.TouchableNativeFeedback, {
-          onPress: t ? r.clearHistory : null
-        }, React.default.createElement(ReactNative.View, {
-          style: t && {
-            flexDirection: 'row',
-            alignItems: 'center'
-          }
-        }, React.default.createElement(_default, {
-          style: [E.text, E.sectionHeader]
-        }, sections.SECTION_NAMES[e]), t && React.default.createElement(components.Icon, {
-          name: icons.default.WINDOW_CLOSE,
-          color: "#eee",
-          style: E.rightIcon,
-          size: 20
-        })));
-      }, r._renderItem = function (e) {
-        return r.state[e] ? r.state[e].map(function (t, a) {
-          var n = r.formatSuggestData(t, e);
-          return React.default.createElement(y, {
-            key: a,
-            name: n.name,
-            transName: n.transName,
-            subName: n.subName,
-            item: n,
-            onPress: function () {
-              return r.props.onSuggest(t, e);
-            }
-          });
-        }) : null;
-      }, r.getSectionDataLength = function (e) {
-        var t;
-        return null === (t = r.state[e]) || void 0 === t ? void 0 : t.length;
-      }, r.formatSuggestData = function (e, t) {
-        var a = r.props.api,
-          n = {};
-        if (t === sections.SECTION_KEYS.history) {
-          n.name = e.text;
-          return n;
-        }
-        switch (a) {
-          case providers.default.netEase:
-            t === sections.SECTION_KEYS.songs && (n.subName = types.isArray(e.artist) ? e.artists[0].name : '', n.transName = e.transNames ? e.transNames[0] : '');
-            t === sections.SECTION_KEYS.albums && (n.subName = e.artist.name);
-            t === sections.SECTION_KEYS.artists && (n.subName = e.alias[0]);
-            n.name = e.name;
-            break;
-          case providers.default.qqMusic:
-            n.name = e.name;
-        }
-        return n;
-      }, r.clearHistory = function () {
-        r.setState({
-          history: []
-        });
-        _appStorage.storage.remove({
-          key: keys.default.searchHistory
-        });
-      }, a;
-    }
-    "componentDidMount"() {
-      this.loadHistory();
-      this.props.onRef(this);
-    }
-    "render"() {
-      return this.props.focusing ? React.default.createElement(ReactNative.View, {
-        style: {
-          top: 40 + constants.STATUS_BAR_HEIGHT,
-          flex: 1,
-          alignSelf: 'center',
-          width: '100%',
-          height: '100%',
-          position: 'absolute',
-          paddingHorizontal: 20
-        }
-      }, React.default.createElement(FadingEdge.default, {
-        top: 50
-      }, React.default.createElement(reactNativeSpringScrollview.SpringScrollView, {
-        contentStyle: {
-          paddingTop: 20
-        }
-      }, this._renderContent()))) : null;
+import React from 'react';
+import {StyleSheet, TouchableNativeFeedback, View} from 'react-native';
+import debounce from 'lodash/debounce';
+import FadingEdge from '../components/FadingEdge';
+import {SpringScrollView} from '../components/Scrolling';
+import {Icon} from '../components';
+import Text from '../components/Text';
+import providers from '../services/providers';
+import {STATUS_BAR_HEIGHT} from '../theme/constants';
+import icons from '../theme/icons';
+import {storage} from '../storage';
+import keys from '../storage/keys';
+import {Netease, QQMusic} from '../services';
+import {SECTIONS, SECTION_KEYS, SECTION_NAMES} from '../screens/search/sections';
+
+export default class SearchSuggestions extends React.PureComponent {
+  state = {songs: [], albums: [], artists: [], history: [], error: null};
+  requestId = 0;
+  historyRequest = 0;
+  fetchSuggestions = debounce((query, api, request) => this.loadSuggestions(query, api, request), 100);
+
+  componentDidMount() {
+    this.mounted = true;
+    this.loadHistory();
+    this.updateQuery();
+  }
+
+  componentDidUpdate(previous) {
+    if (previous.query !== this.props.query || previous.api !== this.props.api || previous.focusing !== this.props.focusing) this.updateQuery();
+    if ((!previous.focusing && this.props.focusing) || previous.historyVersion !== this.props.historyVersion) this.loadHistory();
+  }
+
+  componentWillUnmount() {
+    this.mounted = false;
+    this.requestId++;
+    this.fetchSuggestions.cancel();
+  }
+
+  updateQuery = () => {
+    const request = ++this.requestId;
+    this.fetchSuggestions.cancel();
+    this.setState({songs: [], albums: [], artists: [], error: null});
+    const query = this.props.query.trim();
+    if (this.props.focusing && query) this.fetchSuggestions(query, this.props.api, request);
+  };
+
+  loadSuggestions = async (query, api, request) => {
+    try {
+      const response = await (api === providers.netEase ? Netease.search_suggest(query) : QQMusic.search_suggest(query));
+      if (request !== this.requestId) return;
+      const expected = api === providers.netEase ? 200 : 0;
+      if (response?.code !== expected) throw new Error('搜索建议失败（' + response?.code + '）');
+      const data = api === providers.netEase ? response.result : response.data;
+      if (!data) throw new Error('搜索建议响应缺少结果');
+      this.setState(api === providers.netEase ? {
+        songs: data.songs || [], albums: data.albums || [], artists: data.artists || [], error: null,
+      } : {
+        songs: data.song?.itemlist || [], albums: data.album?.itemlist || [], artists: data.singer?.itemlist || [], error: null,
+      });
+    } catch (error) {
+      if (request === this.requestId) this.setState({error});
     }
   };
-exports.default = S;
-var y = function (e) {
-    var t = e.name,
-      a = e.transName,
-      r = e.subName,
-      n = e.onPress;
-    return React.default.createElement(ReactNative.TouchableNativeFeedback, {
-      onPress: function () {
-        return requestAnimationFrame(function () {
-          n();
-        });
-      }
-    }, React.default.createElement(ReactNative.View, {
-      style: {
-        marginLeft: 10,
-        flexDirection: 'row'
-      }
-    }, React.default.createElement(_default, {
-      style: [E.text, {
-        fontSize: 16
-      }]
-    }, t, a ? "(" + a + ")" : ''), Boolean(r) && React.default.createElement(_default, {
-      style: [E.text, E.fadeText]
-    }, r)));
-  },
-  E = ReactNative.StyleSheet.create({
-    text: {
-      fontSize: 14,
-      padding: 5
-    },
-    sectionHeader: {
-      borderRadius: 5,
-      fontSize: 16,
-      fontWeight: 'bold'
-    },
-    text: {
-      fontSize: 14,
-      padding: 5
-    },
-    fadeText: {
-      opacity: .6
+
+  loadHistory = async () => {
+    const request = ++this.historyRequest;
+    try {
+      const history = await storage.load({key: keys.searchHistory});
+      if (this.mounted && request === this.historyRequest) this.setState({history});
+    } catch (error) {
+      if (this.mounted && error.name !== 'NotFoundError') this.setState({error});
     }
-  });
+  };
+
+  clearHistory = async () => {
+    const request = ++this.historyRequest;
+    try {
+      await storage.remove({key: keys.searchHistory});
+      if (this.mounted && request === this.historyRequest) this.setState({history: []});
+    } catch (error) {
+      if (this.mounted) this.setState({error});
+    }
+  };
+
+  formatSuggestion(item, section) {
+    if (section === SECTION_KEYS.history) return {name: item.text};
+    if (this.props.api === providers.qqMusic) return {name: item.name};
+    if (section === SECTION_KEYS.songs) return {name: item.name, subName: item.artists?.[0]?.name, transName: item.transNames?.[0]};
+    if (section === SECTION_KEYS.albums) return {name: item.name, subName: item.artist?.name};
+    return {name: item.name, subName: item.alias?.[0]};
+  }
+
+  renderSection = section => {
+    const items = this.state[section];
+    if (!items.length) return null;
+    const isHistory = section === SECTION_KEYS.history;
+    const header = <View style={styles.header}>
+      <Text style={[styles.text, styles.sectionHeader]}>{SECTION_NAMES[section]}</Text>
+      {isHistory && <Icon name={icons.WINDOW_CLOSE} color="#eee" size={20} />}
+    </View>;
+    return <React.Fragment key={section}>
+      {isHistory ? <TouchableNativeFeedback onPress={this.clearHistory} accessibilityLabel="清空搜索历史">{header}</TouchableNativeFeedback> : header}
+      {items.map((item, index) => {
+        const {name, transName, subName} = this.formatSuggestion(item, section);
+        return <TouchableNativeFeedback key={index} onPress={() => this.props.onSuggest(item, section)}>
+          <View style={styles.row}>
+            <Text style={[styles.text, styles.name]}>{name}{transName ? '(' + transName + ')' : ''}</Text>
+            {!!subName && <Text style={[styles.text, styles.fadeText]}>{subName}</Text>}
+          </View>
+        </TouchableNativeFeedback>;
+      })}
+    </React.Fragment>;
+  };
+
+  render() {
+    if (!this.props.focusing) return null;
+    return <View style={styles.container}>
+      <FadingEdge top={50}>
+        <SpringScrollView contentStyle={{paddingTop: 20}}>
+          {this.state.error && <Text selectable style={styles.text}>{this.state.error.message}</Text>}
+          {SECTIONS.map(this.renderSection)}
+        </SpringScrollView>
+      </FadingEdge>
+    </View>;
+  }
+}
+
+const styles = StyleSheet.create({
+  container: {top: 40 + STATUS_BAR_HEIGHT, flex: 1, alignSelf: 'center', width: '100%', height: '100%', position: 'absolute', paddingHorizontal: 20},
+  text: {fontSize: 14, padding: 5},
+  sectionHeader: {borderRadius: 5, fontSize: 16, fontWeight: 'bold'},
+  header: {flexDirection: 'row', alignItems: 'center'},
+  row: {marginLeft: 10, flexDirection: 'row'},
+  name: {fontSize: 16},
+  fadeText: {opacity: 0.6},
+});
