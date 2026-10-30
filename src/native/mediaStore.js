@@ -1,65 +1,37 @@
-const _asyncRuntime = require("@babel/runtime/helpers/regeneratorRuntime")();
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-var ReactNative = require("react-native"),
-  trackInfo = require("../services/trackInfo"),
-  o = ReactNative.NativeModules.RNMediaStore,
-  c = function () {
-    return o.getPlayList();
+import {NativeModules, PermissionsAndroid, Platform} from 'react-native';
+import {extractBasicInfo} from '../services/trackInfo';
+
+const native = NativeModules.RNMediaStore;
+
+async function writePermission() {
+  if (Platform.Version > 28) return;
+  const permission = PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE;
+  if (!await PermissionsAndroid.check(permission) && await PermissionsAndroid.request(permission) !== PermissionsAndroid.RESULTS.GRANTED) {
+    throw new Error('需要媒体文件保存权限');
+  }
+}
+
+export default {
+  getPlayList: () => native.getPlayList(),
+  getArtWork: id => native.getArtWork(id),
+  async publish(path, name, mime, subdirectory) {
+    await writePermission();
+    return native.publish(path, name, mime, subdirectory);
   },
-  s = function (t) {
-    var e = t.formattedItem,
-      r = t.localItem,
-      n = e.singer[0].name + ' - ' + e.song,
-      a = e.song === r.title && e.singer[0].name === r.singer,
-      u = n === r.title;
-    return a || u;
+  async deleteAudio(id) {
+    await writePermission();
+    return native.deleteAudio(String(id));
   },
-  l = {
-    getPlayList: c,
-    getArtWork: function (t) {
-      return o.getArtWork(t);
-    },
-    attachLocalPath: function (t) {
-      var e, r, n;
-      return _asyncRuntime.async(function (a) {
-        for (;;) switch (a.prev = a.next) {
-          case 0:
-            e = t;
-            a.next = 3;
-            return _asyncRuntime.awrap(c());
-          case 3:
-            if ((r = a.sent) && r.numbers && !(r.numbers < 1)) {
-              a.next = 6;
-              break;
-            }
-            return a.abrupt("return", e);
-          case 6:
-            if ((n = r.data.filter(function (t) {
-              return t.duration / 1e3 > 60;
-            })) && !(n.length < 1)) {
-              a.next = 9;
-              break;
-            }
-            return a.abrupt("return", e);
-          case 9:
-            return a.abrupt("return", e.map(function (t) {
-              var e = (0, trackInfo.extractBasicInfo)(t);
-              n.map(function (r) {
-                e.singer && s({
-                  formattedItem: e,
-                  localItem: r
-                }) && (t.localPath = r.path);
-              });
-              return t;
-            }));
-          case 10:
-          case "end":
-            return a.stop();
-        }
-      }, null, this);
+  async attachLocalPath(tracks) {
+    const {data} = await native.getPlayList();
+    const locals = data.filter(track => track.duration / 1000 > 60);
+    for (const track of tracks) {
+      const info = extractBasicInfo(track);
+      if (!Array.isArray(info.singer) || !info.singer.length) continue;
+      for (const local of locals) {
+        if (info.song === local.title && info.singer[0].name === local.singer || info.singer[0].name + ' - ' + info.song === local.title) track.localPath = local.path;
+      }
     }
-  };
-exports.default = l;
+    return tracks;
+  },
+};

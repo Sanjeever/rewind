@@ -1,7 +1,7 @@
+const _asyncRuntime = require("@babel/runtime/helpers/regeneratorRuntime")();
 const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
 const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 const _appStorage = require("./../storage/index.js");
-const _asyncRuntime = require("@babel/runtime/helpers/regeneratorRuntime")();
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -92,12 +92,15 @@ var React = _interopRequireWildcard(require("react")),
               return t.stop();
           }
         }, null, this);
-      }, n.onDelete = function () {
-        toast(locales.default.CACHE_CLEARED);
-        (0, files.clearCache)();
-        n.setState({
-          cacheSize: 0
-        });
+      }, n.onDelete = async function () {
+        try {
+          await (0, files.clearCache)();
+          n.setState({
+            cacheSize: 0
+          });
+        } catch (error) {
+          toast('清理缓存失败：' + error.message);
+        }
       }, a;
     }
     "componentDidMount"() {

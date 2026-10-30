@@ -47,6 +47,18 @@ class RewindStorageModule(private val context: ReactApplicationContext) : ReactC
     }
 
     @ReactMethod
+    fun replaceFile(source: String, destination: String, promise: Promise) {
+        executor.execute {
+            try {
+                Os.rename(source, destination)
+                promise.resolve(null)
+            } catch (error: Exception) {
+                promise.reject("E_FILE_WRITE", "保存文件失败", error)
+            }
+        }
+    }
+
+    @ReactMethod
     fun commitPlaylist(promise: Promise) {
         executor.execute {
             try {

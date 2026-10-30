@@ -15,4 +15,11 @@ export async function initializeStorage() {
   });
   storage = new Storage({size: 2048, storageBackend: backend, defaultExpires: null, enableCache: false});
   await storage._mapPromise;
+  let megabytes = 200;
+  try {
+    megabytes = await storage.load({key: 'maxCacheSize'});
+  } catch (error) {
+    if (error.name !== 'NotFoundError') throw error;
+  }
+  await NativeModules.RNAudioPlayer.configureCacheSize(megabytes);
 }

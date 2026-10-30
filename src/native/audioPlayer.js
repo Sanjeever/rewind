@@ -31,6 +31,7 @@ export default class AudioPlayer {
   static showSystemStreamVolumeUI() { native.showSystemStreamVolumeUI(); }
   static setNowPlaying(info) { native.setNowPlaying(info); }
   static enableControl(name, enabled) { native.enableControl(name, enabled); }
+  static setHandleAudioFocus(enabled) { native.setHandleAudioFocus(enabled); }
   static on(name, callback) { actions.set(name, callback); }
   static updatePlayback(info) { native.updatePlayback(info); }
   static openEqualizer() { return native.openEqualizer(); }

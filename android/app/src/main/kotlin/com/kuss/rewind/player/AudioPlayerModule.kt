@@ -110,6 +110,21 @@ class AudioPlayerModule(private val context: ReactApplicationContext) : ReactCon
 
     @ReactMethod fun updatePlayback(info: ReadableMap) { setNowPlaying(info) }
     @ReactMethod fun enableControl(name: String, enabled: Boolean) { main.post { PlayerBridge.controls[name] = enabled } }
+    @ReactMethod fun setHandleAudioFocus(enabled: Boolean) {
+        main.post { PlayerBridge.handleAudioFocus = enabled; PlayerBridge.audioFocusUpdater?.invoke(enabled) }
+    }
+    @ReactMethod fun configureCacheSize(megabytes: Double, promise: Promise) {
+        main.post {
+            if (!megabytes.isFinite() || megabytes < 0) promise.reject("E_CACHE_SIZE", "音频缓存上限无效")
+            else { PlayerBridge.maxCacheBytes = (megabytes * 1048576).toLong(); promise.resolve(null) }
+        }
+    }
+    @ReactMethod fun getCacheSize(promise: Promise) {
+        player { PlayerBridge.cacheSizeReader?.invoke(promise) ?: promise.reject("E_PLAYER_UNAVAILABLE", "播放服务不可用") }
+    }
+    @ReactMethod fun clearCache(promise: Promise) {
+        player { PlayerBridge.cacheClearer?.invoke(promise) ?: promise.reject("E_PLAYER_UNAVAILABLE", "播放服务不可用") }
+    }
     @ReactMethod fun getSystemVolume(callback: Callback) { callback.invoke(null, Arguments.createMap().apply { putDouble("volume", volume.getStreamVolume(AudioManager.STREAM_MUSIC).toDouble()) }) }
     @ReactMethod fun setSystemVolume(value: Double) { volume.setStreamVolume(AudioManager.STREAM_MUSIC, value.toInt(), 0) }
     @ReactMethod fun showSystemStreamVolumeUI() { volume.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_SAME, AudioManager.FLAG_SHOW_UI) }
