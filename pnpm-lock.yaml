@@ -47,6 +47,9 @@ importers:
       lottie-react-native:
         specifier: 7.5.0
         version: 7.5.0(react-native@0.88.1(@babel/core@7.26.10)(@react-native-community/cli@20.2.0)(@react-native/metro-config@0.88.1(@babel/core@7.26.10))(react@19.3.0))(react@19.3.0)
+      lrc-kit:
+        specifier: 1.2.1
+        version: 1.2.1
       lru-cache:
         specifier: 11.2.2
         version: 11.2.2
@@ -162,6 +165,9 @@ importers:
       adm-zip:
         specifier: 0.5.16
         version: 0.5.16
+      hermes-compiler:
+        specifier: 260318099.0.5
+        version: 260318099.0.5
 
 packages:
 
@@ -1866,6 +1872,9 @@ packages:
         optional: true
       react-native-windows:
         optional: true
+
+  lrc-kit@1.2.1:
+    resolution: {integrity: sha512-Ukfn5fleQEnl3ar5hmaI52HFrFQ6Xo5rM7gHcXpy9oXpdtxzZU50bN6EpO9wPeo9mFkJ4ojlKAWbuLijQUdjhg==}
 
   lru-cache@11.2.2:
     resolution: {integrity: sha512-F9ODfyqML2coTIsQpSkRHnLSZMtkU8Q+mSfcaIyKwy58u+8k5nvAYeiNhsyMARvzNcXJ9QfWVrcPsC9e9rAxtg==}
@@ -4756,6 +4765,8 @@ snapshots:
     dependencies:
       react: 19.3.0
       react-native: 0.88.1(@babel/core@7.26.10)(@react-native-community/cli@20.2.0)(@react-native/metro-config@0.88.1(@babel/core@7.26.10))(react@19.3.0)
+
+  lrc-kit@1.2.1: {}
 
   lru-cache@11.2.2: {}
 

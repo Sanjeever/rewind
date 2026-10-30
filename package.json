@@ -14,7 +14,7 @@
     "android:install": "node scripts/android.cjs installDebug",
     "android:build:standalone": "node scripts/android.cjs assembleStandalone",
     "android:install:standalone": "node scripts/android.cjs installStandalone",
-    "test": "node --test src/storage/migrate.test.cjs src/utils/md5.test.cjs"
+    "test": "node --test src/storage/migrate.test.cjs src/utils/md5.test.cjs src/utils/parseLyric.test.cjs"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "3.1.1",
@@ -30,6 +30,7 @@
     "immer": "10.1.1",
     "lodash": "4.17.21",
     "lottie-react-native": "7.5.0",
+    "lrc-kit": "1.2.1",
     "lru-cache": "11.2.2",
     "pinyin-pro": "3.27.0",
     "prop-types": "15.8.1",
@@ -69,6 +70,7 @@
     "@react-native/gradle-plugin": "0.88.1",
     "@react-native/metro-config": "0.88.1",
     "@xmldom/xmldom": "0.9.12",
-    "adm-zip": "0.5.16"
+    "adm-zip": "0.5.16",
+    "hermes-compiler": "260318099.0.5"
   }
 }
