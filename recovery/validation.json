@@ -1,0 +1,131 @@
+{
+  "date": "2026-10-30",
+  "overall_status": "compatible_source_baseline_with_external_limits",
+  "device": {
+    "serial": "emulator-5556",
+    "api": 28,
+    "android": "9",
+    "abi": "x86_64",
+    "emulator": "32.1.15",
+    "hypervisor": "HAXM 7.6.5",
+    "audio_output": "headless_no_speaker"
+  },
+  "build": {
+    "status": "passed",
+    "jdk": "8u491",
+    "gradle": "6.7.1",
+    "android_gradle_plugin": "4.2.2",
+    "compile_sdk": 32,
+    "build_tools": "30.0.3",
+    "command": ".\\android\\gradlew.bat -p android assembleDebug --console=plain",
+    "apk": "android/app/build/outputs/apk/debug/app-debug.apk",
+    "application_id": "com.kuss.rewind.dev",
+    "version_name": "3.5.0-dev",
+    "version_code": 5000098,
+    "packaged_abis": ["arm64-v8a", "armeabi-v7a", "x86", "x86_64"],
+    "tested_abis": ["x86_64"],
+    "evidence": ".recovery/final-build.log"
+  },
+  "checks": [
+    {
+      "id": "original_inputs",
+      "status": "passed",
+      "result": "四个原始 APK 与 output-metadata.json 无 Git 内容变化；逐项 SHA-256 保存在 inventory.json"
+    },
+    {
+      "id": "source_modules",
+      "status": "passed",
+      "application_modules": 265,
+      "public_runtime_modules": 673,
+      "apk_module_registrations": 938,
+      "own_native_classes_remaining_in_runtime_jar": 0,
+      "result": "自有 JS 从源码编译，自有 Java 从源码编译，运行库不保留自有原生类"
+    },
+    {
+      "id": "source_to_apk",
+      "status": "passed",
+      "observed_text": "3.5.0-dev · 源码验证",
+      "evidence": ".recovery/validation/dev-about-proof.png",
+      "temporary_change_removed": true
+    },
+    {
+      "id": "new_jsx_and_json_modules",
+      "status": "passed",
+      "observed_text": "3.5.0-dev · JSX链路验证",
+      "evidence": ".recovery/validation/dev-jsx-proof.png",
+      "temporary_component_and_json_removed": true,
+      "final_apk_contains_temporary_markers": false
+    },
+    {
+      "id": "navigation",
+      "status": "passed_in_scope",
+      "pages": ["首页", "关于", "设置", "本地音乐", "本地歌单列表", "空歌单详情", "多选", "搜索入口", "登录选择", "网易云登录表单", "QQ 登录表单", "播放器", "歌词视图"],
+      "result": "页面实际打开；网络内容、完整账号状态未据此判定通过"
+    },
+    {
+      "id": "local_playback",
+      "status": "passed_in_scope",
+      "fixture": "隔离模拟器内生成的 45 秒与 60 秒 MP3 测试音频",
+      "observations": ["MediaStore 返回两首音频的真实标签与时长", "AudioTrack 启动，媒体会话进入播放状态", "暂停时记录正数播放位置", "队列显示两首曲目与当前项", "切换上下一首改变真实媒体会话标题", "左侧进度手势改变播放位置"],
+      "seek_observation_ms": {"before_paused": 28996, "after_seek": 39680},
+      "evidence": ".recovery/validation/dev-player.png",
+      "audible_output_verified": false
+    },
+    {
+      "id": "background_playback",
+      "status": "passed_in_scope",
+      "result": "退到系统桌面后保持播放，媒体下一首按键切换标题，暂停按键得到 6145 毫秒暂停位置",
+      "evidence": [".recovery/validation/background-playing.txt", ".recovery/validation/background-next.txt", ".recovery/validation/background-paused.txt"],
+      "long_duration_and_physical_device_verified": false
+    },
+    {
+      "id": "local_playlist",
+      "status": "passed_in_scope",
+      "observations": ["通过 UI 创建 Rewind_QA", "重新启动与重新安装后仍显示该歌单", "进入空歌单详情与多选页", "通过 UI 确认删除后列表和文件均变为空歌单", "原版外部歌单文件仍为空，开发包使用自身目录"],
+      "evidence": [".recovery/validation/dev-playlist-restart.xml", ".recovery/validation/playlist-fixed-detail.png", ".recovery/validation/playlist-fixed-multiselect.xml", ".recovery/validation/playlist-deleted.xml"],
+      "online_playlist_contents_verified": false
+    },
+    {
+      "id": "settings_persistence",
+      "status": "passed",
+      "database": "databases/RKStorage",
+      "table": "catalystLocalStorage",
+      "columns": ["key", "value"],
+      "key": "settings",
+      "field": "rawData.autoSetPlaylistOrder.on",
+      "value_after_force_stop": false,
+      "sqlite_integrity_check": "ok",
+      "evidence": ".recovery/validation/RKStorage"
+    },
+    {
+      "id": "lyrics",
+      "status": "partial",
+      "result": "四组歌词解析与原版一致；歌词视图实际打开，显示原有无歌词占位；未验证在线歌词获取和同步",
+      "evidence": ".recovery/validation/final-lyric.xml"
+    },
+    {
+      "id": "login",
+      "status": "partial",
+      "result": "选择页与网易云、QQ 表单实际打开；未输入账号凭据，未验证认证成功及用户歌单同步",
+      "evidence": [".recovery/validation/dev-netease-login.xml", ".recovery/validation/dev-qq-login.xml"]
+    },
+    {
+      "id": "external_services",
+      "status": "unverified_network",
+      "observations": ["代理请求没有取得上游 HTTP 响应", "直连 DNS 查询超时", "使用公开 DNS 解析出的地址直连仍连接超时", "原版与恢复版均打开 hello 搜索页，但未观察到搜索结果"],
+      "conclusion": "当前证据不足以认定服务端接口永久失效，也不足以判定搜索、在线音频和歌词通过"
+    },
+    {
+      "id": "binding_and_exception_regressions",
+      "status": "passed",
+      "result": "全部应用模块在重命名时核对绑定引用数；空歌单详情与多选页复测无崩溃；缺失行号格式检查和错误提示参数检查通过"
+    }
+  ],
+  "remaining_limits": [
+    "框架、第三方 Java、JNI 与公共 JS 仍暂用兼容运行库，部分依赖精确版本未知",
+    "未验证账号认证、在线曲目、在线歌单、真实歌词及相关推荐内容",
+    "其他 ABI、其他 Android 版本、物理设备听感和长时间后台稳定性未验证",
+    "原版私有沙盒数据迁移和覆盖安装兼容性未验证",
+    "当前不提供 Metro 热更新和常规 PNG require 导入流程"
+  ]
+}

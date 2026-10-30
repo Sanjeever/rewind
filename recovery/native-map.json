@@ -209,5 +209,91 @@
   ],
   "manifest": "android/app/src/main/AndroidManifest.xml",
   "runtime_boundary": "框架、第三方 Java 与 JNI 暂用兼容库；全部自有原生类由源码编译",
-  "registered_package_count": 33
+  "registered_package_count": 33,
+  "manifest_components": {
+    "original": {
+      "permissions": [
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.WAKE_LOCK",
+        "android.permission.ACCESS_NETWORK_STATE",
+        "android.permission.ACCESS_WIFI_STATE",
+        "android.permission.FOREGROUND_SERVICE",
+        "android.permission.REQUEST_INSTALL_PACKAGES",
+        "android.permission.REQUEST_COMPANION_START_FOREGROUND_SERVICES_FROM_BACKGROUND",
+        "android.permission.REQUEST_COMPANION_RUN_IN_BACKGROUND",
+        "android.permission.INTERNET",
+        "com.android.vending.CHECK_LICENSE",
+        "android.permission.SYSTEM_ALERT_WINDOW",
+        "com.google.android.finsky.permission.BIND_GET_INSTALL_REFERRER_SERVICE",
+        "com.google.android.gms.permission.AD_ID"
+      ],
+      "activity": [
+        "com.kuss.rewind.MainActivity",
+        "com.facebook.react.devsupport.DevSettingsActivity",
+        "com.kuss.rewind.ErrorActivity",
+        "com.masteratul.exceptionhandler.DefaultErrorScreen",
+        "com.yalantis.ucrop.UCropActivity",
+        "com.jakewharton.processphoenix.ProcessPhoenix"
+      ],
+      "service": [
+        "com.modules.audioplayer.AudioService",
+        "com.google.android.gms.measurement.AppMeasurementService",
+        "com.google.android.gms.measurement.AppMeasurementJobService",
+        "com.google.firebase.components.ComponentDiscoveryService",
+        "com.google.android.datatransport.runtime.backends.TransportBackendDiscovery",
+        "com.google.android.datatransport.runtime.scheduling.jobscheduling.JobInfoSchedulerService"
+      ],
+      "receiver": [
+        "com.modules.audioplayer.MyMediaButtonReceiver",
+        "com.google.android.gms.measurement.AppMeasurementReceiver",
+        "com.google.android.datatransport.runtime.scheduling.jobscheduling.AlarmManagerSchedulerBroadcastReceiver"
+      ],
+      "provider": [
+        "androidx.core.content.FileProvider",
+        "com.RNFetchBlob.Utils.FileProvider",
+        "com.google.firebase.provider.FirebaseInitProvider",
+        "androidx.startup.InitializationProvider"
+      ]
+    },
+    "development": {
+      "permissions": [
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.WAKE_LOCK",
+        "android.permission.ACCESS_NETWORK_STATE",
+        "android.permission.ACCESS_WIFI_STATE",
+        "android.permission.FOREGROUND_SERVICE",
+        "android.permission.REQUEST_INSTALL_PACKAGES",
+        "android.permission.REQUEST_COMPANION_START_FOREGROUND_SERVICES_FROM_BACKGROUND",
+        "android.permission.REQUEST_COMPANION_RUN_IN_BACKGROUND",
+        "android.permission.INTERNET",
+        "android.permission.SYSTEM_ALERT_WINDOW"
+      ],
+      "activity": [
+        ".MainActivity",
+        "com.facebook.react.devsupport.DevSettingsActivity",
+        ".ErrorActivity",
+        "com.masteratul.exceptionhandler.DefaultErrorScreen",
+        "com.yalantis.ucrop.UCropActivity",
+        "com.jakewharton.processphoenix.ProcessPhoenix"
+      ],
+      "service": [
+        "com.modules.audioplayer.AudioService"
+      ],
+      "receiver": [
+        "com.modules.audioplayer.MyMediaButtonReceiver"
+      ],
+      "provider": [
+        "com.RNFetchBlob.Utils.FileProvider"
+      ]
+    }
+  },
+  "compatibility_patches": [
+    {
+      "class": "d.e.m.z0.a",
+      "source": "android/app/src/main/java/d/e/m/z0/a.java",
+      "reason": "未知异常行号保留 ? 与原始消息"
+    }
+  ]
 }

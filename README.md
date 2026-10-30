@@ -4,7 +4,7 @@
 
 ## 工程恢复进度
 
-当前已建立可构建运行的兼容基线，正在继续业务验证与依赖整理。交接目标见 [handoff.md](handoff.md)，开发约定见 [AGENTS.md](AGENTS.md)。
+已恢复可修改、可构建运行的 Android 兼容工程。本地核心链路完成验证。线上内容和账号流程受当前网络与测试条件限制，仍未通过完整验收。交接目标见 [handoff.md](handoff.md)，开发约定见 [AGENTS.md](AGENTS.md)。
 
 | 项目 | 当前状态 |
 | --- | --- |
@@ -15,7 +15,7 @@
 | 源码与 Android 工程 | 265 个自有 JS 模块、114 份自有 Java 文件与 Gradle Wrapper 已建立 |
 | 构建、安装、实际运行 | assembleDebug 成功，API 28 x86_64 模拟器安装启动成功，与原版并存 |
 | 源码到 APK | 修改 JS 关于页与原生版本信息、重建安装后，实际显示 3.5.0-dev · 源码验证；临时验证文字已撤回 |
-| 业务验证 | 首页、关于、设置、本地媒体列表与本地播放已检查，其余逐项进行 |
+| 业务验证 | 本地播放、暂停、切歌、进度、队列、后台控制、歌单和设置持久化已检查；线上内容与完整登录未通过验收 |
 
 ## 当前环境
 
@@ -60,6 +60,15 @@ $sdkRoot = Join-Path $PWD '.recovery/android-sdk'
 
 产物为 `android/app/build/outputs/apk/debug/app-debug.apk`，包名 `com.kuss.rewind.dev`，版本 `3.5.0-dev`。Gradle 构建自动编译当前 JS 源码。首次 Wrapper 分发包下载在本机代理下曾停滞，随后使用已下载的同版本官方分发包填充本地 Wrapper 缓存；缓存就绪后，上述 Wrapper 命令实际成功。代理参数保存在忽略目录的 Gradle 用户配置中。
 
+本机已创建 `rewind_api28` 测试 AVD。模拟器未运行时，使用经过验证的 32.1.15 可执行文件启动。
+
+```powershell
+$env:ANDROID_SDK_ROOT = $sdkRoot
+$env:ANDROID_HOME = $sdkRoot
+$env:ANDROID_AVD_HOME = Join-Path $PWD '.recovery/avd'
+Start-Process -FilePath (Join-Path $PWD '.recovery/tools/emulator32/emulator/emulator.exe') -WindowStyle Hidden -ArgumentList '-avd rewind_api28 -no-window -no-audio -no-snapshot -no-boot-anim -gpu swiftshader_indirect -memory 2048 -cores 2 -port 5556'
+```
+
 ```powershell
 $adb = Join-Path $sdkRoot 'platform-tools/adb.exe'
 & $adb -s emulator-5556 install -r -g android/app/build/outputs/apk/debug/app-debug.apk
@@ -68,7 +77,7 @@ $adb = Join-Path $sdkRoot 'platform-tools/adb.exe'
 
 已在独立模拟器执行安装和启动，原版 `com.kuss.rewind` 仍保留。开发包可通过 `run-as com.kuss.rewind.dev` 检查沙盒。开发构建使用嵌入式 JS 运行库，尚未启用 Metro 热更新。
 
-当前依赖边界为兼容运行库，第三方 Java、JNI 和公共 JS 还未全部替换成正式上游依赖。ExoPlayer 的版本常量已确认 2.17.1，其他精确依赖版本仍待整理。开发 Manifest 保留业务服务、媒体按键、文件提供器和裁剪入口，未启用原版统计初始化组件。四个 JNI ABI 已纳入 APK，目前实际运行验证覆盖 x86_64。
+当前依赖边界为兼容运行库，第三方 Java、JNI 和公共 JS 还未全部替换成正式上游依赖。已确认 RN 0.56.1、React 16.8.3、ExoPlayer 2.17.1、Axios 0.27.2 和 base-64 0.1.0。其余名称、版本及证据在 `recovery/inventory.json` 中区分确认、推断和未知。开发 Manifest 保留业务服务、媒体按键、文件提供器和裁剪入口，未启用原版统计初始化组件。四个 JNI ABI 已纳入 APK，目前实际运行验证覆盖 x86_64。
 
 异常栈格式化类有一份源码兼容补丁，未知行号显示 `?`，避免格式化异常覆盖原始 JS 消息。运行库准备时剔除对应二进制类，再由工程编译补丁；不吞掉原始错误。可运行以下检查，使用接口代理覆盖缺失、空值和正常行列号，再结合设备实际页面验证。
 
@@ -99,7 +108,7 @@ pnpm check:modules
 
 导入重命名会检查全部内部作用域，并在转换时重新核对绑定引用数，防止导入组件被同名局部变量遮蔽。该问题曾在空歌单详情触发，修复后已在设备上打开详情和多选页。错误提示也已修正参数类型，保留实际错误文字。
 
-恢复构建使用本地开发签名，并以独立测试环境或开发包名运行。原版安装与数据兼容性尚未验证。远端服务可用性和账号相关功能待实测。
+恢复构建使用本地开发签名，并以独立测试环境或开发包名运行。原版覆盖安装与私有数据迁移尚未验证。远端服务与账号认证的未验证范围见下文。
 
 ## 验证记录与限制
 
@@ -107,7 +116,13 @@ pnpm check:modules
 - 源码链路截图位于本机 `.recovery/validation/dev-about-proof.png`，对应页面显示 JS 验证文字和来自当前 BuildConfig 的版本号。截图与临时日志不提交。
 - 设置中关闭“自动调整歌单顺序”后强制结束进程，实际 SQLite 快照中 `settings.rawData.autoSetPlaylistOrder.on` 为 false，数据库完整性检查为 ok。
 - 本地播放测试使用隔离模拟器内两份明确标记的测试音频，验证真实 MediaStore、解码、AudioTrack 和媒体会话。已观察播放状态、暂停位置和队列中的两首曲目，测试素材不进入业务源码。模拟器采用无窗口、无扬声器模式，尚未验证物理设备听感。
-- 歌词解析有源码对照检查，在线歌词、完整账号登录、远端搜索与在线播放仍在实测，不能视为通过。部分内部变量与库类型仍使用短名，精确依赖版本和上游替换尚未完成。
+- 进度手势观察到暂停位置由 28.996 秒跳到约 39.680 秒。应用退到系统桌面后仍播放，媒体下一首按键切换真实曲目，暂停按键得到 6.145 秒暂停位置。未验证长时间后台和其他 Android 版本。
+- 本地歌单通过 UI 创建、重启恢复、打开空详情与多选、确认删除；最终列表与文件均变为空歌单。开发包操作期间，原版外部歌单文件保持为空。
+- 登录选择图标、网易云表单和 QQ 表单实际打开，未输入账号凭据。歌词视图已打开，显示原有无歌词占位；四组歌词解析对照通过。完整账号认证、在线歌单、在线歌词、远端搜索和在线播放未通过验收。
+- 网络探测中，代理请求未取得上游 HTTP 响应，直连出现 DNS 超时，使用公开解析地址直连也连接超时。原版与恢复版均打开 `hello` 搜索页，但未观察到结果。当前不能据此认定接口永久失效。
+- 框架和第三方实现仍有兼容运行库边界，部分内部变量与库类型使用短名，精确依赖版本和上游替换尚未完成。
+
+详细范围、结果和本机证据路径见 [recovery/validation.json](recovery/validation.json)。原版与恢复版均用相同本地音频检查列表和播放器。最后一次完整执行锁定安装、运行库准备、异常格式检查与 Wrapper 构建成功，最新 APK 已重新安装启动。临时源码验证文字未留在最终 APK。
 
 ## 原版下载
 

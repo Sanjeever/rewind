@@ -18,3 +18,6 @@
 - `pnpm prepare:runtime` 使用 Java 17 准备本地兼容运行库。Android 构建使用 JDK 8、AGP 4.2.2、Wrapper 6.7.1、Platform 32 和 Build Tools 30.0.3。已验证命令为 `.\android\gradlew.bat -p android assembleDebug --console=plain`，本机环境设置见 README。
 - 开发包名为 `com.kuss.rewind.dev`，保留原版 `com.kuss.rewind`。当前模拟器为 API 28 x86_64，序列号 `emulator-5556`。测试账号、音频与数据库快照保持本地，不提交。
 - 兼容 Java 运行库必须排除 `com/modules/` 和 `com/kuss/rewind/` 自有类。资源稳定 ID 使用最终开发包名，并作为资源处理任务输入，避免增量构建使用过期 ID。
+- 应用资源由 `android/app/src/main/res/` 维护，准备脚本从兼容资源中排除相同文件和配置项。异常格式兼容类 `d/e/m/z0/a.class` 也须从运行库排除，使用工程中的源码补丁。
+- 源码转换时，导入名称须避开内部作用域绑定，转换工具会核对引用数。业务修改不再通过重新提取覆盖源码。
+- `recovery/validation.json` 记录实际验收范围。当前本地链路已验证，网络内容和完整认证未验证，其他 ABI 及物理设备未运行验证。后续更新不得把这些项目直接标记通过。
