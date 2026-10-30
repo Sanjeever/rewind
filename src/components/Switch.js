@@ -9,9 +9,8 @@ var React = _interopRequireDefault(require("react")),
   constants = require("../theme/constants"),
   u = function (e) {
     return React.default.createElement(ReactNative.Switch, _extends({
-      onTintColor: constants.COLORS.primaryAlpha50,
-      tintColor: constants.COLORS.primaryAlpha20,
-      thumbTintColor: constants.COLORS.secondary
+      trackColor: {true: constants.COLORS.primaryAlpha50, false: constants.COLORS.primaryAlpha20},
+      thumbColor: constants.COLORS.secondary
     }, e));
   };
 exports.default = u;

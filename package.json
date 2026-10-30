@@ -14,7 +14,7 @@
     "android:install": "node scripts/android.cjs installDebug",
     "android:build:standalone": "node scripts/android.cjs assembleStandalone",
     "android:install:standalone": "node scripts/android.cjs installStandalone",
-    "test": "node --test src/storage/migrate.test.cjs src/utils/md5.test.cjs src/utils/parseLyric.test.cjs"
+    "test": "node --test src/storage/migrate.test.cjs src/settings/merge.test.cjs src/utils/md5.test.cjs src/utils/parseLyric.test.cjs"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "3.1.1",

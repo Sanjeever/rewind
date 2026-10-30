@@ -2,6 +2,7 @@ const _default = require("./../components/Text.js").default;
 const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
 const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 const _appStorage = require("./../storage/index.js");
+const {mergeSettings} = require('../settings/merge.cjs');
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -27,27 +28,11 @@ var React = _interopRequireWildcard(require("react")),
         settings: defaults.defaultSettings,
         modified: false,
         modal: false
-      }, a.isSettingsUpdated = function (e) {
-        var t = Object.keys(e),
-          n = Object.keys(defaults.defaultSettings);
-        if (t.length !== n.length) return true;
-        for (var a = 0; a < t.length; a++) if (t[a] !== n[a]) return true;
-        return false;
-      }, a.save = function () {
-        var e = a.state.modified;
-        return new Promise(function (t) {
-          if (!e) return t(false);
-          _appStorage.storage.save({
-            key: keysModule.default.settings,
-            data: a.state.settings
-          }).then(function () {
-            events.emitter.emit(names.default.SettingsChanged);
-            toast(locales.default.SETTINGS_SAVED);
-            t(true);
-          }).catch(function () {
-            return t(false);
-          });
-        });
+      }, a.save = async function () {
+        if (!a.state.modified) return false;
+        await _appStorage.storage.save({key: keysModule.default.settings, data: a.state.settings});
+        events.emitter.emit(names.default.SettingsChanged);
+        return true;
       }, a.alertResetSettings = function () {
         ReactNative.Alert.alert(locales.default.WARN, locales.default.CONFIRM_RESET_ALL_SETTINGS, [{
           text: locales.default.CANCEL,
@@ -61,14 +46,15 @@ var React = _interopRequireWildcard(require("react")),
             return a.resetSettings();
           }
         }]);
-      }, a.resetSettings = function () {
-        a.setState({
-          settings: defaults.defaultSettings
-        });
-        _appStorage.storage.remove({
-          key: keysModule.default.settings
-        });
-        toast(locales.default.CACHE_CLEARED);
+      }, a.resetSettings = async function () {
+        try {
+          const settings = mergeSettings({}, defaults.defaultSettings);
+          await _appStorage.storage.save({key: keysModule.default.settings, data: settings});
+          a.setState({settings, modified: false});
+          events.emitter.emit(names.default.SettingsChanged);
+        } catch (error) {
+          toast('设置保存失败：' + error.message);
+        }
       }, a.onValueChange = function (e) {
         var t = a.state.settings;
         t.bottomPadding.subtitle = e;
@@ -87,6 +73,7 @@ var React = _interopRequireWildcard(require("react")),
           var i = e[t],
             o = defaults.defaultSettings[t];
           return t.includes('SECTION') ? React.default.createElement(components.Title, {
+            key: t,
             style: C.sectionText
           }, defaults.sectionsMap[t].title) : 'bottomPadding' === t ? React.default.createElement(components.SettingItem, {
             key: n,
@@ -97,7 +84,7 @@ var React = _interopRequireWildcard(require("react")),
           }) : React.default.createElement(ReactNative.TouchableNativeFeedback, {
             key: n,
             onPress: function () {
-              return a.switchOptions(i.option);
+              return a.switchOptions(t);
             }
           }, React.default.createElement(components.SettingItem, {
             key: n,
@@ -117,45 +104,33 @@ var React = _interopRequireWildcard(require("react")),
       }, a.restart = function () {
         a.save().then(function () {
           restartModule.default.restart();
+        }).catch(function (error) {
+          toast('设置保存失败：' + error.message);
         });
       }, a.onShowBottomPaddingModal = function () {
         a.setState({
           modal: true
         });
-      }, a.switchOptions = function (e) {
-        var t = a.state.settings;
-        t[e].on = !t[e].on;
-        a.setState({
-          settings: t,
-          modified: true
-        });
-        _appStorage.storage.save({
-          key: keysModule.default.settings,
-          data: t
-        });
+      }, a.switchOptions = async function (key) {
+        const settings = {...a.state.settings, [key]: {...a.state.settings[key], on: !a.state.settings[key].on}};
+        const previous = a.state.settings;
+        a.setState({settings, modified: true});
+        try {
+          await _appStorage.storage.save({key: keysModule.default.settings, data: settings});
+          a.setState({modified: false});
+          events.emitter.emit(names.default.SettingsChanged);
+        } catch (error) {
+          a.setState({settings: previous});
+          toast('设置保存失败：' + error.message);
+        }
       }, n;
     }
-    "componentDidMount"() {
-      var e = this;
-      _appStorage.storage.load({
-        key: keysModule.default.settings
-      }).then(function (t) {
-        if ('object' == typeof t) {
-          var n = e.isSettingsUpdated(t) ? defaults.defaultSettings : t;
-          e.setState({
-            settings: n
-          });
-        } else e.setState({
-          settings: defaults.defaultSettings
-        });
-      }).catch(function () {
-        e.setState({
-          settings: defaults.defaultSettings
-        });
-      });
+    async componentDidMount() {
+      const stored = await _appStorage.storage.load({key: keysModule.default.settings});
+      this.setState({settings: mergeSettings(stored, defaults.defaultSettings)});
     }
     "componentWillUnmount"() {
-      this.save();
+      this.save().catch(error => toast('设置保存失败：' + error.message));
     }
     "render"() {
       var e = this,

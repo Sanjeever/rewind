@@ -46,9 +46,9 @@ import Video from '../screens/Video';
 const Stack = createNativeStackNavigator();
 const screens = {Home, Skin, About, SearchPage, Settings, MusicHistory, CustomPlaylist, NeteaseLogin, QQMusicLogin, InitialLogin, Playlist, LocalMusic, ArtistPage, AlbumPage, Msg, MsgHistory, MusicRecommend, Radio, RadioDetail, Charts, HotPlaylist, Favs, CachePage, WebViewPage, Tip, Cloud, UserManager, UserInfo, FollowPage, LanguagePage, FeaturePage, OrderPage, MusicNotificationPage, CommentPage, ListenRecord, PlaylistIntersection, LyricPage, HappyBirthday, SubNewSongs, Video};
 
-export default function Navigation({animationEnabled = true}) {
+export default function Navigation({animationEnabled = true, statusBarHidden = false}) {
   return <NavigationContainer ref={navigationRef} theme={DarkTheme}>
-    <Stack.Navigator screenOptions={{headerShown: false, contentStyle: {backgroundColor: '#000'}, animation: animationEnabled ? 'slide_from_right' : 'none'}}>
+    <Stack.Navigator screenOptions={{headerShown: false, statusBarStyle: 'light', statusBarHidden, contentStyle: {backgroundColor: '#000'}, animation: animationEnabled ? 'slide_from_right' : 'none'}}>
       {Object.entries(screens).map(([name, component]) => <Stack.Screen key={name} name={name} component={component} />)}
     </Stack.Navigator>
   </NavigationContainer>;

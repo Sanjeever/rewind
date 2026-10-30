@@ -1,5 +1,6 @@
 const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
 const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+const {mergeSettings} = require('./settings/merge.cjs');
 const _objectSpread = require("@babel/runtime/helpers/objectSpread2");
 const _appStorage = require("./storage/index.js");
 Object.defineProperty(exports, "__esModule", {
@@ -27,6 +28,7 @@ var immer = require("immer"),
   navigation = _interopRequireDefault(require("./navigation/index")),
   events = require("./events/index"),
   k = class t extends React.PureComponent {
+    settingsLoaded = false;
     constructor() {
       var e, a, n;
       for (var l = arguments.length, r = new Array(l), o = 0; o < l; o++) r[o] = arguments[o];
@@ -65,7 +67,10 @@ var immer = require("immer"),
           e = defaults.defaultSettings;
           await _appStorage.storage.save({key: keys.default.settings, data: e});
         }
-          e.autoLoadLastPlayedTracks.on && lastQueue.default.emit();
+          e = mergeSettings(e, defaults.defaultSettings);
+          const firstLoad = !n.settingsLoaded;
+          n.settingsLoaded = true;
+          firstLoad && e.autoLoadLastPlayedTracks.on && lastQueue.default.emit();
           n.setState((0, immer.produce)(function (t) {
             t.settings = (0, utils.extractKeyValue)(e, 'on');
             t.bottomPaddingValue = e.bottomPadding.subtitle;
@@ -133,7 +138,8 @@ var immer = require("immer"),
         translucent: true,
         hidden: f
       }), React.default.createElement(navigation.default, {
-        animationEnabled: !m
+        animationEnabled: !m,
+        statusBarHidden: f
       }), React.default.createElement(player.default, {
         setDisplayNowPlaying: this.setDisplayNowPlaying,
         setPlayerData: this.setPlayerData,
