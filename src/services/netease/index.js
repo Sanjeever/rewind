@@ -1,9 +1,14 @@
+const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+const _classCallCheck = require("@babel/runtime/helpers/classCallCheck");
+const _asyncRuntime = require("regenerator-runtime");
+const _toConsumableArray = require("@babel/runtime/helpers/toConsumableArray");
+const _objectSpread = require("@babel/runtime/helpers/objectSpread2");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
 var utils = require("../../utils/index"),
-  types = babelHelpers.interopRequireWildcard(require("../../utils/types")),
+  types = _interopRequireWildcard(require("../../utils/types")),
   http = require("./http"),
   u = null,
   l = function () {
@@ -18,7 +23,7 @@ var utils = require("../../utils/index"),
   },
   m = new function e() {
     var t = this;
-    babelHelpers.classCallCheck(this, e);
+    _classCallCheck(this, e);
     this.login_out = function () {
       return (0, http.cryptoRequest)('/weapi/logout', {
         csrf_token: ''
@@ -75,13 +80,13 @@ var utils = require("../../utils/index"),
         l,
         c,
         m = arguments;
-      return regeneratorRuntime.async(function (d) {
+      return _asyncRuntime.async(function (d) {
         for (;;) switch (d.prev = d.next) {
           case 0:
             r = m.length > 1 && void 0 !== m[1] && m[1];
             n = "id=" + e + "&n=1000&limit=1000";
             d.next = 4;
-            return regeneratorRuntime.awrap((0, http.request)('/api/v6/playlist/detail', n));
+            return _asyncRuntime.awrap((0, http.request)('/api/v6/playlist/detail', n));
           case 4:
             if (i = d.sent, a = i.playlist, s = i.playlist.trackIds.slice(1e3), !(a.tracks.length < a.trackIds.length && s.length > 0)) {
               d.next = 18;
@@ -94,10 +99,10 @@ var utils = require("../../utils/index"),
               break;
             }
             d.next = 12;
-            return regeneratorRuntime.awrap(u());
+            return _asyncRuntime.awrap(u());
           case 12:
             l = d.sent;
-            (null === (c = l.songs) || void 0 === c ? void 0 : c.length) > 0 && (i.playlist.tracks = babelHelpers.toConsumableArray(i.playlist.tracks).concat(babelHelpers.toConsumableArray(c)));
+            (null === (c = l.songs) || void 0 === c ? void 0 : c.length) > 0 && (i.playlist.tracks = _toConsumableArray(i.playlist.tracks).concat(_toConsumableArray(c)));
             d.next = 18;
             break;
           case 17:
@@ -112,7 +117,7 @@ var utils = require("../../utils/index"),
     };
     this.song_detail = function (e) {
       var t, r, n, i;
-      return regeneratorRuntime.async(function (a) {
+      return _asyncRuntime.async(function (a) {
         for (;;) switch (a.prev = a.next) {
           case 0:
             if (e && !((null === e || void 0 === e ? void 0 : e.length) < 1)) {
@@ -134,7 +139,7 @@ var utils = require("../../utils/index"),
               }));
             });
             a.next = 7;
-            return regeneratorRuntime.awrap(Promise.all(r));
+            return _asyncRuntime.awrap(Promise.all(r));
           case 7:
             n = a.sent;
             i = n.reduce(function (e, t) {
@@ -152,7 +157,7 @@ var utils = require("../../utils/index"),
     };
     this.search = function (e) {
       var t, r, n, i, a, s, u, l;
-      return regeneratorRuntime.async(function (c) {
+      return _asyncRuntime.async(function (c) {
         for (;;) switch (c.prev = c.next) {
           case 0:
             t = e.keywords;
@@ -177,7 +182,7 @@ var utils = require("../../utils/index"),
     };
     this.cloud_search = function (e) {
       var t, r, n, i, a, s, u;
-      return regeneratorRuntime.async(function (l) {
+      return _asyncRuntime.async(function (l) {
         for (;;) switch (l.prev = l.next) {
           case 0:
             t = e.keywords;
@@ -303,8 +308,8 @@ var utils = require("../../utils/index"),
         r = void 0 === t ? 'add' : t,
         n = e.pid,
         i = e.tracks,
-        a = types.isArray(i) ? babelHelpers.toConsumableArray(i) : [i, i],
-        u = "op=" + r + "&pid=" + n + "&tracks=" + i + "&trackIds=[" + babelHelpers.toConsumableArray(a) + "]";
+        a = types.isArray(i) ? _toConsumableArray(i) : [i, i],
+        u = "op=" + r + "&pid=" + n + "&tracks=" + i + "&trackIds=[" + _toConsumableArray(a) + "]";
       return (0, http.request)('/api/playlist/manipulate/tracks', u);
     };
     this.personal_fm = function () {
@@ -359,7 +364,7 @@ var utils = require("../../utils/index"),
           } : {
             artistIds: [t]
           },
-          s = babelHelpers.objectSpread({
+          s = _objectSpread({
             csrf_token: ''
           }, a);
         return (0, http.cryptoRequest)("/weapi/artist/" + n + "?timestamp=" + i, s);
@@ -374,7 +379,7 @@ var utils = require("../../utils/index"),
           a = {
             id: t
           },
-          s = babelHelpers.objectSpread({
+          s = _objectSpread({
             csrf_token: ''
           }, a);
         return (0, http.cryptoRequest)("/weapi/album/" + n + "?timestamp=" + i, s);
@@ -606,14 +611,14 @@ var utils = require("../../utils/index"),
     };
     this.follow_user = function (e) {
       var t, r, n, i, a, s;
-      return regeneratorRuntime.async(function (u) {
+      return _asyncRuntime.async(function (u) {
         for (;;) switch (u.prev = u.next) {
           case 0:
             t = e.uid;
             r = e.type;
             n = void 0 === r ? 1 : r;
             u.next = 3;
-            return regeneratorRuntime.awrap((0, http.getCsrfToken)());
+            return _asyncRuntime.awrap((0, http.getCsrfToken)());
           case 3:
             if (i = u.sent, t && i) {
               u.next = 6;
@@ -632,14 +637,14 @@ var utils = require("../../utils/index"),
     };
     this.subscribe_playlist = function (e) {
       var t, r, n, i, a;
-      return regeneratorRuntime.async(function (s) {
+      return _asyncRuntime.async(function (s) {
         for (;;) switch (s.prev = s.next) {
           case 0:
             t = e.id;
             r = e.op;
             n = void 0 === r ? 'subscribe' : r;
             s.next = 3;
-            return regeneratorRuntime.awrap((0, http.getCsrfToken)());
+            return _asyncRuntime.awrap((0, http.getCsrfToken)());
           case 3:
             if (i = s.sent) {
               s.next = 6;

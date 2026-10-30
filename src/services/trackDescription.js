@@ -1,11 +1,12 @@
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var providers = babelHelpers.interopRequireDefault(require("./providers")),
-  locales = babelHelpers.interopRequireDefault(require("../locales/index")),
+var providers = _interopRequireDefault(require("./providers")),
+  locales = _interopRequireDefault(require("../locales/index")),
   utils = require("../utils/index"),
-  searchTypes = babelHelpers.interopRequireDefault(require("./searchTypes")),
+  searchTypes = _interopRequireDefault(require("./searchTypes")),
   s = function (e) {
     var a = e.item,
       t = e.api,

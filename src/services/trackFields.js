@@ -1,11 +1,12 @@
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.getUid = exports.getSong = exports.getSinger = exports.getImg = exports.getApi = exports.getAlias = exports.getAlbum = void 0;
-var providers = babelHelpers.interopRequireDefault(require("./providers")),
+var providers = _interopRequireDefault(require("./providers")),
   utils = require("../utils/index"),
   types = require("../utils/types"),
-  artistInfo = babelHelpers.interopRequireDefault(require("./artistInfo"));
+  artistInfo = _interopRequireDefault(require("./artistInfo"));
 exports.getUid = function (e) {
   if ((0, types.isObject)(e)) return e.songmid || e.mid || e.id;
 };

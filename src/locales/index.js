@@ -1,12 +1,13 @@
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var languageModule = babelHelpers.interopRequireDefault(require("../native/language")),
-  en_USModule = babelHelpers.interopRequireDefault(require("./en_US")),
-  zh_CNModule = babelHelpers.interopRequireDefault(require("./zh_CN")),
-  zh_HKModule = babelHelpers.interopRequireDefault(require("./zh_HK")),
-  zh_TWModule = babelHelpers.interopRequireDefault(require("./zh_TW")),
+var languageModule = _interopRequireDefault(require("../native/language")),
+  en_USModule = _interopRequireDefault(require("./en_US")),
+  zh_CNModule = _interopRequireDefault(require("./zh_CN")),
+  zh_HKModule = _interopRequireDefault(require("./zh_HK")),
+  zh_TWModule = _interopRequireDefault(require("./zh_TW")),
   p = {
     zh_CN: zh_CNModule.default,
     zh_TW: zh_TWModule.default,

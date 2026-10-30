@@ -1,14 +1,16 @@
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+const _asyncRuntime = require("regenerator-runtime");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
 var ReactNative = require("react-native"),
-  rnFetchBlob = babelHelpers.interopRequireDefault(require("rn-fetch-blob")),
-  providers = babelHelpers.interopRequireDefault(require("./providers")),
-  locales = babelHelpers.interopRequireDefault(require("../locales/index")),
+  rnFetchBlob = _interopRequireDefault(require("react-native-blob-util")),
+  providers = _interopRequireDefault(require("./providers")),
+  locales = _interopRequireDefault(require("../locales/index")),
   services = require("./index"),
   utils = require("../utils/index"),
-  audioTagger = babelHelpers.interopRequireDefault(require("../native/audioTagger")),
+  audioTagger = _interopRequireDefault(require("../native/audioTagger")),
   f = rnFetchBlob.default.fs.dirs.MusicDir + '/rewind/',
   d = {
     netEase: 'netease',
@@ -27,7 +29,7 @@ var ReactNative = require("react-native"),
   },
   b = function (e) {
     var t, r, a, n, u, i, l;
-    return regeneratorRuntime.async(function (b) {
+    return _asyncRuntime.async(function (b) {
       for (;;) switch (b.prev = b.next) {
         case 0:
           t = e.url;
@@ -37,12 +39,12 @@ var ReactNative = require("react-native"),
           u = e.type;
           i = f + d[r] + '/' + (a + "." + (void 0 === u ? 'mp3' : u));
           b.next = 7;
-          return regeneratorRuntime.awrap(rnFetchBlob.default.config({
+          return _asyncRuntime.awrap(rnFetchBlob.default.config({
             path: i
           }).fetch('GET', t));
         case 7:
           b.next = 9;
-          return regeneratorRuntime.awrap(audioTagger.default.commit(i, {
+          return _asyncRuntime.awrap(audioTagger.default.commit(i, {
             title: n.song,
             artist: (0, utils.parseArtist)(n.singer),
             album: n.album,
@@ -51,7 +53,7 @@ var ReactNative = require("react-native"),
         case 9:
           200 != (null === (l = b.sent) || void 0 === l ? void 0 : l.code) && toast('\u5199\u5165\u97f3\u4e50\u6807\u7b7e\u5931\u8d25');
           b.next = 13;
-          return regeneratorRuntime.awrap(rnFetchBlob.default.fs.scanFile([{
+          return _asyncRuntime.awrap(rnFetchBlob.default.fs.scanFile([{
             path: i,
             mime: 'audio/mpeg'
           }]));
@@ -76,11 +78,11 @@ var ReactNative = require("react-native"),
   },
   x = function (e, t, r, a, n) {
     var u, s, i;
-    return regeneratorRuntime.async(function (c) {
+    return _asyncRuntime.async(function (c) {
       for (;;) switch (c.prev = c.next) {
         case 0:
           c.next = 2;
-          return regeneratorRuntime.awrap(services.Netease.musicUrl({
+          return _asyncRuntime.awrap(services.Netease.musicUrl({
             id: t
           }));
         case 2:
@@ -100,11 +102,11 @@ var ReactNative = require("react-native"),
   },
   R = function (e, t, r, a, n) {
     var u, s, i, c;
-    return regeneratorRuntime.async(function (p) {
+    return _asyncRuntime.async(function (p) {
       for (;;) switch (p.prev = p.next) {
         case 0:
           p.next = 2;
-          return regeneratorRuntime.awrap(services.Netease.freeMusicUrl({
+          return _asyncRuntime.awrap(services.Netease.freeMusicUrl({
             id: t
           }));
         case 2:
@@ -129,7 +131,7 @@ var ReactNative = require("react-native"),
           break;
         case 14:
           p.next = 16;
-          return regeneratorRuntime.awrap(services.provider.getUrlFromOther(a));
+          return _asyncRuntime.awrap(services.provider.getUrlFromOther(a));
         case 16:
           s = p.sent;
           i = 'mp3';
@@ -149,18 +151,18 @@ var ReactNative = require("react-native"),
   },
   v = function (e, t, r, a, n) {
     var u, s;
-    return regeneratorRuntime.async(function (c) {
+    return _asyncRuntime.async(function (c) {
       for (;;) switch (c.prev = c.next) {
         case 0:
           c.next = 2;
-          return regeneratorRuntime.awrap(services.QQMusic.getMusicUrl(t));
+          return _asyncRuntime.awrap(services.QQMusic.getMusicUrl(t));
         case 2:
           if (u = c.sent, s = g(u, r)) {
             c.next = 8;
             break;
           }
           c.next = 7;
-          return regeneratorRuntime.awrap(services.provider.getUrlFromOther(a, providers.default.qqMusic));
+          return _asyncRuntime.awrap(services.provider.getUrlFromOther(a, providers.default.qqMusic));
         case 7:
           s = c.sent;
         case 8:

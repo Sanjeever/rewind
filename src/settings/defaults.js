@@ -1,8 +1,9 @@
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.settingsMap = exports.sectionsMap = exports.defaultSettings = void 0;
-var locales = babelHelpers.interopRequireDefault(require("../locales/index")),
+var locales = _interopRequireDefault(require("../locales/index")),
   n = locales.default.SETTINGS,
   _ = n.NAVBAR_PADDING,
   r = n.DEFAULT_HIGH_QUALITY,

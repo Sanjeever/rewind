@@ -1,17 +1,20 @@
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+const _asyncRuntime = require("regenerator-runtime");
+const _appStorage = require("./../storage/index.js");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = exports.check = void 0;
-var keys = babelHelpers.interopRequireDefault(require("../storage/keys")),
+var keys = _interopRequireDefault(require("../storage/keys")),
   u = function () {
     var e;
-    return regeneratorRuntime.async(function (t) {
+    return _asyncRuntime.async(function (t) {
       for (;;) switch (t.prev = t.next) {
         case 0:
           e = false;
           t.prev = 1;
           t.next = 4;
-          return regeneratorRuntime.awrap(storage.load({
+          return _asyncRuntime.awrap(_appStorage.storage.load({
             key: keys.default.firstTime
           }));
         case 4:
@@ -33,10 +36,10 @@ var keys = babelHelpers.interopRequireDefault(require("../storage/keys")),
   };
 exports.check = u;
 var s = function () {
-    return regeneratorRuntime.async(function (e) {
+    return _asyncRuntime.async(function (e) {
       for (;;) switch (e.prev = e.next) {
         case 0:
-          storage.save({
+          _appStorage.storage.save({
             key: keys.default.firstTime,
             data: false
           });

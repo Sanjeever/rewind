@@ -16,7 +16,7 @@ var utils = require("../utils/index"),
       return '001ZaCQY2OxVMg' !== m ? l + m + '.jpg' : i + a + '.jpg';
     },
     local: function (e) {
-      return e.img ? 'data:image/png;base64,' + e.img : null;
+      return e.img ? (e.img.startsWith('content://') || e.img.startsWith('http') ? e.img : 'data:image/png;base64,' + e.img) : null;
     }
   };
 exports.default = m;

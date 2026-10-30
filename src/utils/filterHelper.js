@@ -1,8 +1,9 @@
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var Runtime562 = babelHelpers.interopRequireDefault(require("@runtime/562")),
+var pinyin = require("pinyin-pro").pinyin,
   trackInfo = require("../services/trackInfo"),
   utils = require("./index"),
   c = {
@@ -28,7 +29,7 @@ var Runtime562 = babelHelpers.interopRequireDefault(require("@runtime/562")),
     return e.replace(/\s/, '');
   },
   f = function (e) {
-    return b(Runtime562.default.getFullChars(e));
+    return b(pinyin(e, {toneType: 'none', type: 'array'}).join(''));
   },
   g = function (e) {
     return (0, utils.usable)(c[e]);

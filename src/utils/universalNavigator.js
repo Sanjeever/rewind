@@ -1,20 +1,7 @@
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-var o,
-  reactNavigation = require("react-navigation");
-var u = {
-  navigate: function (a, t) {
-    var e;
-    null === (e = o) || void 0 === e || e.dispatch(reactNavigation.NavigationActions.navigate({
-      type: reactNavigation.NavigationActions.NAVIGATE,
-      routeName: a,
-      params: t
-    }));
+import {createNavigationContainerRef} from '@react-navigation/native';
+export const navigationRef = createNavigationContainerRef();
+export default {
+  navigate(name, params) {
+    if (navigationRef.isReady()) navigationRef.navigate(name, params);
   },
-  setTopLevelNavigator: function (a) {
-    o = a;
-  }
 };
-exports.default = u;

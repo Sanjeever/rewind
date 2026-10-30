@@ -1,12 +1,13 @@
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var dayjs = babelHelpers.interopRequireDefault(require("dayjs")),
-  languageModule = babelHelpers.interopRequireDefault(require("../native/language")),
-  Runtime572 = require("@runtime/572"),
-  Runtime573 = require("@runtime/573"),
-  Runtime574 = require("@runtime/574"),
+var dayjs = _interopRequireDefault(require("dayjs")),
+  languageModule = _interopRequireDefault(require("../native/language")),
+  Runtime572 = require("dayjs/plugin/localizedFormat"),
+  Runtime573 = require("dayjs/locale/en"),
+  Runtime574 = require("dayjs/locale/zh-cn"),
   i = {
     zh_CN: Runtime574,
     zh_TW: Runtime574,

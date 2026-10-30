@@ -1,3 +1,4 @@
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -80,19 +81,19 @@ Object.defineProperty(exports, "universalNavigator", {
   }
 });
 exports.keepBound = exports.emojiStrip = exports.groupedArray = exports.extractKeyValue = exports.swap = exports.delay = exports.stripper = exports.shuffle = exports.usable = exports.delve = void 0;
-var animInterpolate = babelHelpers.interopRequireDefault(require("./animInterpolate")),
-  base64 = babelHelpers.interopRequireDefault(require("./base64")),
-  Runtime557 = babelHelpers.interopRequireDefault(require("@runtime/557")),
-  dialogs = babelHelpers.interopRequireDefault(require("./dialogs")),
-  filterHelper = babelHelpers.interopRequireDefault(require("./filterHelper")),
-  firstTimeChecker = babelHelpers.interopRequireDefault(require("./firstTimeChecker")),
-  parseArtist = babelHelpers.interopRequireDefault(require("./parseArtist")),
-  parseLyric = babelHelpers.interopRequireDefault(require("./parseLyric")),
-  randomModule = babelHelpers.interopRequireDefault(require("./random")),
-  getRipple = babelHelpers.interopRequireDefault(require("./getRipple")),
-  stopTimer = babelHelpers.interopRequireDefault(require("./stopTimer")),
-  timeFormatter = babelHelpers.interopRequireDefault(require("./timeFormatter")),
-  universalNavigator = babelHelpers.interopRequireDefault(require("./universalNavigator"));
+var animInterpolate = _interopRequireDefault(require("./animInterpolate")),
+  base64 = _interopRequireDefault(require("./base64")),
+  Runtime557 = _interopRequireDefault(require("spark-md5").hash),
+  dialogs = _interopRequireDefault(require("./dialogs")),
+  filterHelper = _interopRequireDefault(require("./filterHelper")),
+  firstTimeChecker = _interopRequireDefault(require("./firstTimeChecker")),
+  parseArtist = _interopRequireDefault(require("./parseArtist")),
+  parseLyric = _interopRequireDefault(require("./parseLyric")),
+  randomModule = _interopRequireDefault(require("./random")),
+  getRipple = _interopRequireDefault(require("./getRipple")),
+  stopTimer = _interopRequireDefault(require("./stopTimer")),
+  timeFormatter = _interopRequireDefault(require("./timeFormatter")),
+  universalNavigator = _interopRequireDefault(require("./universalNavigator"));
 exports.delve = function (u, D) {
   D.split('.').map(function (D) {
     return u = u && u[D];

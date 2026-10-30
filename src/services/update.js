@@ -1,9 +1,11 @@
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+const _asyncRuntime = require("regenerator-runtime");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
 var ReactNative = require("react-native"),
-  locales = babelHelpers.interopRequireDefault(require("../locales/index")),
+  locales = _interopRequireDefault(require("../locales/index")),
   endpoints = require("./endpoints"),
   c = function () {
     return fetch(endpoints.UPDATE_CHANGELOG).then(function (e) {
@@ -19,11 +21,11 @@ var ReactNative = require("react-native"),
   l = {
     checkAndAlert: function () {
       var e, n, t;
-      return regeneratorRuntime.async(function (r) {
+      return _asyncRuntime.async(function (r) {
         for (;;) switch (r.prev = r.next) {
           case 0:
             r.next = 2;
-            return regeneratorRuntime.awrap(c());
+            return _asyncRuntime.awrap(c());
           case 2:
             e = r.sent;
             n = e.log;
@@ -47,11 +49,11 @@ var ReactNative = require("react-native"),
       }, null, this);
     },
     onlyCheck: function () {
-      return regeneratorRuntime.async(function (e) {
+      return _asyncRuntime.async(function (e) {
         for (;;) switch (e.prev = e.next) {
           case 0:
             e.next = 2;
-            return regeneratorRuntime.awrap(c());
+            return _asyncRuntime.awrap(c());
           case 2:
             e.sent.log && toast(locales.default.UPDATE_READY);
           case 5:

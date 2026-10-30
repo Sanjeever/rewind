@@ -1,3 +1,4 @@
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -8,7 +9,7 @@ Object.defineProperty(exports, "getUid", {
   }
 });
 exports.extractSingerName = exports.extractSingerItem = exports.extractFullInfo = exports.extractBasicInfo = exports.extractAlbumName = exports.extractAlbumItem = void 0;
-var providers = babelHelpers.interopRequireDefault(require("./providers")),
+var providers = _interopRequireDefault(require("./providers")),
   utils = require("../utils/index"),
   trackFields = require("./trackFields"),
   c = function () {

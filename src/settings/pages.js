@@ -1,9 +1,10 @@
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var tabIcons = babelHelpers.interopRequireDefault(require("../theme/tabIcons")),
-  locales = babelHelpers.interopRequireDefault(require("../locales/index")),
+var tabIcons = _interopRequireDefault(require("../theme/tabIcons")),
+  locales = _interopRequireDefault(require("../locales/index")),
   f = {
     pages: [{
       title: locales.default.LOCAL_MUSIC,

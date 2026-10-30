@@ -1,11 +1,10 @@
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+const _asyncRuntime = require("regenerator-runtime");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var reactNativeDialogs = babelHelpers.interopRequireDefault(require("react-native-dialogs"));
-reactNativeDialogs.default.assignDefaults({
-  positiveText: '\u786e\u8ba4'
-});
+var reactNativeDialogs = _interopRequireDefault(require("../native/dialogs"));
 var l = function (e, r, t) {
     var a,
       n,
@@ -15,14 +14,14 @@ var l = function (e, r, t) {
       c,
       o,
       v = arguments;
-    return regeneratorRuntime.async(function (b) {
+    return _asyncRuntime.async(function (b) {
       for (;;) switch (b.prev = b.next) {
         case 0:
           a = v.length > 3 && void 0 !== v[3] ? v[3] : function (e) {
             return -1 === e.value;
           };
           b.next = 3;
-          return regeneratorRuntime.awrap(reactNativeDialogs.default.showPicker(r, null, {
+          return _asyncRuntime.awrap(reactNativeDialogs.default.showPicker(r, null, {
             items: e
           }));
         case 3:
@@ -37,7 +36,7 @@ var l = function (e, r, t) {
             break;
           }
           b.next = 10;
-          return regeneratorRuntime.awrap(reactNativeDialogs.default.prompt(t, null, {
+          return _asyncRuntime.awrap(reactNativeDialogs.default.prompt(t, null, {
             keyboardType: 'decimal-pad'
           }));
         case 10:
@@ -61,11 +60,11 @@ var l = function (e, r, t) {
     showNumberPicker: l,
     showTimePicker: function () {
       var e;
-      return regeneratorRuntime.async(function (r) {
+      return _asyncRuntime.async(function (r) {
         for (;;) switch (r.prev = r.next) {
           case 0:
             r.next = 2;
-            return regeneratorRuntime.awrap(l([{
+            return _asyncRuntime.awrap(l([{
               label: '5 \u5206\u949f',
               value: 5
             }, {
@@ -92,11 +91,11 @@ var l = function (e, r, t) {
     },
     showCacheSizePicker: function () {
       var e;
-      return regeneratorRuntime.async(function (r) {
+      return _asyncRuntime.async(function (r) {
         for (;;) switch (r.prev = r.next) {
           case 0:
             r.next = 2;
-            return regeneratorRuntime.awrap(l([{
+            return _asyncRuntime.awrap(l([{
               label: '128 MB',
               value: 128
             }, {

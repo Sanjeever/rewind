@@ -1,3 +1,5 @@
+const _toConsumableArray = require("@babel/runtime/helpers/toConsumableArray");
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -8,14 +10,14 @@ exports.qmSign = function (n) {
     }),
     t = c.map(l(r)).join(''),
     o = i.map(l(r)).join(''),
-    d = base64.default.encode(String.fromCodePoint.apply(String, babelHelpers.toConsumableArray(e))).replace(/=+$/, '').replace(/[\/+]/g, '').toLowerCase();
+    d = base64.default.encode(String.fromCodePoint.apply(String, _toConsumableArray(e))).replace(/=+$/, '').replace(/[\/+]/g, '').toLowerCase();
   return "zzb" + t + d + o;
 };
 exports.getSecuritySign = function (n) {
   for (var r = Math.floor(7 * Math.random() + 10), e = 'zza', t = 0; t < r; t++) e += "abcdefghijklmnopqrstuvwxyz0123456789"[Math.floor(36 * Math.random())];
   return e += d('CJBPACrRuNy7' + n);
 };
-var base64 = babelHelpers.interopRequireDefault(require("base-64")),
+var base64 = _interopRequireDefault(require("base-64")),
   utils = require("../../utils/index"),
   f = [212, 45, 80, 68, 195, 163, 163, 203, 157, 220, 254, 91, 204, 79, 104, 6],
   c = [21, 4, 9, 26, 16, 20, 27, 30],

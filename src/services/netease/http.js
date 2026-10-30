@@ -1,13 +1,15 @@
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+const _asyncRuntime = require("regenerator-runtime");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.request = exports.http = exports.getCsrfToken = exports.cryptoRequest = void 0;
 var a,
-  cookies = babelHelpers.interopRequireDefault(require("@react-native-community/cookies")),
-  axios = babelHelpers.interopRequireDefault(require("axios")),
+  cookies = _interopRequireDefault(require("../../native/cookies")),
+  axios = _interopRequireDefault(require("axios")),
   utils = require("../../utils/index"),
-  crypto = babelHelpers.interopRequireDefault(require("../../native/crypto")),
-  anonymousCookie = babelHelpers.interopRequireDefault(require("./anonymousCookie")),
+  crypto = _interopRequireDefault(require("../../native/crypto")),
+  anonymousCookie = _interopRequireDefault(require("./anonymousCookie")),
   p = 'https://music.163.com',
   d = {
     Connection: 'keep-alive',
@@ -43,17 +45,17 @@ exports.cryptoRequest = function e(t, n, r) {
     i,
     l,
     u = arguments;
-  return regeneratorRuntime.async(function (s) {
+  return _asyncRuntime.async(function (s) {
     for (;;) switch (s.prev = s.next) {
       case 0:
         o = u.length > 3 && void 0 !== u[3] ? u[3] : 0;
         s.next = 3;
-        return regeneratorRuntime.awrap(crypto.default.weapi(n));
+        return _asyncRuntime.awrap(crypto.default.weapi(n));
       case 3:
         a = s.sent;
         i = "params=" + encodeURIComponent(a.params) + "&encSecKey=" + encodeURIComponent(a.encSecKey);
         s.next = 7;
-        return regeneratorRuntime.awrap(f.post(t, i, {
+        return _asyncRuntime.awrap(f.post(t, i, {
           signal: null === r || void 0 === r ? void 0 : r.signal
         }).catch(function (e) {
           log('requestError', e);
