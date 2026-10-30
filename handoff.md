@@ -99,7 +99,7 @@
 5. **整理 JS 与依赖。** 将业务代码逐步恢复为正常导入、类和 async/await，去掉全局 `babelHelpers`、`regeneratorRuntime` 和 `@runtime/<id>`。旧导航迁到 `@react-navigation/native` 与 native-stack；核心 WebView 迁到社区 WebView；旧列表优先使用 FlatList/SectionList，按实际滚动性能再决定额外库。Pager、Slider、Lottie、图标、Cookie、图片裁剪等逐项核对新架构支持并固定版本。资源改为 Metro 支持的正常图片引用。不能安装包后继续实际调用 ZIP 内旧模块。
 6. **逐步迁移页面。** 基础组件与导航 → 设置/本地音乐 → 歌单/完整播放器/歌词 → 搜索/服务歌单/登录/其他实际页面。保留路由参数、返回行为和原有界面语义，不夹带重设计。真实网络和账号允许时验证完整流程，遇到限制明确记录并继续本地独立工作。
 7. **删除兼容构建。** 能力全部转移后删除 `vendor/rewind-runtime-3.5.0.zip`、`scripts/runtime.cjs`、自定义 `scripts/bundle.cjs`、`scripts/module-map.json`、旧框架补丁及 Gradle 稳定资源 ID/缓存 Java/JNI 注入。删除旧 npm 构建专用依赖。保留有实际用途的跨平台命令，不能保留一条隐式回退到旧运行库的启动路径。
-8. **完整验收与文档。** 在实际 macOS 环境构建、安装和验证，条件允许时在 Windows 干净检出构建。检查目标 Android 的存储、通知、前台服务要求，验证 x86_64 模拟器及可用 ARM64 设备。按照新框架实际 ABI 支持配置，不能沿用旧四 ABI 列表就宣称全部可用。更新 README 与 AGENTS，准确区分已验证和未验证。
+8. **完整验收与文档。** 在实际 macOS 环境构建、安装和验证，条件允许时在 Windows 干净检出构建。检查目标 Android 的存储、通知、前台服务要求。根据宿主 CPU 选择可加速的模拟器：Apple Silicon 使用 ARM64，Intel 使用 x86_64；具备条件时补充物理 ARM64 设备测试，其他组合明确列为待验证。按照新框架实际 ABI 支持配置，不能沿用旧四 ABI 列表或交叉编译结果就宣称全部运行通过。更新 README 与 AGENTS，准确区分已验证和未验证。
 
 最终开发命令应包含 `pnpm start`、`pnpm android`、`pnpm android:build`；明确 Debug 的 Metro 用法，以及无 Metro 时独立运行的打包方式。Release 验证如需本地签名，凭据与密钥保持本地，不依赖原发布签名，不将测试签名构建宣称为正式发布。
 
