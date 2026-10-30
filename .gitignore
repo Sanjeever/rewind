@@ -1,4 +1,4 @@
-.recovery/
+.cache/
 node_modules/
 .gradle/
 **/build/

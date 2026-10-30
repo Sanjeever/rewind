@@ -4,10 +4,10 @@
   "private": true,
   "packageManager": "pnpm@11.5.2",
   "scripts": {
-    "inventory": "node scripts/inventory.cjs",
     "bundle:android": "node scripts/bundle.cjs",
-    "check:modules": "node scripts/bundle.cjs && node scripts/check-modules.cjs",
-    "prepare:runtime": "pwsh -NoProfile -File scripts/prepare-runtime.ps1"
+    "prepare:runtime": "pwsh -NoProfile -File scripts/prepare-runtime.ps1",
+    "android:build": "cd android && gradlew.bat assembleDebug --console=plain",
+    "android:install": "cd android && gradlew.bat installDebug --console=plain"
   },
   "devDependencies": {
     "@babel/core": "7.26.10",

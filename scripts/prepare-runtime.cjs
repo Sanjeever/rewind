@@ -2,8 +2,8 @@ const fs = require('node:fs');
 const path = require('node:path');
 const Zip = require('adm-zip');
 
-const input = '.recovery/raw/runtime.jar';
-if (!fs.existsSync(input)) throw new Error('请先按 README 生成本地兼容运行库 .recovery/raw/runtime.jar');
+const input = '.cache/runtime-inputs/classes.jar';
+if (!fs.existsSync(input)) throw new Error('请先运行 pnpm prepare:runtime 准备兼容运行库');
 const original = new Zip(input);
 const runtime = new Zip();
 let removed = 0;
@@ -12,13 +12,13 @@ for (const entry of original.getEntries().filter(entry=>!entry.isDirectory)) {
   if (entry.entryName === 'd/e/m/z0/a.class') continue;
   runtime.addFile(entry.entryName,entry.getData());
 }
-fs.mkdirSync('.recovery/runtime',{recursive:true});
-runtime.writeZip('.recovery/runtime/legacy-runtime.jar');
+fs.mkdirSync('.cache/android-runtime',{recursive:true});
+runtime.writeZip('.cache/android-runtime/legacy-runtime.jar');
 for (const abi of ['arm64-v8a','armeabi-v7a','x86','x86_64']) {
   const apk = new Zip(`app-${abi}-release.apk`);
   for (const entry of apk.getEntries().filter(entry=>!entry.isDirectory && (entry.entryName.startsWith('lib/') || abi==='arm64-v8a' && entry.entryName.startsWith('assets/') && entry.entryName!=='assets/index.android.bundle'))) {
     const relative = entry.entryName.startsWith('lib/')?'jniLibs/'+entry.entryName.slice(4):entry.entryName;
-    const output = path.join('.recovery/runtime',relative);
+    const output = path.join('.cache/android-runtime',relative);
     fs.mkdirSync(path.dirname(output),{recursive:true});
     fs.writeFileSync(output,entry.getData());
   }

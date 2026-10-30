@@ -1,11 +1,11 @@
 $ErrorActionPreference = 'Stop'
 $projectRoot = Split-Path $PSScriptRoot -Parent
-$source = Join-Path $projectRoot '.recovery/decompiled/resources/res'
-$destination = Join-Path $projectRoot '.recovery/runtime/res'
+$source = Join-Path $projectRoot '.cache/runtime-inputs/resources/res'
+$destination = Join-Path $projectRoot '.cache/android-runtime/res'
 if (-not (Test-Path -LiteralPath (Join-Path $source 'values/public.xml'))) {
     throw '缺少资源输入，请先按 README 准备本地运行库。'
 }
-$expected = [System.IO.Path]::GetFullPath((Join-Path $projectRoot '.recovery/runtime/res'))
+$expected = [System.IO.Path]::GetFullPath((Join-Path $projectRoot '.cache/android-runtime/res'))
 if ([System.IO.Path]::GetFullPath($destination) -ne $expected) { throw '资源输出目录不匹配。' }
 if (Test-Path -LiteralPath $destination) { Remove-Item -LiteralPath $destination -Recurse -Force }
 Copy-Item -LiteralPath $source -Destination $destination -Recurse

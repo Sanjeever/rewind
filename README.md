@@ -1,154 +1,74 @@
+上游仓库：[KusStar/rewind-apks](https://github.com/KusStar/rewind-apks)
+
 # 倒带 rewind
 
-倒带 Android 项目，原版发布版本为 3.5.0，包名 `com.kuss.rewind`。
+本项目以倒带 v3.5.0 Android 发布包为基础重建。发布包中的应用逻辑和资源经过模块整理，形成当前 JavaScript 业务代码、Java 原生桥接与 Android 工程，供二次开发使用。框架和部分第三方实现沿用与发布包匹配的兼容运行库。
 
-## 工程恢复进度
+[倒带公告牌](https://t.me/Rewind_News) · [倒带反馈群](https://t.me/Rewind_Group)
 
-已恢复可修改、可构建运行的 Android 兼容工程。本地核心链路完成验证。线上内容和账号流程受当前网络与测试条件限制，仍未通过完整验收。交接目标见 [handoff.md](handoff.md)，开发约定见 [AGENTS.md](AGENTS.md)。
+## 开发环境
 
-| 项目 | 当前状态 |
+| 工具 | 版本或用途 |
 | --- | --- |
-| 原始发布材料 | 四个 APK 与 output-metadata.json 保持跟踪，禁止修改 |
-| JavaScript 与原生依赖 | JS 与原生版本常量均为 RN 0.56.1；AGP 4.2.2；min / target / compile SDK 为 21 / 32 / 32；第三方依赖精确版本待核对 |
-| 模块图 | 共 938 个模块，其中 265 个自有模块进入正常源码目录，673 个运行库模块暂用兼容映射；包名映射为识别线索，精确版本待核对 |
-| 存储 | react-native-storage 接 AsyncStorage，容量 2048、默认不过期、关闭内存缓存；设备数据库为 RKStorage，业务表为 catalystLocalStorage(key, value) |
-| 源码与 Android 工程 | 265 个自有 JS 模块、114 份自有 Java 文件与 Gradle Wrapper 已建立 |
-| 构建、安装、实际运行 | assembleDebug 成功，API 28 x86_64 模拟器安装启动成功，与原版并存 |
-| 源码到 APK | 修改 JS 关于页与原生版本信息、重建安装后，实际显示 3.5.0-dev · 源码验证；临时验证文字已撤回 |
-| 业务验证 | 本地播放、暂停、切歌、进度、队列、后台控制、歌单和设置持久化已检查；线上内容与完整登录未通过验收 |
+| Node.js | 22 |
+| pnpm | 11.5.2 |
+| PowerShell | 7，运行依赖准备脚本 |
+| JDK 17 | 准备兼容运行库 |
+| JDK 8 | 构建 Android 工程 |
+| Android SDK | Platform 32、Build Tools 30.0.3、Platform Tools |
+| Gradle / AGP | Wrapper 6.7.1 / 4.2.2 |
 
-## 当前环境
+配置 `ANDROID_HOME` 或 `ANDROID_SDK_ROOT` 指向本机 Android SDK。项目不提供带本机路径的 `android/local.properties`；Android Studio 生成的本地配置保持忽略。
 
-2026-10-30 实际环境为 Windows 11、PowerShell 7、Node.js 22.17.0、pnpm 11.5.2。运行库准备工具使用 OpenJDK 17.0.12，Android 构建使用本机已有 JDK 8u491、AGP 4.2.2 和 Gradle Wrapper 6.7.1。SDK Platform 为 32，Build Tools 为 30.0.3。系统 PATH 中的其他 Gradle 不用于本工程。
+准备依赖与构建使用不同 JDK。依赖准备终端的 `JAVA_HOME` 指向 JDK 17，Android 构建终端的 `JAVA_HOME` 指向 JDK 8。安装路径由本机环境配置。
 
-运行验证使用 Android Emulator 32.1.15、Google APIs Android 9 / API 28 x86_64 镜像，设备序列号 `emulator-5556`。本机 HAXM 7.6.5 可用。新版 Emulator 37 拒绝 HAXM，因此使用兼容版本。SDK、模拟器和 AVD 位于 `.recovery/`，没有修改主机虚拟化功能。
+## 安装与构建
 
-已安装源码编译和清单分析依赖并生成 pnpm 锁文件，包括 Babel 7.26 系列与 adm-zip 0.5.16。应用运行库通过下述 `prepare:runtime` 准备。
+在项目根目录安装依赖，并用 JDK 17 准备运行库。
 
 ```powershell
 pnpm install --frozen-lockfile
-pnpm inventory
-```
-
-本次安装沿用会话已有代理，通过 pnpm 命令参数传入 `HTTP_PROXY` / `HTTPS_PROXY`，没有写入全局配置。`pnpm inventory` 已执行成功，读取根目录四个原始 APK，生成 `recovery/inventory.json`、`recovery/module-map.json` 和 `.recovery/modules/` 临时模块。安装命令是否需要代理取决于本机网络。
-
-`recovery/inventory.json` 记录每个 APK 及内部文件的大小与 SHA-256。四包 JS 均为 1,808,058 字节，SHA-256 为 `6f47d21b5321aabdd5311fd64c8bf27a25ecfd671ddb4dc68da464e8738ae159`。
-
-临时提取、分析材料和工具放在被忽略的 `.recovery/`，项目本地 SDK 路径与开发签名不提交。
-
-## Android 构建与运行
-
-先安装上节依赖，再准备兼容运行库。准备工具要求 Java 17 可用，首次执行会从上游正式发行地址下载 Apktool 3.0.3 和 dex-tools 2.4。
-
-```powershell
 pnpm prepare:runtime
 ```
 
-此命令已执行成功。它从仓库发布材料准备框架、第三方运行库、资源和四个 ABI 的 JNI 库，输出均在 `.recovery/`。运行库剔除全部 127 个自有类，自有 Java 由当前 `android/app/src/main/java/` 编译。资源名称与资源 ID 映射由准备脚本和 Gradle 处理。
+首次准备会下载构建工具并从仓库内的 APK 生成兼容依赖，缓存位于 `.cache/`。原始 APK 是构建输入，应保留。
 
-41 份应用图标、布局、主题、字符串和网络配置已放入 `android/app/src/main/res/`，可直接修改后构建。准备脚本会排除运行库中的同名文件和同配置值，保留第三方公共资源。JS 图片注册信息位于 `assets/images/`，应用加载动画位于 `assets/animations/`。当前新增图片按 Android 资源流程维护，打包器尚未提供 Metro 图片导入流程。
-
-以下为本机实际执行成功的构建命令。其他机器需将 `JAVA_HOME` 和 SDK 路径改为实际安装位置，SDK 须包含 Platform 32 和 Build Tools 30.0.3。
+切换到 JDK 8 构建 Android。
 
 ```powershell
-$env:JAVA_HOME = 'D:\jdks\jdk1.8.0_491'
-$env:GRADLE_USER_HOME = Join-Path $PWD '.recovery/gradle-home'
-$sdkRoot = Join-Path $PWD '.recovery/android-sdk'
-"sdk.dir=$($sdkRoot.Replace('\', '/'))" | Set-Content android/local.properties -Encoding utf8
-.\android\gradlew.bat -p android assembleDebug --console=plain
+pnpm android:build
 ```
 
-产物为 `android/app/build/outputs/apk/debug/app-debug.apk`，包名 `com.kuss.rewind.dev`，版本 `3.5.0-dev`。Gradle 构建自动编译当前 JS 源码。首次 Wrapper 分发包下载在本机代理下曾停滞，随后使用已下载的同版本官方分发包填充本地 Wrapper 缓存；缓存就绪后，上述 Wrapper 命令实际成功。代理参数保存在忽略目录的 Gradle 用户配置中。
+产物位于 `android/app/build/outputs/apk/debug/app-debug.apk`。开发包名为 `com.kuss.rewind.dev`，版本为 `3.5.0-dev`，可与原版并存。
 
-本机已创建 `rewind_api28` 测试 AVD。模拟器未运行时，使用经过验证的 32.1.15 可执行文件启动。
+连接 Android 设备或启动模拟器后安装。
 
 ```powershell
-$env:ANDROID_SDK_ROOT = $sdkRoot
-$env:ANDROID_HOME = $sdkRoot
-$env:ANDROID_AVD_HOME = Join-Path $PWD '.recovery/avd'
-Start-Process -FilePath (Join-Path $PWD '.recovery/tools/emulator32/emulator/emulator.exe') -WindowStyle Hidden -ArgumentList '-avd rewind_api28 -no-window -no-audio -no-snapshot -no-boot-anim -gpu swiftshader_indirect -memory 2048 -cores 2 -port 5556'
+pnpm android:install
 ```
 
-```powershell
-$adb = Join-Path $sdkRoot 'platform-tools/adb.exe'
-& $adb -s emulator-5556 install -r -g android/app/build/outputs/apk/debug/app-debug.apk
-& $adb -s emulator-5556 shell am start -n com.kuss.rewind.dev/com.kuss.rewind.MainActivity
-```
+## 代码结构
 
-已在独立模拟器执行安装和启动，原版 `com.kuss.rewind` 仍保留。开发包可通过 `run-as com.kuss.rewind.dev` 检查沙盒。开发构建使用嵌入式 JS 运行库，尚未启用 Metro 热更新。
+- `index.js`、`src/App.js`：应用入口。
+- `src/screens/`、`src/components/`、`src/navigation/`：页面、组件和导航。
+- `src/player/`、`src/services/`、`src/storage/`：播放、网络服务和持久化。
+- `src/native/`：JavaScript 原生调用封装。
+- `android/app/src/main/java/`：Android 入口、原生模块与兼容补丁。
+- `android/app/src/main/res/`、`assets/`：应用资源。
+- `scripts/`：运行库准备、JavaScript 编译与构建必需的模块映射。
 
-当前依赖边界为兼容运行库，第三方 Java、JNI 和公共 JS 还未全部替换成正式上游依赖。已确认 RN 0.56.1、React 16.8.3、ExoPlayer 2.17.1、Axios 0.27.2 和 base-64 0.1.0。其余名称、版本及证据在 `recovery/inventory.json` 中区分确认、推断和未知。开发 Manifest 保留业务服务、媒体按键、文件提供器和裁剪入口，未启用原版统计初始化组件。四个 JNI ABI 已纳入 APK，目前实际运行验证覆盖 x86_64。
-
-异常栈格式化类有一份源码兼容补丁，未知行号显示 `?`，避免格式化异常覆盖原始 JS 消息。运行库准备时剔除对应二进制类，再由工程编译补丁；不吞掉原始错误。可运行以下检查，使用接口代理覆盖缺失、空值和正常行列号，再结合设备实际页面验证。
-
-```powershell
-pwsh -NoProfile -File scripts/check-exceptions.ps1
-```
-
-## JavaScript 源码
-
-入口为 `index.js` 和 `src/App.js`。页面路由位于 `src/navigation/index.js`，主要页面在 `src/screens/`，播放器在 `src/player/`，网络服务在 `src/services/`，存储在 `src/storage/`，原生调用封装在 `src/native/`。尚未确定语义的内部模块使用 `module-编号.js` 命名，后续继续整理。
-
-已按实际用途整理 44 个内部模块，包括播放器封面、歌词视图、进度条、播放按钮和队列位置，以及关于页、登录帮助、抽屉与视频播放器。第三方映射已核对触控缩放和 Lottie 桥接；未确认所属包的 LRU 实现继续使用编号，不预设依赖版本。
+修改 JS、JSX 或 JSON 后直接构建，Gradle 会重新打包源码。新增模块通过相对路径引用，无需手动分配模块 ID。单独生成 JavaScript 包可执行：
 
 ```powershell
 pnpm bundle:android
-pnpm check:modules
 ```
 
-两条命令已执行成功。打包器读取自有源码和 `recovery/module-map.json`，生成 `.recovery/generated/assets/index.android.bundle`。检查先重新编译源码，再核对模块引用、自有源码路径、运行库 factory、四组歌词对照和两套包名的存储路径。
+生成文件位于 `android/app/build/generated/assets/rewind/`。原生代码和资源按 Android 工程方式修改。`scripts/module-map.json` 用于连接业务模块与兼容运行库，应随相关依赖调整维护。
 
-应用源码使用 Babel 7 编译，支持 JSX、ES 模块与 JSON。新增 JS / JSON 文件通过相对路径引用，打包器自动分配新增模块 ID，无需手改模块表。编译目标兼容当前 JSC，未迁移 React Native 版本。新增第三方入口仍须先核对兼容版本和运行库映射。
+## 当前边界
 
-已临时新增 JSX 组件与 JSON 配置，重新构建安装后，关于页实际显示 `3.5.0-dev · JSX链路验证`，证明新增文件也进入运行 APK。截图在 `.recovery/validation/dev-jsx-proof.png`，临时组件、配置和文字均已撤回。
+工程使用 React Native 0.56.1、React 16.8.3 和 JavaScriptCore。JavaScript 通过 Babel 与模块映射打包，尚未接入 Metro 热更新及常规图片 `require` 流程；图片资源在 Android 资源目录维护。
 
-673 个运行库模块暂从原版公共 JavaScript 运行库加载到临时构建目录，包含框架、polyfill、第三方库。自有源码之间使用相对路径；第三方入口使用包名，尚未识别的内部依赖使用 `@runtime/编号`。当前不是标准 Metro 依赖安装流程，精确依赖版本与上游替换仍在进行。React 的实际版本常量为 16.8.3，不依据 RN 默认 peer dependency 推定版本。
+框架、第三方 Java、JNI 和公共 JS 仍依赖兼容运行库，部分精确版本尚未确认。升级依赖时需一并检查原生桥接、资源 ID 和运行时兼容性。
 
-`scripts/restore-modules.cjs` 是初次源码结构转换工具，默认拒绝覆盖已有源码。正常修改应用时运行打包命令，避免重新生成并覆盖手工改动。
-
-导入重命名会检查全部内部作用域，并在转换时重新核对绑定引用数，防止导入组件被同名局部变量遮蔽。该问题曾在空歌单详情触发，修复后已在设备上打开详情和多选页。错误提示也已修正参数类型，保留实际错误文字。
-
-恢复构建使用本地开发签名，并以独立测试环境或开发包名运行。原版覆盖安装与私有数据迁移尚未验证。远端服务与账号认证的未验证范围见下文。
-
-## 验证记录与限制
-
-- 原版与开发包均在 API 28 模拟器启动。原版权限与首次启动对话框已观察，开发包首页、关于、设置、本地音乐列表已检查。
-- 源码链路截图位于本机 `.recovery/validation/dev-about-proof.png`，对应页面显示 JS 验证文字和来自当前 BuildConfig 的版本号。截图与临时日志不提交。
-- 设置中关闭“自动调整歌单顺序”后强制结束进程，实际 SQLite 快照中 `settings.rawData.autoSetPlaylistOrder.on` 为 false，数据库完整性检查为 ok。
-- 本地播放测试使用隔离模拟器内两份明确标记的测试音频，验证真实 MediaStore、解码、AudioTrack 和媒体会话。已观察播放状态、暂停位置和队列中的两首曲目，测试素材不进入业务源码。模拟器采用无窗口、无扬声器模式，尚未验证物理设备听感。
-- 进度手势观察到暂停位置由 28.996 秒跳到约 39.680 秒。应用退到系统桌面后仍播放，媒体下一首按键切换真实曲目，暂停按键得到 6.145 秒暂停位置。未验证长时间后台和其他 Android 版本。
-- 本地歌单通过 UI 创建、重启恢复、打开空详情与多选、确认删除；最终列表与文件均变为空歌单。开发包操作期间，原版外部歌单文件保持为空。
-- 登录选择图标、网易云表单和 QQ 表单实际打开，未输入账号凭据。歌词视图已打开，显示原有无歌词占位；四组歌词解析对照通过。完整账号认证、在线歌单、在线歌词、远端搜索和在线播放未通过验收。
-- 网络探测中，代理请求未取得上游 HTTP 响应，直连出现 DNS 超时，使用公开解析地址直连也连接超时。原版与恢复版均打开 `hello` 搜索页，但未观察到结果。当前不能据此认定接口永久失效。
-- 框架和第三方实现仍有兼容运行库边界，部分内部变量与库类型使用短名，精确依赖版本和上游替换尚未完成。
-
-详细范围、结果和本机证据路径见 [recovery/validation.json](recovery/validation.json)。原版与恢复版均用相同本地音频检查列表和播放器。最后一次完整执行锁定安装、运行库准备、异常格式检查与 Wrapper 构建成功，最新 APK 已重新安装启动。临时源码验证文字未留在最终 APK。
-
-## 原版下载
-
-![rewind-version](https://img.shields.io/badge/rewind-v3.5.0-black?style=for-the-badge)
-[![倒带公告牌](https://img.shields.io/badge/%E5%80%92%E5%B8%A6%E5%85%AC%E5%91%8A%E7%89%8C-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me/Rewind_News)
-[![倒带反馈群](https://img.shields.io/badge/%E5%80%92%E5%B8%A6%E5%8F%8D%E9%A6%88%E7%BE%A4-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white&link)](https://t.me/Rewind_Group)
-
-点击下方[链接](#原版下载)下载安装包，移动设备选 [ARM](#arm)，其他选 [X86](#x86)
-
-> 优先选择 64 位，遇到问题再尝试 32 位
-
-以下链接无法下载请尝试 [备用下载1](https://n56zqzh3ji.feishu.cn/docx/doxcnL8w8MPe7iqmEwSUdZuEcof)
-
-## ARM
-
-[**64 位**](https://github.com/KusStar/rewind-apks/blob/master/app-arm64-v8a-release.apk?raw=true)
-
-[**32 位**](https://github.com/KusStar/rewind-apks/blob/master/app-armeabi-v7a-release.apk?raw=true)
-
-## X86
-
-[**64 位**](https://github.com/KusStar/rewind-apks/blob/master/app-x86_64-release.apk?raw=true)
-
-[**32 位**](https://github.com/KusStar/rewind-apks/blob/master/app-x86-release.apk?raw=true)
-
-## Thanks
-
-[shields](https://github.com/badges/shields)
-
+本地功能已在 Android 9 / x86_64 环境运行。在线搜索、播放、歌单同步、歌词和完整登录流程仍需结合可用网络与账号确认。其他 Android 版本、ABI 和物理设备音频表现尚未完整确认。
