@@ -1,11 +1,10 @@
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-var i = require("react-native").NativeModules.ExtraDimensions,
-  o = {
-    get: function (e) {
-      return i[e];
-    }
-  };
-exports.default = o;
+import {Dimensions, StatusBar} from 'react-native';
+export default {
+  get(name) {
+    const screen = Dimensions.get('screen');
+    const window = Dimensions.get('window');
+    return {REAL_WINDOW_HEIGHT: screen.height, REAL_WINDOW_WIDTH: screen.width,
+      STATUS_BAR_HEIGHT: StatusBar.currentHeight ?? 0,
+      SOFT_MENU_BAR_HEIGHT: Math.max(0, screen.height - window.height - (StatusBar.currentHeight ?? 0))}[name];
+  },
+};

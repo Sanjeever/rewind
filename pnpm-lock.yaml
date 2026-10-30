@@ -11,15 +11,15 @@ importers:
       '@react-native-async-storage/async-storage':
         specifier: 3.1.1
         version: 3.1.1(react-native@0.88.1(@babel/core@7.26.10)(@react-native-community/cli@20.2.0)(@react-native/metro-config@0.88.1(@babel/core@7.26.10))(react@19.3.0))(react@19.3.0)
+      '@react-native-clipboard/clipboard':
+        specifier: 1.16.3
+        version: 1.16.3(react-native@0.88.1(@babel/core@7.26.10)(@react-native-community/cli@20.2.0)(@react-native/metro-config@0.88.1(@babel/core@7.26.10))(react@19.3.0))(react@19.3.0)
       '@react-native-community/netinfo':
         specifier: 11.5.0
         version: 11.5.0(react-native@0.88.1(@babel/core@7.26.10)(@react-native-community/cli@20.2.0)(@react-native/metro-config@0.88.1(@babel/core@7.26.10))(react@19.3.0))(react@19.3.0)
       '@react-native-community/slider':
         specifier: 5.1.2
         version: 5.1.2
-      '@react-native-cookies/cookies':
-        specifier: 6.2.1
-        version: 6.2.1(react-native@0.88.1(@babel/core@7.26.10)(@react-native-community/cli@20.2.0)(@react-native/metro-config@0.88.1(@babel/core@7.26.10))(react@19.3.0))
       '@react-navigation/native':
         specifier: 7.5.1
         version: 7.5.1(react-native@0.88.1(@babel/core@7.26.10)(@react-native-community/cli@20.2.0)(@react-native/metro-config@0.88.1(@babel/core@7.26.10))(react@19.3.0))(react@19.3.0)
@@ -92,6 +92,9 @@ importers:
       react-native-storage:
         specifier: 1.0.1
         version: 1.0.1
+      react-native-tab-view:
+        specifier: 4.3.4
+        version: 4.3.4(react-native-pager-view@9.0.11(react-native@0.88.1(@babel/core@7.26.10)(@react-native-community/cli@20.2.0)(@react-native/metro-config@0.88.1(@babel/core@7.26.10))(react@19.3.0))(react@19.3.0))(react-native@0.88.1(@babel/core@7.26.10)(@react-native-community/cli@20.2.0)(@react-native/metro-config@0.88.1(@babel/core@7.26.10))(react@19.3.0))(react@19.3.0)
       react-native-text-ticker:
         specifier: 1.14.0
         version: 1.14.0
@@ -107,9 +110,6 @@ importers:
       react-native-webview:
         specifier: 14.0.1
         version: 14.0.1(react-native@0.88.1(@babel/core@7.26.10)(@react-native-community/cli@20.2.0)(@react-native/metro-config@0.88.1(@babel/core@7.26.10))(react@19.3.0))(react@19.3.0)
-      regenerator-runtime:
-        specifier: 0.14.1
-        version: 0.14.1
       spark-md5:
         specifier: 3.0.2
         version: 3.0.2
@@ -835,6 +835,19 @@ packages:
       react: '*'
       react-native: '*'
 
+  '@react-native-clipboard/clipboard@1.16.3':
+    resolution: {integrity: sha512-cMIcvoZKIrShzJHEaHbTAp458R9WOv0fB6UyC7Ek4Qk561Ow/DrzmmJmH/rAZg21Z6ixJ4YSdFDC14crqIBmCQ==}
+    peerDependencies:
+      react: '>= 16.9.0'
+      react-native: '>= 0.61.5'
+      react-native-macos: '>= 0.61.0'
+      react-native-windows: '>= 0.61.0'
+    peerDependenciesMeta:
+      react-native-macos:
+        optional: true
+      react-native-windows:
+        optional: true
+
   '@react-native-community/cli-clean@20.2.0':
     resolution: {integrity: sha512-krqbhFiwHN8l5wZ2XTcrNq9N+DqDWHxW8RK0bIcrK0O+fMvjYi9e/1Pnx2W0CTotOVcZpHzUbgZ4TQVF231Skw==}
 
@@ -881,12 +894,6 @@ packages:
 
   '@react-native-community/slider@5.1.2':
     resolution: {integrity: sha512-UV/MjCyCtSjS5BQDrrGIMmCXm309xEG6XbR0Dj65kzTraJSVDxSjQS2uBUXgX+5SZUOCzCxzv3OufOZBdtQY4w==}
-
-  '@react-native-cookies/cookies@6.2.1':
-    resolution: {integrity: sha512-D17wCA0DXJkGJIxkL74Qs9sZ3sA+c+kCoGmXVknW7bVw/W+Vv1m/7mWTNi9DLBZSRddhzYw8SU0aJapIaM/g5w==}
-    deprecated: This package is deprecated. Use @preeternal/react-native-cookie-manager or react-native-nitro-cookies instead.
-    peerDependencies:
-      react-native: '>= 0.60.2'
 
   '@react-native/asset-utils@0.88.1':
     resolution: {integrity: sha512-BLb5FF7NgggGYiCsA7KKkK2qFhn0K+6iGXOI+4Ucd+G7Robzw9Gt4WsWwxLt+Od+G+/hyqfz8ASokyWFZ6VcLw==}
@@ -2262,6 +2269,13 @@ packages:
   react-native-storage@1.0.1:
     resolution: {integrity: sha512-fXT2+zhkfHj3E1/ekbymO8JwcDGgnxeWBiNIa7Al14qB4i3MSOF88nyjIRuTyBsEwZl/f6JG7l+zwd/20+bmlA==}
 
+  react-native-tab-view@4.3.4:
+    resolution: {integrity: sha512-z8eXgVmfLx2aSMeppQkuZPbb2N00H76T7OwtGcZYua5g2h9AYBbkYrYN4rKY0wSl1g0YRQ+NS6LLVkxppGr68g==}
+    peerDependencies:
+      react: '>= 18.2.0'
+      react-native: '*'
+      react-native-pager-view: '>= 6.0.0'
+
   react-native-text-ticker@1.14.0:
     resolution: {integrity: sha512-8TNGTcW43dfnCqIuXVA7F1Ny8SKGrw0pIrNS5nM7eda+6AsuPTZh3JQ2CwmSRYfsrlnS4QFrpyo5ykpI8nvtCw==}
 
@@ -2326,9 +2340,6 @@ packages:
 
   regenerator-runtime@0.13.11:
     resolution: {integrity: sha512-kY1AZVr2Ra+t+piVaJ4gxaFaReZVH40AKNo7UCX6W+dEwBo/2oZJzqfuN1qLq1oL45o56cPaTXELwrTh8Fpggg==}
-
-  regenerator-runtime@0.14.1:
-    resolution: {integrity: sha512-dYnhHh0nJoMfnkZs6GmmhFknAGRrLznOu5nc9ML+EJxGvrx6H7teuevqVqCuPcPK//3eDrrjQhehXVx9cnkGdw==}
 
   regexpu-core@6.5.3:
     resolution: {integrity: sha512-E8VgUoSK+LMQrLboDxavm76MTBGrQhx9RiNuomRmYnZ10Uw12HrI8fkxOOncktb2hBpzIZ9SV/347euQHG5z+g==}
@@ -3592,6 +3603,11 @@ snapshots:
       react: 19.3.0
       react-native: 0.88.1(@babel/core@7.26.10)(@react-native-community/cli@20.2.0)(@react-native/metro-config@0.88.1(@babel/core@7.26.10))(react@19.3.0)
 
+  '@react-native-clipboard/clipboard@1.16.3(react-native@0.88.1(@babel/core@7.26.10)(@react-native-community/cli@20.2.0)(@react-native/metro-config@0.88.1(@babel/core@7.26.10))(react@19.3.0))(react@19.3.0)':
+    dependencies:
+      react: 19.3.0
+      react-native: 0.88.1(@babel/core@7.26.10)(@react-native-community/cli@20.2.0)(@react-native/metro-config@0.88.1(@babel/core@7.26.10))(react@19.3.0)
+
   '@react-native-community/cli-clean@20.2.0':
     dependencies:
       '@react-native-community/cli-tools': 20.2.0
@@ -3727,11 +3743,6 @@ snapshots:
       react-native: 0.88.1(@babel/core@7.26.10)(@react-native-community/cli@20.2.0)(@react-native/metro-config@0.88.1(@babel/core@7.26.10))(react@19.3.0)
 
   '@react-native-community/slider@5.1.2': {}
-
-  '@react-native-cookies/cookies@6.2.1(react-native@0.88.1(@babel/core@7.26.10)(@react-native-community/cli@20.2.0)(@react-native/metro-config@0.88.1(@babel/core@7.26.10))(react@19.3.0))':
-    dependencies:
-      invariant: 2.2.4
-      react-native: 0.88.1(@babel/core@7.26.10)(@react-native-community/cli@20.2.0)(@react-native/metro-config@0.88.1(@babel/core@7.26.10))(react@19.3.0)
 
   '@react-native/asset-utils@0.88.1': {}
 
@@ -5212,6 +5223,13 @@ snapshots:
       opencollective: 1.0.3
       opencollective-postinstall: 2.0.3
 
+  react-native-tab-view@4.3.4(react-native-pager-view@9.0.11(react-native@0.88.1(@babel/core@7.26.10)(@react-native-community/cli@20.2.0)(@react-native/metro-config@0.88.1(@babel/core@7.26.10))(react@19.3.0))(react@19.3.0))(react-native@0.88.1(@babel/core@7.26.10)(@react-native-community/cli@20.2.0)(@react-native/metro-config@0.88.1(@babel/core@7.26.10))(react@19.3.0))(react@19.3.0):
+    dependencies:
+      react: 19.3.0
+      react-native: 0.88.1(@babel/core@7.26.10)(@react-native-community/cli@20.2.0)(@react-native/metro-config@0.88.1(@babel/core@7.26.10))(react@19.3.0)
+      react-native-pager-view: 9.0.11(react-native@0.88.1(@babel/core@7.26.10)(@react-native-community/cli@20.2.0)(@react-native/metro-config@0.88.1(@babel/core@7.26.10))(react@19.3.0))(react@19.3.0)
+      use-latest-callback: 0.2.6(react@19.3.0)
+
   react-native-text-ticker@1.14.0: {}
 
   react-native-touchable-scale@2.2.0(react-native@0.88.1(@babel/core@7.26.10)(@react-native-community/cli@20.2.0)(@react-native/metro-config@0.88.1(@babel/core@7.26.10))(react@19.3.0))(react@19.3.0):
@@ -5299,8 +5317,6 @@ snapshots:
   regenerator-runtime@0.11.1: {}
 
   regenerator-runtime@0.13.11: {}
-
-  regenerator-runtime@0.14.1: {}
 
   regexpu-core@6.5.3:
     dependencies:

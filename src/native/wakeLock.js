@@ -1,6 +1,5 @@
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-var u = require("react-native").NativeModules.RNWakeLock;
-exports.default = u;
+import {NativeModules} from 'react-native';
+export default {
+  activate: () => NativeModules.RewindDevice.keepScreenOn(true),
+  deactivate: () => NativeModules.RewindDevice.keepScreenOn(false),
+};

@@ -1,3 +1,4 @@
+const _asyncRuntime = require("@babel/runtime/helpers/regeneratorRuntime")();
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -23,12 +24,12 @@ var ReactNative = require("react-native"),
     },
     attachLocalPath: function (t) {
       var e, r, n;
-      return regeneratorRuntime.async(function (a) {
+      return _asyncRuntime.async(function (a) {
         for (;;) switch (a.prev = a.next) {
           case 0:
             e = t;
             a.next = 3;
-            return regeneratorRuntime.awrap(c());
+            return _asyncRuntime.awrap(c());
           case 3:
             if ((r = a.sent) && r.numbers && !(r.numbers < 1)) {
               a.next = 6;

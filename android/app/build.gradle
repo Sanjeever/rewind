@@ -1,70 +1,41 @@
 apply plugin: 'com.android.application'
+apply plugin: 'org.jetbrains.kotlin.android'
+apply plugin: 'com.facebook.react'
 
-def projectRoot = rootProject.projectDir.parentFile
-def runtimeDir = new File(projectRoot, '.cache/android-runtime')
-def resourceDir = new File(runtimeDir, 'res')
-def stableIds = new File(runtimeDir, 'stable-ids.txt')
-def generatedAssets = new File(buildDir, 'generated/assets/rewind')
-
-android {
-    compileSdkVersion 32
-    buildToolsVersion '30.0.3'
-    defaultConfig {
-        applicationId 'com.kuss.rewind.dev'
-        minSdkVersion 21
-        targetSdkVersion 32
-        versionCode 5000098
-        versionName '3.5.0-dev'
-        ndk { abiFilters 'x86_64', 'arm64-v8a', 'armeabi-v7a', 'x86' }
-    }
-    sourceSets {
-        main {
-            res.srcDirs = [resourceDir, 'src/main/res']
-            assets.srcDirs = [new File(runtimeDir, 'assets'), generatedAssets]
-            jniLibs.srcDirs = [new File(runtimeDir, 'jniLibs')]
-        }
-    }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-    aaptOptions {
-        additionalParameters '--stable-ids', stableIds.absolutePath
-        noCompress 'bundle', 'ttf'
-    }
+react {
+    autolinkLibrariesWithApp()
 }
 
-task prepareRuntime(type: Exec) {
-    workingDir projectRoot
-    commandLine 'node', 'scripts/runtime.cjs'
-    inputs.file new File(projectRoot, 'vendor/rewind-runtime-3.5.0.zip')
-    inputs.file new File(projectRoot, 'scripts/runtime.cjs')
-    inputs.files fileTree('src/main/res')
-    inputs.property 'applicationId', android.defaultConfig.applicationId
-    outputs.dir runtimeDir
-    doLast {
-        def resources = new XmlSlurper().parse(new File(resourceDir, 'values/public.xml'))
-        stableIds.text = resources.public.collect { item ->
-            "${android.defaultConfig.applicationId}:${item.@type}/${item.@name} = ${item.@id}"
-        }.join('\n') + '\n'
+android {
+    namespace 'com.kuss.rewind'
+    ndkVersion rootProject.ext.ndkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
+    compileSdk rootProject.ext.compileSdkVersion
+    defaultConfig {
+        applicationId 'com.kuss.rewind.dev'
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 5000099
+        versionName '3.5.0-dev'
+    }
+    sourceSets.main.java.srcDirs = ['src/main/kotlin']
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+        standalone {
+            initWith release
+            signingConfig signingConfigs.debug
+            matchingFallbacks = ['release']
+        }
     }
 }
 
 dependencies {
-    implementation files(new File(runtimeDir, 'legacy-runtime.jar')).builtBy(prepareRuntime)
-}
-
-task bundleJavaScript(type: Exec) {
-    workingDir projectRoot
-    commandLine 'node', 'scripts/bundle.cjs'
-    inputs.files fileTree(new File(projectRoot, 'src')), fileTree(new File(projectRoot, 'assets'))
-    inputs.files new File(projectRoot, 'index.js'), new File(projectRoot, 'babel.config.cjs'), new File(projectRoot, 'scripts/module-map.json'), new File(projectRoot, 'scripts/bundle.cjs'), new File(projectRoot, 'package.json'), new File(projectRoot, 'pnpm-lock.yaml')
-    inputs.file new File(projectRoot, 'vendor/rewind-runtime-3.5.0.zip')
-    outputs.file new File(generatedAssets, 'index.android.bundle')
-}
-preBuild.dependsOn prepareRuntime, bundleJavaScript
-
-tasks.matching { it.name.startsWith('process') && it.name.endsWith('Resources') }.configureEach {
-    dependsOn prepareRuntime
-    inputs.file stableIds
+    implementation('com.facebook.react:react-android')
+    implementation('com.facebook.react:hermes-android')
+    implementation('androidx.core:core-splashscreen:1.0.1')
+    implementation('androidx.media3:media3-exoplayer:1.11.1')
+    implementation('androidx.media3:media3-session:1.11.1')
+    implementation('net.jthink:jaudiotagger:3.0.1')
 }

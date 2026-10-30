@@ -1,6 +1,9 @@
 .cache/
 node_modules/
 .gradle/
+.cxx/
+.kotlin/
+.externalNativeBuild/
 **/build/
 android/local.properties
 *.jks

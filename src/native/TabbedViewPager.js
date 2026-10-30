@@ -1,93 +1,26 @@
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-var Runtime40 = babelHelpers.interopRequireDefault(require("@runtime/40")),
-  React = babelHelpers.interopRequireDefault(require("react")),
-  ReactNative = require("react-native"),
-  s = Runtime40.default,
-  p = 'viewPager',
-  d = function (e) {
-    function t() {
-      var e, o, a;
-      babelHelpers.classCallCheck(this, t);
-      for (var r = arguments.length, l = new Array(r), s = 0; s < r; s++) l[s] = arguments[s];
-      return babelHelpers.possibleConstructorReturn(a, (o = a = babelHelpers.possibleConstructorReturn(this, (e = babelHelpers.getPrototypeOf(t)).call.apply(e, [this].concat(l))), a.getInnerViewNode = function () {
-        return a.refs[p].getInnerViewNode();
-      }, a._childrenWithOverridenStyle = function () {
-        return React.default.Children.map(a.props.children, function (e) {
-          if (!e) return null;
-          var t = babelHelpers.objectSpread({}, e.props, {
-            style: [e.props.style, {
-              position: 'absolute',
-              left: 0,
-              top: 0,
-              right: 0,
-              bottom: 0,
-              width: void 0,
-              height: void 0
-            }],
-            collapsable: false
-          });
-          e.type && e.type.displayName && 'RCTView' !== e.type.displayName && e.type.displayName;
-          return React.default.createElement(e.type, t);
-        });
-      }, a._onPageScroll = function (e) {
-        a.props.onPageScroll && a.props.onPageScroll(e);
-        'on-drag' === a.props.keyboardDismissMode && (0, ReactNative.dismissKeyboard)();
-      }, a._onPageScrollStateChanged = function (e) {
-        a.props.onPageScrollStateChanged && a.props.onPageScrollStateChanged(e.nativeEvent.pageScrollState);
-      }, a._onPageSelected = function (e) {
-        a.props.onPageSelected && a.props.onPageSelected(e);
-      }, a.setPage = function (e) {
-        ReactNative.UIManager.dispatchViewManagerCommand((0, ReactNative.findNodeHandle)(babelHelpers.assertThisInitialized(babelHelpers.assertThisInitialized(a))), ReactNative.UIManager.TabbedViewPager.Commands.setPage, [e]);
-      }, a.setPageWithoutAnimation = function (e) {
-        ReactNative.UIManager.dispatchViewManagerCommand((0, ReactNative.findNodeHandle)(babelHelpers.assertThisInitialized(babelHelpers.assertThisInitialized(a))), ReactNative.UIManager.TabbedViewPager.Commands.setPageWithoutAnimation, [e]);
-      }, o));
-    }
-    babelHelpers.createClass(t, [{
-      key: "componentDidMount",
-      value: function () {
-        null != this.props.initialPage && this.setPageWithoutAnimation(this.props.initialPage);
-      }
-    }, {
-      key: "render",
-      value: function () {
-        return React.default.createElement(c, babelHelpers.extends({}, this.props, {
-          ref: p,
-          style: this.props.style,
-          onPageScroll: this._onPageScroll,
-          onPageScrollStateChanged: this._onPageScrollStateChanged,
-          onPageSelected: this._onPageSelected,
-          tabTextColor: (0, ReactNative.processColor)(this.props.tabTextColor),
-          tabBackground: (0, ReactNative.processColor)(this.props.tabBackground),
-          tabSelectedTextColor: (0, ReactNative.processColor)(this.props.tabSelectedTextColor),
-          tabIndicatorColor: (0, ReactNative.processColor)(this.props.tabIndicatorColor),
-          children: this._childrenWithOverridenStyle()
-        }));
-      }
-    }]);
-    babelHelpers.inherits(t, e);
-    return t;
-  }(React.default.Component);
-d.propTypes = babelHelpers.objectSpread({}, ReactNative.View.propTypes, {
-  initialPage: s.number,
-  onPageScroll: s.func,
-  onPageScrollStateChanged: s.func,
-  onPageSelected: s.func,
-  pageMargin: s.number,
-  keyboardDismissMode: s.oneOf(['none', 'on-drag']),
-  scrollEnabled: s.bool,
-  tabGravity: s.oneOf(['fill', 'center']),
-  tabMode: s.oneOf(['fixed', 'scrollable']),
-  tabBackground: ReactNative.ColorPropType,
-  tabIndicatorColor: ReactNative.ColorPropType,
-  tabTextColor: ReactNative.ColorPropType,
-  tabSelectedTextColor: ReactNative.ColorPropType,
-  tabIndicatorHeight: s.number,
-  tabElevation: s.number,
-  tabNames: s.array.isRequired
-});
-var c = (0, ReactNative.requireNativeComponent)('TabbedViewPager', d),
-  b = d;
-exports.default = b;
+import React from 'react';
+import {View, Text, Pressable} from 'react-native';
+import PagerView from '../components/Pager';
+
+export default class TabbedViewPager extends React.Component {
+  state = {index: this.props.initialPage ?? 0};
+  setPage = index => this.pager.setPage(index);
+  setPageWithoutAnimation = index => this.pager.setPageWithoutAnimation(index);
+  render() {
+    const {tabNames, tabTextColor = '#aaa', tabSelectedTextColor = '#fff', tabIndicatorColor = '#fff',
+      tabBackground = 'transparent', tabIndicatorHeight = 2, style, onPageSelected, children, ...props} = this.props;
+    return <View style={[{flex: 1}, style]}>
+      {tabNames && <View style={{flexDirection: 'row', backgroundColor: tabBackground}}>
+        {tabNames.map((title, index) => <Pressable key={index} onPress={() => this.setPage(index)}
+          style={{flex: 1, paddingVertical: 14, alignItems: 'center', borderBottomWidth: tabIndicatorHeight,
+            borderBottomColor: index === this.state.index ? tabIndicatorColor : 'transparent'}}>
+          <Text style={{color: index === this.state.index ? tabSelectedTextColor : tabTextColor}}>{title}</Text>
+        </Pressable>)}
+      </View>}
+      <PagerView {...props} ref={pager => { this.pager = pager; }} style={{flex: 1}} initialPage={this.state.index}
+        onPageSelected={event => { this.setState({index: event.nativeEvent.position}); onPageSelected?.(event); }}>
+        {React.Children.map(children, (child, index) => child && <View key={index} style={{flex: 1}} collapsable={false}>{child}</View>)}
+      </PagerView>
+    </View>;
+  }
+}

@@ -1,15 +1,17 @@
 # 倒带 Android 项目约定
 
-- 正在按 `handoff.md` 迁移标准工程。正式框架版本锁定 React Native 0.88.1、React 19.3.0、CLI 20.2.0，目标工具链为 JDK 17、Gradle 9.4.1、Kotlin 2.2.0、NDK 27.1.12297006、minSdk 24。以下兼容构建约定随对应实现替换更新，不作为保留旧运行库的要求。
-- 迁移中保持应用 ID `com.kuss.rewind.dev`、Java 包 `com.kuss.rewind`、JS 注册名 `rewind`。旧数据升级须使用相同开发签名，禁止清空数据或改包名规避验证。
-
 - 使用简体中文沟通和维护文档。工作前检查 Git 状态，保留已有改动。
-- 业务代码在 `src/`，原生工程在 `android/`，应用资源在 `assets/` 与 `android/app/src/main/res/`。构建脚本和必要模块映射在 `scripts/`。
-- 使用 Node.js 和 pnpm。Windows、macOS 共用 `pnpm android:build`、`pnpm android:install`，Android 工程使用 JDK 8。环境要求见 README。
-- SDK 通过 `ANDROID_HOME` 或 `ANDROID_SDK_ROOT` 配置。代码、文档和共享配置不写入本机绝对路径；本地工具配置、`.cache/`、构建输出、私钥与凭据不提交。
-- 兼容运行库固定在 `vendor/`，由 Gradle 自动准备。应用安装包、发布元数据、APK 提取与转换工具不纳入项目。升级框架或依赖前先核对兼容性。
-- 日常开发直接修改源码，Gradle 自动调用 Babel 打包。新增 JS、JSX 和 JSON 模块使用相对路径引用，保留 `scripts/module-map.json` 中现有模块与运行库入口。
-- Java 运行库须排除 `com/modules/`、`com/kuss/rewind/` 和异常格式兼容类 `d/e/m/z0/a.class`，由工程源码编译。资源稳定 ID 随开发包名生成，避免破坏原生库中的资源引用。
-- `android/gradlew` 保持 LF 换行和 Git 可执行权限，`gradlew.bat` 使用 CRLF。构建入口不依赖 PowerShell、用户目录或固定盘符。
-- 修改后执行与改动相称的构建或运行检查。外部接口、账号和设备限制如实说明，不用替代数据宣称功能可用。
-- 分支使用 `main`。本地提交采用 Conventional Commits，描述写简短中文；提交前检查暂存 diff，不自动 push、发布或重写历史。
+- 业务代码在 `src/`，Metro 图片在 `assets/`，Android 原生源码在 `android/app/src/main/kotlin/`，Android 图标、启动资源和字体在 `android/app/src/main/`。
+- 使用 pnpm 11.5.2。React Native 0.88.1、React 19.3.0、CLI 20.2.0 固定精确版本。Node 满足 `^22.13.0 || ^24.3.0 || >=26.0.0`。
+- Android 使用 JDK 17、Gradle Wrapper 9.4.1、AGP 9.2.1、Kotlin 2.2.10、NDK 27.1.12297006。保持新架构与 Hermes。工具版本变更先核对官方模板和实际依赖兼容性。
+- 应用 ID 保持 `com.kuss.rewind.dev`，Java/Kotlin 包为 `com.kuss.rewind`，JS 注册名为 `rewind`。升级测试保持开发签名，不卸载、不清空数据，不通过改包名规避迁移。
+- Windows、macOS 共用 `pnpm start`、`pnpm android`、`pnpm android:build`。使用标准 Metro、React Native Gradle 插件和自动链接。`scripts/android.cjs` 负责跨平台选择 Wrapper，不添加专用 JS 打包、数字模块映射或运行库注入。
+- `standalone` 是使用本机开发签名、内置生产模式 JS 的验证构建。正式发布签名由本地配置提供，不把开发签名包称为正式发布。
+- SDK 使用 `ANDROID_HOME` 或 `ANDROID_SDK_ROOT`，本机 `android/local.properties` 保持忽略。代码、文档和共享配置不写入本机路径。缓存、构建输出、私钥和凭据不提交。
+- 播放器由 Media3 `PlaybackService` 持有。JS 队列保持单一来源，通知与耳机控制同步现有播放行为。文件扫描和公共音乐导出使用 MediaStore，遵守对应 Android API 的权限要求。
+- 旧数据迁移原样复制 `RKStorage/catalystLocalStorage` 的包装值和索引，写入、读回成功后标记完成。保留旧数据库和外部 files 目录下的歌单，不把读取错误转成空数据。歌单保存使用串行写入与原子替换。
+- 图片通过普通 `require('...png')` 引用。禁止重新引入兼容 ZIP、全局 Babel 辅助函数和数字模块引用。迁移遗留文件只在完成替换后删除。
+- `android/gradlew` 保持 LF 与 Git 可执行权限，`gradlew.bat` 使用 CRLF。构建入口不依赖 PowerShell、用户目录或固定盘符。
+- 修改后执行相称的测试、打包或运行检查。构建通过、页面打开和完整功能通过分别表述；网络、账号、设备与宿主平台限制如实记录。
+- README 保留上游引用、源码来源、倒带公告牌和反馈群链接。不恢复下载安装地址，不提交 APK/AAB、发布元数据、提取转换工具或临时验证材料。
+- 分支使用 `main`。按可审查单元做小的本地 Conventional Commit，描述写简短中文。提交前检查暂存 diff，不自动 push、发布或重写历史。
