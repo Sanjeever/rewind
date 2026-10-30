@@ -8,11 +8,8 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.WritableMap;
 import java.math.BigInteger;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.util.Random;
 import javax.crypto.Cipher;
-import javax.crypto.Mac;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
@@ -22,7 +19,6 @@ public class RNCrypto extends ReactContextBaseJavaModule {
     private static final String modulus = "00e0b509f6259df8642dbc35662901477df22677ec152b5ff68ace615bb7b725152b3ab17a876aea8a5aa76d2e417629ec4ee341f56135fccf695280104e0312ecbda92557c93870114af6c9d05c4f7f0c3685b7a46bee255932575cce10b424d813cfe4875d3e82047b97ddef52741d546b8e289dc6935b3ece0462db0a22b8e7";
     private static final String nonce = "0CoJUm6Qyw8W8jud";
     private static final String pubKey = "010001";
-    private static final String tencentAPISecretKey = "REMOVED_TENCENT_CREDENTIAL";
     private Thread mThread;
 
     class InnerA extends Thread {
@@ -53,30 +49,6 @@ public class RNCrypto extends ReactContextBaseJavaModule {
         }
     }
 
-    class InnerB extends Thread {
-        final String k;
-        final Promise l;
-
-        InnerB(String str, Promise promise) {
-            this.k = str;
-            this.l = promise;
-        }
-
-        @Override
-        public void run() {
-            if (this.k == null) {
-                return;
-            }
-            WritableMap writableMapCreateMap = Arguments.createMap();
-            String strAccess$400 = RNCrypto.access$400(RNCrypto.this, this.k);
-            if (strAccess$400 != null) {
-                writableMapCreateMap.putString("signature", strAccess$400);
-            }
-            this.l.resolve(writableMapCreateMap);
-            RNCrypto.access$302(RNCrypto.this, null);
-        }
-    }
-
     public RNCrypto(ReactApplicationContext reactApplicationContext) {
         super(reactApplicationContext);
     }
@@ -98,10 +70,6 @@ public class RNCrypto extends ReactContextBaseJavaModule {
         return thread;
     }
 
-    static String access$400(RNCrypto rNCrypto, String str) {
-        return rNCrypto.hmacSHA1(str);
-    }
-
     private String aesCBC(String str, String str2) {
         try {
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
@@ -120,18 +88,6 @@ public class RNCrypto extends ReactContextBaseJavaModule {
             sb.append(BASE62.charAt(random.nextInt(62)));
         }
         return sb.toString();
-    }
-
-    private String hmacSHA1(String str) {
-        try {
-            SecretKeySpec secretKeySpec = new SecretKeySpec(tencentAPISecretKey.getBytes(), "HmacSHA1");
-            Mac mac = Mac.getInstance("HmacSHA1");
-            mac.init(secretKeySpec);
-            return toBase64(mac.doFinal(str.getBytes()));
-        } catch (InvalidKeyException | NoSuchAlgorithmException e2) {
-            e2.printStackTrace();
-            return null;
-        }
     }
 
     private String reverse(String str) {
@@ -175,9 +131,7 @@ public class RNCrypto extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void tencentSignature(String str, Promise promise) {
-        InnerB innerB = new InnerB(str, promise);
-        this.mThread = innerB;
-        innerB.start();
+        promise.reject("E_NLP_NOT_CONFIGURED", "评论分词服务尚未配置");
     }
 
     @ReactMethod
