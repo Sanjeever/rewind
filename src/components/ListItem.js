@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = void 0;
 var React = babelHelpers.interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
-  module547 = babelHelpers.interopRequireDefault(require("../modules/module-547")),
+  TouchableScale = babelHelpers.interopRequireDefault(require("./TouchableScale")),
   _ = require("./index"),
   constants = require("../theme/constants"),
   icons = babelHelpers.interopRequireDefault(require("../theme/icons")),
@@ -91,7 +91,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
           onLongPress: t
         }, React.default.createElement(ReactNative.View, {
           style: [b.container]
-        }, React.default.createElement(module547.default, {
+        }, React.default.createElement(TouchableScale.default, {
           disabled: !l,
           onPress: l
         }, this.renderImg()), React.default.createElement(ReactNative.View, {

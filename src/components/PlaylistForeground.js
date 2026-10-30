@@ -5,7 +5,7 @@ exports.default = void 0;
 var React = babelHelpers.interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
   reactNativeAnimatable = babelHelpers.interopRequireWildcard(require("react-native-animatable")),
-  module547 = babelHelpers.interopRequireDefault(require("../modules/module-547")),
+  TouchableScale = babelHelpers.interopRequireDefault(require("./TouchableScale")),
   _ = require("./index"),
   constants = require("../theme/constants"),
   icons = babelHelpers.interopRequireDefault(require("../theme/icons")),
@@ -181,7 +181,7 @@ var h = function (e) {
       n = e.savePic,
       a = e.onUser,
       r = e.creator;
-    return t ? React.default.createElement(React.default.Fragment, null, React.default.createElement(module547.default, {
+    return t ? React.default.createElement(React.default.Fragment, null, React.default.createElement(TouchableScale.default, {
       onPress: n,
       style: C.coverImg
     }, React.default.createElement(ReactNative.Image, {
@@ -189,7 +189,7 @@ var h = function (e) {
       source: {
         uri: t
       }
-    })), (null === r || void 0 === r ? void 0 : r.avatarUrl) && React.default.createElement(module547.default, {
+    })), (null === r || void 0 === r ? void 0 : r.avatarUrl) && React.default.createElement(TouchableScale.default, {
       style: C.avatarCon,
       onPress: a
     }, React.default.createElement(ReactNative.Image, {
@@ -245,7 +245,7 @@ var h = function (e) {
         paddingLeft: 11,
         paddingRight: 18
       }
-    }, React.default.createElement(module547.default, {
+    }, React.default.createElement(TouchableScale.default, {
       onPress: a
     }, React.default.createElement(ReactNative.Image, {
       source: {

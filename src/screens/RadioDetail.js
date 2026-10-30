@@ -6,7 +6,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
   reactNativeSpringScrollview = require("react-native-spring-scrollview"),
   components = require("../components/index"),
-  module821 = babelHelpers.interopRequireDefault(require("../modules/module-821")),
+  ParallaxList = babelHelpers.interopRequireDefault(require("../components/ParallaxList")),
   providers = babelHelpers.interopRequireDefault(require("../services/providers")),
   constants = require("../theme/constants"),
   names = babelHelpers.interopRequireDefault(require("../events/names")),
@@ -125,7 +125,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
             return e._scrollView = t;
           },
           onLoading: this.getMore,
-          loadingFooter: module821.default
+          loadingFooter: ParallaxList.default
         }, n.map(function (t, a) {
           return e._renderItem({
             item: t,

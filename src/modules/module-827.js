@@ -6,7 +6,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
   components = require("../components/index"),
   highlightWordsCore = require("highlight-words-core"),
-  module825 = require("./module-825"),
+  formatItem = require("../screens/comments/formatItem"),
   u = function (e) {
     function t() {
       var e, r, o;
@@ -17,7 +17,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
           t = e.item,
           r = e.title,
           l = e.replied,
-          u = (0, module825.getFormattedItem)(t);
+          u = (0, formatItem.getFormattedItem)(t);
         if (r && u.content) {
           var c = u.content,
             b = (0, highlightWordsCore.findAll)({
@@ -49,7 +49,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
         var e = this.props,
           t = e.replied,
           r = e.item,
-          o = (0, module825.getFormattedItem)(r);
+          o = (0, formatItem.getFormattedItem)(r);
         return React.default.createElement(ReactNative.View, {
           style: [{
             alignItems: 'center',

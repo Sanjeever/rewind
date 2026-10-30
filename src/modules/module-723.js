@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = void 0;
 var React = babelHelpers.interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
-  module547 = babelHelpers.interopRequireDefault(require("./module-547")),
+  TouchableScale = babelHelpers.interopRequireDefault(require("../components/TouchableScale")),
   o = function (e) {
     function t() {
       babelHelpers.classCallCheck(this, t);
@@ -17,7 +17,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
           t = e.onPress,
           l = e.title,
           n = e.value;
-        return React.default.createElement(module547.default, {
+        return React.default.createElement(TouchableScale.default, {
           onPress: function () {
             null === t || void 0 === t || t();
           },

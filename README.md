@@ -72,6 +72,8 @@ $adb = Join-Path $sdkRoot 'platform-tools/adb.exe'
 
 入口为 `index.js` 和 `src/App.js`。页面路由位于 `src/navigation/index.js`，主要页面在 `src/screens/`，播放器在 `src/player/`，网络服务在 `src/services/`，存储在 `src/storage/`，原生调用封装在 `src/native/`。尚未确定语义的内部模块使用 `module-编号.js` 命名，后续继续整理。
 
+已按实际用途整理 44 个内部模块，包括播放器封面、歌词视图、进度条、播放按钮和队列位置，以及关于页、登录帮助、抽屉与视频播放器。第三方映射已核对触控缩放和 Lottie 桥接；未确认所属包的 LRU 实现继续使用编号，不预设依赖版本。
+
 ```powershell
 pnpm bundle:android
 pnpm check:modules

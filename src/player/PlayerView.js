@@ -11,17 +11,17 @@ var React = babelHelpers.interopRequireDefault(require("react")),
   styles = babelHelpers.interopRequireDefault(require("./styles")),
   utils = require("../utils/index"),
   dimensions = babelHelpers.interopRequireDefault(require("../native/dimensions")),
-  module748 = babelHelpers.interopRequireDefault(require("./module-748")),
-  module749 = babelHelpers.interopRequireDefault(require("./module-749")),
-  module751 = babelHelpers.interopRequireDefault(require("./module-751")),
-  module752 = babelHelpers.interopRequireDefault(require("./module-752")),
-  module753 = babelHelpers.interopRequireDefault(require("./module-753")),
-  module754 = babelHelpers.interopRequireDefault(require("./module-754")),
-  module759 = babelHelpers.interopRequireDefault(require("./module-759")),
-  module762 = babelHelpers.interopRequireDefault(require("./module-762")),
-  module764 = babelHelpers.interopRequireDefault(require("./module-764")),
-  module765 = babelHelpers.interopRequireDefault(require("./module-765")),
-  module767 = babelHelpers.interopRequireDefault(require("./module-767")),
+  PlaybackTime = babelHelpers.interopRequireDefault(require("./PlaybackTime")),
+  Cover = babelHelpers.interopRequireDefault(require("./Cover")),
+  TrackTitle = babelHelpers.interopRequireDefault(require("./TrackTitle")),
+  ControlIcon = babelHelpers.interopRequireDefault(require("./ControlIcon")),
+  Toolbar = babelHelpers.interopRequireDefault(require("./Toolbar")),
+  LyricsView = babelHelpers.interopRequireDefault(require("./LyricsView")),
+  MiniPlayer = babelHelpers.interopRequireDefault(require("./MiniPlayer")),
+  PlaybackControls = babelHelpers.interopRequireDefault(require("./PlaybackControls")),
+  QueuePosition = babelHelpers.interopRequireDefault(require("./QueuePosition")),
+  SeekBar = babelHelpers.interopRequireDefault(require("./SeekBar")),
+  LyricTime = babelHelpers.interopRequireDefault(require("./LyricTime")),
   module768 = babelHelpers.interopRequireDefault(require("./module-768"));
 exports.MiniPlayerWrapper = function (e) {
   var t = e.that,
@@ -41,7 +41,7 @@ exports.MiniPlayerWrapper = function (e) {
     g = y.isRound,
     b = p.playingIndex,
     h = p.tracks;
-  return React.default.createElement(module759.default, {
+  return React.default.createElement(MiniPlayer.default, {
     playingIndex: b,
     tracks: h,
     changeSong: t.changeSong,
@@ -105,7 +105,7 @@ exports.renderPlayerComponent = function (e, t) {
   switch (t) {
     case 'QUEUE_NOW':
       if (true === G) return null;
-      I || (ee = React.default.createElement(module764.default, {
+      I || (ee = React.default.createElement(QueuePosition.default, {
         extraBottomValue: J,
         animatedOpacity: e.animatedOpacity,
         currentIndex: K + 1,
@@ -113,7 +113,7 @@ exports.renderPlayerComponent = function (e, t) {
       }));
       break;
     case 'PLAY_BUTTONS':
-      k && (ee = React.default.createElement(module762.default, {
+      k && (ee = React.default.createElement(PlaybackControls.default, {
         animatedOpacity: e.animatedOpacity,
         playMode: D,
         playState: l,
@@ -140,7 +140,7 @@ exports.renderPlayerComponent = function (e, t) {
           right: 10,
           left: null
         }]
-      }, React.default.createElement(module752.default, {
+      }, React.default.createElement(ControlIcon.default, {
         name: buttons.default.CIRCLE.name,
         type: buttons.default.CIRCLE.type,
         color: _,
@@ -154,7 +154,7 @@ exports.renderPlayerComponent = function (e, t) {
           left: 10,
           right: null
         }]
-      }, React.default.createElement(module752.default, {
+      }, React.default.createElement(ControlIcon.default, {
         name: buttons.default.CLOSE.name,
         type: buttons.default.CLOSE.type,
         onPress: e._playerClose,
@@ -181,7 +181,7 @@ exports.renderPlayerComponent = function (e, t) {
     case 'SLIDER':
       if (P) {
         if ((null === e.y0 || !e.sliding) && X && z) return null;
-        ee = React.default.createElement(module765.default, {
+        ee = React.default.createElement(SeekBar.default, {
           SOFT_MENU_HEIGHT: J,
           showLyric: I,
           isRound: z,
@@ -197,7 +197,7 @@ exports.renderPlayerComponent = function (e, t) {
       break;
     case 'AUTO_FADE_TIME':
       if (z || W) return null;
-      (!I && e.sliding || !I && 'paused' === l && E) && (ee = React.default.createElement(module748.default, {
+      (!I && e.sliding || !I && 'paused' === l && E) && (ee = React.default.createElement(PlaybackTime.default, {
         width: constants.DEVICE_WIDTH,
         animatedOpacity: e.animatedOpacity,
         color: _,
@@ -207,7 +207,7 @@ exports.renderPlayerComponent = function (e, t) {
       break;
     case 'TIME':
       if (true === W) return null;
-      I && (ee = React.default.createElement(module767.default, {
+      I && (ee = React.default.createElement(LyricTime.default, {
         color: _,
         duration: C,
         currentTime: H,
@@ -230,7 +230,7 @@ exports.renderPlayerComponent = function (e, t) {
       }, $.right.panHandlers)));
       break;
     case 'LYRIC':
-      I && (ee = React.default.createElement(module754.default, {
+      I && (ee = React.default.createElement(LyricsView.default, {
         showTool: k,
         animatedOpacity: e.animatedOpacity,
         hidePlayingTime: W,
@@ -253,7 +253,7 @@ exports.renderPlayerComponent = function (e, t) {
       if (!I && !k && !Y) {
         var te = e.props.lyric;
         if (!te) return;
-        ee = React.default.createElement(module753.default, {
+        ee = React.default.createElement(Toolbar.default, {
           currentTime: H,
           getLyricIndex: e.getLyricIndex,
           lyric: te,
@@ -287,7 +287,7 @@ exports.renderPlayerComponent = function (e, t) {
         style: [styles.default.lyric, false === k && styles.default.toolHide, {
           opacity: e.animatedOpacity
         }]
-      }, React.default.createElement(module749.default, {
+      }, React.default.createElement(Cover.default, {
         reverseGestureHands: j,
         onPlay: k ? null : e.togglePlay,
         onTap: e.onTap,
@@ -318,7 +318,7 @@ exports.renderPlayerComponent = function (e, t) {
       if (true === I) {
         var ae = e.props.songItemInfo.singer,
           ne = (0, utils.parseArtist)(ae);
-        ee = React.default.createElement(module751.default, {
+        ee = React.default.createElement(TrackTitle.default, {
           viewStyle: [styles.default.songTitleCon, false === k && {
             alignItems: 'center',
             alignSelf: 'center',

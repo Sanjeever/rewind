@@ -16,7 +16,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
   events = require("../events/index"),
   trackInfo = require("../services/trackInfo"),
   dimensions = babelHelpers.interopRequireDefault(require("../native/dimensions")),
-  module873 = require("./module-873"),
+  sections = require("../screens/history/sections"),
   L = dimensions.default.get('SOFT_MENU_BAR_HEIGHT'),
   T = function (e) {
     function t() {
@@ -58,7 +58,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
           y: 0
         });
       }, a.getData = function () {
-        return module873.sections.map(function (e) {
+        return sections.sections.map(function (e) {
           return {
             items: a.props[e].length > 0 ? a.props[e] : []
           };
@@ -66,21 +66,21 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
       }, a._heightForIndexPath = function () {
         return constants.ITEM_HEIGHT;
       }, a._heightForSection = function (e) {
-        var t = module873.sections[e];
-        return 0 === a.sectionDataLength(t) ? 0 : module873.SECTION_HEIGHT;
+        var t = sections.sections[e];
+        return 0 === a.sectionDataLength(t) ? 0 : sections.SECTION_HEIGHT;
       }, a._renderSection = function (e) {
-        var t = module873.sections[e],
-          n = module873.sectionTitleMap[t],
+        var t = sections.sections[e],
+          n = sections.sectionTitleMap[t],
           l = a.sectionDataLength(t);
         return React.default.createElement(ReactNative.View, {
-          style: module873.sectionStyle.container
+          style: sections.sectionStyle.container
         }, React.default.createElement(components.Title, {
-          style: [module873.sectionStyle.numbers]
+          style: [sections.sectionStyle.numbers]
         }, l), React.default.createElement(components.Title, null, n));
       }, a._renderIndexPath = function (e) {
         var t = e.section,
           n = e.row,
-          l = module873.sections[t],
+          l = sections.sections[t],
           s = n,
           o = a.props[l][s],
           u = (0, trackInfo.extractFullInfo)(o),

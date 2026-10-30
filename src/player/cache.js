@@ -2,9 +2,9 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var tinyLru = babelHelpers.interopRequireDefault(require("tiny-lru")),
+var LruCache = babelHelpers.interopRequireDefault(require("@runtime/781")),
   providers = babelHelpers.interopRequireDefault(require("../services/providers")),
-  o = new tinyLru.default(100),
+  o = new LruCache.default(100),
   s = function (e, r) {
     var t = e.song;
     return r === providers.default.qqMusic ? t.songmid || t.mid : String(t.id);

@@ -35,12 +35,12 @@ var constants = require("../theme/constants"),
         }, React.default.createElement(reactNativeSpringScrollview.SpringScrollView, null, React.default.createElement(ReactNative.View, {
           style: b.con
         }, React.default.createElement(p, {
-          source: require("../modules/module-845"),
+          source: require("../../assets/images/netease"),
           onPress: function () {
             return e.goTo(providers.default.netEase);
           }
         }), React.default.createElement(p, {
-          source: require("../modules/module-846"),
+          source: require("../../assets/images/qqmusic"),
           onPress: function () {
             return e.goTo(providers.default.qqMusic);
           }

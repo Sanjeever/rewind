@@ -6,7 +6,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
   reactNativePopupMenu = require("react-native-popup-menu"),
   components = require("../components/index"),
-  module924 = babelHelpers.interopRequireDefault(require("../modules/module-924")),
+  VideoPlayer = babelHelpers.interopRequireDefault(require("../player/VideoPlayer")),
   providers = babelHelpers.interopRequireDefault(require("../services/providers")),
   names = babelHelpers.interopRequireDefault(require("../events/names")),
   icons = babelHelpers.interopRequireDefault(require("../theme/icons")),
@@ -115,7 +115,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
           style: [C.container, a && {
             paddingTop: 0
           }]
-        }, React.default.createElement(module924.default, {
+        }, React.default.createElement(VideoPlayer.default, {
           title: r,
           source: {
             uri: n

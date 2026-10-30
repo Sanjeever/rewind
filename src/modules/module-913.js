@@ -6,11 +6,11 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
   reactNativeLargelist = require("react-native-largelist"),
   components = require("../components/index"),
-  module821 = babelHelpers.interopRequireDefault(require("./module-821")),
+  ParallaxList = babelHelpers.interopRequireDefault(require("../components/ParallaxList")),
   providers = babelHelpers.interopRequireDefault(require("../services/providers")),
   constants = require("../theme/constants"),
   services = require("../services/index"),
-  module881 = babelHelpers.interopRequireDefault(require("./module-881")),
+  trackDescription = babelHelpers.interopRequireDefault(require("../services/trackDescription")),
   searchTypes = babelHelpers.interopRequireDefault(require("../services/searchTypes")),
   b = function (e) {
     function t() {
@@ -66,7 +66,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
       }, r.formatAllData = function (e) {
         for (var t = r.props.api, a = [], n = 0; n < e.length; n++) {
           var l = e[n],
-            i = (0, module881.default)({
+            i = (0, trackDescription.default)({
               item: l,
               api: t,
               page: searchTypes.default.singers
@@ -130,7 +130,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
           },
           renderIndexPath: this._renderIndexPath,
           onLoading: this.getMore,
-          loadingFooter: module821.default
+          loadingFooter: ParallaxList.default
         }));
       }
     }]);

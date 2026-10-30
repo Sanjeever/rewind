@@ -12,7 +12,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
   events = require("../events/index"),
   utils = require("../utils/index"),
   queue = babelHelpers.interopRequireDefault(require("../events/queue")),
-  module888 = babelHelpers.interopRequireDefault(require("../modules/module-888")),
+  styles = babelHelpers.interopRequireDefault(require("./messages/styles")),
   g = function (e) {
     function t() {
       var e, a, r;
@@ -65,7 +65,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
         var t = e.item,
           a = e.index,
           n = r.formatRow(t);
-        return React.default.createElement(module888.default, {
+        return React.default.createElement(styles.default, {
           key: a,
           user: r.state.title,
           fromUser: t.fromUser.nickname,

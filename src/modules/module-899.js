@@ -6,7 +6,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
   FadingEdge = babelHelpers.interopRequireDefault(require("../components/FadingEdge")),
   reactNativeSpringScrollview = require("react-native-spring-scrollview"),
-  module547 = babelHelpers.interopRequireDefault(require("./module-547")),
+  TouchableScale = babelHelpers.interopRequireDefault(require("../components/TouchableScale")),
   components = require("../components/index"),
   providers = babelHelpers.interopRequireDefault(require("../services/providers")),
   icons = babelHelpers.interopRequireDefault(require("../theme/icons")),
@@ -96,7 +96,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
           onPress: this.onClosed
         }, React.default.createElement(ReactNative.View, {
           style: [ReactNative.StyleSheet.absoluteFill]
-        })), React.default.createElement(module547.default, {
+        })), React.default.createElement(TouchableScale.default, {
           onPress: this.onTop
         }, React.default.createElement(ReactNative.Text, {
           style: [h.text, h.title]

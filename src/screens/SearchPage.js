@@ -18,8 +18,8 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
   module913 = babelHelpers.interopRequireDefault(require("../modules/module-913")),
   module914 = babelHelpers.interopRequireDefault(require("../modules/module-914")),
   module915 = babelHelpers.interopRequireDefault(require("../modules/module-915")),
-  module845 = require("../modules/module-845"),
-  module846 = require("../modules/module-846"),
+  netease = require("../../assets/images/netease"),
+  qqmusic = require("../../assets/images/qqmusic"),
   v = function (e) {
     function t() {
       var e, a, n;
@@ -181,7 +181,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
             flex: 1
           }
         }, React.default.createElement(ReactNative.Image, {
-          source: a === providers.default.netEase ? module845 : module846,
+          source: a === providers.default.netEase ? netease : qqmusic,
           style: {
             height: 25,
             width: 25

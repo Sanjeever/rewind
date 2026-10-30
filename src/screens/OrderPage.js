@@ -5,7 +5,7 @@ exports.default = void 0;
 var immer = require("immer"),
   React = babelHelpers.interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
-  module837 = babelHelpers.interopRequireDefault(require("../modules/module-837")),
+  SegmentedControl = babelHelpers.interopRequireDefault(require("../components/SegmentedControl")),
   components = require("../components/index"),
   TabbedViewPager = babelHelpers.interopRequireDefault(require("../native/TabbedViewPager")),
   pages = babelHelpers.interopRequireDefault(require("../settings/pages")),
@@ -157,7 +157,7 @@ var immer = require("immer"),
           disabledTopFadingEdge: true
         }, React.default.createElement(TabbedViewPager.default, {
           tabNames: this._TAB_NAMES
-        }, React.default.createElement(module837.default, {
+        }, React.default.createElement(SegmentedControl.default, {
           style: {
             padding: 10,
             paddingHorizontal: 15
@@ -167,7 +167,7 @@ var immer = require("immer"),
           onReleaseRow: function (a, t) {
             return e.onReleaseRow(a, t, 'pages');
           }
-        }), React.default.createElement(module837.default, {
+        }), React.default.createElement(SegmentedControl.default, {
           style: {
             padding: 10,
             paddingHorizontal: 15

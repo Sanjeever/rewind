@@ -13,7 +13,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
   services = require("../services/index"),
   events = require("../events/index"),
   types = babelHelpers.interopRequireWildcard(require("../utils/types")),
-  module920 = babelHelpers.interopRequireDefault(require("../modules/module-920")),
+  styles = babelHelpers.interopRequireDefault(require("./users/styles")),
   y = function (e) {
     function t() {
       var e, n, a;
@@ -121,7 +121,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
             padding: 20,
             alignItems: 'center'
           }
-        }, React.default.createElement(module920.default, {
+        }, React.default.createElement(styles.default, {
           imgUrl: c,
           nativeOffset: e
         }), React.default.createElement(ReactNative.Animated.View, {

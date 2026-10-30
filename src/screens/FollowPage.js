@@ -6,7 +6,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
   reactNativeTabView = require("react-native-tab-view"),
   components = require("../components/index"),
-  module821 = babelHelpers.interopRequireDefault(require("../modules/module-821")),
+  ParallaxList = babelHelpers.interopRequireDefault(require("../components/ParallaxList")),
   constants = require("../theme/constants"),
   names = babelHelpers.interopRequireDefault(require("../events/names")),
   locales = babelHelpers.interopRequireDefault(require("../locales/index")),
@@ -226,7 +226,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
           },
           onLoading: this.getMore,
           onNativeContentOffsetExtract: this._nativeOffset,
-          loadingFooter: module821.default
+          loadingFooter: ParallaxList.default
         }, React.default.createElement(module919.default, {
           nativeOffset: this._nativeOffset,
           profile: n,

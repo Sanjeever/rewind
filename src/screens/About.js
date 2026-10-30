@@ -2,21 +2,21 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var accordionCollapseReactNative = babelHelpers.interopRequireDefault(require("accordion-collapse-react-native")),
+var lottieReactNative = babelHelpers.interopRequireDefault(require("lottie-react-native")),
   React = babelHelpers.interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
   reactNativeSpringScrollview = require("react-native-spring-scrollview"),
-  module547 = babelHelpers.interopRequireDefault(require("../modules/module-547")),
+  TouchableScale = babelHelpers.interopRequireDefault(require("../components/TouchableScale")),
   components = require("../components/index"),
-  module803 = babelHelpers.interopRequireDefault(require("../modules/module-803")),
+  Placeholders = babelHelpers.interopRequireDefault(require("./about/Placeholders")),
   icons = babelHelpers.interopRequireDefault(require("../theme/icons")),
   locales = babelHelpers.interopRequireDefault(require("../locales/index")),
   endpoints = require("../services/endpoints"),
   info = require("../native/info"),
-  module805 = babelHelpers.interopRequireDefault(require("../modules/module-805")),
-  module806 = babelHelpers.interopRequireDefault(require("../modules/module-806")),
-  module808 = babelHelpers.interopRequireDefault(require("../modules/module-808")),
-  module807 = babelHelpers.interopRequireDefault(require("../modules/module-807")),
+  linkData = babelHelpers.interopRequireDefault(require("./about/linkData")),
+  CreditsSection = babelHelpers.interopRequireDefault(require("./about/CreditsSection")),
+  LinkList = babelHelpers.interopRequireDefault(require("./about/LinkList")),
+  styles = babelHelpers.interopRequireDefault(require("./about/styles")),
   h = function (e) {
     function l() {
       var e, t, a;
@@ -52,11 +52,11 @@ var accordionCollapseReactNative = babelHelpers.interopRequireDefault(require("a
         });
       }, a.renderAll = function () {
         return React.default.createElement(React.default.Fragment, null, React.default.createElement(ReactNative.Text, {
-          style: [module807.default.text, {
+          style: [styles.default.text, {
             marginBottom: 10
           }]
-        }, '\t\t', "\u672c\u5e94\u7528\u53ea\u5728\u76f8\u5173\u7fa4\u7ec4/\u9891\u9053\u53d1\u5e03\u66f4\u65b0\uff0c\u5176\u4ed6\u5730\u65b9\u4e0b\u8f7d\u7684\u65e0\u6cd5\u4fdd\u8bc1\u53ef\u7528\u6027\u3002"), module805.default.sites.map(function (e, t) {
-          return React.default.createElement(module806.default, {
+        }, '\t\t', "\u672c\u5e94\u7528\u53ea\u5728\u76f8\u5173\u7fa4\u7ec4/\u9891\u9053\u53d1\u5e03\u66f4\u65b0\uff0c\u5176\u4ed6\u5730\u65b9\u4e0b\u8f7d\u7684\u65e0\u6cd5\u4fdd\u8bc1\u53ef\u7528\u6027\u3002"), linkData.default.sites.map(function (e, t) {
+          return React.default.createElement(CreditsSection.default, {
             key: t,
             onPress: function () {
               return a.linking(e.url);
@@ -65,42 +65,42 @@ var accordionCollapseReactNative = babelHelpers.interopRequireDefault(require("a
               return React.default.createElement(components.Icon, {
                 name: e.icon,
                 size: a.ICON_SIZE,
-                style: module807.default.avatar
+                style: styles.default.avatar
               });
             },
             title: e.name,
             subtitle: e.url
           });
         }), React.default.createElement(components.Title, {
-          style: [module807.default.title]
+          style: [styles.default.title]
         }, "\u76f8\u5173\u7684\u4eba"), a.renderPersons(), React.default.createElement(components.Title, {
-          style: [module807.default.title]
-        }, "\u5f00\u6e90\u5e93"), React.default.createElement(module806.default, {
+          style: [styles.default.title]
+        }, "\u5f00\u6e90\u5e93"), React.default.createElement(CreditsSection.default, {
           onPress: a.onThanks,
           renderAvatar: function () {
             return React.default.createElement(components.Icon, {
               name: icons.default.HEART_OUTLINE,
               size: a.ICON_SIZE,
-              style: module807.default.avatar
+              style: styles.default.avatar
             });
           },
           title: '\u70b9\u51fb\u67e5\u770b',
           subtitle: endpoints.HOST_PAGE + "/thanks"
         }), React.default.createElement(components.EmptyFooter, null));
       }, a.renderPersons = function () {
-        return module805.default.persons.map(function (e, t) {
-          var l = module805.default.qqs[t],
-            n = module805.default.qqAvatarUrl.replace('%qq', l);
-          return React.default.createElement(module806.default, {
+        return linkData.default.persons.map(function (e, t) {
+          var l = linkData.default.qqs[t],
+            n = linkData.default.qqAvatarUrl.replace('%qq', l);
+          return React.default.createElement(CreditsSection.default, {
             key: t,
             onPress: function () {
               return a.onClip(l);
             },
             renderAvatar: function () {
               return React.default.createElement(ReactNative.View, {
-                style: [module807.default.avatar]
+                style: [styles.default.avatar]
               }, React.default.createElement(ReactNative.Image, {
-                style: [module807.default.borderLine, {
+                style: [styles.default.borderLine, {
                   height: 55,
                   width: 55,
                   borderRadius: 27.5
@@ -140,22 +140,22 @@ var accordionCollapseReactNative = babelHelpers.interopRequireDefault(require("a
             padding: 15
           }
         }, React.default.createElement(ReactNative.View, {
-          style: module807.default.lottieContainer
-        }, React.default.createElement(module547.default, {
+          style: styles.default.lottieContainer
+        }, React.default.createElement(TouchableScale.default, {
           onPress: this.onSpeedUp
-        }, React.default.createElement(accordionCollapseReactNative.default, {
+        }, React.default.createElement(lottieReactNative.default, {
           source: require("../../assets/animations/loading"),
           loop: true,
           autoPlay: true,
-          style: module807.default.lottieView,
+          style: styles.default.lottieView,
           speed: b
-        })), a ? React.default.createElement(module803.default.Text, {
-          style: [module807.default.text, module807.default.version],
+        })), a ? React.default.createElement(Placeholders.default.Text, {
+          style: [styles.default.text, styles.default.version],
           numbers: 3
         }) : React.default.createElement(ReactNative.Text, {
-          style: [module807.default.text, module807.default.version]
-        }, info.versionName)), a ? React.default.createElement(module808.default, {
-          info: module805.default
+          style: [styles.default.text, styles.default.version]
+        }, info.versionName)), a ? React.default.createElement(LinkList.default, {
+          info: linkData.default
         }) : this.renderAll()));
       }
     }]);

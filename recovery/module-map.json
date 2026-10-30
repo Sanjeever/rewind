@@ -7222,7 +7222,7 @@
         548
       ],
       "classification": "application",
-      "source": "src/modules/module-547.js",
+      "source": "src/components/TouchableScale.js",
       "exports": [
         "default"
       ],
@@ -7242,7 +7242,7 @@
         "default"
       ],
       "native_modules": [],
-      "package": "@react-native-community/slider/legacy"
+      "package": "react-native-touchable-scale"
     },
     {
       "id": 549,
@@ -8638,7 +8638,7 @@
       "source": null,
       "exports": [],
       "native_modules": [],
-      "package": "accordion-collapse-react-native"
+      "package": "lottie-react-native"
     },
     {
       "id": 644,
@@ -10171,7 +10171,7 @@
         554
       ],
       "classification": "application",
-      "source": "src/player/module-748.js",
+      "source": "src/player/PlaybackTime.js",
       "exports": [
         "default"
       ],
@@ -10193,7 +10193,7 @@
         751
       ],
       "classification": "application",
-      "source": "src/player/module-749.js",
+      "source": "src/player/Cover.js",
       "exports": [
         "default"
       ],
@@ -10225,7 +10225,7 @@
         311
       ],
       "classification": "application",
-      "source": "src/player/module-751.js",
+      "source": "src/player/TrackTitle.js",
       "exports": [
         "default"
       ],
@@ -10241,7 +10241,7 @@
         309
       ],
       "classification": "application",
-      "source": "src/player/module-752.js",
+      "source": "src/player/ControlIcon.js",
       "exports": [
         "default"
       ],
@@ -10257,7 +10257,7 @@
         746
       ],
       "classification": "application",
-      "source": "src/player/module-753.js",
+      "source": "src/player/Toolbar.js",
       "exports": [
         "default"
       ],
@@ -10274,7 +10274,7 @@
         755
       ],
       "classification": "application",
-      "source": "src/player/module-754.js",
+      "source": "src/player/LyricsView.js",
       "exports": [
         "default"
       ],
@@ -10291,7 +10291,7 @@
         373
       ],
       "classification": "application",
-      "source": "src/player/module-755.js",
+      "source": "src/player/LyricLine.js",
       "exports": [
         "default"
       ],
@@ -10348,7 +10348,7 @@
         761
       ],
       "classification": "application",
-      "source": "src/player/module-759.js",
+      "source": "src/player/MiniPlayer.js",
       "exports": [
         "default"
       ],
@@ -10371,7 +10371,7 @@
         751
       ],
       "classification": "application",
-      "source": "src/player/module-760.js",
+      "source": "src/player/MiniPlayerContent.js",
       "exports": [
         "default"
       ],
@@ -10388,7 +10388,7 @@
         752
       ],
       "classification": "application",
-      "source": "src/player/module-761.js",
+      "source": "src/player/PlayButton.js",
       "exports": [
         "default"
       ],
@@ -10407,7 +10407,7 @@
         763
       ],
       "classification": "application",
-      "source": "src/player/module-762.js",
+      "source": "src/player/PlaybackControls.js",
       "exports": [
         "default"
       ],
@@ -10422,7 +10422,7 @@
         752
       ],
       "classification": "application",
-      "source": "src/player/module-763.js",
+      "source": "src/player/AnimatedPlayButton.js",
       "exports": [
         "default"
       ],
@@ -10436,7 +10436,7 @@
         1
       ],
       "classification": "application",
-      "source": "src/player/module-764.js",
+      "source": "src/player/QueuePosition.js",
       "exports": [
         "default"
       ],
@@ -10451,7 +10451,7 @@
         746
       ],
       "classification": "application",
-      "source": "src/player/module-765.js",
+      "source": "src/player/SeekBar.js",
       "exports": [
         "default"
       ],
@@ -10482,7 +10482,7 @@
         746
       ],
       "classification": "application",
-      "source": "src/player/module-767.js",
+      "source": "src/player/LyricTime.js",
       "exports": [
         "default"
       ],
@@ -10717,7 +10717,7 @@
       "source": null,
       "exports": [],
       "native_modules": [],
-      "package": "tiny-lru"
+      "package": null
     },
     {
       "id": 782,
@@ -11084,7 +11084,7 @@
         804
       ],
       "classification": "application",
-      "source": "src/modules/module-803.js",
+      "source": "src/screens/about/Placeholders.js",
       "exports": [
         "default"
       ],
@@ -11098,7 +11098,7 @@
         1
       ],
       "classification": "application",
-      "source": "src/modules/module-804.js",
+      "source": "src/components/PulsingPlaceholder.js",
       "exports": [
         "default"
       ],
@@ -11112,7 +11112,7 @@
         800
       ],
       "classification": "application",
-      "source": "src/modules/module-805.js",
+      "source": "src/screens/about/linkData.js",
       "exports": [
         "default"
       ],
@@ -11127,7 +11127,7 @@
         807
       ],
       "classification": "application",
-      "source": "src/modules/module-806.js",
+      "source": "src/screens/about/CreditsSection.js",
       "exports": [
         "default"
       ],
@@ -11141,7 +11141,7 @@
         311
       ],
       "classification": "application",
-      "source": "src/modules/module-807.js",
+      "source": "src/screens/about/styles.js",
       "exports": [
         "default"
       ],
@@ -11157,7 +11157,7 @@
         807
       ],
       "classification": "application",
-      "source": "src/modules/module-808.js",
+      "source": "src/screens/about/LinkList.js",
       "exports": [
         "default"
       ],
@@ -11227,7 +11227,7 @@
         372
       ],
       "classification": "application",
-      "source": "src/modules/module-812.js",
+      "source": "src/screens/album/Description.js",
       "exports": [
         "default"
       ],
@@ -11351,7 +11351,7 @@
         311
       ],
       "classification": "application",
-      "source": "src/modules/module-819.js",
+      "source": "src/screens/artist/styles.js",
       "exports": [
         "default"
       ],
@@ -11397,7 +11397,7 @@
         822
       ],
       "classification": "application",
-      "source": "src/modules/module-821.js",
+      "source": "src/components/ParallaxList.js",
       "exports": [
         "default"
       ],
@@ -11408,7 +11408,7 @@
       "id": 822,
       "dependencies": [],
       "classification": "application",
-      "source": "src/modules/module-822.js",
+      "source": "src/theme/layout.js",
       "exports": [],
       "native_modules": [],
       "package": null
@@ -11449,7 +11449,7 @@
         554
       ],
       "classification": "application",
-      "source": "src/modules/module-825.js",
+      "source": "src/screens/comments/formatItem.js",
       "exports": [
         "getFormattedItem"
       ],
@@ -11674,7 +11674,7 @@
         838
       ],
       "classification": "application",
-      "source": "src/modules/module-837.js",
+      "source": "src/components/SegmentedControl.js",
       "exports": [
         "default"
       ],
@@ -11787,7 +11787,7 @@
         65
       ],
       "classification": "application",
-      "source": "src/modules/module-845.js",
+      "source": "assets/images/netease.js",
       "exports": [],
       "native_modules": [],
       "package": null
@@ -11798,7 +11798,7 @@
         65
       ],
       "classification": "application",
-      "source": "src/modules/module-846.js",
+      "source": "assets/images/qqmusic.js",
       "exports": [],
       "native_modules": [],
       "package": null
@@ -11894,7 +11894,7 @@
         853
       ],
       "classification": "application",
-      "source": "src/modules/module-851.js",
+      "source": "src/components/Drawer.js",
       "exports": [
         "default"
       ],
@@ -11915,7 +11915,7 @@
         713
       ],
       "classification": "application",
-      "source": "src/modules/module-852.js",
+      "source": "src/components/ProfileHeader.js",
       "exports": [
         "default"
       ],
@@ -11935,7 +11935,7 @@
         314
       ],
       "classification": "application",
-      "source": "src/modules/module-853.js",
+      "source": "src/components/DrawerActions.js",
       "exports": [
         "default"
       ],
@@ -12223,7 +12223,7 @@
         372
       ],
       "classification": "application",
-      "source": "src/modules/module-867.js",
+      "source": "src/screens/login/NeteaseHelp.js",
       "exports": [
         "default"
       ],
@@ -12267,7 +12267,7 @@
         372
       ],
       "classification": "application",
-      "source": "src/modules/module-869.js",
+      "source": "src/screens/login/QQMusicHelp.js",
       "exports": [
         "default"
       ],
@@ -12303,7 +12303,7 @@
         1
       ],
       "classification": "application",
-      "source": "src/modules/module-871.js",
+      "source": "src/screens/lyrics/LyricText.js",
       "exports": [
         "default"
       ],
@@ -12346,7 +12346,7 @@
         373
       ],
       "classification": "application",
-      "source": "src/modules/module-873.js",
+      "source": "src/screens/history/sections.js",
       "exports": [
         "sectionTitleMap",
         "sectionStyle",
@@ -12521,7 +12521,7 @@
         882
       ],
       "classification": "application",
-      "source": "src/modules/module-881.js",
+      "source": "src/services/trackDescription.js",
       "exports": [
         "default"
       ],
@@ -12564,7 +12564,7 @@
       "id": 884,
       "dependencies": [],
       "classification": "application",
-      "source": "src/modules/module-884.js",
+      "source": "src/components/filterColors.js",
       "exports": [
         "defaultColor",
         "highlightColor"
@@ -12580,7 +12580,7 @@
         884
       ],
       "classification": "application",
-      "source": "src/modules/module-885.js",
+      "source": "src/components/filterStyles.js",
       "exports": [
         "default"
       ],
@@ -12637,7 +12637,7 @@
         554
       ],
       "classification": "application",
-      "source": "src/modules/module-888.js",
+      "source": "src/screens/messages/styles.js",
       "exports": [
         "default"
       ],
@@ -12814,7 +12814,7 @@
         713
       ],
       "classification": "application",
-      "source": "src/modules/module-896.js",
+      "source": "src/screens/playlist/actions.js",
       "exports": [
         "default"
       ],
@@ -13283,7 +13283,7 @@
         311
       ],
       "classification": "application",
-      "source": "src/modules/module-920.js",
+      "source": "src/screens/users/styles.js",
       "exports": [
         "default"
       ],
@@ -13381,7 +13381,7 @@
         935
       ],
       "classification": "application",
-      "source": "src/modules/module-924.js",
+      "source": "src/player/VideoPlayer.js",
       "exports": [
         "default"
       ],

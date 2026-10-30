@@ -11,7 +11,7 @@ var immer = require("immer"),
   services = require("../services/index"),
   utils = require("../utils/index"),
   trackInfo = require("../services/trackInfo"),
-  module871 = babelHelpers.interopRequireDefault(require("../modules/module-871")),
+  LyricText = babelHelpers.interopRequireDefault(require("./lyrics/LyricText")),
   p = function (e) {
     function t() {
       var e, r, n;
@@ -80,7 +80,7 @@ var immer = require("immer"),
           r = e.index,
           a = n.getTrans(t.total),
           i = t.hidden || false;
-        return React.default.createElement(module871.default, {
+        return React.default.createElement(LyricText.default, {
           hidden: i,
           lyric: n.renderTxt(t.txt),
           trans: a ? n.renderTxt(a.txt) : '',

@@ -6,7 +6,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
   reactNativeLargelist = require("react-native-largelist"),
   components = require("../components/index"),
-  module821 = babelHelpers.interopRequireDefault(require("./module-821")),
+  ParallaxList = babelHelpers.interopRequireDefault(require("../components/ParallaxList")),
   providers = babelHelpers.interopRequireDefault(require("../services/providers")),
   constants = require("../theme/constants"),
   locales = babelHelpers.interopRequireDefault(require("../locales/index")),
@@ -145,7 +145,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
           },
           renderIndexPath: this._renderIndexPath,
           onLoading: this.getMore,
-          loadingFooter: module821.default
+          loadingFooter: ParallaxList.default
         }));
       }
     }]);

@@ -5,7 +5,7 @@ exports.default = void 0;
 var React = babelHelpers.interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
   reactNativeAnimatable = babelHelpers.interopRequireWildcard(require("react-native-animatable")),
-  module547 = babelHelpers.interopRequireDefault(require("../modules/module-547")),
+  TouchableScale = babelHelpers.interopRequireDefault(require("./TouchableScale")),
   _ = require("./index"),
   constants = require("../theme/constants"),
   icons = babelHelpers.interopRequireDefault(require("../theme/icons")),
@@ -129,7 +129,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
       n = e.onPress,
       a = e.name,
       l = e.size;
-    return React.default.createElement(module547.default, {
+    return React.default.createElement(TouchableScale.default, {
       onPress: n,
       activeScale: .7
     }, React.default.createElement(ReactNative.View, {
@@ -168,7 +168,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
   b = function (e) {
     var t = e.img,
       n = e.addToQueue;
-    if (t) return React.default.createElement(module547.default, {
+    if (t) return React.default.createElement(TouchableScale.default, {
       onPress: n
     }, React.default.createElement(ReactNative.View, {
       style: T.key

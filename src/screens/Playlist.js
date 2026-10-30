@@ -18,7 +18,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
   mediaStore = babelHelpers.interopRequireDefault(require("../native/mediaStore")),
   lastSong = babelHelpers.interopRequireDefault(require("../storage/lastSong")),
   sortModes = require("./playlist/sortModes"),
-  module896 = babelHelpers.interopRequireDefault(require("../modules/module-896")),
+  actions = babelHelpers.interopRequireDefault(require("./playlist/actions")),
   T = function (e) {
     function t() {
       var e, a, r;
@@ -123,7 +123,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
               return l.abrupt("return");
             case 4:
               l.next = 6;
-              return regeneratorRuntime.awrap(module896.default.getFromNetease(n));
+              return regeneratorRuntime.awrap(actions.default.getFromNetease(n));
             case 6:
               (s = l.sent) && r.setData(s);
               i = r.getIsCreatedByMe(a, t);
@@ -179,7 +179,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
               return s.abrupt("return");
             case 4:
               s.next = 6;
-              return regeneratorRuntime.awrap(module896.default.getFromQQMusic(a));
+              return regeneratorRuntime.awrap(actions.default.getFromQQMusic(a));
             case 6:
               (n = s.sent) && (r.setData(n), r.setState({
                 isCreatedByMe: false
@@ -336,7 +336,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
           a = t.api,
           n = t.subscribed,
           s = n ? 'unsubscribe' : 'subscribe';
-        module896.default.onSubscribe(e, s, a);
+        actions.default.onSubscribe(e, s, a);
         r.setState({
           subscribed: !n
         });
@@ -358,7 +358,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
               return e.id === t.id;
             });
           if (s >= 0) {
-            module896.default.playMusic(t, s, babelHelpers.assertThisInitialized(babelHelpers.assertThisInitialized(r)));
+            actions.default.playMusic(t, s, babelHelpers.assertThisInitialized(babelHelpers.assertThisInitialized(r)));
             null === (n = r._list) || void 0 === n || n.scrollTo({
               x: 0,
               y: (s + 1) * constants.ITEM_HEIGHT
@@ -367,7 +367,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
           r.setState({
             lastPlayedSong: null
           });
-        } else module896.default.playMusic(a[0], 0, babelHelpers.assertThisInitialized(babelHelpers.assertThisInitialized(r)));
+        } else actions.default.playMusic(a[0], 0, babelHelpers.assertThisInitialized(babelHelpers.assertThisInitialized(r)));
       }, r._renderItem = function (e) {
         var t = e.item,
           a = e.index,
@@ -375,7 +375,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
           i = n.api,
           l = n.playingIndex,
           u = n.isTopList,
-          d = module896.default.formatItemData(t, i);
+          d = actions.default.formatItemData(t, i);
         return React.default.createElement(components.SongRow, {
           lastRank: t.lastRank,
           showRank: u,
@@ -386,17 +386,17 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
           singer: d.artist,
           alias: d.alias,
           onPress: function () {
-            return module896.default.playMusic(t, a, babelHelpers.assertThisInitialized(babelHelpers.assertThisInitialized(r)));
+            return actions.default.playMusic(t, a, babelHelpers.assertThisInitialized(babelHelpers.assertThisInitialized(r)));
           },
           detail: function () {
-            return module896.default.onDetail(t, a, babelHelpers.assertThisInitialized(babelHelpers.assertThisInitialized(r)));
+            return actions.default.onDetail(t, a, babelHelpers.assertThisInitialized(babelHelpers.assertThisInitialized(r)));
           },
           addToQueue: function () {
-            return module896.default.addToQueue(t, i);
+            return actions.default.addToQueue(t, i);
           },
           isExist: t.localPath,
           onMV: function () {
-            return module896.default.onMV(t, i);
+            return actions.default.onMV(t, i);
           },
           showMV: d.showMV,
           playing: a === l
@@ -413,7 +413,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
         var e = r.state,
           t = e.lastPlayedSong,
           a = e.api;
-        t && module896.default.addToQueue(t, a);
+        t && actions.default.addToQueue(t, a);
       }, r.getPlaylistUrl = function () {
         var e,
           t = r.state,
@@ -459,7 +459,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
           if (r) {
             var i;
             if (r === providers.default.netEase) {
-              module896.default.deleteFromNetease({
+              actions.default.deleteFromNetease({
                 playlistId: s,
                 trackid: n
               });
@@ -468,7 +468,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
               });
             } else if (r === providers.default.qqMusic) {
               var l = t.playlist;
-              module896.default.deleteFromQQMusic(n, l.dirid);
+              actions.default.deleteFromQQMusic(n, l.dirid);
               i = e.state.playlist.filter(function (e) {
                 return e.songid !== n;
               });
@@ -547,7 +547,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
                 return e.onSubscribe(f);
               },
               savePic: function () {
-                return module896.default.savePic(r, e.state.name);
+                return actions.default.savePic(r, e.state.name);
               },
               onSort: e.onSort,
               orderText: e.state.orderText,
@@ -555,7 +555,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
                 return e.onSortText(e.state.sortMode);
               },
               onHeartMode: function () {
-                return module896.default.onHeartMode(e);
+                return actions.default.onHeartMode(e);
               },
               heartMode: e.state.heartMode,
               onMult: function () {

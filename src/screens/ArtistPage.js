@@ -20,7 +20,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
   module816 = babelHelpers.interopRequireDefault(require("../modules/module-816")),
   module817 = babelHelpers.interopRequireDefault(require("../modules/module-817")),
   module818 = babelHelpers.interopRequireDefault(require("../modules/module-818")),
-  module819 = babelHelpers.interopRequireDefault(require("../modules/module-819")),
+  styles = babelHelpers.interopRequireDefault(require("./artist/styles")),
   R = {
     all: 'all',
     albums: 'albums',
@@ -338,7 +338,7 @@ var x = {
           v = t.mvs,
           E = t.releaseMode;
         return React.default.createElement(ReactNative.View, {
-          style: module819.default.container
+          style: styles.default.container
         }, React.default.createElement(components.Background, null), React.default.createElement(components.ParallaxScrollView, {
           onNativeContentOffsetExtract: this._nativeOffset,
           onRef: function (t) {
@@ -359,8 +359,8 @@ var x = {
           }
         }, React.default.createElement(components.TextButton, {
           text: locales.default.ARTIST_SONGS,
-          style: module819.default.btnCon,
-          textStyle: 0 === n && module819.default.strong,
+          style: styles.default.btnCon,
+          textStyle: 0 === n && styles.default.strong,
           onPress: function () {
             return e.setState({
               index: 0
@@ -372,22 +372,22 @@ var x = {
           }
         }, React.default.createElement(components.TextButton, {
           text: x[E],
-          style: module819.default.btnCon,
-          textStyle: 1 === n && module819.default.strong,
+          style: styles.default.btnCon,
+          textStyle: 1 === n && styles.default.strong,
           onPress: this.onReleaseTab
         }), React.default.createElement(ReactNative.View, {
-          style: module819.default.dotContainer
+          style: styles.default.dotContainer
         }, [R.all, R.albums, R.singlesAndEps].map(function (e, t) {
           return React.default.createElement(ReactNative.View, {
             key: t,
-            style: [module819.default.dot, e !== E && {
+            style: [styles.default.dot, e !== E && {
               opacity: .4
             }]
           });
         }))), React.default.createElement(components.TextButton, {
           text: locales.default.ARTIST_MV,
-          style: module819.default.btnCon,
-          textStyle: 2 === n && module819.default.strong,
+          style: styles.default.btnCon,
+          textStyle: 2 === n && styles.default.strong,
           onPress: function () {
             return e.setState({
               index: 2
@@ -398,7 +398,7 @@ var x = {
             paddingTop: constants.DEVICE_WIDTH + 200
           }]
         }), React.default.createElement(components.EmptyFooter, null)), React.default.createElement(components.HeaderBar, {
-          headerStyle: [module819.default.header, utils.animInterpolate.forHeader(this._nativeOffset.y)],
+          headerStyle: [styles.default.header, utils.animInterpolate.forHeader(this._nativeOffset.y)],
           title: p,
           goBack: this.goBack,
           onTop: this.onTop,

@@ -4,11 +4,11 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = void 0;
 var React = babelHelpers.interopRequireDefault(require("react")),
   ReactNative = require("react-native"),
-  module547 = babelHelpers.interopRequireDefault(require("./module-547")),
+  TouchableScale = babelHelpers.interopRequireDefault(require("../components/TouchableScale")),
   f = function (e) {
     var t = e.onPress,
       n = e.content;
-    return React.default.createElement(module547.default, {
+    return React.default.createElement(TouchableScale.default, {
       onPress: t
     }, React.default.createElement(ReactNative.Text, {
       style: {

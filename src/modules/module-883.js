@@ -9,8 +9,8 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
   icons = babelHelpers.interopRequireDefault(require("../theme/icons")),
   services = require("../services/index"),
   utils = require("../utils/index"),
-  module884 = require("./module-884"),
-  module885 = babelHelpers.interopRequireDefault(require("./module-885")),
+  filterColors = require("../components/filterColors"),
+  filterStyles = babelHelpers.interopRequireDefault(require("../components/filterStyles")),
   b = function (e) {
     function r() {
       var e, t, n;
@@ -20,7 +20,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
         var r = e.item,
           t = e.index,
           l = utils.random.getInt(20, 30);
-        return React.default.createElement(module885.default, {
+        return React.default.createElement(filterStyles.default, {
           key: t,
           name: r.name,
           highlight: n.props.currentType === r.name,
@@ -60,7 +60,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
             padding: 20
           }
         }, React.default.createElement(components.Icon, {
-          color: module884.highlightColor,
+          color: filterColors.highlightColor,
           name: icons.default.WINDOW_CLOSE,
           size: 40,
           onPress: n
@@ -70,7 +70,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
             index: t
           });
         }), React.default.createElement(components.Icon, {
-          color: 'search' === c ? module884.highlightColor : module884.defaultColor,
+          color: 'search' === c ? filterColors.highlightColor : filterColors.defaultColor,
           name: icons.default.MAGNIFY,
           size: 40,
           onPress: l

@@ -16,7 +16,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
   utils = require("../utils/index"),
   queue = babelHelpers.interopRequireDefault(require("../events/queue")),
   sharedUrls = require("../services/sharedUrls"),
-  module812 = babelHelpers.interopRequireDefault(require("../modules/module-812")),
+  Description = babelHelpers.interopRequireDefault(require("./album/Description")),
   y = constants.DEVICE_WIDTH,
   w = function (e) {
     function t(e) {
@@ -394,7 +394,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
             item: t,
             index: a
           });
-        }), React.default.createElement(components.EmptyFooter, null)), !!h && React.default.createElement(module812.default, {
+        }), React.default.createElement(components.EmptyFooter, null)), !!h && React.default.createElement(Description.default, {
           showModal: h,
           albumImg: i,
           onClose: function () {

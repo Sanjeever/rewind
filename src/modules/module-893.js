@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = void 0;
 var React = babelHelpers.interopRequireDefault(require("react")),
   ReactNative = require("react-native"),
-  module547 = babelHelpers.interopRequireDefault(require("./module-547")),
+  TouchableScale = babelHelpers.interopRequireDefault(require("../components/TouchableScale")),
   components = require("../components/index"),
   constants = require("../theme/constants"),
   icons = babelHelpers.interopRequireDefault(require("../theme/icons")),
@@ -98,7 +98,7 @@ var React = babelHelpers.interopRequireDefault(require("react")),
       onPress: l,
       size: 20,
       name: icons.default.ALBUM,
-      component: module547.default
+      component: TouchableScale.default
     })));
   },
   E = ReactNative.StyleSheet.create({
@@ -151,7 +151,7 @@ var React = babelHelpers.interopRequireDefault(require("react")),
       style: E.container
     }, React.default.createElement(ReactNative.View, {
       style: E.avatarCon
-    }, React.default.createElement(module547.default, {
+    }, React.default.createElement(TouchableScale.default, {
       onPress: d
     }, React.default.createElement(ReactNative.Image, {
       style: E.avatar,

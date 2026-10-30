@@ -2,12 +2,12 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var accordionCollapseReactNative = babelHelpers.interopRequireDefault(require("accordion-collapse-react-native")),
+var lottieReactNative = babelHelpers.interopRequireDefault(require("lottie-react-native")),
   React = babelHelpers.interopRequireDefault(require("react")),
   reactNativeSpringScrollview = require("react-native-spring-scrollview"),
   _ = require("./index"),
   constants = require("../theme/constants"),
-  module822 = require("../modules/module-822"),
+  layout = require("../theme/layout"),
   f = function (e) {
     function t() {
       babelHelpers.classCallCheck(this, t);
@@ -21,8 +21,8 @@ var accordionCollapseReactNative = babelHelpers.interopRequireDefault(require("a
           inputRange: [-120, -60],
           outputRange: [1, 0]
         });
-        return React.default.createElement(accordionCollapseReactNative.default, {
-          source: module822,
+        return React.default.createElement(lottieReactNative.default, {
+          source: layout,
           progress: e,
           style: {
             height: constants.SPINKIT_SIZE,

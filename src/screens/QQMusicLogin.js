@@ -16,7 +16,7 @@ var cookies = babelHelpers.interopRequireDefault(require("@react-native-communit
   types = babelHelpers.interopRequireWildcard(require("../utils/types")),
   users = babelHelpers.interopRequireDefault(require("../storage/users")),
   LoginView = babelHelpers.interopRequireDefault(require("../components/LoginView")),
-  module869 = babelHelpers.interopRequireDefault(require("../modules/module-869")),
+  QQMusicHelp = babelHelpers.interopRequireDefault(require("./login/QQMusicHelp")),
   _ = 'http://ui.ptlogin2.qq.com/cgi-bin/login?pt_no_auth=1&pt_wxtest=1&pt_no_onekey=1&daid=384&style=9&hln_css=https%3A%2F%2Fy.gtimg.cn%2Fmusic%2Fcommon%2Fupload%2Ft_cm3_photo_publish%2F1117688.png%3Fmax_age%3D2592000&appid=83886593&s_url=https%3A%2F%2Fy.qq.com%2Fm%2Flogin%2Fredirect.html%3Flogin_type%3D1%26surl%3Dhttp://y.qq.com/portal/profile.html',
   y = 'http://open.weixin.qq.com/connect/qrconnect?appid=wx48db31d50e334801&redirect_uri=https%3A%2F%2Fy.qq.com%2Fportal%2Fwx_redirect.html%3Flogin_type%3D2%26surl%3Dhttps%3A%2F%2Fy.qq.com%2Fportal%2Fprofile.html&response_type=code&scope=snsapi_login&state=STATE&href=https%3A%2F%2Fy.gtimg.cn%2Fmediastyle%2Fyqq%2Fpopup_wechat.css#wechat_redirect',
   M = function (e) {
@@ -238,7 +238,7 @@ var cookies = babelHelpers.interopRequireDefault(require("@react-native-communit
             bottom: 0,
             backgroundColor: 'rgba(0,0,0,0.5)'
           }
-        }), React.default.createElement(components.Spinkit, null)) : null, React.default.createElement(module869.default, {
+        }), React.default.createElement(components.Spinkit, null)) : null, React.default.createElement(QQMusicHelp.default, {
           isOpen: this.state.tipModalOpen,
           onRequestClose: function () {
             return e.setState({

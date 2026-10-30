@@ -2,7 +2,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var accordionCollapseReactNative = babelHelpers.interopRequireDefault(require("accordion-collapse-react-native")),
+var lottieReactNative = babelHelpers.interopRequireDefault(require("lottie-react-native")),
   React = babelHelpers.interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
   constants = require("../theme/constants"),
@@ -25,7 +25,7 @@ var accordionCollapseReactNative = babelHelpers.interopRequireDefault(require("a
             alignItems: 'center',
             justifyContent: 'center'
           }, r]
-        }, React.default.createElement(accordionCollapseReactNative.default, {
+        }, React.default.createElement(lottieReactNative.default, {
           loop: true,
           autoPlay: true,
           source: loading,

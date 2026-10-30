@@ -8,7 +8,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
   constants = require("../theme/constants"),
   icons = babelHelpers.interopRequireDefault(require("../theme/icons")),
   locales = babelHelpers.interopRequireDefault(require("../locales/index")),
-  module920 = babelHelpers.interopRequireDefault(require("./module-920")),
+  styles = babelHelpers.interopRequireDefault(require("../screens/users/styles")),
   p = function (e) {
     function t() {
       babelHelpers.classCallCheck(this, t);
@@ -56,7 +56,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
           style: [ReactNative.StyleSheet.absoluteFill, {
             backgroundColor: 'rgba(0,0,0,0.5)'
           }]
-        })), React.default.createElement(module920.default, {
+        })), React.default.createElement(styles.default, {
           imgUrl: p,
           nativeOffset: a
         }), React.default.createElement(ReactNative.Animated.View, {

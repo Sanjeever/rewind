@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = void 0;
 var React = babelHelpers.interopRequireDefault(require("react")),
   ReactNative = require("react-native"),
-  module547 = babelHelpers.interopRequireDefault(require("./module-547")),
+  TouchableScale = babelHelpers.interopRequireDefault(require("../components/TouchableScale")),
   components = require("../components/index"),
   icons = babelHelpers.interopRequireDefault(require("../theme/icons")),
   locales = babelHelpers.interopRequireDefault(require("../locales/index")),
@@ -58,7 +58,7 @@ var React = babelHelpers.interopRequireDefault(require("react")),
       style: {
         marginTop: 5
       }
-    }, a + " " + locales.default.SONG_COUNT)), React.default.createElement(module547.default, {
+    }, a + " " + locales.default.SONG_COUNT)), React.default.createElement(TouchableScale.default, {
       onPress: r
     }, l ? React.default.createElement(ReactNative.Image, {
       style: f.cover,

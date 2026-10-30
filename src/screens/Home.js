@@ -10,7 +10,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
   icons = babelHelpers.interopRequireDefault(require("../theme/icons")),
   devMenu = babelHelpers.interopRequireDefault(require("../native/devMenu")),
   info = require("../native/info"),
-  module851 = babelHelpers.interopRequireDefault(require("../modules/module-851")),
+  Drawer = babelHelpers.interopRequireDefault(require("../components/Drawer")),
   home = babelHelpers.interopRequireDefault(require("./home/index")),
   h = function (e) {
     function t() {
@@ -84,7 +84,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
     drawerWidth: .7 * constants.DEVICE_WIDTH,
     drawerPosition: 'left',
     contentComponent: function (e) {
-      return React.default.createElement(module851.default, e);
+      return React.default.createElement(Drawer.default, e);
     }
   });
 exports.default = v;

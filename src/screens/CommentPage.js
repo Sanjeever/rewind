@@ -6,7 +6,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
   reactNativeSpringScrollview = require("react-native-spring-scrollview"),
   components = require("../components/index"),
-  module821 = babelHelpers.interopRequireDefault(require("../modules/module-821")),
+  ParallaxList = babelHelpers.interopRequireDefault(require("../components/ParallaxList")),
   providers = babelHelpers.interopRequireDefault(require("../services/providers")),
   icons = babelHelpers.interopRequireDefault(require("../theme/icons")),
   locales = babelHelpers.interopRequireDefault(require("../locales/index")),
@@ -15,7 +15,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
   trackInfo = require("../services/trackInfo"),
   module823 = babelHelpers.interopRequireDefault(require("../modules/module-823")),
   module824 = babelHelpers.interopRequireDefault(require("../modules/module-824")),
-  module825 = require("../modules/module-825"),
+  formatItem = require("./comments/formatItem"),
   module826 = babelHelpers.interopRequireDefault(require("../modules/module-826")),
   w = function (e) {
     return e;
@@ -231,7 +231,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
         }), n.renderTextInput(), t.length > 0 && React.default.createElement(components.Title, {
           style: E.section
         }, "\u70ed\u95e8\u8bc4\u8bba ", t.length), t.map(function (e, t) {
-          var a = (0, module825.getFormattedItem)(e, i);
+          var a = (0, formatItem.getFormattedItem)(e, i);
           return React.default.createElement(module824.default, {
             key: t,
             content: a.content,
@@ -383,7 +383,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
       n._renderItem = function (e) {
         var t = e.item,
           a = e.index,
-          o = (0, module825.getFormattedItem)(t, n.state.api);
+          o = (0, formatItem.getFormattedItem)(t, n.state.api);
         return React.default.createElement(module824.default, {
           key: a,
           content: o.content,
@@ -455,7 +455,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
             return e._scrollView = t;
           },
           onLoading: this.getMore,
-          loadingFooter: module821.default
+          loadingFooter: ParallaxList.default
         }, this.renderHeader(), a.map(function (t, n) {
           return e._renderItem({
             item: t,

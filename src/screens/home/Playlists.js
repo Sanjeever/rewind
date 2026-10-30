@@ -14,8 +14,8 @@ var immer = require("immer"),
   locales = babelHelpers.interopRequireDefault(require("../../locales/index")),
   playlistFiles = babelHelpers.interopRequireDefault(require("../../storage/playlistFiles")),
   CreatePlaylist = babelHelpers.interopRequireDefault(require("../../modals/CreatePlaylist")),
-  module845 = require("../../modules/module-845"),
-  module846 = require("../../modules/module-846"),
+  netease = require("../../../assets/images/netease"),
+  qqmusic = require("../../../assets/images/qqmusic"),
   b = {
     custom: '\u65e0\u672c\u5730\u6b4c\u5355\uff0c\u70b9\u51fb\u521b\u5efa\u3002',
     netEase: '\u65e0\u7f51\u6613\u4e91\u6b4c\u5355\uff0c\u70b9\u51fb\u83b7\u53d6',
@@ -203,10 +203,10 @@ var immer = require("immer"),
         var t;
         switch (e) {
           case 'netEase':
-            t = module845;
+            t = netease;
             break;
           case 'qqMusic':
-            t = module846;
+            t = qqmusic;
         }
         return React.default.createElement(ReactNative.Animated.View, {
           style: [P.headerCon, {

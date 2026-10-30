@@ -5,7 +5,7 @@ exports.default = void 0;
 var React = babelHelpers.interopRequireWildcard(require("react")),
   reactNativeLargelist = require("react-native-largelist"),
   components = require("../components/index"),
-  module821 = babelHelpers.interopRequireDefault(require("../modules/module-821")),
+  ParallaxList = babelHelpers.interopRequireDefault(require("../components/ParallaxList")),
   providers = babelHelpers.interopRequireDefault(require("../services/providers")),
   constants = require("../theme/constants"),
   icons = babelHelpers.interopRequireDefault(require("../theme/icons")),
@@ -185,7 +185,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
             items: i
           }],
           onLoading: this.getMore,
-          loadingFooter: module821.default,
+          loadingFooter: ParallaxList.default,
           renderIndexPath: this._renderIndexPath,
           heightForIndexPath: function () {
             return constants.ITEM_HEIGHT;

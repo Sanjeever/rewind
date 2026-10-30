@@ -15,10 +15,10 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
         var a;
         switch (e) {
           case providers.default.netEase:
-            a = require("./module-845");
+            a = require("../../assets/images/netease");
             break;
           case providers.default.qqMusic:
-            a = require("./module-846");
+            a = require("../../assets/images/qqmusic");
         }
         return React.default.createElement(ReactNative.View, {
           style: {

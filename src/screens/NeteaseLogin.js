@@ -19,7 +19,7 @@ var cookies = babelHelpers.interopRequireDefault(require("@react-native-communit
   types = babelHelpers.interopRequireWildcard(require("../utils/types")),
   users = babelHelpers.interopRequireDefault(require("../storage/users")),
   LoginView = babelHelpers.interopRequireDefault(require("../components/LoginView")),
-  module867 = babelHelpers.interopRequireDefault(require("../modules/module-867")),
+  NeteaseHelp = babelHelpers.interopRequireDefault(require("./login/NeteaseHelp")),
   k = 'https://graph.qq.com/oauth2.0/show?which=Login&display=pc&client_id=100495085&response_type=code&redirect_uri=https://music.163.com/back/qq&forcelogin=true&state=ZwKHpxUoam',
   y = 'https://api.weibo.com/oauth2/authorize?client_id=301575942&response_type=code&redirect_uri=http://music.163.com/back/weibo&forcelogin=true&scope=friendships_groups_read,statuses_to_me_read,follow_app_official_microblog&state=ovYduMoJhD&checkToken=9ca17ae2e6ffcda170e2e6eeabf121bcec818fc67ba69a8fa2c85e978f8bbbee62b19cb7b4c44abaa789b0f22af0feaec3b92a91e98adaef79f8ecba90b34a939b8fb2c15b8eb1b6dadb3a888e899aec33a1b9ee9e',
   C = function () {
@@ -394,7 +394,7 @@ var cookies = babelHelpers.interopRequireDefault(require("@react-native-communit
             });
           },
           onSelected: this.onSelected
-        }), React.default.createElement(module867.default, {
+        }), React.default.createElement(NeteaseHelp.default, {
           isOpen: this.state.guideModalOpen,
           onRequestClose: function () {
             return e.setState({
