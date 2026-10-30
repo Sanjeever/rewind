@@ -7,6 +7,7 @@ import android.media.AudioManager
 import android.media.audiofx.AudioEffect
 import android.net.Uri
 import android.os.Handler
+import android.os.Bundle
 import android.os.Looper
 import androidx.core.content.ContextCompat
 import androidx.media3.common.C
@@ -22,7 +23,9 @@ import java.io.File
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 class AudioPlayerModule(private val context: ReactApplicationContext) : ReactContextBaseJavaModule(context) {
     private val main = Handler(Looper.getMainLooper())
-    private val future = MediaController.Builder(context, SessionToken(context, ComponentName(context, PlaybackService::class.java))).setApplicationLooper(Looper.getMainLooper()).buildAsync()
+    private val future = MediaController.Builder(context, SessionToken(context, ComponentName(context, PlaybackService::class.java)))
+        .setApplicationLooper(Looper.getMainLooper())
+        .setConnectionHints(Bundle().apply { putBoolean("rewindJsController", true) }).buildAsync()
     private val volume = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
     private var prepareListener: Player.Listener? = null
     private var completionListener: Player.Listener? = null

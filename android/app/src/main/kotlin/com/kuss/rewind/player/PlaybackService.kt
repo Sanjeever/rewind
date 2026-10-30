@@ -31,20 +31,6 @@ class PlaybackService : MediaSessionService() {
             override fun seekToNextMediaItem() { PlayerBridge.action("nextTrack") }
             override fun seekToPrevious() { PlayerBridge.action("previousTrack") }
             override fun seekToPreviousMediaItem() { PlayerBridge.action("previousTrack") }
-            override fun play() {
-                val changed = !playWhenReady
-                super.play()
-                if (changed) PlayerBridge.action("play")
-            }
-            override fun pause() {
-                val changed = playWhenReady
-                super.pause()
-                if (changed) PlayerBridge.action("pause")
-            }
-            override fun stop() {
-                super.stop()
-                PlayerBridge.action("stop")
-            }
         }
         player.addListener(object : Player.Listener {
             override fun onPlayWhenReadyChanged(playWhenReady: Boolean, reason: Int) {
@@ -54,7 +40,14 @@ class PlaybackService : MediaSessionService() {
             }
         })
         val activity = PendingIntent.getActivity(this, 0, Intent(this, MainActivity::class.java), PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
-        session = MediaSession.Builder(this, controls).setSessionActivity(activity).build()
+        session = MediaSession.Builder(this, controls).setSessionActivity(activity)
+            .setCallback(object : MediaSession.Callback {
+                override fun onPlayerInteractionFinished(session: MediaSession, controller: MediaSession.ControllerInfo, commands: Player.Commands) {
+                    if (controller.connectionHints.getBoolean("rewindJsController")) return
+                    if (commands.contains(Player.COMMAND_STOP)) PlayerBridge.action("stop")
+                    else if (commands.contains(Player.COMMAND_PLAY_PAUSE)) PlayerBridge.action(if (player.playWhenReady) "play" else "pause")
+                }
+            }).build()
     }
 
     override fun onGetSession(controllerInfo: MediaSession.ControllerInfo) = session
