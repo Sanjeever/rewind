@@ -62,9 +62,10 @@ class RewindDeviceModule(private val context: ReactApplicationContext) : ReactCo
     @ReactMethod
     fun close() {
         handler.post {
+            com.kuss.rewind.player.PlayerBridge.closeController?.invoke()
+            com.kuss.rewind.player.PlayerBridge.stopService?.invoke()
             context.stopService(Intent(context, com.kuss.rewind.player.PlaybackService::class.java))
             context.currentActivity?.finishAndRemoveTask()
-            (context.applicationContext as ReactApplication).reactHost?.destroy("用户关闭应用", null)
         }
     }
 

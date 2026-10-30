@@ -13,6 +13,8 @@ object PlayerBridge {
     var maxCacheBytes = 200L * 1024 * 1024
     var cacheSizeReader: ((Promise) -> Unit)? = null
     var cacheClearer: ((Promise) -> Unit)? = null
+    var closeController: (() -> Unit)? = null
+    var stopService: (() -> Unit)? = null
 
     fun playback(playing: Boolean) {
         val react = context ?: return

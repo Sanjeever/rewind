@@ -18,29 +18,45 @@ import androidx.media3.common.Player
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import com.facebook.react.bridge.*
+import com.google.common.util.concurrent.ListenableFuture
 import java.io.File
 
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 class AudioPlayerModule(private val context: ReactApplicationContext) : ReactContextBaseJavaModule(context) {
     private val main = Handler(Looper.getMainLooper())
-    private val future = MediaController.Builder(context, SessionToken(context, ComponentName(context, PlaybackService::class.java)))
-        .setApplicationLooper(Looper.getMainLooper())
-        .setConnectionHints(Bundle().apply { putBoolean("rewindJsController", true) }).buildAsync()
+    private var future: ListenableFuture<MediaController>? = null
     private val volume = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
     private var prepareListener: Player.Listener? = null
     private var completionListener: Player.Listener? = null
     private var metadata = MediaMetadata.EMPTY
     override fun getName() = "RNAudioPlayer"
 
-    init { PlayerBridge.context = context }
+    init {
+        PlayerBridge.context = context
+        PlayerBridge.closeController = {
+            future?.let { pending ->
+                if (pending.isDone && !pending.isCancelled) pending.get().stop()
+                MediaController.releaseFuture(pending)
+            }
+            future = null
+        }
+    }
 
-    private fun player(block: (MediaController) -> Unit) {
-        future.addListener({ block(future.get()) }, ContextCompat.getMainExecutor(context))
+    private fun player(connect: Boolean = false, block: (MediaController) -> Unit) {
+        main.post {
+            if (!connect && future == null) return@post
+            val pending = future ?: MediaController.Builder(context, SessionToken(context, ComponentName(context, PlaybackService::class.java)))
+                .setApplicationLooper(Looper.getMainLooper())
+                .setConnectionHints(Bundle().apply { putBoolean("rewindJsController", true) }).buildAsync().also { future = it }
+            pending.addListener({
+                if (pending === future && !pending.isCancelled) block(pending.get())
+            }, ContextCompat.getMainExecutor(context))
+        }
     }
 
     @ReactMethod
     fun prepare(source: String, callback: Callback) {
-        player { controller ->
+        player(connect = true) { controller ->
             prepareListener?.let { controller.removeListener(it) }
             completionListener?.let { controller.removeListener(it) }
             controller.pause()
@@ -91,22 +107,24 @@ class AudioPlayerModule(private val context: ReactApplicationContext) : ReactCon
     }
 
     @ReactMethod fun pause(callback: Callback) { player { it.pause(); callback.invoke() } }
-    @ReactMethod fun release() { player { it.pause(); it.clearMediaItems() } }
+    @ReactMethod fun release() { player(connect = false) { it.pause(); it.clearMediaItems() } }
     @ReactMethod fun getCurrentTime(callback: Callback) { player { callback.invoke(it.currentPosition.toDouble() / 1000, it.isPlaying) } }
     @ReactMethod fun setCurrentTime(seconds: Double, play: Boolean) { player { it.seekTo((seconds * 1000).toLong()); if (play) it.play() } }
     @ReactMethod fun setVolume(left: Double, right: Double) { player { it.volume = left.toFloat() } }
 
     @ReactMethod
     fun setNowPlaying(info: ReadableMap) {
-        player { controller ->
+        main.post {
             val builder = metadata.buildUpon()
             if (info.hasKey("title")) builder.setTitle(info.getString("title"))
             if (info.hasKey("artist")) builder.setArtist(info.getString("artist"))
             if (info.hasKey("album")) builder.setAlbumTitle(info.getString("album"))
             if (info.hasKey("artwork")) builder.setArtworkUri(if (info.isNull("artwork")) null else Uri.parse(info.getString("artwork")))
             metadata = builder.build()
-            val current = controller.currentMediaItem ?: return@player
-            controller.replaceMediaItem(controller.currentMediaItemIndex, current.buildUpon().setMediaMetadata(metadata).build())
+            player { controller ->
+                val current = controller.currentMediaItem ?: return@player
+                controller.replaceMediaItem(controller.currentMediaItemIndex, current.buildUpon().setMediaMetadata(metadata).build())
+            }
         }
     }
 
@@ -122,10 +140,10 @@ class AudioPlayerModule(private val context: ReactApplicationContext) : ReactCon
         }
     }
     @ReactMethod fun getCacheSize(promise: Promise) {
-        player { PlayerBridge.cacheSizeReader?.invoke(promise) ?: promise.reject("E_PLAYER_UNAVAILABLE", "播放服务不可用") }
+        player(connect = true) { PlayerBridge.cacheSizeReader?.invoke(promise) ?: promise.reject("E_PLAYER_UNAVAILABLE", "播放服务不可用") }
     }
     @ReactMethod fun clearCache(promise: Promise) {
-        player { PlayerBridge.cacheClearer?.invoke(promise) ?: promise.reject("E_PLAYER_UNAVAILABLE", "播放服务不可用") }
+        player(connect = true) { PlayerBridge.cacheClearer?.invoke(promise) ?: promise.reject("E_PLAYER_UNAVAILABLE", "播放服务不可用") }
     }
     @ReactMethod fun getSystemVolume(callback: Callback) { callback.invoke(null, Arguments.createMap().apply { putDouble("volume", volume.getStreamVolume(AudioManager.STREAM_MUSIC).toDouble()) }) }
     @ReactMethod fun setSystemVolume(value: Double) { volume.setStreamVolume(AudioManager.STREAM_MUSIC, value.toInt(), 0) }
@@ -133,7 +151,7 @@ class AudioPlayerModule(private val context: ReactApplicationContext) : ReactCon
 
     @ReactMethod
     fun openEqualizer(promise: Promise) {
-        player { controller ->
+        main.post {
             try {
                 val intent = Intent(AudioEffect.ACTION_DISPLAY_AUDIO_EFFECT_CONTROL_PANEL)
                     .putExtra(AudioEffect.EXTRA_PACKAGE_NAME, context.packageName)
@@ -147,7 +165,11 @@ class AudioPlayerModule(private val context: ReactApplicationContext) : ReactCon
 
     override fun invalidate() {
         PlayerBridge.context = null
-        main.post { MediaController.releaseFuture(future) }
+        main.post {
+            future?.let { MediaController.releaseFuture(it) }
+            future = null
+            PlayerBridge.closeController = null
+        }
         super.invalidate()
     }
 }

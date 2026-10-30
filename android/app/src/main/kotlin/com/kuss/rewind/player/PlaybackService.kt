@@ -24,7 +24,7 @@ import java.util.concurrent.Executors
 
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 class PlaybackService : MediaSessionService() {
-    private lateinit var session: MediaSession
+    private var session: MediaSession? = null
     private val cacheExecutor = Executors.newSingleThreadExecutor()
     private val cacheDatabase = lazy { StandaloneDatabaseProvider(this) }
     private val audioCache = lazy {
@@ -37,7 +37,6 @@ class PlaybackService : MediaSessionService() {
         val cached = DataSource.Factory {
             CacheDataSource.Factory().setCache(audioCache.value)
                 .setCacheKeyFactory { spec -> spec.uri.lastPathSegment ?: spec.uri.toString() }
-                .setFlags(CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR)
                 .setUpstreamDataSourceFactory(upstream).createDataSource()
         }
         val player = ExoPlayer.Builder(this)
@@ -84,16 +83,30 @@ class PlaybackService : MediaSessionService() {
                     else if (commands.contains(Player.COMMAND_PLAY_PAUSE)) PlayerBridge.action(if (player.playWhenReady) "play" else "pause")
                 }
             }).build()
+        PlayerBridge.stopService = {
+            releaseSession()
+            pauseAllPlayersAndStopSelf()
+        }
     }
 
     override fun onGetSession(controllerInfo: MediaSession.ControllerInfo) = session
+
+    private fun releaseSession() {
+        session?.let { active ->
+            active.player.pause()
+            removeSession(active)
+            active.release()
+            active.player.release()
+        }
+        session = null
+    }
 
     override fun onDestroy() {
         PlayerBridge.audioFocusUpdater = null
         PlayerBridge.cacheClearer = null
         PlayerBridge.cacheSizeReader = null
-        session.player.release()
-        session.release()
+        PlayerBridge.stopService = null
+        releaseSession()
         cacheExecutor.execute {
             if (audioCache.isInitialized()) audioCache.value.release()
             if (cacheDatabase.isInitialized()) cacheDatabase.value.close()
