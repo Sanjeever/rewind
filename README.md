@@ -6,6 +6,12 @@
 
 [倒带公告牌](https://t.me/Rewind_News) · [倒带反馈群](https://t.me/Rewind_Group)
 
+## 标准工程迁移进度
+
+迁移要求见 [handoff.md](handoff.md)。正式依赖锁定 React Native 0.88.1、React 19.3.0、React Native CLI 20.2.0，依据同版本[官方模板](https://github.com/react-native-community/template/tree/0.88-stable/template)核对。Node 需满足 `^22.13.0 || ^24.3.0 || >=26.0.0`，新 Android 工程使用 JDK 17、Gradle 9.4.1、Kotlin 2.2.0、NDK 27.1.12297006，最低 API 24。
+
+当前正在分阶段迁移。Metro 配置与正式框架依赖已加入；下面的兼容构建说明仍对应尚未替换的 Android 入口，不能视为新框架运行验收。macOS 检查环境为 Apple Silicon、Node 26.11.0、pnpm 11.5.2、JDK 17.0.17；Android 工具与 ARM64 模拟器正在准备。
+
 ## 开发环境
 
 | 工具 | 版本或用途 |

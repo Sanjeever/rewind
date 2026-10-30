@@ -1,5 +1,8 @@
 # 倒带 Android 项目约定
 
+- 正在按 `handoff.md` 迁移标准工程。正式框架版本锁定 React Native 0.88.1、React 19.3.0、CLI 20.2.0，目标工具链为 JDK 17、Gradle 9.4.1、Kotlin 2.2.0、NDK 27.1.12297006、minSdk 24。以下兼容构建约定随对应实现替换更新，不作为保留旧运行库的要求。
+- 迁移中保持应用 ID `com.kuss.rewind.dev`、Java 包 `com.kuss.rewind`、JS 注册名 `rewind`。旧数据升级须使用相同开发签名，禁止清空数据或改包名规避验证。
+
 - 使用简体中文沟通和维护文档。工作前检查 Git 状态，保留已有改动。
 - 业务代码在 `src/`，原生工程在 `android/`，应用资源在 `assets/` 与 `android/app/src/main/res/`。构建脚本和必要模块映射在 `scripts/`。
 - 使用 Node.js 和 pnpm。Windows、macOS 共用 `pnpm android:build`、`pnpm android:install`，Android 工程使用 JDK 8。环境要求见 README。
