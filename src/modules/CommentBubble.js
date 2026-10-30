@@ -1,18 +1,19 @@
+const _default = require("./../components/Text.js").default;
+const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var React = babelHelpers.interopRequireWildcard(require("react")),
+var React = _interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
   components = require("../components/index"),
   highlightWordsCore = require("highlight-words-core"),
   formatItem = require("../screens/comments/formatItem"),
-  u = function (e) {
-    function t() {
+  u = class t extends React.PureComponent {
+    constructor() {
       var e, r, o;
-      babelHelpers.classCallCheck(this, t);
       for (var l = arguments.length, u = new Array(l), c = 0; c < l; c++) u[c] = arguments[c];
-      return babelHelpers.possibleConstructorReturn(o, (r = o = babelHelpers.possibleConstructorReturn(this, (e = babelHelpers.getPrototypeOf(t)).call.apply(e, [this].concat(u))), o.renderContent = function () {
+      return r = o = super(...u), o.renderContent = function () {
         var e = o.props,
           t = e.item,
           r = e.title,
@@ -30,7 +31,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
             }]
           }, b.map(function (e, t) {
             var r = c.substr(e.start, e.end - e.start);
-            return e.highlight ? React.default.createElement(ReactNative.Text, {
+            return e.highlight ? React.default.createElement(_default, {
               key: t,
               style: f.highlight
             }, r) : r;
@@ -41,55 +42,50 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
             fontSize: 14
           }]
         }, u.content);
-      }, r));
+      }, r;
     }
-    babelHelpers.createClass(t, [{
-      key: "render",
-      value: function () {
-        var e = this.props,
-          t = e.replied,
-          r = e.item,
-          o = (0, formatItem.getFormattedItem)(r);
-        return React.default.createElement(ReactNative.View, {
-          style: [{
-            alignItems: 'center',
-            padding: 20,
-            marginBottom: 20
-          }, true === t && {
-            backgroundColor: '#1a1820',
-            borderRadius: 5
-          }]
-        }, !t && React.default.createElement(c, null), this.renderContent(), React.default.createElement(ReactNative.View, {
-          style: {
-            flexDirection: 'row',
-            alignItems: 'center',
-            marginTop: 10
-          }
-        }, React.default.createElement(ReactNative.Image, {
-          source: {
-            uri: o.userAvatar
-          },
-          style: {
-            height: 25,
-            width: 25,
-            borderRadius: 12.5
-          }
-        }), React.default.createElement(components.Selectable, {
-          style: [f.text, {
-            fontSize: 12,
-            marginLeft: 3
-          }]
-        }, o.userName)), o.time ? React.default.createElement(ReactNative.Text, {
-          style: [f.text, {
-            fontSize: 10,
-            marginTop: 5
-          }]
-        }, o.time) : null);
-      }
-    }]);
-    babelHelpers.inherits(t, e);
-    return t;
-  }(React.PureComponent);
+    "render"() {
+      var e = this.props,
+        t = e.replied,
+        r = e.item,
+        o = (0, formatItem.getFormattedItem)(r);
+      return React.default.createElement(ReactNative.View, {
+        style: [{
+          alignItems: 'center',
+          padding: 20,
+          marginBottom: 20
+        }, true === t && {
+          backgroundColor: '#1a1820',
+          borderRadius: 5
+        }]
+      }, !t && React.default.createElement(c, null), this.renderContent(), React.default.createElement(ReactNative.View, {
+        style: {
+          flexDirection: 'row',
+          alignItems: 'center',
+          marginTop: 10
+        }
+      }, React.default.createElement(ReactNative.Image, {
+        source: {
+          uri: o.userAvatar
+        },
+        style: {
+          height: 25,
+          width: 25,
+          borderRadius: 12.5
+        }
+      }), React.default.createElement(components.Selectable, {
+        style: [f.text, {
+          fontSize: 12,
+          marginLeft: 3
+        }]
+      }, o.userName)), o.time ? React.default.createElement(_default, {
+        style: [f.text, {
+          fontSize: 10,
+          marginTop: 5
+        }]
+      }, o.time) : null);
+    }
+  };
 exports.default = u;
 var c = function () {
     return React.default.createElement(React.default.Fragment, null, React.default.createElement(ReactNative.View, {

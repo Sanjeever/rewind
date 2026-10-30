@@ -1,31 +1,33 @@
+const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+const _toConsumableArray = require("@babel/runtime/helpers/toConsumableArray");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var React = babelHelpers.interopRequireWildcard(require("react")),
+var React = _interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
-  reactNativeSpringScrollview = require("react-native-spring-scrollview"),
+  reactNativeSpringScrollview = require("./../components/Scrolling.js"),
   components = require("../components/index"),
-  ParallaxList = babelHelpers.interopRequireDefault(require("../components/ParallaxList")),
-  providers = babelHelpers.interopRequireDefault(require("../services/providers")),
-  icons = babelHelpers.interopRequireDefault(require("../theme/icons")),
-  locales = babelHelpers.interopRequireDefault(require("../locales/index")),
+  ParallaxList = _interopRequireDefault(require("../components/ParallaxList")),
+  providers = _interopRequireDefault(require("../services/providers")),
+  icons = _interopRequireDefault(require("../theme/icons")),
+  locales = _interopRequireDefault(require("../locales/index")),
   services = require("../services/index"),
   utils = require("../utils/index"),
   trackInfo = require("../services/trackInfo"),
-  module823 = babelHelpers.interopRequireDefault(require("../modules/module-823")),
-  module824 = babelHelpers.interopRequireDefault(require("../modules/module-824")),
+  commentSegmentation = _interopRequireDefault(require("./../modules/commentSegmentation.js")),
+  CommentCard = _interopRequireDefault(require("./../modules/CommentCard.js")),
   formatItem = require("./comments/formatItem"),
-  module826 = babelHelpers.interopRequireDefault(require("../modules/module-826")),
+  CommentAnalysis = _interopRequireDefault(require("./../modules/CommentAnalysis.js")),
   w = function (e) {
     return e;
   },
-  x = function (e) {
-    function t(e) {
+  x = class t extends React.PureComponent {
+    constructor(e) {
       var n;
-      babelHelpers.classCallCheck(this, t);
-      (n = babelHelpers.possibleConstructorReturn(this, babelHelpers.getPrototypeOf(t).call(this, e))).init = function () {
-        var e = n.props.navigation.state.params;
+      (n = super(e)).init = function () {
+        var e = n.props.route.params;
         if (e) {
           var t = e.api,
             a = e.song;
@@ -70,58 +72,40 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
           });
         });
       };
-      n.NeteaseComment = function (e) {
-        var t, a, o, r, s, i, l, u, d, c, m;
-        return regeneratorRuntime.async(function (p) {
-          for (;;) switch (p.prev = p.next) {
-            case 0:
-              if (t = e.id, a = e.offset, o = void 0 === a ? 0 : a, r = e.isRadio, !(s = void 0 !== r && r)) {
-                p.next = 7;
-                break;
-              }
-              p.next = 4;
-              return regeneratorRuntime.awrap(services.Netease.comment_radio({
-                id: t,
-                offset: o
-              }));
-            case 4:
-              i = p.sent;
-              p.next = 10;
-              break;
-            case 7:
-              p.next = 9;
-              return regeneratorRuntime.awrap(services.Netease.comment({
-                id: t,
-                offset: o
-              }));
-            case 9:
-              i = p.sent;
-            case 10:
-              if (!i) {
-                p.next = 16;
-                break;
-              }
-              if (u = (l = i).comments, d = l.hotComments, c = l.total, u && !(u.length < 1)) {
-                p.next = 14;
-                break;
-              }
-              return p.abrupt("return");
-            case 14:
-              m = !d || d.length < 1 ? u.slice(0, 15) : d;
-              u && n.setState({
-                data: u,
-                loaded: true,
-                total: c,
-                hotComments: s ? [] : m,
-                title: w(c),
-                id: t,
-                isRadio: s
-              });
-            case 16:
-            case "end":
-              return p.stop();
-          }
-        }, null, this);
+      n.NeteaseComment = async function ({
+        id,
+        offset = 0,
+        isRadio = false
+      }) {
+        try {
+          const response = await (isRadio ? services.Netease.comment_radio({
+            id,
+            offset
+          }) : services.Netease.comment({
+            id,
+            offset
+          }));
+          if (!Array.isArray(response?.comments)) throw new Error(response?.message || locales.default.ERROR);
+          const {
+            comments,
+            hotComments,
+            total
+          } = response;
+          n.setState({
+            data: comments,
+            loaded: true,
+            total,
+            hotComments: isRadio ? [] : hotComments?.length ? hotComments : comments.slice(0, 15),
+            title: w(total),
+            id,
+            isRadio
+          });
+        } catch (error) {
+          n.setState({
+            loaded: true
+          });
+          toast(error.message);
+        }
       };
       n.getCommentKeywords = function (e) {
         if (e.length < 1) n.setState({
@@ -138,34 +122,22 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
           n.getKeyWords((0, utils.emojiStrip)(t));
         }
       };
-      n.getKeyWords = function (e) {
-        var t, a, o, r;
-        return regeneratorRuntime.async(function (s) {
-          for (;;) switch (s.prev = s.next) {
-            case 0:
-              if (e) {
-                s.next = 2;
-                break;
-              }
-              return s.abrupt("return");
-            case 2:
-              a = e.slice(500);
-              o = e.slice(0, 500);
-              s.next = 6;
-              return regeneratorRuntime.awrap(module823.default.nlp(o));
-            case 6:
-              r = s.sent;
-              (null === (t = r) || void 0 === t ? void 0 : t.length) > 0 && (r = Array.from(new Set(r)), n.setState({
-                wordscloud: babelHelpers.toConsumableArray(n.state.wordscloud).concat(babelHelpers.toConsumableArray(r))
-              }));
-              a.length > 0 ? n.getKeyWords(a) : n.setState({
-                loadWordsCloudDone: true
-              });
-            case 9:
-            case "end":
-              return s.stop();
+      n.getKeyWords = async function (text) {
+        if (!text) return;
+        try {
+          for (let offset = 0; offset < text.length; offset += 500) {
+            const words = await commentSegmentation.default.nlp(text.slice(offset, offset + 500));
+            if (words?.length) n.setState(previous => ({
+              wordscloud: [...previous.wordscloud, ...new Set(words)]
+            }));
           }
-        }, null, this);
+        } catch (error) {
+          toast(error.message);
+        } finally {
+          n.setState({
+            loadWordsCloudDone: true
+          });
+        }
       };
       n.renderTextInput = function () {
         var e = n.state.text;
@@ -232,7 +204,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
           style: E.section
         }, "\u70ed\u95e8\u8bc4\u8bba ", t.length), t.map(function (e, t) {
           var a = (0, formatItem.getFormattedItem)(e, i);
-          return React.default.createElement(module824.default, {
+          return React.default.createElement(CommentCard.default, {
             key: t,
             content: a.content,
             userAvatar: a.userAvatar,
@@ -268,30 +240,26 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
           });
         }
       };
-      n.addNetease = function (e, t) {
-        var a, o, r;
-        return regeneratorRuntime.async(function (s) {
-          for (;;) switch (s.prev = s.next) {
-            case 0:
-              s.next = 2;
-              return regeneratorRuntime.awrap(services.Netease.comment_add({
-                id: t,
-                text: e
-              }));
-            case 2:
-              a = s.sent;
-              (0, utils.usable)(a) && (200 === a.code ? (n.setState({
-                hotComments: []
-              }), n.refs.list.scrollToOffset({
-                offset: 0
-              }), o = n.state.data, (r = a.comment).beReplied = [], r.liked = false, r.likedCount = 0, o.splice(0, 0, r), n.setState({
-                data: o
-              }), toast(locales.default.COMMENT_SUCCESS)) : toast(locales.default.NETEASE_NOT_LOGIN));
-            case 4:
-            case "end":
-              return s.stop();
-          }
-        }, null, this);
+      n.addNetease = async function (text, id) {
+        const response = await services.Netease.comment_add({
+          id,
+          text
+        });
+        if (response?.code === 200) {
+          const comment = {
+            ...response.comment,
+            beReplied: [],
+            liked: false,
+            likedCount: 0
+          };
+          n.setState(previous => ({
+            hotComments: [],
+            data: [comment, ...previous.data]
+          }));
+          n.list?.scrollToOffset({
+            offset: 0
+          });
+        } else toast(response?.message || locales.default.NETEASE_NOT_LOGIN);
       };
       n.onWordsCloud = function () {
         var e = n.state,
@@ -305,46 +273,25 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
         var e, t;
         null === (e = (t = n._scrollView).scrollToBegin) || void 0 === e || e.call(t);
       };
-      n.NeteaseMore = function (e) {
-        var t,
-          a,
-          o,
-          r,
-          s,
-          i = arguments;
-        return regeneratorRuntime.async(function (l) {
-          for (;;) switch (l.prev = l.next) {
-            case 0:
-              if (t = i.length > 1 && void 0 !== i[1] ? i[1] : 0, !n.state.isRadio) {
-                l.next = 8;
-                break;
-              }
-              l.next = 5;
-              return regeneratorRuntime.awrap(services.Netease.comment_radio({
-                id: e,
-                offset: t
-              }));
-            case 5:
-              a = l.sent;
-              l.next = 11;
-              break;
-            case 8:
-              l.next = 10;
-              return regeneratorRuntime.awrap(services.Netease.comment({
-                id: e,
-                offset: t
-              }));
-            case 10:
-              a = l.sent;
-            case 11:
-              a && (o = a.comments) && (n.setState({
-                data: babelHelpers.toConsumableArray(n.state.data).concat(babelHelpers.toConsumableArray(o))
-              }), null === (r = (s = n._scrollView).endLoading) || void 0 === r || r.call(s));
-            case 12:
-            case "end":
-              return l.stop();
+      n.NeteaseMore = async function (id, offset = 0) {
+        try {
+          const response = await (n.state.isRadio ? services.Netease.comment_radio({
+            id,
+            offset
+          }) : services.Netease.comment({
+            id,
+            offset
+          }));
+          if (response?.comments) {
+            n.setState(previous => ({
+              data: [...previous.data, ...response.comments]
+            }));
+            n._scrollView?.endLoading?.(!response.comments.length);
           }
-        }, null, this);
+        } catch (error) {
+          n._scrollView?.endLoading?.();
+          toast(error.message);
+        }
       };
       n.QQMusicMore = function (e, t) {
         services.QQMusic.song_comments({
@@ -356,7 +303,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
             o = e.comment,
             r = o.commentlist;
           o.commenttotal > 0 && (n.setState({
-            data: babelHelpers.toConsumableArray(n.state.data).concat(babelHelpers.toConsumableArray(r))
+            data: _toConsumableArray(n.state.data).concat(_toConsumableArray(r))
           }), null === (t = (a = n._scrollView).endLoading) || void 0 === t || t.call(a));
         });
       };
@@ -384,7 +331,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
         var t = e.item,
           a = e.index,
           o = (0, formatItem.getFormattedItem)(t, n.state.api);
-        return React.default.createElement(module824.default, {
+        return React.default.createElement(CommentCard.default, {
           key: a,
           content: o.content,
           userName: o.userName,
@@ -421,75 +368,68 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
       };
       return n;
     }
-    babelHelpers.createClass(t, [{
-      key: "componentDidMount",
-      value: function () {
-        this.init();
-      }
-    }, {
-      key: "render",
-      value: function () {
-        var e = this,
-          t = this.state,
-          n = t.loaded,
-          a = t.data,
-          o = t.showWordscloud,
-          d = t.wordscloud,
-          m = t.hotComments,
-          f = t.song,
-          p = t.title,
-          g = t.loadWordsCloudDone;
-        return React.default.createElement(components.PageContainer, {
-          title: p,
-          goBack: this.props.navigation.goBack,
-          onTop: this.onTop,
-          backIcon: {
-            name: icons.default.WINDOW_CLOSE
-          },
-          rightIcon: {
-            name: icons.default.FIRE,
-            onPress: this.onWordsCloud
-          }
-        }, false === n ? React.default.createElement(components.Spinkit, null) : React.default.createElement(reactNativeSpringScrollview.SpringScrollView, {
-          ref: function (t) {
-            return e._scrollView = t;
-          },
-          onLoading: this.getMore,
-          loadingFooter: ParallaxList.default
-        }, this.renderHeader(), a.map(function (t, n) {
-          return e._renderItem({
-            item: t,
-            index: n
+    "componentDidMount"() {
+      this.init();
+    }
+    "render"() {
+      var e = this,
+        t = this.state,
+        n = t.loaded,
+        a = t.data,
+        o = t.showWordscloud,
+        d = t.wordscloud,
+        m = t.hotComments,
+        f = t.song,
+        p = t.title,
+        g = t.loadWordsCloudDone;
+      return React.default.createElement(components.PageContainer, {
+        title: p,
+        goBack: this.props.navigation.goBack,
+        onTop: this.onTop,
+        backIcon: {
+          name: icons.default.WINDOW_CLOSE
+        },
+        rightIcon: {
+          name: icons.default.FIRE,
+          onPress: this.onWordsCloud
+        }
+      }, false === n ? React.default.createElement(components.Spinkit, null) : React.default.createElement(reactNativeSpringScrollview.SpringScrollView, {
+        ref: function (t) {
+          return e._scrollView = t;
+        },
+        onLoading: this.getMore,
+        loadingFooter: ParallaxList.default
+      }, this.renderHeader(), a.map(function (t, n) {
+        return e._renderItem({
+          item: t,
+          index: n
+        });
+      })), React.default.createElement(ReactNative.Modal, {
+        visible: o,
+        onRequestClose: function () {
+          return e.setState({
+            showWordscloud: false
           });
-        })), React.default.createElement(ReactNative.Modal, {
-          visible: o,
-          onRequestClose: function () {
-            return e.setState({
-              showWordscloud: false
-            });
-          },
-          animationType: "fade"
-        }, React.default.createElement(ReactNative.View, {
-          style: {
-            flex: 1,
-            backgroundColor: '#100f14'
-          }
-        }, React.default.createElement(module826.default, {
-          hotComments: m,
-          wordscloud: d,
-          song: f,
-          onClose: function () {
-            return e.setState({
-              showWordscloud: false
-            });
-          },
-          loadWordsCloudDone: g
-        }))));
-      }
-    }]);
-    babelHelpers.inherits(t, e);
-    return t;
-  }(React.PureComponent),
+        },
+        animationType: "fade"
+      }, React.default.createElement(ReactNative.View, {
+        style: {
+          flex: 1,
+          backgroundColor: '#100f14'
+        }
+      }, React.default.createElement(CommentAnalysis.default, {
+        hotComments: m,
+        wordscloud: d,
+        song: f,
+        onClose: function () {
+          return e.setState({
+            showWordscloud: false
+          });
+        },
+        loadWordsCloudDone: g
+      }))));
+    }
+  },
   E = ReactNative.StyleSheet.create({
     section: {
       paddingLeft: 20

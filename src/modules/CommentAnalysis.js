@@ -1,20 +1,23 @@
+const _default = require("./../components/Pager.js").default;
+const _default2 = require("./../components/Text.js").default;
+const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var React = babelHelpers.interopRequireWildcard(require("react")),
+var React = _interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
-  reactNativeSpringScrollview = require("react-native-spring-scrollview"),
+  reactNativeSpringScrollview = require("./../components/Scrolling.js"),
   components = require("../components/index"),
   constants = require("../theme/constants"),
   utils = require("../utils/index"),
-  module827 = babelHelpers.interopRequireDefault(require("./module-827")),
-  m = function (e) {
-    function t() {
+  CommentBubble = _interopRequireDefault(require("./CommentBubble.js")),
+  m = class t extends React.Component {
+    constructor() {
       var e, n, l;
-      babelHelpers.classCallCheck(this, t);
       for (var r = arguments.length, o = new Array(r), c = 0; c < r; c++) o[c] = arguments[c];
-      return babelHelpers.possibleConstructorReturn(l, (n = l = babelHelpers.possibleConstructorReturn(this, (e = babelHelpers.getPrototypeOf(t)).call.apply(e, [this].concat(o))), l.hash = {}, l.state = {
+      return n = l = super(...o), l.hash = {}, l.state = {
         selectedComments: [],
         showSelectedComments: false,
         selectedIndex: 0
@@ -69,7 +72,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
             height: 80,
             justifyContent: 'center'
           }
-        }, React.default.createElement(ReactNative.ViewPagerAndroid, {
+        }, React.default.createElement(_default, {
           style: {
             width: constants.DEVICE_WIDTH,
             flex: 1,
@@ -78,7 +81,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
           },
           initialPage: 1,
           onPageSelected: l.onTitleSelected,
-          ref: "titlePager"
+          ref: instance => this.titlePager = instance
         }, React.default.createElement(f, {
           text: l.getSelectedText('pre')
         }), React.default.createElement(f, {
@@ -96,10 +99,10 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
               style: {
                 marginTop: 30
               }
-            }, React.default.createElement(module827.default, {
+            }, React.default.createElement(CommentBubble.default, {
               item: e,
               title: l.getSelectedText('mid')
-            }), e.beReplied.length > 0 ? React.default.createElement(module827.default, {
+            }), e.beReplied.length > 0 ? React.default.createElement(CommentBubble.default, {
               item: e.beReplied[0],
               replied: true
             }) : null);
@@ -110,10 +113,10 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
               alignItems: 'center',
               justifyContent: 'center'
             }
-          }, React.default.createElement(module827.default, {
+          }, React.default.createElement(CommentBubble.default, {
             item: n,
             title: l.getSelectedText('mid')
-          }), (null === (e = n.beReplied) || void 0 === e ? void 0 : e.length) > 0 ? React.default.createElement(module827.default, {
+          }), (null === (e = n.beReplied) || void 0 === e ? void 0 : e.length) > 0 ? React.default.createElement(CommentBubble.default, {
             item: n.beReplied[0],
             replied: true
           }) : null);
@@ -131,99 +134,94 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
           case 2:
             l.selectItem('next');
         }
-        null === (t = l.refs.titlePager) || void 0 === t || t.setPageWithoutAnimation(1);
-      }, n));
+        null === (t = l.titlePager) || void 0 === t || t.setPageWithoutAnimation(1);
+      }, n;
     }
-    babelHelpers.createClass(t, [{
-      key: "render",
-      value: function () {
-        var e = this,
-          t = this.props,
-          n = t.wordscloud,
-          l = t.loadWordsCloudDone,
-          r = t.song;
-        return l ? React.default.createElement(ReactNative.View, {
-          style: {
-            flex: 1
-          }
-        }, React.default.createElement(reactNativeSpringScrollview.SpringScrollView, {
-          contentStyle: {
-            paddingTop: '15%'
-          }
-        }, React.default.createElement(ReactNative.View, {
-          style: {
-            alignItems: 'center',
-            marginBottom: 20
-          }
-        }, React.default.createElement(ReactNative.Text, {
-          style: [p.text, {
-            fontSize: 25,
-            textAlign: 'center',
-            alignSelf: 'center',
-            fontWeight: 'bold'
-          }]
-        }, r.song), React.default.createElement(ReactNative.Text, {
-          style: [p.text, {
-            fontSize: 15,
-            alignSelf: 'center'
-          }]
-        }, (0, utils.parseArtist)(r.singer))), React.default.createElement(ReactNative.View, {
-          style: {
-            flexDirection: 'row',
-            flexWrap: 'wrap',
-            padding: 20
-          }
-        }, null === n || void 0 === n ? void 0 : n.map(function (t, n) {
-          var l = e.useRandomValues(n),
-            r = l.textOpacity,
-            o = l.randomSize;
-          return React.default.createElement(ReactNative.View, {
-            key: n,
-            style: [{
-              justifyContent: 'center',
-              alignItems: 'center'
-            }]
-          }, React.default.createElement(ReactNative.TouchableOpacity, {
-            onPress: function () {
-              return e.showHotComment(t, n);
-            }
-          }, React.default.createElement(ReactNative.Text, {
-            style: [p.text, {
-              margin: 1,
-              opacity: r,
-              textAlignVertical: 'center',
-              fontSize: o
-            }]
-          }, t)));
-        }))), React.default.createElement(ReactNative.Modal, {
-          visible: this.state.showSelectedComments,
-          onRequestClose: this.closeItem,
-          animationType: "fade",
-          transparent: true
-        }, React.default.createElement(ReactNative.View, {
-          style: {
-            flex: 1,
-            backgroundColor: "#100f14"
-          }
-        }, React.default.createElement(reactNativeSpringScrollview.SpringScrollView, {
-          contentStyle: {
-            alignItems: 'center',
+    "render"() {
+      var e = this,
+        t = this.props,
+        n = t.wordscloud,
+        l = t.loadWordsCloudDone,
+        r = t.song;
+      return l ? React.default.createElement(ReactNative.View, {
+        style: {
+          flex: 1
+        }
+      }, React.default.createElement(reactNativeSpringScrollview.SpringScrollView, {
+        contentStyle: {
+          paddingTop: '15%'
+        }
+      }, React.default.createElement(ReactNative.View, {
+        style: {
+          alignItems: 'center',
+          marginBottom: 20
+        }
+      }, React.default.createElement(_default2, {
+        style: [p.text, {
+          fontSize: 25,
+          textAlign: 'center',
+          alignSelf: 'center',
+          fontWeight: 'bold'
+        }]
+      }, r.song), React.default.createElement(_default2, {
+        style: [p.text, {
+          fontSize: 15,
+          alignSelf: 'center'
+        }]
+      }, (0, utils.parseArtist)(r.singer))), React.default.createElement(ReactNative.View, {
+        style: {
+          flexDirection: 'row',
+          flexWrap: 'wrap',
+          padding: 20
+        }
+      }, null === n || void 0 === n ? void 0 : n.map(function (t, n) {
+        var l = e.useRandomValues(n),
+          r = l.textOpacity,
+          o = l.randomSize;
+        return React.default.createElement(ReactNative.View, {
+          key: n,
+          style: [{
             justifyContent: 'center',
-            flexGrow: 1,
-            paddingTop: constants.STATUS_BAR_HEIGHT + 100,
-            padding: 20
+            alignItems: 'center'
+          }]
+        }, React.default.createElement(ReactNative.TouchableOpacity, {
+          onPress: function () {
+            return e.showHotComment(t, n);
           }
-        }, this.renderSelectedItem())))) : React.default.createElement(components.Spinkit, null);
-      }
-    }]);
-    babelHelpers.inherits(t, e);
-    return t;
-  }(React.Component),
+        }, React.default.createElement(_default2, {
+          style: [p.text, {
+            margin: 1,
+            opacity: r,
+            textAlignVertical: 'center',
+            fontSize: o
+          }]
+        }, t)));
+      }))), React.default.createElement(ReactNative.Modal, {
+        visible: this.state.showSelectedComments,
+        onRequestClose: this.closeItem,
+        animationType: "fade",
+        transparent: true
+      }, React.default.createElement(ReactNative.View, {
+        style: {
+          flex: 1,
+          backgroundColor: "#100f14"
+        }
+      }, React.default.createElement(reactNativeSpringScrollview.SpringScrollView, {
+        contentStyle: {
+          alignItems: 'center',
+          justifyContent: 'center',
+          flexGrow: 1,
+          paddingTop: constants.STATUS_BAR_HEIGHT + 100,
+          padding: 20
+        }
+      }, this.renderSelectedItem())))) : React.default.createElement(components.Spinkit, null);
+    }
+  },
   f = function (e) {
     var t = e.text;
     return React.default.createElement(ReactNative.View, {
       style: p.titleCon
-    }, React.default.createElement(ReactNative.Text, {
+    }, React.default.createElement(_default2, {
       style: [p.text, p.title]
     }, "\u201c ", t, " \u201d"));
   },

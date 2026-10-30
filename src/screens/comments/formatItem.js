@@ -1,8 +1,9 @@
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.getFormattedItem = void 0;
-var providers = babelHelpers.interopRequireDefault(require("../../services/providers")),
+var providers = _interopRequireDefault(require("../../services/providers")),
   utils = require("../../utils/index");
 exports.getFormattedItem = function (e, t) {
   t || (t = e.content ? providers.default.netEase : providers.default.qqMusic);
