@@ -473,12 +473,20 @@ var React = require("react"),
         }
         n.recordPlayed(n.props.songItem);
       }, n.intervalCurrentTimeGetter = function () {
-        var e = n.state,
-          t = e.playState,
-          a = e.expanded,
-          r = e.isBackground,
-          i = n.props.settings.hideMiniLyric;
-        r || 'playing' === t && F && (n.getMusicTimeInfo('currentTime'), timer.default.setTimeout(n.intervalCurrentTimeGetter, H), a || i || n.getCurrentMiniLyric());
+        if (n.currentTimeTimer) {
+          timer.default.clearTimeout(n.currentTimeTimer);
+          n.currentTimeTimer = null;
+        }
+        const {
+          playState,
+          expanded,
+          isBackground
+        } = n.state;
+        if (!isBackground && playState === 'playing' && F) {
+          n.getMusicTimeInfo('currentTime');
+          n.currentTimeTimer = timer.default.setTimeout(n.intervalCurrentTimeGetter, H);
+          if (!expanded && !n.props.settings.hideMiniLyric) n.getCurrentMiniLyric();
+        }
       }, n.getMusicTimeInfo = function (type) {
         if (type === 'currentTime') F?.getCurrentTime(seconds => n.setState({
           currentTime: seconds
@@ -778,6 +786,10 @@ var React = require("react"),
     }
     "componentDidMount"() {
       var t = this;
+      this.playbackStateListener = ReactNative.DeviceEventEmitter.addListener('rewind.playbackState', event => {
+        const playState = event.playing ? 'playing' : 'paused';
+        if (playState !== this.state.playState) this.setState({playState}, this.intervalCurrentTimeGetter);
+      });
       lyricPreferences.default.loadAll(this);
       notification.default.init(this);
       audioPlayer.default.setHandleAudioFocus(!this.props.settings.playWithOthers);
@@ -885,6 +897,8 @@ var React = require("react"),
     }
     "componentWillUnmount"() {
       this.lyricRequest++;
+      this.playbackStateListener.remove();
+      if (this.currentTimeTimer) timer.default.clearTimeout(this.currentTimeTimer);
       var e;
       events.emitter.off(names.default.Player, this.musicPlayerEmitter);
       this.playerCloseListener.remove();

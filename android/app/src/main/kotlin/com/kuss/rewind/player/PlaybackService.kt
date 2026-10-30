@@ -48,6 +48,9 @@ class PlaybackService : MediaSessionService() {
             setWakeMode(C.WAKE_MODE_LOCAL)
         }
         PlayerBridge.audioFocusUpdater = { enabled -> player.setAudioAttributes(player.audioAttributes, enabled) }
+        player.addListener(object : Player.Listener {
+            override fun onIsPlayingChanged(isPlaying: Boolean) { PlayerBridge.playback(isPlaying) }
+        })
         PlayerBridge.cacheSizeReader = { promise ->
             cacheExecutor.execute {
                 try { promise.resolve(audioCache.value.cacheSpace.toDouble()) }
@@ -72,13 +75,6 @@ class PlaybackService : MediaSessionService() {
             override fun seekToPrevious() { PlayerBridge.action("previousTrack") }
             override fun seekToPreviousMediaItem() { PlayerBridge.action("previousTrack") }
         }
-        player.addListener(object : Player.Listener {
-            override fun onPlayWhenReadyChanged(playWhenReady: Boolean, reason: Int) {
-                if (reason == Player.PLAY_WHEN_READY_CHANGE_REASON_AUDIO_FOCUS_LOSS || reason == Player.PLAY_WHEN_READY_CHANGE_REASON_AUDIO_BECOMING_NOISY) {
-                    PlayerBridge.action(if (playWhenReady) "play" else "pause")
-                }
-            }
-        })
         val activity = PendingIntent.getActivity(this, 0, Intent(this, MainActivity::class.java), PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
         session = MediaSession.Builder(this, controls).setSessionActivity(activity)
             .setCallback(object : MediaSession.Callback {

@@ -18,6 +18,6 @@ function schedule(callback, timeout, interval) {
 export default {
   setTimeout: (callback, timeout) => schedule(callback, timeout, false),
   setInterval: (callback, timeout) => schedule(callback, timeout, true),
-  clearTimeout: id => callbacks.delete(id),
-  clearInterval: id => callbacks.delete(id),
+  clearTimeout: id => { callbacks.delete(id); native.clearTimeout(id); },
+  clearInterval: id => { callbacks.delete(id); native.clearTimeout(id); },
 };

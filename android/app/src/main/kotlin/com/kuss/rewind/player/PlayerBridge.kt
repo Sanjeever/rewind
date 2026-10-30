@@ -14,6 +14,14 @@ object PlayerBridge {
     var cacheSizeReader: ((Promise) -> Unit)? = null
     var cacheClearer: ((Promise) -> Unit)? = null
 
+    fun playback(playing: Boolean) {
+        val react = context ?: return
+        if (react.hasActiveReactInstance()) {
+            val event = Arguments.createMap().apply { putBoolean("playing", playing) }
+            react.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java).emit("rewind.playbackState", event)
+        }
+    }
+
     fun action(name: String) {
         val enabled = controls[when (name) { "play", "pause" -> "playPause"; else -> name }] ?: true
         val react = context ?: return

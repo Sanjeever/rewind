@@ -14,6 +14,7 @@ import com.facebook.react.ReactApplication
 
 class RewindDeviceModule(private val context: ReactApplicationContext) : ReactContextBaseJavaModule(context) {
     private val handler = Handler(Looper.getMainLooper())
+    private val timers = mutableMapOf<Int, Runnable>()
     private val preferences = context.getSharedPreferences(MainActivity::class.java.name, 0)
     override fun getName() = "RewindDevice"
     override fun getConstants(): Map<String, Any> {
@@ -60,7 +61,11 @@ class RewindDeviceModule(private val context: ReactApplicationContext) : ReactCo
 
     @ReactMethod
     fun close() {
-        handler.post { context.currentActivity?.finishAndRemoveTask() }
+        handler.post {
+            context.stopService(Intent(context, com.kuss.rewind.player.PlaybackService::class.java))
+            context.currentActivity?.finishAndRemoveTask()
+            (context.applicationContext as ReactApplication).reactHost?.destroy("用户关闭应用", null)
+        }
     }
 
     @ReactMethod
@@ -70,10 +75,21 @@ class RewindDeviceModule(private val context: ReactApplicationContext) : ReactCo
 
     @ReactMethod
     fun setTimeout(id: Double, milliseconds: Double) {
-        handler.postDelayed({
-            if (context.hasActiveReactInstance()) context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
-                .emit("backgroundTimer.timeout", id.toInt())
-        }, milliseconds.toLong())
+        handler.post {
+            val key = id.toInt()
+            timers.remove(key)?.let { handler.removeCallbacks(it) }
+            val task = Runnable {
+                timers.remove(key)
+                if (context.hasActiveReactInstance()) context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
+                    .emit("backgroundTimer.timeout", key)
+            }
+            timers[key] = task
+            handler.postDelayed(task, milliseconds.toLong())
+        }
+    }
+
+    @ReactMethod fun clearTimeout(id: Double) {
+        handler.post { timers.remove(id.toInt())?.let { handler.removeCallbacks(it) } }
     }
 
     @ReactMethod fun addListener(name: String) {}
@@ -81,6 +97,7 @@ class RewindDeviceModule(private val context: ReactApplicationContext) : ReactCo
 
     override fun invalidate() {
         handler.removeCallbacksAndMessages(null)
+        timers.clear()
         super.invalidate()
     }
 }

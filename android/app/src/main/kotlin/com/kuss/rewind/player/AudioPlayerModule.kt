@@ -29,6 +29,7 @@ class AudioPlayerModule(private val context: ReactApplicationContext) : ReactCon
     private val volume = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
     private var prepareListener: Player.Listener? = null
     private var completionListener: Player.Listener? = null
+    private var metadata = MediaMetadata.EMPTY
     override fun getName() = "RNAudioPlayer"
 
     init { PlayerBridge.context = context }
@@ -60,7 +61,7 @@ class AudioPlayerModule(private val context: ReactApplicationContext) : ReactCon
             prepareListener = listener
             controller.addListener(listener)
             val uri = if (source.startsWith("/")) Uri.fromFile(File(source)) else Uri.parse(source)
-            controller.setMediaItem(MediaItem.fromUri(uri))
+            controller.setMediaItem(MediaItem.Builder().setUri(uri).setMediaMetadata(metadata).build())
             controller.prepare()
         }
     }
@@ -98,13 +99,14 @@ class AudioPlayerModule(private val context: ReactApplicationContext) : ReactCon
     @ReactMethod
     fun setNowPlaying(info: ReadableMap) {
         player { controller ->
+            val builder = metadata.buildUpon()
+            if (info.hasKey("title")) builder.setTitle(info.getString("title"))
+            if (info.hasKey("artist")) builder.setArtist(info.getString("artist"))
+            if (info.hasKey("album")) builder.setAlbumTitle(info.getString("album"))
+            if (info.hasKey("artwork")) builder.setArtworkUri(if (info.isNull("artwork")) null else Uri.parse(info.getString("artwork")))
+            metadata = builder.build()
             val current = controller.currentMediaItem ?: return@player
-            val metadata = MediaMetadata.Builder()
-            if (info.hasKey("title")) metadata.setTitle(info.getString("title"))
-            if (info.hasKey("artist")) metadata.setArtist(info.getString("artist"))
-            if (info.hasKey("album")) metadata.setAlbumTitle(info.getString("album"))
-            if (info.hasKey("artwork") && !info.isNull("artwork")) metadata.setArtworkUri(Uri.parse(info.getString("artwork")))
-            controller.replaceMediaItem(controller.currentMediaItemIndex, current.buildUpon().setMediaMetadata(metadata.build()).build())
+            controller.replaceMediaItem(controller.currentMediaItemIndex, current.buildUpon().setMediaMetadata(metadata).build())
         }
     }
 
