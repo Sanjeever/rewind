@@ -70,11 +70,14 @@ var immer = require("immer"),
           e = mergeSettings(e, defaults.defaultSettings);
           const firstLoad = !n.settingsLoaded;
           n.settingsLoaded = true;
-          firstLoad && e.autoLoadLastPlayedTracks.on && lastQueue.default.emit();
           n.setState((0, immer.produce)(function (t) {
             t.settings = (0, utils.extractKeyValue)(e, 'on');
             t.bottomPaddingValue = e.bottomPadding.subtitle;
-          }));
+          }), function () {
+            if (firstLoad && e.autoLoadLastPlayedTracks.on) {
+              lastQueue.default.emit().catch(error => toast('恢复播放队列失败：' + error.message));
+            }
+          });
           events.emitter.emit(names.default.SetHomeState, {
             autoSetPlaylistOrder: e.autoSetPlaylistOrder.on
           });

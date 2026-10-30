@@ -1,53 +1,25 @@
-const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
-const _appStorage = require("./index.js");
-const _asyncRuntime = require("@babel/runtime/helpers/regeneratorRuntime")();
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-var keys = _interopRequireDefault(require("./keys")),
-  o = {
-    get: function (e) {
-      return _appStorage.storage.load({
-        key: keys.default.lastPlayedSong
-      }).then(function (t) {
-        if (t) return t[e];
-      }).catch(function () {
-        return false;
-      });
-    },
-    save: function (e, t) {
-      return _asyncRuntime.async(function (a) {
-        for (;;) switch (a.prev = a.next) {
-          case 0:
-            if (e) {
-              a.next = 2;
-              break;
-            }
-            return a.abrupt("return");
-          case 2:
-            _appStorage.storage.load({
-              key: keys.default.lastPlayedSong
-            }).then(function (a) {
-              if (!a) throw new Error('NMSL');
-              a[e] = t;
-              _appStorage.storage.save({
-                key: keys.default.lastPlayedSong,
-                data: a
-              });
-            }).catch(function () {
-              var a = {};
-              a[e] = t;
-              _appStorage.storage.save({
-                key: keys.default.lastPlayedSong,
-                data: a
-              });
-            });
-          case 3:
-          case "end":
-            return a.stop();
-        }
-      }, null, this);
+import {storage} from './index';
+import keys from './keys';
+
+export default {
+  async get(api) {
+    try {
+      const songs = await storage.load({key: keys.lastPlayedSong});
+      return songs[api];
+    } catch (error) {
+      if (error.name === 'NotFoundError') return false;
+      throw error;
     }
-  };
-exports.default = o;
+  },
+  async save(api, song) {
+    if (!api) return;
+    let songs;
+    try {
+      songs = await storage.load({key: keys.lastPlayedSong});
+    } catch (error) {
+      if (error.name !== 'NotFoundError') throw error;
+      songs = {};
+    }
+    return storage.save({key: keys.lastPlayedSong, data: {...songs, [api]: song}});
+  },
+};

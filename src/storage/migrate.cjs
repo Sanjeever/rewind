@@ -1,9 +1,9 @@
 const marker = '__rewind_storage_migration_v1';
 
 async function migrateStorage({readLegacy, destination, validatePlaylists}) {
+  await validatePlaylists();
   if (await destination.getItem(marker)) return;
   const entries = await readLegacy();
-  await validatePlaylists();
   if (Object.keys(entries).length) {
     await destination.setMany(entries);
     const saved = await destination.getMany(Object.keys(entries));

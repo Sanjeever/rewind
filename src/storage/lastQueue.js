@@ -1,46 +1,25 @@
-const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
-const _appStorage = require("./index.js");
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-var keys = _interopRequireDefault(require("./keys")),
-  events = require("../events/index"),
-  o = function () {
-    return _appStorage.storage.load({
-      key: keys.default.lastPlayedTracks
-    }).then(function (e) {
-      if (e) return e;
-      throw new Error('Could not load');
-    });
+import {storage} from './index';
+import keys from './keys';
+import {toPlayer} from '../events';
+
+async function load() {
+  try {
+    return await storage.load({key: keys.lastPlayedTracks});
+  } catch (error) {
+    if (error.name === 'NotFoundError') return null;
+    throw error;
+  }
+}
+
+export default {
+  save({tracks, index, api}) {
+    return storage.save({key: keys.lastPlayedTracks, data: {tracks, index, api}});
   },
-  l = {
-    save: function (e) {
-      var a = e.tracks,
-        t = e.index,
-        n = e.api;
-      _appStorage.storage.save({
-        key: keys.default.lastPlayedTracks,
-        data: {
-          tracks: a,
-          index: t,
-          api: n
-        }
-      });
-    },
-    load: o,
-    emit: function () {
-      o().then(function (e) {
-        var a = e.tracks,
-          t = e.index,
-          n = e.api;
-        a && n && (0, events.toPlayer)({
-          item: a[t],
-          data: a,
-          index: t,
-          api: n
-        });
-      });
+  load,
+  async emit() {
+    const queue = await load();
+    if (queue?.tracks?.[queue.index] && queue.api) {
+      toPlayer({item: queue.tracks[queue.index], data: queue.tracks, index: queue.index, api: queue.api});
     }
-  };
-exports.default = l;
+  },
+};

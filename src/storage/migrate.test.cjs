@@ -59,3 +59,12 @@ test('歌单损坏或旧数据库不可读时停止启动且保留旧数据', as
   }), /数据库不可读/);
   assert.deepEqual(destination.values, {});
 });
+
+test('迁移完成后仍检查歌单，不用空列表覆盖后续损坏文件', async () => {
+  const destination = database({[marker]: '{"version":1}', settings: '保留新设置'});
+  await assert.rejects(migrateStorage({
+    readLegacy: async () => { throw new Error('不应重读旧库'); }, destination,
+    validatePlaylists: async () => { throw new Error('歌单损坏'); },
+  }), /歌单损坏/);
+  assert.equal(destination.values.settings, '保留新设置');
+});
