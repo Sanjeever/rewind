@@ -1,14 +1,16 @@
+const _default = require("./../components/Text.js").default;
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var React = babelHelpers.interopRequireDefault(require("react")),
+var React = _interopRequireDefault(require("react")),
   ReactNative = require("react-native"),
-  TouchableScale = babelHelpers.interopRequireDefault(require("../components/TouchableScale")),
+  TouchableScale = _interopRequireDefault(require("../components/TouchableScale")),
   components = require("../components/index"),
   constants = require("../theme/constants"),
-  icons = babelHelpers.interopRequireDefault(require("../theme/icons")),
-  locales = babelHelpers.interopRequireDefault(require("../locales/index")),
+  icons = _interopRequireDefault(require("../theme/icons")),
+  locales = _interopRequireDefault(require("../locales/index")),
   events = require("../events/index"),
   utils = require("../utils/index"),
   trackInfo = require("../services/trackInfo"),
@@ -79,12 +81,12 @@ var React = babelHelpers.interopRequireDefault(require("react")),
       style: {
         flex: 1
       }
-    }, React.default.createElement(ReactNative.Text, {
+    }, React.default.createElement(_default, {
       style: {
         fontSize: 15
       },
       numberOfLines: 1
-    }, t), React.default.createElement(ReactNative.Text, {
+    }, t), React.default.createElement(_default, {
       style: {
         fontSize: 12,
         opacity: .8
@@ -162,7 +164,7 @@ var React = babelHelpers.interopRequireDefault(require("react")),
       style: {
         fontSize: 15
       }
-    }, c.artistName), React.default.createElement(ReactNative.Text, {
+    }, c.artistName), React.default.createElement(_default, {
       style: {
         opacity: .8,
         fontSize: 13

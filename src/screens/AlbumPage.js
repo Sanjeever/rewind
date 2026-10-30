@@ -1,28 +1,31 @@
+const _default = require("@react-native-clipboard/clipboard").default;
+const _default2 = require("./../components/Text.js").default;
+const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+const _asyncRuntime = require("@babel/runtime/helpers/regeneratorRuntime")();
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-require("@runtime/810");
-var React = babelHelpers.interopRequireWildcard(require("react")),
+var React = _interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
   components = require("../components/index"),
-  module811 = babelHelpers.interopRequireDefault(require("../modules/module-811")),
-  providers = babelHelpers.interopRequireDefault(require("../services/providers")),
+  OverflowMenu = _interopRequireDefault(require("./../modules/OverflowMenu.js")),
+  providers = _interopRequireDefault(require("../services/providers")),
   constants = require("../theme/constants"),
-  icons = babelHelpers.interopRequireDefault(require("../theme/icons")),
-  locales = babelHelpers.interopRequireDefault(require("../locales/index")),
+  icons = _interopRequireDefault(require("../theme/icons")),
+  locales = _interopRequireDefault(require("../locales/index")),
   services = require("../services/index"),
   events = require("../events/index"),
   utils = require("../utils/index"),
-  queue = babelHelpers.interopRequireDefault(require("../events/queue")),
+  queue = _interopRequireDefault(require("../events/queue")),
   sharedUrlsModule = require("../services/sharedUrls"),
-  Description = babelHelpers.interopRequireDefault(require("./album/Description")),
+  Description = _interopRequireDefault(require("./album/Description")),
   y = constants.DEVICE_WIDTH,
-  w = function (e) {
-    function t(e) {
+  w = class t extends React.PureComponent {
+    constructor(e) {
       var a;
-      babelHelpers.classCallCheck(this, t);
-      (a = babelHelpers.possibleConstructorReturn(this, babelHelpers.getPrototypeOf(t).call(this, e)))._nativeOffset = {
+      (a = super(e))._nativeOffset = {
         x: new ReactNative.Animated.Value(0),
         y: new ReactNative.Animated.Value(0)
       };
@@ -36,11 +39,11 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
       };
       a.netEaseAlbum = function (e) {
         var t, n, i, o, l, r, u, s;
-        return regeneratorRuntime.async(function (d) {
+        return _asyncRuntime.async(function (d) {
           for (;;) switch (d.prev = d.next) {
             case 0:
               d.next = 2;
-              return regeneratorRuntime.awrap(services.Netease.album(e));
+              return _asyncRuntime.awrap(services.Netease.album(e));
             case 2:
               if (t = d.sent, !(0, utils.usable)(t)) {
                 d.next = 14;
@@ -149,7 +152,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
       };
       a.onCopy = function () {
         var e = a.state.title;
-        ReactNative.Clipboard.setString(e);
+        _default.setString(e);
         toast(locales.default.COPIED + " " + e);
       };
       a.onOpenUrl = function () {
@@ -198,11 +201,11 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
       };
       a.netEaseIsLikedAlbum = function () {
         var e, t, n, i, o;
-        return regeneratorRuntime.async(function (l) {
+        return _asyncRuntime.async(function (l) {
           for (;;) switch (l.prev = l.next) {
             case 0:
               l.next = 2;
-              return regeneratorRuntime.awrap(services.Netease.sublist_album({
+              return _asyncRuntime.awrap(services.Netease.sublist_album({
                 limit: 1e3
               }));
             case 2:
@@ -220,11 +223,11 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
       };
       a.netEaseLikeAlbum = function (e, t) {
         var a, n;
-        return regeneratorRuntime.async(function (i) {
+        return _asyncRuntime.async(function (i) {
           for (;;) switch (i.prev = i.next) {
             case 0:
               i.next = 2;
-              return regeneratorRuntime.awrap(services.Netease.sublist_album_add({
+              return _asyncRuntime.awrap(services.Netease.sublist_album_add({
                 id: e,
                 op: true === t ? 'sub' : 'unsub'
               }));
@@ -333,133 +336,124 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
       };
       return a;
     }
-    babelHelpers.createClass(t, [{
-      key: "componentDidMount",
-      value: function () {
-        var e = this.props.navigation.state.params;
-        if (e) {
-          var t = e.item,
-            a = e.api;
-          a && (this.setState({
-            api: a
-          }), this.getAlbum(t, a));
+    "componentDidMount"() {
+      var e = this.props.route.params;
+      if (e) {
+        var t = e.item,
+          a = e.api;
+        a && (this.setState({
+          api: a
+        }), this.getAlbum(t, a));
+      }
+    }
+    "componentWillUnmount"() {
+      this.setState({
+        showElevation: false
+      });
+    }
+    "render"() {
+      var e = this,
+        t = this.state,
+        a = t.followed,
+        n = t.data,
+        i = t.albumImg,
+        s = t.publishTime,
+        d = t.company,
+        f = t.title,
+        p = t.loaded,
+        h = t.showModal,
+        g = t.description,
+        w = t.duration;
+      return React.default.createElement(ReactNative.View, {
+        style: E.container
+      }, React.default.createElement(components.Background, null), false === p && React.default.createElement(components.Spinkit, {
+        style: {
+          paddingTop: y,
+          position: 'absolute',
+          top: 0,
+          bottom: 0,
+          left: 0,
+          right: 0
         }
-      }
-    }, {
-      key: "componentWillUnmount",
-      value: function () {
-        this.setState({
-          showElevation: false
+      }), React.default.createElement(components.ParallaxScrollView, {
+        onNativeContentOffsetExtract: this._nativeOffset,
+        onRef: function (t) {
+          return e._list = t;
+        }
+      }, React.default.createElement(components.ParallaxForeground, {
+        img: i,
+        title: f,
+        subtitle: [n.length + " " + locales.default.SONG_COUNT + " \uff5c " + utils.timeFormatter.parseTime(w), "" + s],
+        animOffsetY: this._nativeOffset.y,
+        onInfo: this.onDesc
+      }), n.map(function (t, a) {
+        return e._renderItem({
+          item: t,
+          index: a
         });
-      }
-    }, {
-      key: "render",
-      value: function () {
-        var e = this,
-          t = this.state,
-          a = t.followed,
-          n = t.data,
-          i = t.albumImg,
-          s = t.publishTime,
-          d = t.company,
-          f = t.title,
-          p = t.loaded,
-          h = t.showModal,
-          g = t.description,
-          w = t.duration;
-        return React.default.createElement(ReactNative.View, {
-          style: E.container
-        }, React.default.createElement(components.Background, null), false === p && React.default.createElement(components.Spinkit, {
-          style: {
-            paddingTop: y,
-            position: 'absolute',
-            top: 0,
-            bottom: 0,
-            left: 0,
-            right: 0
-          }
-        }), React.default.createElement(components.ParallaxScrollView, {
-          onNativeContentOffsetExtract: this._nativeOffset,
-          onRef: function (t) {
-            return e._list = t;
-          }
-        }, React.default.createElement(components.ParallaxForeground, {
-          img: i,
-          title: f,
-          subtitle: [n.length + " " + locales.default.SONG_COUNT + " \uff5c " + utils.timeFormatter.parseTime(w), "" + s],
-          animOffsetY: this._nativeOffset.y,
-          onInfo: this.onDesc
-        }), n.map(function (t, a) {
-          return e._renderItem({
-            item: t,
-            index: a
+      }), React.default.createElement(components.EmptyFooter, null)), !!h && React.default.createElement(Description.default, {
+        showModal: h,
+        albumImg: i,
+        onClose: function () {
+          return e.setState({
+            showModal: false
           });
-        }), React.default.createElement(components.EmptyFooter, null)), !!h && React.default.createElement(Description.default, {
-          showModal: h,
-          albumImg: i,
-          onClose: function () {
-            return e.setState({
-              showModal: false
-            });
-          },
-          company: d,
-          publishTime: s,
-          description: g
-        }), React.default.createElement(ReactNative.View, {
-          style: E.hoverArea
-        }, React.default.createElement(ReactNative.View, {
-          style: E.hoverCon
-        }, React.default.createElement(ReactNative.TouchableOpacity, {
-          onPress: this.onPlayAll
-        }, React.default.createElement(ReactNative.Text, {
-          style: {
-            color: '#000',
-            padding: 10,
-            fontWeight: 'bold'
-          }
-        }, "\u64ad\u653e\u5168\u90e8")), React.default.createElement(ReactNative.View, {
-          style: {
-            width: 1,
-            height: 18,
-            backgroundColor: '#000'
-          }
-        }), React.default.createElement(ReactNative.TouchableOpacity, {
-          style: {
-            padding: 5
-          },
-          onPress: this.addToPlaylist
-        }, React.default.createElement(components.Icon, {
-          name: icons.default.PLUS,
+        },
+        company: d,
+        publishTime: s,
+        description: g
+      }), React.default.createElement(ReactNative.View, {
+        style: E.hoverArea
+      }, React.default.createElement(ReactNative.View, {
+        style: E.hoverCon
+      }, React.default.createElement(ReactNative.TouchableOpacity, {
+        onPress: this.onPlayAll
+      }, React.default.createElement(_default2, {
+        style: {
           color: '#000',
-          style: {
-            fontWeight: 'bold'
-          }
-        })))), React.default.createElement(components.HeaderBar, {
-          headerStyle: [E.header, utils.animInterpolate.forHeader(this._nativeOffset.y)],
-          title: f,
-          goBack: this.goBack,
-          onTop: this.onTop,
-          rightIcon: function () {
-            return React.default.createElement(module811.default, {
-              followed: a,
-              onLike: e.onLikeAlbum,
-              onWebview: e.onWebview,
-              onCopy: e.onCopy,
-              onOpenUrl: e.onOpenUrl,
-              onShare: e.onShare
-            });
-          },
-          backIcon: {
-            name: icons.default.WINDOW_CLOSE
-          },
-          bold: true,
-          blur: true
-        }));
-      }
-    }]);
-    babelHelpers.inherits(t, e);
-    return t;
-  }(React.PureComponent),
+          padding: 10,
+          fontWeight: 'bold'
+        }
+      }, "\u64ad\u653e\u5168\u90e8")), React.default.createElement(ReactNative.View, {
+        style: {
+          width: 1,
+          height: 18,
+          backgroundColor: '#000'
+        }
+      }), React.default.createElement(ReactNative.TouchableOpacity, {
+        style: {
+          padding: 5
+        },
+        onPress: this.addToPlaylist
+      }, React.default.createElement(components.Icon, {
+        name: icons.default.PLUS,
+        color: '#000',
+        style: {
+          fontWeight: 'bold'
+        }
+      })))), React.default.createElement(components.HeaderBar, {
+        headerStyle: [E.header, utils.animInterpolate.forHeader(this._nativeOffset.y)],
+        title: f,
+        goBack: this.goBack,
+        onTop: this.onTop,
+        rightIcon: function () {
+          return React.default.createElement(OverflowMenu.default, {
+            followed: a,
+            onLike: e.onLikeAlbum,
+            onWebview: e.onWebview,
+            onCopy: e.onCopy,
+            onOpenUrl: e.onOpenUrl,
+            onShare: e.onShare
+          });
+        },
+        backIcon: {
+          name: icons.default.WINDOW_CLOSE
+        },
+        bold: true,
+        blur: true
+      }));
+    }
+  },
   E = ReactNative.StyleSheet.create({
     container: {
       flex: 1

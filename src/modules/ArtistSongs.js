@@ -1,19 +1,20 @@
+const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var React = babelHelpers.interopRequireWildcard(require("react")),
+var React = _interopRequireWildcard(require("react")),
   components = require("../components/index"),
-  providers = babelHelpers.interopRequireDefault(require("../services/providers")),
+  providers = _interopRequireDefault(require("../services/providers")),
   events = require("../events/index"),
   utils = require("../utils/index"),
-  queue = babelHelpers.interopRequireDefault(require("../events/queue")),
-  p = function (e) {
-    function t() {
+  queue = _interopRequireDefault(require("../events/queue")),
+  p = class t extends React.PureComponent {
+    constructor() {
       var e, n, r;
-      babelHelpers.classCallCheck(this, t);
       for (var a = arguments.length, p = new Array(a), d = 0; d < a; d++) p[d] = arguments[d];
-      return babelHelpers.possibleConstructorReturn(r, (n = r = babelHelpers.possibleConstructorReturn(this, (e = babelHelpers.getPrototypeOf(t)).call.apply(e, [this].concat(p))), r.formatListItem = function (e) {
+      return n = r = super(...p), r.formatListItem = function (e) {
         var t,
           n = {};
         switch (r.props.api) {
@@ -77,21 +78,16 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
             return r.onMV(m.mvid);
           }
         });
-      }, n));
+      }, n;
     }
-    babelHelpers.createClass(t, [{
-      key: "render",
-      value: function () {
-        var e = this;
-        return this.props.hotSongs.map(function (t, n) {
-          return e._renderItem({
-            item: t,
-            index: n
-          });
+    "render"() {
+      var e = this;
+      return this.props.hotSongs.map(function (t, n) {
+        return e._renderItem({
+          item: t,
+          index: n
         });
-      }
-    }]);
-    babelHelpers.inherits(t, e);
-    return t;
-  }(React.PureComponent);
+      });
+    }
+  };
 exports.default = p;

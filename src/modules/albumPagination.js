@@ -1,17 +1,20 @@
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+const _asyncRuntime = require("@babel/runtime/helpers/regeneratorRuntime")();
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var providers = babelHelpers.interopRequireDefault(require("../services/providers")),
+var providers = _interopRequireDefault(require("../services/providers")),
   services = require("../services/index"),
-  types = babelHelpers.interopRequireWildcard(require("../utils/types")),
+  types = _interopRequireWildcard(require("../utils/types")),
   c = function e(r) {
     var t, n;
-    return regeneratorRuntime.async(function (a) {
+    return _asyncRuntime.async(function (a) {
       for (;;) switch (a.prev = a.next) {
         case 0:
           a.next = 2;
-          return regeneratorRuntime.awrap(services.Netease.artist_album(r));
+          return _asyncRuntime.awrap(services.Netease.artist_album(r));
         case 2:
           if (t = a.sent) {
             a.next = 5;
@@ -32,11 +35,11 @@ var providers = babelHelpers.interopRequireDefault(require("../services/provider
   },
   o = function (e) {
     var r;
-    return regeneratorRuntime.async(function (t) {
+    return _asyncRuntime.async(function (t) {
       for (;;) switch (t.prev = t.next) {
         case 0:
           t.next = 2;
-          return regeneratorRuntime.awrap(services.QQMusic.album(e));
+          return _asyncRuntime.awrap(services.QQMusic.album(e));
         case 2:
           if (r = t.sent, !types.isArray(r)) {
             t.next = 5;
@@ -51,11 +54,11 @@ var providers = babelHelpers.interopRequireDefault(require("../services/provider
   },
   f = function e(r) {
     var t, n;
-    return regeneratorRuntime.async(function (a) {
+    return _asyncRuntime.async(function (a) {
       for (;;) switch (a.prev = a.next) {
         case 0:
           a.next = 2;
-          return regeneratorRuntime.awrap(services.Netease.artist_mv(r));
+          return _asyncRuntime.awrap(services.Netease.artist_mv(r));
         case 2:
           if (t = a.sent) {
             a.next = 5;
@@ -76,11 +79,11 @@ var providers = babelHelpers.interopRequireDefault(require("../services/provider
   },
   p = function (e) {
     var r;
-    return regeneratorRuntime.async(function (t) {
+    return _asyncRuntime.async(function (t) {
       for (;;) switch (t.prev = t.next) {
         case 0:
           t.next = 2;
-          return regeneratorRuntime.awrap(services.QQMusic.artist_mv(e));
+          return _asyncRuntime.awrap(services.QQMusic.artist_mv(e));
         case 2:
           if (!(r = t.sent)) {
             t.next = 5;
@@ -96,7 +99,7 @@ var providers = babelHelpers.interopRequireDefault(require("../services/provider
   l = {
     albums: function (e) {
       var r, t, n, a;
-      return regeneratorRuntime.async(function (s) {
+      return _asyncRuntime.async(function (s) {
         for (;;) switch (s.prev = s.next) {
           case 0:
             if (r = e.api, t = e.id, r !== providers.default.netEase) {
@@ -104,7 +107,7 @@ var providers = babelHelpers.interopRequireDefault(require("../services/provider
               break;
             }
             s.next = 4;
-            return regeneratorRuntime.awrap(c(t));
+            return _asyncRuntime.awrap(c(t));
           case 4:
             n = s.sent;
             return s.abrupt("return", n);
@@ -114,7 +117,7 @@ var providers = babelHelpers.interopRequireDefault(require("../services/provider
               break;
             }
             s.next = 11;
-            return regeneratorRuntime.awrap(o(t));
+            return _asyncRuntime.awrap(o(t));
           case 11:
             a = s.sent;
             return s.abrupt("return", a);
@@ -126,7 +129,7 @@ var providers = babelHelpers.interopRequireDefault(require("../services/provider
     },
     mvs: function (e) {
       var r, t, n, a;
-      return regeneratorRuntime.async(function (s) {
+      return _asyncRuntime.async(function (s) {
         for (;;) switch (s.prev = s.next) {
           case 0:
             if (r = e.api, t = e.id, r !== providers.default.netEase) {
@@ -134,7 +137,7 @@ var providers = babelHelpers.interopRequireDefault(require("../services/provider
               break;
             }
             s.next = 4;
-            return regeneratorRuntime.awrap(f(t));
+            return _asyncRuntime.awrap(f(t));
           case 4:
             n = s.sent;
             return s.abrupt("return", n);
@@ -144,7 +147,7 @@ var providers = babelHelpers.interopRequireDefault(require("../services/provider
               break;
             }
             s.next = 11;
-            return regeneratorRuntime.awrap(p(t));
+            return _asyncRuntime.awrap(p(t));
           case 11:
             a = s.sent;
             return s.abrupt("return", a);

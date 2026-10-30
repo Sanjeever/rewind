@@ -1,26 +1,30 @@
+const _default = require("@react-native-clipboard/clipboard").default;
+const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+const _asyncRuntime = require("@babel/runtime/helpers/regeneratorRuntime")();
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = exports.RELEASE_MODE = void 0;
-var React = babelHelpers.interopRequireWildcard(require("react")),
+var React = _interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
   components = require("../components/index"),
-  module811 = babelHelpers.interopRequireDefault(require("../modules/module-811")),
-  providers = babelHelpers.interopRequireDefault(require("../services/providers")),
+  OverflowMenu = _interopRequireDefault(require("./../modules/OverflowMenu.js")),
+  providers = _interopRequireDefault(require("../services/providers")),
   constants = require("../theme/constants"),
-  icons = babelHelpers.interopRequireDefault(require("../theme/icons")),
-  locales = babelHelpers.interopRequireDefault(require("../locales/index")),
+  icons = _interopRequireDefault(require("../theme/icons")),
+  locales = _interopRequireDefault(require("../locales/index")),
   services = require("../services/index"),
   utils = require("../utils/index"),
-  types = babelHelpers.interopRequireWildcard(require("../utils/types")),
+  types = _interopRequireWildcard(require("../utils/types")),
   sharedUrlsModule = require("../services/sharedUrls"),
-  users = babelHelpers.interopRequireDefault(require("../storage/users")),
-  module814 = babelHelpers.interopRequireDefault(require("../modules/module-814")),
-  module815 = babelHelpers.interopRequireDefault(require("../modules/module-815")),
-  module816 = babelHelpers.interopRequireDefault(require("../modules/module-816")),
-  module817 = babelHelpers.interopRequireDefault(require("../modules/module-817")),
-  module818 = babelHelpers.interopRequireDefault(require("../modules/module-818")),
-  styles = babelHelpers.interopRequireDefault(require("./artist/styles")),
+  users = _interopRequireDefault(require("../storage/users")),
+  ArtistAlbums = _interopRequireDefault(require("./../modules/ArtistAlbums.js")),
+  ArtistVideos = _interopRequireDefault(require("./../modules/ArtistVideos.js")),
+  albumPagination = _interopRequireDefault(require("./../modules/albumPagination.js")),
+  artistAliases = _interopRequireDefault(require("./../modules/artistAliases.js")),
+  ArtistSongs = _interopRequireDefault(require("./../modules/ArtistSongs.js")),
+  styles = _interopRequireDefault(require("./artist/styles")),
   R = {
     all: 'all',
     albums: 'albums',
@@ -32,12 +36,11 @@ var x = {
     albums: '\u4e13\u8f91',
     singlesAndEps: '\u5355\u66f2 & EPs'
   },
-  k = function (e) {
-    function t() {
+  k = class t extends React.PureComponent {
+    constructor() {
       var e, n, a;
-      babelHelpers.classCallCheck(this, t);
       for (var r = arguments.length, i = new Array(r), o = 0; o < r; o++) i[o] = arguments[o];
-      return babelHelpers.possibleConstructorReturn(a, (n = a = babelHelpers.possibleConstructorReturn(this, (e = babelHelpers.getPrototypeOf(t)).call.apply(e, [this].concat(i))), a._nativeOffset = {
+      return n = a = super(...i), a._nativeOffset = {
         x: new ReactNative.Animated.Value(0),
         y: new ReactNative.Animated.Value(0)
       }, a.state = {
@@ -56,13 +59,13 @@ var x = {
         singlesAndEpsGroup: []
       }, a.getNeteaseArtistSongs = function (e) {
         var t, n, r, s, l, i;
-        return regeneratorRuntime.async(function (o) {
+        return _asyncRuntime.async(function (o) {
           for (;;) switch (o.prev = o.next) {
             case 0:
               o.next = 2;
-              return regeneratorRuntime.awrap(services.Netease.artist(e));
+              return _asyncRuntime.awrap(services.Netease.artist(e));
             case 2:
-              (t = o.sent) && (n = t.hotSongs, r = t.artist, s = r.img1v1Url ? r.img1v1Url + '?param=500y500' : null, l = r.followed || false, i = (0, module817.default)(r), a.setState({
+              (t = o.sent) && (n = t.hotSongs, r = t.artist, s = r.img1v1Url ? r.img1v1Url + '?param=500y500' : null, l = r.followed || false, i = (0, artistAliases.default)(r), a.setState({
                 hotSongs: n,
                 followed: l,
                 subtitle: i
@@ -108,11 +111,11 @@ var x = {
         }
       }, a.getAlbums = function (e, t) {
         var n, r, s;
-        return regeneratorRuntime.async(function (l) {
+        return _asyncRuntime.async(function (l) {
           for (;;) switch (l.prev = l.next) {
             case 0:
               l.next = 2;
-              return regeneratorRuntime.awrap(module816.default.albums({
+              return _asyncRuntime.awrap(albumPagination.default.albums({
                 id: e,
                 api: t
               }));
@@ -137,11 +140,11 @@ var x = {
         }, null, this);
       }, a.getMVs = function (e, t) {
         var n;
-        return regeneratorRuntime.async(function (r) {
+        return _asyncRuntime.async(function (r) {
           for (;;) switch (r.prev = r.next) {
             case 0:
               r.next = 2;
-              return regeneratorRuntime.awrap(module816.default.mvs({
+              return _asyncRuntime.awrap(albumPagination.default.mvs({
                 api: t,
                 id: e
               }));
@@ -193,11 +196,11 @@ var x = {
         }]) : a.onLikeArtistImpl();
       }, a.qqMusicLikeArtist = function (e, t) {
         var n, a, r, s;
-        return regeneratorRuntime.async(function (l) {
+        return _asyncRuntime.async(function (l) {
           for (;;) switch (l.prev = l.next) {
             case 0:
               l.next = 2;
-              return regeneratorRuntime.awrap(users.default.getUserInfo());
+              return _asyncRuntime.awrap(users.default.getUserInfo());
             case 2:
               if ('object' != typeof (n = l.sent)) {
                 l.next = 7;
@@ -207,7 +210,7 @@ var x = {
               r = a.userId;
               s = a.cookies;
               l.next = 7;
-              return regeneratorRuntime.awrap(services.QQMusic.like_artist({
+              return _asyncRuntime.awrap(services.QQMusic.like_artist({
                 mid: e,
                 cookies: s,
                 userId: r,
@@ -220,11 +223,11 @@ var x = {
         }, null, this);
       }, a.netEaseLikeArtist = function (e, t) {
         var n;
-        return regeneratorRuntime.async(function (a) {
+        return _asyncRuntime.async(function (a) {
           for (;;) switch (a.prev = a.next) {
             case 0:
               a.next = 2;
-              return regeneratorRuntime.awrap(services.Netease.sublist_artist_add({
+              return _asyncRuntime.awrap(services.Netease.sublist_artist_add({
                 id: e,
                 op: true === t ? 'sub' : 'unsub'
               }));
@@ -251,7 +254,7 @@ var x = {
         }));
       }, a.onCopy = function () {
         var e = a.state.artistName;
-        ReactNative.Clipboard.setString(e);
+        _default.setString(e);
         toast(locales.default.COPIED + " " + e);
       }, a.onWebview = function () {
         var e = a.getSharedLink();
@@ -287,20 +290,20 @@ var x = {
           u = t.releaseMode;
         switch (n) {
           case 0:
-            return r.length > 0 ? React.default.createElement(module818.default, {
+            return r.length > 0 ? React.default.createElement(ArtistSongs.default, {
               hotSongs: r,
               api: o,
               navigation: e
             }) : null;
           case 1:
-            return l.length > 0 ? React.default.createElement(module814.default, {
+            return l.length > 0 ? React.default.createElement(ArtistAlbums.default, {
               albums: a.getAlbumData(l, o, u),
               api: o,
               navigation: e,
               releaseMode: u
             }) : null;
           case 2:
-            return i.length > 0 ? React.default.createElement(module815.default, {
+            return i.length > 0 ? React.default.createElement(ArtistVideos.default, {
               api: o,
               mvs: i,
               navigation: e
@@ -308,121 +311,114 @@ var x = {
         }
       }, a.goBack = function () {
         a.props.navigation.goBack();
-      }, n));
+      }, n;
     }
-    babelHelpers.createClass(t, [{
-      key: "componentDidMount",
-      value: function () {
-        var e = this.props.navigation.state.params;
-        if (e) {
-          var t = e.item,
-            n = e.api;
-          n && (this.getArtistInfo(t, n), this.setState({
-            api: n,
-            followed: 1 === t.is_follow
-          }));
-        }
-      }
-    }, {
-      key: "render",
-      value: function () {
-        var e = this,
-          t = this.state,
-          n = t.index,
-          a = t.hotSongs,
-          r = t.followed,
-          u = t.artistImg,
-          p = t.artistName,
-          b = t.subtitle,
-          h = t.albums,
-          v = t.mvs,
-          E = t.releaseMode;
-        return React.default.createElement(ReactNative.View, {
-          style: styles.default.container
-        }, React.default.createElement(components.Background, null), React.default.createElement(components.ParallaxScrollView, {
-          onNativeContentOffsetExtract: this._nativeOffset,
-          onRef: function (t) {
-            return e._list = t;
-          }
-        }, React.default.createElement(components.ParallaxForeground, {
-          img: u,
-          title: p,
-          alias: b,
-          subtitle: [types.isArray(h) && h.length + " " + locales.default.ALBUM_COUNT, types.isArray(v) && v.length + " " + locales.default.MV_COUNT],
-          animOffsetY: this._nativeOffset.y
-        }), React.default.createElement(ReactNative.View, {
-          style: {
-            margin: 15,
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-around'
-          }
-        }, React.default.createElement(components.TextButton, {
-          text: locales.default.ARTIST_SONGS,
-          style: styles.default.btnCon,
-          textStyle: 0 === n && styles.default.strong,
-          onPress: function () {
-            return e.setState({
-              index: 0
-            });
-          }
-        }), React.default.createElement(ReactNative.View, {
-          style: {
-            alignItems: 'center'
-          }
-        }, React.default.createElement(components.TextButton, {
-          text: x[E],
-          style: styles.default.btnCon,
-          textStyle: 1 === n && styles.default.strong,
-          onPress: this.onReleaseTab
-        }), React.default.createElement(ReactNative.View, {
-          style: styles.default.dotContainer
-        }, [R.all, R.albums, R.singlesAndEps].map(function (e, t) {
-          return React.default.createElement(ReactNative.View, {
-            key: t,
-            style: [styles.default.dot, e !== E && {
-              opacity: .4
-            }]
-          });
-        }))), React.default.createElement(components.TextButton, {
-          text: locales.default.ARTIST_MV,
-          style: styles.default.btnCon,
-          textStyle: 2 === n && styles.default.strong,
-          onPress: function () {
-            return e.setState({
-              index: 2
-            });
-          }
-        })), (null === a || void 0 === a ? void 0 : a.length) > 0 ? this.renderTabs() : React.default.createElement(components.Spinkit, {
-          style: [ReactNative.StyleSheet.absoluteFill, {
-            paddingTop: constants.DEVICE_WIDTH + 200
-          }]
-        }), React.default.createElement(components.EmptyFooter, null)), React.default.createElement(components.HeaderBar, {
-          headerStyle: [styles.default.header, utils.animInterpolate.forHeader(this._nativeOffset.y)],
-          title: p,
-          goBack: this.goBack,
-          onTop: this.onTop,
-          iconColor: '#eee',
-          fontColor: "#fff",
-          rightIcon: function () {
-            return React.default.createElement(module811.default, {
-              followed: r,
-              onLike: e.onLikeArtist,
-              onWebview: e.onWebview,
-              onCopy: e.onCopy,
-              onOpenUrl: e.onOpenUrl,
-              onShare: e.onShare
-            });
-          },
-          backIcon: {
-            name: icons.default.WINDOW_CLOSE
-          },
-          blur: true,
-          bold: true
+    "componentDidMount"() {
+      var e = this.props.route.params;
+      if (e) {
+        var t = e.item,
+          n = e.api;
+        n && (this.getArtistInfo(t, n), this.setState({
+          api: n,
+          followed: 1 === t.is_follow
         }));
       }
-    }]);
-    babelHelpers.inherits(t, e);
-    return t;
-  }(React.PureComponent);
+    }
+    "render"() {
+      var e = this,
+        t = this.state,
+        n = t.index,
+        a = t.hotSongs,
+        r = t.followed,
+        u = t.artistImg,
+        p = t.artistName,
+        b = t.subtitle,
+        h = t.albums,
+        v = t.mvs,
+        E = t.releaseMode;
+      return React.default.createElement(ReactNative.View, {
+        style: styles.default.container
+      }, React.default.createElement(components.Background, null), React.default.createElement(components.ParallaxScrollView, {
+        onNativeContentOffsetExtract: this._nativeOffset,
+        onRef: function (t) {
+          return e._list = t;
+        }
+      }, React.default.createElement(components.ParallaxForeground, {
+        img: u,
+        title: p,
+        alias: b,
+        subtitle: [types.isArray(h) && h.length + " " + locales.default.ALBUM_COUNT, types.isArray(v) && v.length + " " + locales.default.MV_COUNT],
+        animOffsetY: this._nativeOffset.y
+      }), React.default.createElement(ReactNative.View, {
+        style: {
+          margin: 15,
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-around'
+        }
+      }, React.default.createElement(components.TextButton, {
+        text: locales.default.ARTIST_SONGS,
+        style: styles.default.btnCon,
+        textStyle: 0 === n && styles.default.strong,
+        onPress: function () {
+          return e.setState({
+            index: 0
+          });
+        }
+      }), React.default.createElement(ReactNative.View, {
+        style: {
+          alignItems: 'center'
+        }
+      }, React.default.createElement(components.TextButton, {
+        text: x[E],
+        style: styles.default.btnCon,
+        textStyle: 1 === n && styles.default.strong,
+        onPress: this.onReleaseTab
+      }), React.default.createElement(ReactNative.View, {
+        style: styles.default.dotContainer
+      }, [R.all, R.albums, R.singlesAndEps].map(function (e, t) {
+        return React.default.createElement(ReactNative.View, {
+          key: t,
+          style: [styles.default.dot, e !== E && {
+            opacity: .4
+          }]
+        });
+      }))), React.default.createElement(components.TextButton, {
+        text: locales.default.ARTIST_MV,
+        style: styles.default.btnCon,
+        textStyle: 2 === n && styles.default.strong,
+        onPress: function () {
+          return e.setState({
+            index: 2
+          });
+        }
+      })), (null === a || void 0 === a ? void 0 : a.length) > 0 ? this.renderTabs() : React.default.createElement(components.Spinkit, {
+        style: [ReactNative.StyleSheet.absoluteFill, {
+          paddingTop: constants.DEVICE_WIDTH + 200
+        }]
+      }), React.default.createElement(components.EmptyFooter, null)), React.default.createElement(components.HeaderBar, {
+        headerStyle: [styles.default.header, utils.animInterpolate.forHeader(this._nativeOffset.y)],
+        title: p,
+        goBack: this.goBack,
+        onTop: this.onTop,
+        iconColor: '#eee',
+        fontColor: "#fff",
+        rightIcon: function () {
+          return React.default.createElement(OverflowMenu.default, {
+            followed: r,
+            onLike: e.onLikeArtist,
+            onWebview: e.onWebview,
+            onCopy: e.onCopy,
+            onOpenUrl: e.onOpenUrl,
+            onShare: e.onShare
+          });
+        },
+        backIcon: {
+          name: icons.default.WINDOW_CLOSE
+        },
+        blur: true,
+        bold: true
+      }));
+    }
+  };
 exports.default = k;
