@@ -70,6 +70,12 @@ $adb = Join-Path $sdkRoot 'platform-tools/adb.exe'
 
 当前依赖边界为兼容运行库，第三方 Java、JNI 和公共 JS 还未全部替换成正式上游依赖。ExoPlayer 的版本常量已确认 2.17.1，其他精确依赖版本仍待整理。开发 Manifest 保留业务服务、媒体按键、文件提供器和裁剪入口，未启用原版统计初始化组件。四个 JNI ABI 已纳入 APK，目前实际运行验证覆盖 x86_64。
 
+异常栈格式化类有一份源码兼容补丁，未知行号显示 `?`，避免格式化异常覆盖原始 JS 消息。运行库准备时剔除对应二进制类，再由工程编译补丁；不吞掉原始错误。可运行以下检查，使用接口代理覆盖缺失、空值和正常行列号，再结合设备实际页面验证。
+
+```powershell
+pwsh -NoProfile -File scripts/check-exceptions.ps1
+```
+
 ## JavaScript 源码
 
 入口为 `index.js` 和 `src/App.js`。页面路由位于 `src/navigation/index.js`，主要页面在 `src/screens/`，播放器在 `src/player/`，网络服务在 `src/services/`，存储在 `src/storage/`，原生调用封装在 `src/native/`。尚未确定语义的内部模块使用 `module-编号.js` 命名，后续继续整理。

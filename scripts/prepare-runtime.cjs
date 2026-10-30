@@ -9,6 +9,7 @@ const runtime = new Zip();
 let removed = 0;
 for (const entry of original.getEntries().filter(entry=>!entry.isDirectory)) {
   if (entry.entryName.startsWith('com/modules/') || entry.entryName.startsWith('com/kuss/rewind/')) { removed++; continue; }
+  if (entry.entryName === 'd/e/m/z0/a.class') continue;
   runtime.addFile(entry.entryName,entry.getData());
 }
 fs.mkdirSync('.recovery/runtime',{recursive:true});
@@ -22,4 +23,4 @@ for (const abi of ['arm64-v8a','armeabi-v7a','x86','x86_64']) {
     fs.writeFileSync(output,entry.getData());
   }
 }
-console.log(`本地兼容库已移除 ${removed} 个自有类；自有原生代码必须从 android/app/src/main/java 编译`);
+console.log(`本地兼容库已移除 ${removed} 个自有类和异常格式兼容类；这些类由 android/app/src/main/java 编译`);
