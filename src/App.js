@@ -1,175 +1,124 @@
-const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
-const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
-const {mergeSettings} = require('./settings/merge.cjs');
-const _objectSpread = require("@babel/runtime/helpers/objectSpread2");
-const _appStorage = require("./storage/index.js");
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-require("./bootstrap/globals");
-require("./storage/index");
-var immer = require("immer"),
-  React = _interopRequireWildcard(require("react")),
-  ReactNative = require("react-native"),
-  reactNativePopupMenu = require("react-native-popup-menu"),
-  modals = require("./modals/index"),
-  defaults = require("./settings/defaults"),
-  names = _interopRequireDefault(require("./events/names")),
-  keys = _interopRequireDefault(require("./storage/keys")),
-  player = _interopRequireDefault(require("./player/index")),
-  errors = _interopRequireDefault(require("./bootstrap/errors")),
-  utils = require("./utils/index"),
-  navigationBar = _interopRequireDefault(require("./native/navigationBar")),
-  orientation = _interopRequireDefault(require("./native/orientation")),
-  permissions = _interopRequireDefault(require("./native/permissions")),
-  lastQueue = _interopRequireDefault(require("./storage/lastQueue")),
-  update = _interopRequireDefault(require("./services/update")),
-  navigation = _interopRequireDefault(require("./navigation/index")),
-  events = require("./events/index"),
-  k = class t extends React.PureComponent {
-    settingsLoaded = false;
-    constructor() {
-      var e, a, n;
-      for (var l = arguments.length, r = new Array(l), o = 0; o < l; o++) r[o] = arguments[o];
-      return a = n = super(...r), n.state = {
-        displayNowPlaying: false,
-        playerInfo: {
-          tracks: [],
-          songItem: null,
-          songItemInfo: {
-            singer: null,
-            song: null
-          },
-          playingIndex: null,
-          api: null
-        },
-        lyric: null,
-        hasTrans: false,
-        checkPermissionDone: false,
-        settings: (0, utils.extractKeyValue)(defaults.defaultSettings, 'on'),
-        bottomPaddingValue: 0
-      }, n.initLoad = function () {
-        orientation.default.lockToPortrait();
-        navigationBar.default.transparentStatusBar();
-        n.loadSettings();
-      }, n.setPlayerData = function (e) {
-        var t = _objectSpread({}, n.state.playerInfo, e);
-        n.setState({
-          playerInfo: t
-        });
-      }, n.loadSettings = async function () {
-        let e;
-        try {
-          e = await _appStorage.storage.load({key: keys.default.settings});
-        } catch (error) {
-          if (error.name !== 'NotFoundError') throw error;
-          e = defaults.defaultSettings;
-          await _appStorage.storage.save({key: keys.default.settings, data: e});
-        }
-          e = mergeSettings(e, defaults.defaultSettings);
-          const firstLoad = !n.settingsLoaded;
-          n.settingsLoaded = true;
-          n.setState((0, immer.produce)(function (t) {
-            t.settings = (0, utils.extractKeyValue)(e, 'on');
-            t.bottomPaddingValue = e.bottomPadding.subtitle;
-          }), function () {
-            if (firstLoad && e.autoLoadLastPlayedTracks.on) {
-              lastQueue.default.emit().catch(error => toast('恢复播放队列失败：' + error.message));
-            }
-          });
-          events.emitter.emit(names.default.SetHomeState, {
-            autoSetPlaylistOrder: e.autoSetPlaylistOrder.on
-          });
-      }, n.setDisplayNowPlaying = function (e) {
-        n.setState({
-          displayNowPlaying: e
-        });
-      }, n.setLyric = function (e, t) {
-        n.setState({
-          lyric: e,
-          hasTrans: t
-        });
-      }, a;
-    }
-    "UNSAFE_componentWillMount"() {
-      var e = this;
-      permissions.default.checkPermission().then(function () {
-        e.setState({
-          checkPermissionDone: true
-        });
-        e.initLoad();
-        update.default.onlyCheck();
-      });
-    }
-    "componentDidMount"() {
-      var e = this;
-      this.bottomPaddingValueListener = events.emitter.addListener(names.default.BottomPaddingChange, function (t) {
-        e.setState((0, immer.produce)(function (e) {
-          e.bottomPaddingValue = t;
-        }));
-      });
-      this.settingsChangedListener = events.emitter.addListener(names.default.SettingsChanged, function () {
-        e.loadSettings();
-      });
-      (0, errors.default)();
-    }
-    "componentWillUnmount"() {
-      this.bottomPaddingValueListener.remove();
-      this.settingsChangedListener.remove();
-    }
-    "render"() {
-      var e = this.state,
-        t = e.settings,
-        a = e.displayNowPlaying,
-        n = e.playerInfo,
-        l = e.lyric,
-        i = e.hasTrans,
-        d = e.checkPermissionDone,
-        c = e.bottomPaddingValue;
-      if (true !== d) return null;
-      var f = t.hideStatusBar,
-        g = t.cloneThroughLinking,
-        y = t.isRound,
-        m = t.disabledRouterTransition;
-      return React.default.createElement(reactNativePopupMenu.MenuProvider, null, React.default.createElement(ReactNative.View, {
-        style: {
-          flex: 1
-        }
-      }, React.default.createElement(ReactNative.StatusBar, {
-        backgroundColor: 0,
-        translucent: true,
-        hidden: f
-      }), React.default.createElement(navigation.default, {
-        animationEnabled: !m,
-        statusBarHidden: f
-      }), React.default.createElement(player.default, {
-        setDisplayNowPlaying: this.setDisplayNowPlaying,
-        setPlayerData: this.setPlayerData,
-        tracks: n.tracks,
-        songItem: n.songItem,
-        songItemInfo: n.songItemInfo,
-        playingIndex: n.playingIndex,
-        api: n.api,
-        lyric: l,
-        hasTrans: i,
-        setLyric: this.setLyric,
-        settings: t,
-        bottomPaddingValue: c
-      }), React.default.createElement(modals.LongPressModal, null), React.default.createElement(modals.DetailModal, {
-        cloneThroughLinking: g,
-        isRound: y
-      }), React.default.createElement(modals.CollectModal, null), React.default.createElement(modals.NowPlayingModal, {
-        api: n.api,
-        data: n.tracks,
-        songItem: n.songItem,
-        index: n.playingIndex,
-        setDisplayNowPlaying: this.setDisplayNowPlaying,
-        show: a,
-        isRound: y
-      }), React.default.createElement(modals.SavePicModal, null), React.default.createElement(modals.ChangePlaylistModal, {
-        songItem: n.songItem
-      })));
+import './bootstrap/globals';
+import React from 'react';
+import {StatusBar, View} from 'react-native';
+import {MenuProvider} from 'react-native-popup-menu';
+import {mergeSettings} from './settings/merge.cjs';
+import {storage} from './storage';
+import * as modals from './modals';
+import {defaultSettings} from './settings/defaults';
+import names from './events/names';
+import {emitter} from './events';
+import keys from './storage/keys';
+import Player from './player';
+import installErrorHandler from './bootstrap/errors';
+import {extractKeyValue} from './utils';
+import navigationBar from './native/navigationBar';
+import orientation from './native/orientation';
+import permissions from './native/permissions';
+import lastQueue from './storage/lastQueue';
+import update from './services/update';
+import Navigation from './navigation';
+
+export default class App extends React.PureComponent {
+  settingsLoaded = false;
+  state = {
+    displayNowPlaying: false,
+    playerInfo: {
+      tracks: [],
+      songItem: null,
+      songItemInfo: {singer: null, song: null},
+      playingIndex: null,
+      api: null,
+    },
+    lyric: null,
+    hasTrans: false,
+    checkPermissionDone: false,
+    settings: extractKeyValue(defaultSettings, 'on'),
+    bottomPaddingValue: 0,
+  };
+
+  componentDidMount() {
+    this.bottomPaddingSubscription = emitter.addListener(names.BottomPaddingChange, bottomPaddingValue => {
+      this.setState({bottomPaddingValue});
+    });
+    this.settingsSubscription = emitter.addListener(names.SettingsChanged, this.loadSettings);
+    installErrorHandler();
+    this.initialize();
+  }
+
+  componentWillUnmount() {
+    this.bottomPaddingSubscription.remove();
+    this.settingsSubscription.remove();
+  }
+
+  initialize = async () => {
+    try {
+      await permissions.checkPermission();
+      orientation.lockToPortrait();
+      navigationBar.transparentStatusBar();
+      this.setState({checkPermissionDone: true}, this.loadSettings);
+      update.onlyCheck();
+    } catch (error) {
+      toast('初始化失败：' + error.message);
     }
   };
-exports.default = k;
+
+  setPlayerData = (updateQueue, onCommitted) => {
+    this.setState(state => {
+      const changes = typeof updateQueue === 'function' ? updateQueue(state.playerInfo) : updateQueue;
+      return {playerInfo: {...state.playerInfo, ...changes}};
+    }, () => onCommitted?.(this.state.playerInfo));
+  };
+
+  loadSettings = async () => {
+    try {
+      let saved;
+      try {
+        saved = await storage.load({key: keys.settings});
+      } catch (error) {
+        if (error.name !== 'NotFoundError') throw error;
+        saved = defaultSettings;
+        await storage.save({key: keys.settings, data: saved});
+      }
+      const settings = mergeSettings(saved, defaultSettings);
+      const firstLoad = !this.settingsLoaded;
+      this.settingsLoaded = true;
+      this.setState({
+        settings: extractKeyValue(settings, 'on'),
+        bottomPaddingValue: settings.bottomPadding.subtitle,
+      }, () => {
+        if (firstLoad && settings.autoLoadLastPlayedTracks.on) {
+          lastQueue.emit().catch(error => toast('恢复播放队列失败：' + error.message));
+        }
+      });
+      emitter.emit(names.SetHomeState, {autoSetPlaylistOrder: settings.autoSetPlaylistOrder.on});
+    } catch (error) {
+      toast('读取设置失败：' + error.message);
+    }
+  };
+
+  setDisplayNowPlaying = displayNowPlaying => this.setState({displayNowPlaying});
+  setLyric = (lyric, hasTrans) => this.setState({lyric, hasTrans});
+
+  render() {
+    const {settings, displayNowPlaying, playerInfo, lyric, hasTrans, checkPermissionDone, bottomPaddingValue} = this.state;
+    if (!checkPermissionDone) return null;
+    return <MenuProvider>
+      <View style={{flex: 1}}>
+        <StatusBar backgroundColor="transparent" translucent hidden={settings.hideStatusBar} />
+        <Navigation animationEnabled={!settings.disabledRouterTransition} statusBarHidden={settings.hideStatusBar} />
+        <Player {...playerInfo} lyric={lyric} hasTrans={hasTrans} settings={settings}
+          bottomPaddingValue={bottomPaddingValue} setPlayerData={this.setPlayerData}
+          setDisplayNowPlaying={this.setDisplayNowPlaying} setLyric={this.setLyric} />
+        <modals.LongPressModal />
+        <modals.DetailModal cloneThroughLinking={settings.cloneThroughLinking} isRound={settings.isRound} />
+        <modals.CollectModal />
+        <modals.NowPlayingModal api={playerInfo.api} data={playerInfo.tracks} songItem={playerInfo.songItem}
+          index={playerInfo.playingIndex} setDisplayNowPlaying={this.setDisplayNowPlaying}
+          show={displayNowPlaying} isRound={settings.isRound} />
+        <modals.SavePicModal />
+        <modals.ChangePlaylistModal songItem={playerInfo.songItem} />
+      </View>
+    </MenuProvider>;
+  }
+}
