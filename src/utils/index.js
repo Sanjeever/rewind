@@ -83,7 +83,7 @@ Object.defineProperty(exports, "universalNavigator", {
 exports.keepBound = exports.emojiStrip = exports.groupedArray = exports.extractKeyValue = exports.swap = exports.delay = exports.stripper = exports.shuffle = exports.usable = exports.delve = void 0;
 var animInterpolate = _interopRequireDefault(require("./animInterpolate")),
   base64 = _interopRequireDefault(require("./base64")),
-  Runtime557 = _interopRequireDefault(require("spark-md5").hash),
+  Runtime557 = _interopRequireDefault(require("./md5")),
   dialogs = _interopRequireDefault(require("./dialogs")),
   filterHelper = _interopRequireDefault(require("./filterHelper")),
   firstTimeChecker = _interopRequireDefault(require("./firstTimeChecker")),

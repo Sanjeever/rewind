@@ -1,6 +1,6 @@
 const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
-const _asyncRuntime = require("regenerator-runtime");
+const _asyncRuntime = require("@babel/runtime/helpers/regeneratorRuntime")();
 Object.defineProperty(exports, "__esModule", {
   value: true
 });

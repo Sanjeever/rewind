@@ -1,5 +1,5 @@
 const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
-const _asyncRuntime = require("regenerator-runtime");
+const _asyncRuntime = require("@babel/runtime/helpers/regeneratorRuntime")();
 const _appStorage = require("./../storage/index.js");
 Object.defineProperty(exports, "__esModule", {
   value: true

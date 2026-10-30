@@ -1,4 +1,4 @@
-const _asyncRuntime = require("regenerator-runtime");
+const _asyncRuntime = require("@babel/runtime/helpers/regeneratorRuntime")();
 Object.defineProperty(exports, "__esModule", {
   value: true
 });

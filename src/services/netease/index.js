@@ -1,6 +1,6 @@
 const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
 const _classCallCheck = require("@babel/runtime/helpers/classCallCheck");
-const _asyncRuntime = require("regenerator-runtime");
+const _asyncRuntime = require("@babel/runtime/helpers/regeneratorRuntime")();
 const _toConsumableArray = require("@babel/runtime/helpers/toConsumableArray");
 const _objectSpread = require("@babel/runtime/helpers/objectSpread2");
 Object.defineProperty(exports, "__esModule", {
