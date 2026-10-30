@@ -30,7 +30,7 @@ var React = require("react"),
   history = require("../storage/history"),
   cache = _interopRequireDefault(require("./cache")),
   lyricPreferences = _interopRequireDefault(require("./lyricPreferences")),
-  queue = _interopRequireDefault(require("./queue")),
+  queue = require("./queue"),
   playModeModule = _interopRequireDefault(require("./playMode")),
   lyrics = _interopRequireDefault(require("./lyrics")),
   trackUrl = _interopRequireDefault(require("./trackUrl")),
@@ -221,13 +221,13 @@ var React = require("react"),
           if (n.switchSong(), !types.isObject(e.song) || !types.isArray(e.data)) return void n.setState({
             url: null
           });
-          var t = new queue.default(n.props, n.state.playMode),
-            a = t.api(e),
-            r = t.index(e),
-            i = t.songItem(e, e.data),
-            s = t.data(e, e.data, i),
+          var selection = queue.selectQueue(n.props, e, n.state.playMode),
+            a = selection.api,
+            r = selection.playingIndex,
+            i = selection.songItem,
+            s = selection.tracks,
             o = (0, trackInfo.extractFullInfo)(i, true === n.state.expanded ? 'big' : 'small');
-          'random' === n.state.playMode && s.length !== n.props.tracks.length && (0, playOrder.getRandomArray)(_assertThisInitialized(_assertThisInitialized(n)), s.length);
+          'random' === n.state.playMode && s.length !== n.props.tracks.length && n.setState({randomArray: playOrder.createPlayOrder(s.length)});
           n.loadPlayerResource({
             api: a,
             obj: o,
@@ -755,7 +755,7 @@ var React = require("react"),
           case 'list':
             e = 'random';
         }
-        'random' === e && (0, playOrder.getRandomArray)(_assertThisInitialized(_assertThisInitialized(n)), n.props.tracks.length || 0);
+        'random' === e && n.setState({randomArray: playOrder.createPlayOrder(n.props.tracks.length)});
         n.setState({
           playMode: e
         });
@@ -844,17 +844,8 @@ var React = require("react"),
         return (0, queueActions.default)(t, e);
       });
       this.deleteFromQueueListener = events.emitter.addListener(names.default.DeleteFromQueue, function (e) {
-        var a = e.item,
-          n = t.props.tracks.filter(function (e) {
-            return (0, trackInfo.extractFullInfo)(e).song !== (0, trackInfo.extractFullInfo)(a).song;
-          }),
-          r = n.findIndex(function (e) {
-            return (0, trackInfo.extractFullInfo)(e).song === (0, trackInfo.extractFullInfo)(t.props.songItem).song;
-          });
-        t.props.setPlayerData({
-          tracks: n,
-          playingIndex: r
-        });
+        var next = queue.removeFromQueue(t.props, e.item);
+        t.props.setPlayerData({tracks: next.tracks, playingIndex: next.playingIndex});
       });
       this.fmModeListener = events.emitter.addListener(names.default.FM_MODE, function () {
         var a = t.state.isFM;

@@ -1,47 +1,26 @@
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.getNextPlayIndexByPagerPos = exports.getRandomArray = exports.getRandomIndex = exports.getNextPlayIndex = void 0;
-var utils = require("../utils/index");
-exports.getNextPlayIndex = function (e) {
-  var n = e.type,
-    a = e.tracks,
-    r = e.playingIndex;
-  r += 'next' === n ? 1 : -1;
-  return r = (0, utils.keepBound)(r, a.length);
-};
-var o = function (e) {
-  var n = e.type,
-    a = e.randomArray,
-    r = e.playingIndex,
-    t = a.indexOf(r);
-  switch (n) {
-    case 'next':
-    case 'random':
-      t += 1;
-      break;
-    case 'pre':
-      t -= 1;
+const wrap = (index, length) => length ? (index + length) % length : -1;
+
+export function getNextPlayIndex({type, tracks, playingIndex}) {
+  return wrap(playingIndex + (type === 'next' ? 1 : -1), tracks.length);
+}
+
+export function getRandomIndex({type, randomArray, playingIndex}) {
+  const position = randomArray.indexOf(playingIndex);
+  return randomArray[wrap(position + (type === 'pre' ? -1 : 1), randomArray.length)] ?? -1;
+}
+
+export function createPlayOrder(length, random = Math.random) {
+  const order = Array.from({length}, (_, index) => index);
+  for (let index = order.length - 1; index > 0; index--) {
+    const target = Math.floor(random() * (index + 1));
+    [order[index], order[target]] = [order[target], order[index]];
   }
-  return a[t = (0, utils.keepBound)(t, a.length)];
-};
-exports.getRandomIndex = o;
-exports.getRandomArray = function (e, n) {
-  for (var a = Array(n), r = 0; r < n; r++) a[r] = r;
-  var t = (0, utils.shuffle)(a);
-  e.setState({
-    randomArray: t
-  });
-};
-exports.getNextPlayIndexByPagerPos = function (e) {
-  var n = e.pos,
-    a = e.playMode,
-    r = e.randomArray,
-    t = e.playingIndex,
-    y = e.len;
-  return 1 === n ? t : 'random' === a ? o({
-    type: 0 === n ? 'pre' : 'next',
-    randomArray: r,
-    playingIndex: t
-  }) : (t += 0 === n ? -1 : 1, (0, utils.keepBound)(t, y));
-};
+  return order;
+}
+
+export function getNextPlayIndexByPagerPos({pos, playMode, randomArray, playingIndex, len}) {
+  if (pos === 1) return playingIndex;
+  const type = pos === 0 ? 'pre' : 'next';
+  if (playMode === 'random') return getRandomIndex({type, randomArray, playingIndex});
+  return wrap(playingIndex + (type === 'pre' ? -1 : 1), len);
+}

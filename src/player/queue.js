@@ -1,31 +1,42 @@
-import names from '../events/names';
-import {extractFullInfo} from '../services/trackInfo';
+import {getTrackKey} from '../services/trackFields.js';
 
-export default class QueueSelection {
-  constructor(props, playMode) {
-    this.props = props;
-    this.playMode = playMode;
+function tagTrack(song, api) {
+  return {...song, api: song.api || api};
+}
+
+export function selectQueue(current, command, playMode) {
+  let tracks = command.data.map(song => tagTrack(song, command.api));
+  let index = command.type === 'ChangePlaylist' && playMode !== 'random' ? 0 : command.index;
+  let song = index === 0 && command.type === 'ChangePlaylist' ? tracks[0] : tagTrack(command.song, command.api);
+  if (song.mainTrackId > 0) song = {...song, rid: song.id, id: song.mainTrackId};
+  if (command.type === 'insert' && current.tracks.length) {
+    const key = getTrackKey(song);
+    tracks = current.tracks.map(track => tagTrack(track, current.api)).filter(track => getTrackKey(track) !== key);
+    tracks.unshift(song);
+    index = 0;
+  } else {
+    tracks[index] = song;
   }
-  data(event, tracks, song) {
-    if (event.type !== 'insert' || !this.props.tracks.length) return tracks;
-    const queue = this.props.tracks.filter(item => extractFullInfo(item).song !== extractFullInfo(song).song);
-    if (event.api !== this.props.api) for (const item of queue) if (!item.api) item.api = this.props.api;
-    queue.unshift(song);
-    return queue;
-  }
-  index(event) {
-    if (event.type === names.ChangePlaylist && this.playMode !== 'random') return 0;
-    if (event.type === 'insert' && this.props.tracks.length) return 0;
-    return event.index;
-  }
-  songItem(event, tracks) {
-    let song = event.song;
-    if (song?.mainTrackId > 0) { song.rid = song.id; song.id = song.mainTrackId; }
-    if (event.type === names.ChangePlaylist && this.playMode !== 'random') song = tracks[0];
-    if (event.api !== this.props.api) song.api = event.api;
-    return song;
-  }
-  api(event) {
-    return event.song?.api && event.song.api !== event.api ? event.song.api : event.api;
-  }
+  return {tracks, songItem: song, playingIndex: index, api: song.api};
+}
+
+export function insertNext(current, songs, api) {
+  const additions = songs.map(song => tagTrack(song, api));
+  const currentKey = getTrackKey(current.songItem, current.api);
+  const keys = new Set(additions.map(song => getTrackKey(song)));
+  keys.delete(currentKey);
+  const unique = additions.filter(song => keys.delete(getTrackKey(song)));
+  const insertedKeys = new Set(unique.map(song => getTrackKey(song)));
+  const tracks = current.tracks.map(song => tagTrack(song, current.api))
+    .filter(song => !insertedKeys.has(getTrackKey(song)));
+  const playingIndex = tracks.findIndex(song => getTrackKey(song) === currentKey);
+  tracks.splice(playingIndex + 1, 0, ...unique);
+  return {...current, tracks, playingIndex};
+}
+
+export function removeFromQueue(current, song, api = current.api) {
+  const key = getTrackKey(song, api);
+  const currentKey = getTrackKey(current.songItem, current.api);
+  const tracks = current.tracks.filter(track => getTrackKey(track, current.api) !== key);
+  return {...current, tracks, playingIndex: tracks.findIndex(track => getTrackKey(track, current.api) === currentKey)};
 }

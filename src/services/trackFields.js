@@ -1,36 +1,28 @@
-const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.getUid = exports.getSong = exports.getSinger = exports.getImg = exports.getApi = exports.getAlias = exports.getAlbum = void 0;
-var providers = _interopRequireDefault(require("./providers")),
-  utils = require("../utils/index"),
-  types = require("../utils/types"),
-  artistInfo = _interopRequireDefault(require("./artistInfo"));
-exports.getUid = function (e) {
-  if ((0, types.isObject)(e)) return e.songmid || e.mid || e.id;
-};
-exports.getSong = function (e) {
-  return e.name || e.songname || e.song || e.title || e.filename;
-};
-exports.getSinger = function (e) {
-  return e.singer || e.artists || e.ar;
-};
-exports.getAlbum = function (e) {
-  return (0, utils.delve)(e, 'album.name') || (0, utils.delve)(e, 'al.name') || e.albumname || (t = e.album, (0, types.isString)(t) ? t : void 0) || '';
-  var t;
-};
-exports.getAlias = function (e) {
-  return (0, utils.delve)(e, 'tns.0') || (0, utils.delve)(e, 'alias.0') || e.transName;
-};
-exports.getImg = function (e, t, n) {
-  return artistInfo.default[n](e, t) || "https://s1.ax1x.com/2020/04/01/G8Tdx0.png";
-};
-exports.getApi = function (e) {
-  var t = e.qqAlbumId,
-    n = e.localAlbumId,
-    i = providers.default.netEase;
-  t && (i = providers.default.qqMusic);
-  n && (i = providers.default.local);
-  return i;
-};
+import providers from './providers.js';
+import artwork from './artistInfo.js';
+
+export const getUid = song => song.songmid || song.mid || song.id;
+export const getSong = song => song.name || song.songname || song.song || song.title || song.filename;
+export const getSinger = song => song.singer || song.artists || song.ar;
+export const getAlias = song => song.tns?.[0] || song.alias?.[0] || song.transName;
+
+export function getAlbum(song) {
+  return song.album?.name || song.al?.name || song.albumname || (typeof song.album === 'string' ? song.album : '');
+}
+
+export function getApi(song) {
+  if (song.api) return song.api;
+  if (song.localAlbumId != null || song.albumId != null || song.path) return providers.local;
+  if (song.qqAlbumId || song.album?.mid || song.albummid || song.songmid || song.mid) return providers.qqMusic;
+  return providers.netEase;
+}
+
+export function getTrackKey(song, api = getApi(song)) {
+  const provider = song.api || api;
+  const id = provider === providers.local ? song.path || song.id : getUid(song);
+  return provider + ':' + id;
+}
+
+export function getImg(song, size, api) {
+  return artwork[api](song, size) || 'https://s1.ax1x.com/2020/04/01/G8Tdx0.png';
+}

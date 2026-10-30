@@ -1,22 +1,18 @@
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-var utils = require("../utils/index"),
-  m = {
-    netEase: function (e, t) {
-      var l = (0, utils.delve)(e, 'album.picUrl') || (0, utils.delve)(e, 'al.picUrl') || e.coverUrl;
-      if (l) return 'small' === t ? l + '?param=100y100' : l + '?param=1000y1000';
-    },
-    qqMusic: function (e, t) {
-      var l = 'small' === t ? 'http://y.gtimg.cn/music/photo_new/T002R150x150M000' : 'http://y.gtimg.cn/music/photo_new/T002R500x500M000',
-        i = 'small' === t ? 'https://y.gtimg.cn/music/photo_new/T001R150x150M000' : 'https://y.gtimg.cn/music/photo_new/T001R500x500M000',
-        a = (0, utils.delve)(e, 'singer.0.mid'),
-        m = (0, utils.delve)(e, 'album.mid') || (0, utils.delve)(e, 'albummid');
-      return '001ZaCQY2OxVMg' !== m ? l + m + '.jpg' : i + a + '.jpg';
-    },
-    local: function (e) {
-      return e.img ? (e.img.startsWith('content://') || e.img.startsWith('http') ? e.img : 'data:image/png;base64,' + e.img) : null;
+export default {
+  netEase(song, size) {
+    const image = song.album?.picUrl || song.al?.picUrl || song.coverUrl;
+    if (image) return image + (size === 'small' ? '?param=100y100' : '?param=1000y1000');
+  },
+  qqMusic(song, size) {
+    const albumId = song.album?.mid || song.albummid;
+    const artistId = song.singer?.[0]?.mid;
+    if (albumId && albumId !== '001ZaCQY2OxVMg') {
+      return `https://y.gtimg.cn/music/photo_new/T002R${size === 'small' ? '150x150' : '500x500'}M000${albumId}.jpg`;
     }
-  };
-exports.default = m;
+    if (artistId) return `https://y.gtimg.cn/music/photo_new/T001R${size === 'small' ? '150x150' : '500x500'}M000${artistId}.jpg`;
+  },
+  local(song) {
+    if (!song.img) return null;
+    return /^(content:|https?:|data:)/.test(song.img) ? song.img : 'data:image/png;base64,' + song.img;
+  },
+};

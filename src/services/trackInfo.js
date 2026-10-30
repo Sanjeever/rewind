@@ -1,87 +1,55 @@
-const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-Object.defineProperty(exports, "getUid", {
-  enumerable: true,
-  get: function () {
-    return trackFields.getUid;
-  }
-});
-exports.extractSingerName = exports.extractSingerItem = exports.extractFullInfo = exports.extractBasicInfo = exports.extractAlbumName = exports.extractAlbumItem = void 0;
-var providers = _interopRequireDefault(require("./providers")),
-  utils = require("../utils/index"),
-  trackFields = require("./trackFields"),
-  c = function () {
-    var e = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {},
-      a = {};
-    a.song = (0, trackFields.getSong)(e);
-    a.album = (0, trackFields.getAlbum)(e);
-    a.singer = (0, trackFields.getSinger)(e);
-    return a;
+import providers from './providers.js';
+import {getAlbum, getAlias, getApi, getImg, getSinger, getSong, getTrackKey, getUid} from './trackFields.js';
+
+export {getUid, getTrackKey};
+
+export function extractBasicInfo(song = {}) {
+  return {song: getSong(song), album: getAlbum(song), singer: getSinger(song)};
+}
+
+export function extractFullInfo(song = {}, size = 'small') {
+  const api = getApi(song);
+  return {
+    ...extractBasicInfo(song),
+    qqAlbumId: song.album?.mid || song.albummid,
+    localAlbumId: song.albumId,
+    api,
+    alias: getAlias(song),
+    uid: getUid(song),
+    img: getImg(song, size, api),
   };
-exports.extractBasicInfo = c;
-exports.extractFullInfo = function () {
-  var e = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {},
-    a = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : 'small',
-    t = c(e);
-  t.qqAlbumId = (0, utils.delve)(e, 'album.mid') || (0, utils.delve)(e, 'albummid');
-  t.localAlbumId = e.albumId;
-  t.api = (0, trackFields.getApi)(t);
-  t.alias = (0, trackFields.getAlias)(e);
-  t.uid = (0, trackFields.getUid)(e);
-  t.img = (0, trackFields.getImg)(e, a, t.api);
-  return t;
-};
-exports.extractSingerName = function (e, a) {
-  var t = '',
-    r = null;
-  switch (a) {
-    case providers.default.netEase:
-      r = e.ar || e.artists;
-      t = (0, utils.parseArtist)(r);
-      break;
-    case providers.default.qqMusic:
-      r = e.singer;
-      t = (0, utils.parseArtist)(r);
-  }
-  return t;
-};
-exports.extractAlbumName = function (e, a) {
-  var t = '';
-  switch (a) {
-    case providers.default.netEase:
-      var r = e.al || e.album;
-      r && (t = r.name);
-      break;
-    case providers.default.qqMusic:
-      t = (0, utils.delve)(e, 'album.name') || e.albumname;
-  }
-  return t;
-};
-exports.extractSingerItem = function (e, a) {
-  var t = null;
-  switch (a) {
-    case providers.default.netEase:
-      t = e.ar || e.artists;
-      break;
-    case providers.default.qqMusic:
-      t = e.singer;
-  }
-  return t;
-};
-exports.extractAlbumItem = function (e, a) {
-  var t = '';
-  switch (a) {
-    case providers.default.netEase:
-      t = e.al || e.album;
-      break;
-    case providers.default.qqMusic:
-      var r = {
-        albummid: null === e || void 0 === e ? void 0 : e.albummid,
-        albumname: null === e || void 0 === e ? void 0 : e.albumname
-      };
-      t = e.album || r;
-  }
-  return t;
-};
+}
+
+export function normalizeTrack(source, api = getApi(source)) {
+  const singers = getSinger(source);
+  return {
+    key: getTrackKey(source, api),
+    api: source.api || api,
+    title: getSong(source),
+    artists: Array.isArray(singers) ? singers.map(artist => artist.name) : singers ? [singers] : [],
+    album: getAlbum(source),
+    artwork: getImg(source, 'small', source.api || api),
+    duration: source.dt ?? source.duration ?? (source.interval == null ? null : source.interval * 1000),
+    source,
+  };
+}
+
+export function extractSingerItem(song, api) {
+  if (api === providers.netEase) return song.ar || song.artists;
+  if (api === providers.qqMusic) return song.singer;
+  return null;
+}
+
+export function extractSingerName(song, api) {
+  return extractSingerItem(song, api)?.map(artist => artist.name).join('/') || '';
+}
+
+export function extractAlbumName(song, api) {
+  return api === providers.netEase || api === providers.qqMusic ? getAlbum(song) : '';
+}
+
+export function extractAlbumItem(song, api) {
+  if (api === providers.netEase) return song.al || song.album;
+  if (api === providers.qqMusic) return song.album || {albummid: song.albummid, albumname: song.albumname};
+  return '';
+}

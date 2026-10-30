@@ -69,7 +69,7 @@ pnpm test
 pnpm bundle:android
 ```
 
-单元测试使用 Node 内置测试框架，覆盖[迁移纯逻辑](src/storage/migrate.test.cjs)、[设置合并](src/settings/merge.test.cjs)、[旧字符编码的签名摘要](src/utils/md5.test.cjs)与[歌词时间解析](src/utils/parseLyric.test.cjs)。迁移测试使用内存后端，不替代 SQLite、原生文件写入、播放器或网络的设备验证。
+单元测试使用 Node 内置测试框架，覆盖[迁移纯逻辑](src/storage/migrate.test.cjs)、[设置合并](src/settings/merge.test.cjs)、[旧字符编码的签名摘要](src/utils/md5.test.cjs)、[歌词时间解析](src/utils/parseLyric.test.cjs)、[歌曲结构](src/services/trackInfo.test.cjs)与[队列和播放顺序](src/player/queue.test.cjs)。迁移测试使用内存后端，不替代 SQLite、原生文件写入、播放器或网络的设备验证。
 
 单独 Metro 包写入 `.cache/metro/`。常规 Android 构建由 Gradle 插件管理打包，无需预先执行 `pnpm bundle:android`。
 
@@ -79,6 +79,7 @@ pnpm bundle:android
 
 - **正式构建与新架构。** 旧兼容包固定打包第三方实现，无法靠安装 npm 依赖替换实际运行代码，因此改用 Metro、正式依赖和自动链接。保持 Hermes 与新架构，最低 Android 版本随目标框架提高，旧 Android 5/6 不在支持范围。自有原生模块保留 JS 接口，通过互操作方式注册，减少同时重写原生能力与业务调用的风险。
 - **单一播放队列。** JS 维护队列与业务播放模式，Media3 服务持有当前音频、媒体会话和音频焦点，避免通知与页面各自维护队列导致不同步。关闭时释放媒体资源，由 Activity 正常生命周期卸载界面；提前销毁 ReactHost 曾触发 Fabric Surface 生命周期断言。
+- **歌曲结构与身份。** `trackInfo.normalizeTrack` 提供来源、标题、歌手数组、专辑、封面、毫秒时长和 `source` 原始数据，页面展示使用该结构，旧接口与持久化继续使用原始歌曲。队列身份使用来源加歌曲 ID，本地歌曲使用媒体路径；同名歌曲和跨来源相同 ID 不合并。队列选择、插入、删除与播放顺序计算为纯函数，不修改输入歌曲。
 - **保留旧数据格式。** 旧 `RKStorage` 包含业务包装值、索引与未知键，不能按普通业务 JSON 重建。[迁移逻辑](src/storage/migrate.cjs)原样复制并读回校验，成功后标记完成，保留旧数据库。迁移或歌单校验失败时停止启动并显示错误，不能用清空数据、改包名或更换目录规避问题。
 - **保留文件位置。** 歌单继续使用同一应用外部 files 目录下的 `playlist/playlist.json`，更新串行写入并原子替换，降低中断写入损坏文件的风险。音频缓存继续使用应用外部 cache 目录中的 `audio-cache`；路径以 [src/storage/paths.js](src/storage/paths.js) 为准。
 
