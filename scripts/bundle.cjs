@@ -8,10 +8,10 @@ const Zip = require('adm-zip');
 const babel = require('@babel/core');
 
 const map = JSON.parse(fs.readFileSync('scripts/module-map.json','utf8'));
-const ast = parser.parse(new Zip('app-arm64-v8a-release.apk').readAsText('assets/index.android.bundle'));
+const ast = parser.parse(new Zip('vendor/rewind-runtime-3.5.0.zip').readAsText('runtime.js'));
 const originalIds = new Set(ast.program.body.filter(s=>s.expression?.callee?.name==='__d').map(s=>s.expression.arguments[1].value));
-const byId = new Map([...originalIds].map(id=>[id,{id}]));
 const queue = Object.entries(map.sources).map(([id,source])=>({id:Number(id),source}));
+const byId = new Map([...originalIds, ...queue.map(m=>m.id)].map(id=>[id,{id}]));
 const byPath = new Map(queue.map(m=>[path.resolve(m.source),m.id]));
 const byPackage = new Map(Object.entries(map.packages));
 const compiled = new Map();
@@ -63,7 +63,7 @@ for (const statement of ast.program.body) {
 }
 const additions = queue.filter(m=>!originalIds.has(m.id)).map(m=>t.expressionStatement(t.callExpression(t.identifier('__d'),compiled.get(m.id))));
 if (additions.length) {
-  const entry = ast.program.body.findIndex(s=>s.expression?.callee?.name==='require' && s.expression.arguments[0]?.value===0);
+  const entry = ast.program.body.findIndex(s=>s.expression?.callee?.name==='require');
   if (entry === -1) throw new Error('未找到应用启动调用');
   ast.program.body.splice(entry,0,...additions);
 }

@@ -34,16 +34,24 @@ android {
     }
 }
 
-if (new File(resourceDir, 'values/public.xml').exists()) {
-    def resources = new XmlSlurper().parse(new File(resourceDir, 'values/public.xml'))
-    stableIds.parentFile.mkdirs()
-    stableIds.text = resources.public.collect { item ->
-        "${android.defaultConfig.applicationId}:${item.@type}/${item.@name} = ${item.@id}"
-    }.join('\n') + '\n'
+task prepareRuntime(type: Exec) {
+    workingDir projectRoot
+    commandLine 'node', 'scripts/runtime.cjs'
+    inputs.file new File(projectRoot, 'vendor/rewind-runtime-3.5.0.zip')
+    inputs.file new File(projectRoot, 'scripts/runtime.cjs')
+    inputs.files fileTree('src/main/res')
+    inputs.property 'applicationId', android.defaultConfig.applicationId
+    outputs.dir runtimeDir
+    doLast {
+        def resources = new XmlSlurper().parse(new File(resourceDir, 'values/public.xml'))
+        stableIds.text = resources.public.collect { item ->
+            "${android.defaultConfig.applicationId}:${item.@type}/${item.@name} = ${item.@id}"
+        }.join('\n') + '\n'
+    }
 }
 
 dependencies {
-    implementation files(new File(runtimeDir, 'legacy-runtime.jar'))
+    implementation files(new File(runtimeDir, 'legacy-runtime.jar')).builtBy(prepareRuntime)
 }
 
 task bundleJavaScript(type: Exec) {
@@ -51,10 +59,12 @@ task bundleJavaScript(type: Exec) {
     commandLine 'node', 'scripts/bundle.cjs'
     inputs.files fileTree(new File(projectRoot, 'src')), fileTree(new File(projectRoot, 'assets'))
     inputs.files new File(projectRoot, 'index.js'), new File(projectRoot, 'babel.config.cjs'), new File(projectRoot, 'scripts/module-map.json'), new File(projectRoot, 'scripts/bundle.cjs'), new File(projectRoot, 'package.json'), new File(projectRoot, 'pnpm-lock.yaml')
+    inputs.file new File(projectRoot, 'vendor/rewind-runtime-3.5.0.zip')
     outputs.file new File(generatedAssets, 'index.android.bundle')
 }
-preBuild.dependsOn bundleJavaScript
+preBuild.dependsOn prepareRuntime, bundleJavaScript
 
 tasks.matching { it.name.startsWith('process') && it.name.endsWith('Resources') }.configureEach {
+    dependsOn prepareRuntime
     inputs.file stableIds
 }
