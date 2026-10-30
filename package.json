@@ -1,0 +1,16 @@
+{
+  "name": "rewind",
+  "version": "3.5.0",
+  "private": true,
+  "packageManager": "pnpm@11.5.2",
+  "scripts": {
+    "inventory": "node scripts/inventory.cjs"
+  },
+  "devDependencies": {
+    "@babel/generator": "7.26.10",
+    "@babel/parser": "7.26.10",
+    "@babel/traverse": "7.26.10",
+    "@babel/types": "7.26.10",
+    "adm-zip": "0.5.16"
+  }
+}

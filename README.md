@@ -4,23 +4,47 @@
 
 ## 工程恢复进度
 
-当前完成仓库检查和项目约定，源码工程尚未建立。后续依次核对发布材料、模块与依赖、重建 Android 工程，再执行构建与运行验证。交接目标见 [handoff.md](handoff.md)，开发约定见 [AGENTS.md](AGENTS.md)。
+当前完成仓库检查、项目约定、四包逐项清单和 JavaScript 模块图。源码工程尚未建立。交接目标见 [handoff.md](handoff.md)，开发约定见 [AGENTS.md](AGENTS.md)。
 
 | 项目 | 当前状态 |
 | --- | --- |
 | 原始发布材料 | 四个 APK 与 output-metadata.json 保持跟踪，禁止修改 |
-| JavaScript 与原生依赖 | 待核对，RN 0.56.1 为已有线索 |
+| JavaScript 与原生依赖 | JS 与原生版本常量均为 RN 0.56.1；AGP 4.2.2；min / target / compile SDK 为 21 / 32 / 32；第三方依赖精确版本待核对 |
+| 模块图 | Babel AST 解析出 938 个模块，记录 ID、依赖、导出与桥接引用，业务分类待完成 |
+| 存储 | 模块 663 使用 react-native-storage 接 AsyncStorage，容量 2048、默认不过期、关闭内存缓存；数据库结构待核对 |
 | 源码与 Android 工程 | 待建立 |
 | 构建、安装、实际运行 | 尚未验证 |
 | 播放、歌单、歌词、登录、设置与持久化 | 尚未验证 |
 
 ## 当前环境
 
-2026-10-30 在 Windows / PowerShell 中确认 Node.js 22.17.0、pnpm 11.5.2、OpenJDK 17.0.12。当前 PATH 中有 Gradle 9.2.1，但未确认与本项目兼容。Android SDK 与运行设备仍待检查。项目将使用经过验证的 Gradle Wrapper。
+2026-10-30 在 Windows / PowerShell 中确认 Node.js 22.17.0、pnpm 11.5.2、OpenJDK 17.0.12。当前 PATH 中有 Gradle 9.2.1，但未确认与本项目兼容。项目本地已下载 Gradle 8.7，尚未用于构建。Android SDK 未完成安装。使用本机已有 adb 检查时没有连接设备。项目将使用经过验证的 Gradle Wrapper。
 
-依赖安装、构建和运行命令将在工程建立并实际执行后补充。当前没有可用的源码构建命令。临时提取、分析材料和工具放在被忽略的 `.recovery/`，项目本地 SDK 路径与开发签名不提交。
+已安装用于清单分析的开发依赖并生成 pnpm 锁文件，包括 Babel parser / traverse / generator / types 7.26.10 与 adm-zip 0.5.16。尚未安装应用运行依赖。
+
+```powershell
+pnpm install --frozen-lockfile
+pnpm inventory
+```
+
+本次安装沿用会话已有代理，通过 pnpm 命令参数传入 `HTTP_PROXY` / `HTTPS_PROXY`，没有写入全局配置。`pnpm inventory` 已执行成功，读取根目录四个原始 APK，生成 `recovery/inventory.json`、`recovery/module-map.json` 和 `.recovery/modules/` 临时模块。安装命令是否需要代理取决于本机网络。
+
+`recovery/inventory.json` 记录每个 APK 及内部文件的大小与 SHA-256。四包 JS 均为 1,808,058 字节，SHA-256 为 `6f47d21b5321aabdd5311fd64c8bf27a25ecfd671ddb4dc68da464e8738ae159`。
+
+当前没有可用的源码构建命令。构建和运行命令将在 Android 工程建立并实际执行后补充。临时提取、分析材料和工具放在被忽略的 `.recovery/`，项目本地 SDK 路径与开发签名不提交。
 
 恢复构建使用本地开发签名，并以独立测试环境或开发包名运行。原版安装与数据兼容性尚未验证。远端服务可用性和账号相关功能待实测。
+
+## 暂停与继续入口
+
+2026-10-30 按用户要求暂停，当前分支 `main`，原有 `master` 与历史保留。下一步先核对 Git 状态，再继续下面工作。
+
+1. 阅读 `recovery/` 两份清单和 `.recovery/modules/295.js`、`309.js`、`663.js`、`770.js`、`801.js`。模块 801 含真实页面路由，770 为播放器主体，313 为存储 key。
+2. 本地 JADX 1.5.6 与 Apktool 3.0.3 位于 `.recovery/tools/`。入口、桥接和资源分析材料位于 `.recovery/decompiled/jadx/` 与 `.recovery/decompiled/resources/`。JADX 共报告 24 处错误，不能将所有输出当成可编译源码。`com/modules/` 自有桥接中尚未发现工具失败占位，但仍须逐类恢复和编译核对。
+3. 自有原生包包含播放器、媒体库、标签页、列表、加密、音频标签、语言、定时器、唤醒锁、导航栏、启动页等。主入口注册 33 个 package；对应实现、完整桥接清单和依赖版本仍待整理。
+4. SDK 安装曾在模拟器文件展开时失败。当前 `.recovery/android-sdk/` 不完整，不可用于构建或运行。平台包与 API 28 镜像下载已暂停，保留部分文件。Gradle 8.7 已展开，构建工具 30.0.3 的实际下载文件名可在 `.recovery/tools/repository.xml` 查到，不能使用无前缀 URL。
+5. `.recovery/raw/runtime.jar` 是兼容性分析中间文件，尚未用于构建，不代表已确定工程依赖方案。继续时优先核对正式上游制品与自有补丁。
+6. 完成业务模块正常引用、原生工程与资源配置后，再构建、安装并验证源码变更。播放器、登录、外部接口与持久化仍未实测。
 
 ## 原版下载
 

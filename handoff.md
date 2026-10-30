@@ -78,7 +78,7 @@
 | `.github/workflows/check.yml` | 旧链接检查工作流，针对 master，不能作为构建或功能验证 |
 | `handoff.md` | 本交接说明 |
 
-目前不存在 `package.json`、`android/`、`src/` 或项目级 `AGENTS.md`。数据库名称、表结构、迁移逻辑、原生服务、权限、依赖精确版本和远端 API 可用性尚未完成分析。
+2026-10-30 已建立 `main`、中文项目级 `AGENTS.md`、忽略规则、分析用 `package.json` 与 pnpm 锁文件。`scripts/inventory.cjs` 已成功生成四包逐项清单和 938 个模块映射，暂未分类业务模块。JS 与原生常量均确认 RN 0.56.1，min / target / compile SDK 为 21 / 32 / 32。模块 663 确认 react-native-storage 接 AsyncStorage。尚无 `android/` 和 `src/`，数据库结构、依赖精确版本、构建和实际功能仍待验证。用户要求暂停，恢复入口与本地工具状态记录在 README 的“暂停与继续入口”。
 
 ## 6. 实现方案
 
