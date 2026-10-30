@@ -13,7 +13,7 @@ var React = _interopRequireWildcard(require("react")),
   events = require("../events/index"),
   utils = require("../utils/index"),
   mediaStore = _interopRequireDefault(require("../native/mediaStore")),
-  module863 = _interopRequireDefault(require("../modules/module-863")),
+  LocalMusicList = _interopRequireDefault(require("./../modules/LocalMusicList.js")),
   h = {
     time: 'random',
     random: 'song',
@@ -125,7 +125,7 @@ var React = _interopRequireWildcard(require("react")),
         }, {
           name: icons.default.MAGNIFY
         }]
-      }, React.default.createElement(module863.default, {
+      }, React.default.createElement(LocalMusicList.default, {
         data: this.state.playList,
         playMusic: function (t, a) {
           return e.playMusic(t, a);

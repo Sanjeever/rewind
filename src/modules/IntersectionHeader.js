@@ -1,13 +1,15 @@
+const _default = require("./../components/Text.js").default;
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var React = babelHelpers.interopRequireDefault(require("react")),
+var React = _interopRequireDefault(require("react")),
   ReactNative = require("react-native"),
-  TouchableScale = babelHelpers.interopRequireDefault(require("../components/TouchableScale")),
+  TouchableScale = _interopRequireDefault(require("../components/TouchableScale")),
   components = require("../components/index"),
-  icons = babelHelpers.interopRequireDefault(require("../theme/icons")),
-  locales = babelHelpers.interopRequireDefault(require("../locales/index")),
+  icons = _interopRequireDefault(require("../theme/icons")),
+  locales = _interopRequireDefault(require("../locales/index")),
   f = ReactNative.StyleSheet.create({
     header: {
       paddingHorizontal: 15,
@@ -54,7 +56,7 @@ var React = babelHelpers.interopRequireDefault(require("react")),
       name: 'intersection' === s ? icons.default.INTERSECTION : icons.default.DIFFERENCE,
       size: 30,
       onPress: m
-    }), React.default.createElement(ReactNative.Text, {
+    }), React.default.createElement(_default, {
       style: {
         marginTop: 5
       }
@@ -67,6 +69,6 @@ var React = babelHelpers.interopRequireDefault(require("react")),
       }
     }) : React.default.createElement(ReactNative.View, {
       style: [f.cover, f.center]
-    }, React.default.createElement(ReactNative.Text, null, locales.default.NULL))));
+    }, React.default.createElement(_default, null, locales.default.NULL))));
   };
 exports.default = s;

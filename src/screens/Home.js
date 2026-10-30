@@ -14,15 +14,15 @@ export default function Home({navigation}) {
     drawer.current.closeDrawer();
     navigation.navigate(name, params);
   }};
-  return <DrawerLayoutAndroid ref={drawer} drawerWidth={DEVICE_WIDTH * 0.7} drawerLockMode="locked-closed"
+  return <DrawerLayoutAndroid ref={drawer} style={{flex: 1}} drawerWidth={DEVICE_WIDTH * 0.7} drawerLockMode="locked-closed"
     renderNavigationView={() => <Drawer navigation={drawerNavigation} />}>
     <View style={{flex: 1, backgroundColor: '#000'}}>
       <HomeContent navigation={navigation} />
-      <TouchableBorderless onPress={() => drawer.current.openDrawer()} onLongPress={() => { if (isDebug) devMenu.show(); }}
+      <TouchableBorderless accessibilityLabel="菜单" onPress={() => drawer.current.openDrawer()} onLongPress={() => { if (isDebug) devMenu.show(); }}
         style={{position: 'absolute', top: STATUS_BAR_HEIGHT, left: 10}}>
         <Icon name={icons.MENU} color="#fff" />
       </TouchableBorderless>
-      <TouchableBorderless onPress={() => navigation.navigate('SearchPage')}
+      <TouchableBorderless accessibilityLabel="搜索" onPress={() => navigation.navigate('SearchPage')}
         style={{position: 'absolute', top: STATUS_BAR_HEIGHT, right: 10}}>
         <Icon name={icons.MAGNIFY} color="#fff" />
       </TouchableBorderless>

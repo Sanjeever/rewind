@@ -17,7 +17,7 @@ var immer = require("immer"),
   keys = _interopRequireDefault(require("../storage/keys")),
   locales = _interopRequireDefault(require("../locales/index")),
   restartModule = _interopRequireDefault(require("../native/restart")),
-  module844 = _interopRequireDefault(require("../modules/module-844")),
+  ProviderSelector = _interopRequireDefault(require("./../modules/ProviderSelector.js")),
   v = class a extends React.PureComponent {
     constructor() {
       var e, t, r;
@@ -92,7 +92,7 @@ var immer = require("immer"),
       }, r.renderPageRow = function (e) {
         var a = e.data,
           t = e.active;
-        return React.default.createElement(module844.default, {
+        return React.default.createElement(ProviderSelector.default, {
           data: a,
           active: t,
           type: "pages"
@@ -103,7 +103,7 @@ var immer = require("immer"),
       }, r.renderApiRow = function (e) {
         var a = e.data,
           t = e.active;
-        return React.default.createElement(module844.default, {
+        return React.default.createElement(ProviderSelector.default, {
           data: a,
           active: t,
           type: "apis"

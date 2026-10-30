@@ -1,9 +1,7 @@
 const _default = require("./../../components/Pager.js").default;
 const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
 const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
-const _asyncRuntime = require("@babel/runtime/helpers/regeneratorRuntime")();
 const _appStorage = require("./../../storage/index.js");
-const _toConsumableArray = require("@babel/runtime/helpers/toConsumableArray");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -41,45 +39,19 @@ var immer = require("immer"),
         autoSetPlaylistOrder: defaults.defaultSettings.autoSetPlaylistOrder.on,
         pagesOrder: pagesModule.default.pages,
         apisOrder: pagesModule.default.apis
-      }, r.dailySignin = function () {
-        return _asyncRuntime.async(function (e) {
-          for (;;) switch (e.prev = e.next) {
-            case 0:
-              services.Netease.daily_signin();
-            case 1:
-            case "end":
-              return e.stop();
-          }
-        }, null, this);
-      }, r.happyBirthday = function () {
-        var e, t, a, n, s, i;
-        return _asyncRuntime.async(function (u) {
-          for (;;) switch (u.prev = u.next) {
-            case 0:
-              u.next = 2;
-              return _asyncRuntime.awrap(users.default.getUserInfo());
-            case 2:
-              if (e = u.sent) {
-                u.next = 5;
-                break;
-              }
-              return u.abrupt("return");
-            case 5:
-              t = e.netEase.userId;
-              u.next = 8;
-              return _asyncRuntime.awrap(services.Netease.profile(t));
-            case 8:
-              a = u.sent;
-              n = a.code;
-              s = a.profile;
-              200 === n && (i = s.birthday, utils.timeFormatter.isToday(i) && r.props.navigation.navigate('HappyBirthday', {
-                profile: s
-              }));
-            case 11:
-            case "end":
-              return u.stop();
-          }
-        }, null, this);
+      }, r.dailySignin = async function () {
+        try {
+          return await services.Netease.daily_signin();
+        } catch (error) {
+          log('签到失败', error.message);
+        }
+      }, r.happyBirthday = async function () {
+        const id = (await users.default.getUserInfo())?.netEase?.userId;
+        if (!id) return;
+        const response = await services.Netease.profile(id);
+        if (response?.code === 200 && utils.timeFormatter.isToday(response.profile.birthday)) r.props.navigation.navigate('HappyBirthday', {
+          profile: response.profile
+        });
       }, r.loadOrder = function () {
         _appStorage.storage.load({
           key: keysModule.default.pagesOrder
@@ -119,118 +91,43 @@ var immer = require("immer"),
         }]);
       }, r.isValid = function (e, t) {
         return e && e[t] && types.isObject(e[t]);
-      }, r.loadStorage = function () {
-        var e;
-        return _asyncRuntime.async(function (t) {
-          for (;;) switch (t.prev = t.next) {
-            case 0:
-              t.next = 2;
-              return _asyncRuntime.awrap(users.default.getUserPlayList());
-            case 2:
-              if (e = t.sent, types.isObject(e) || true === r.state.isConnected) {
-                t.next = 6;
-                break;
-              }
-              r.loadPlaylistById();
-              return t.abrupt("return");
-            case 6:
-              r.isValid(e, providers.default.netEase) && r.setState({
-                netEase: e.netEase
-              });
-              r.isValid(e, providers.default.qqMusic) && r.setState({
-                qqMusic: e.qqMusic
-              });
-            case 8:
-            case "end":
-              return t.stop();
+      }, r.loadStorage = async function () {
+        const stored = await users.default.getUserPlayList();
+        if (stored) {
+          if (r.isValid(stored, providers.default.netEase)) r.setState({
+            netEase: stored.netEase
+          });
+          if (r.isValid(stored, providers.default.qqMusic)) r.setState({
+            qqMusic: stored.qqMusic
+          });
+        } else await r.loadPlaylistById();
+      }, r.loadPlaylistById = async function (api, list) {
+        try {
+          if (r.state.isConnected !== true) return;
+          const accounts = await users.default.getUserInfo();
+          if (!accounts) return;
+          if (api) await r['loadPlaylist_' + api](accounts);else {
+            await r.loadPlaylist_netEase(accounts);
+            await r.loadPlaylist_qqMusic(accounts);
           }
-        }, null, this);
-      }, r.loadPlaylistById = function (e, t) {
-        var a, n;
-        return _asyncRuntime.async(function (s) {
-          for (;;) switch (s.prev = s.next) {
-            case 0:
-              if (true === r.state.isConnected) {
-                s.next = 3;
-                break;
-              }
-              return s.abrupt("return");
-            case 3:
-              s.next = 5;
-              return _asyncRuntime.awrap(users.default.getUserInfo());
-            case 5:
-              if (n = s.sent, !types.isObject(n)) {
-                s.next = 16;
-                break;
-              }
-              if (!e) {
-                s.next = 12;
-                break;
-              }
-              s.next = 10;
-              return _asyncRuntime.awrap(r["loadPlaylist_" + e](n));
-            case 10:
-              s.next = 16;
-              break;
-            case 12:
-              s.next = 14;
-              return _asyncRuntime.awrap(r.loadPlaylist_netEase(n));
-            case 14:
-              s.next = 16;
-              return _asyncRuntime.awrap(r.loadPlaylist_qqMusic(n));
-            case 16:
-              null === t || void 0 === t || null === (a = t.endRefresh) || void 0 === a || a.call(t);
-            case 17:
-            case "end":
-              return s.stop();
-          }
-        }, null, this);
-      }, r.loadPlaylist_netEase = function (e) {
-        var t;
-        return _asyncRuntime.async(function (a) {
-          for (;;) switch (a.prev = a.next) {
-            case 0:
-              if (!r.isValid(e, providers.default.netEase)) {
-                a.next = 9;
-                break;
-              }
-              if (t = e.netEase.userId) {
-                a.next = 4;
-                break;
-              }
-              return a.abrupt("return");
-            case 4:
-              r.setState({
-                userId: t
-              });
-              a.next = 7;
-              return _asyncRuntime.awrap(r.getNeteasePlaylist(t));
-            case 7:
-              a.next = 9;
-              return _asyncRuntime.awrap(r.netEaselikelist(t));
-            case 9:
-            case "end":
-              return a.stop();
-          }
-        }, null, this);
-      }, r.loadPlaylist_qqMusic = function (e) {
-        return _asyncRuntime.async(function (t) {
-          for (;;) switch (t.prev = t.next) {
-            case 0:
-              if (!r.isValid(e, providers.default.qqMusic)) {
-                t.next = 5;
-                break;
-              }
-              t.next = 3;
-              return _asyncRuntime.awrap(r.getQQMusicPlaylist(e.qqMusic.userId));
-            case 3:
-              t.next = 5;
-              return _asyncRuntime.awrap(r.qqMusicLikelist());
-            case 5:
-            case "end":
-              return t.stop();
-          }
-        }, null, this);
+        } catch (error) {
+          toast('歌单加载失败：' + error.message);
+        } finally {
+          list?.endRefresh?.();
+        }
+      }, r.loadPlaylist_netEase = async function (accounts) {
+        const id = accounts?.netEase?.userId;
+        if (!id) return;
+        r.setState({
+          userId: id
+        });
+        await r.getNeteasePlaylist(id);
+        await r.netEaselikelist(id);
+      }, r.loadPlaylist_qqMusic = async function (accounts) {
+        const id = accounts?.qqMusic?.userId;
+        if (!id) return;
+        await r.getQQMusicPlaylist(id);
+        await r.qqMusicLikelist();
       }, r.setDefaultState = function () {
         r.setState({
           netEase: [],
@@ -239,43 +136,18 @@ var immer = require("immer"),
           isConnected: true,
           userId: 0
         });
-      }, r.netEaseRefreshLogin = function () {
-        return _asyncRuntime.async(function (e) {
-          for (;;) switch (e.prev = e.next) {
-            case 0:
-              if (true === r.state.isConnected) {
-                e.next = 2;
-                break;
-              }
-              return e.abrupt("return");
-            case 2:
-              services.Netease.login_refresh();
-            case 3:
-            case "end":
-              return e.stop();
+      }, r.netEaseRefreshLogin = async function () {
+        if (r.state.isConnected === true) {
+          try {
+            return await services.Netease.login_refresh();
+          } catch (error) {
+            log('刷新登录失败', error.message);
           }
-        }, null, this);
-      }, r.netEaselikelist = function (e) {
-        var t, a;
-        return _asyncRuntime.async(function (r) {
-          for (;;) switch (r.prev = r.next) {
-            case 0:
-              if (e) {
-                r.next = 2;
-                break;
-              }
-              return r.abrupt("return");
-            case 2:
-              r.next = 4;
-              return _asyncRuntime.awrap(services.Netease.likelist(e));
-            case 4:
-              t = r.sent;
-              (0, utils.usable)(t) && (a = t.ids, 200 === t.code && users.default.saveUserLikeList(a, providers.default.netEase));
-            case 6:
-            case "end":
-              return r.stop();
-          }
-        }, null, this);
+        }
+      }, r.netEaselikelist = async function (id) {
+        if (!id) return;
+        const response = await services.Netease.likelist(id);
+        if (response?.code === 200) await users.default.saveUserLikeList(response.ids, providers.default.netEase);
       }, r.qqMusicLikelist = function () {
         _appStorage.storage.load({
           key: keysModule.default.playlist
@@ -297,86 +169,35 @@ var immer = require("immer"),
         }).catch(function (e) {
           return e;
         });
-      }, r.getQQMusicPlaylist = function (e) {
-        var t, a, n, s, i, u, l;
-        return _asyncRuntime.async(function (o) {
-          for (;;) switch (o.prev = o.next) {
-            case 0:
-              if (e) {
-                o.next = 2;
-                break;
-              }
-              return o.abrupt("return");
-            case 2:
-              o.next = 4;
-              return _asyncRuntime.awrap(services.QQMusic.profile(e));
-            case 4:
-              t = o.sent;
-              o.next = 7;
-              return _asyncRuntime.awrap(services.QQMusic.user_created_list(e));
-            case 7:
-              if (a = o.sent, n = t.mymusic, s = t.mydiss, n) {
-                o.next = 11;
-                break;
-              }
-              return o.abrupt("return");
-            case 11:
-              i = n.find(function (e) {
-                return '\u559c\u6b22' === e.title || '\u6211\u559c\u6b22' === e.title;
-              });
-              u = [i].concat(_toConsumableArray(s.list), _toConsumableArray(a));
-              o.next = 15;
-              return _asyncRuntime.awrap(playlists.default.newOrder({
-                api: providers.default.qqMusic,
-                newArr: u,
-                on: r.state.autoSetPlaylistOrder
-              }));
-            case 15:
-              l = o.sent;
-              r.setState({
-                qqMusic: l
-              });
-              users.default.saveUserPlayList(l, providers.default.qqMusic);
-            case 18:
-            case "end":
-              return o.stop();
-          }
-        }, null, this);
-      }, r.getNeteasePlaylist = function (e) {
-        var t, a;
-        return _asyncRuntime.async(function (n) {
-          for (;;) switch (n.prev = n.next) {
-            case 0:
-              if (e) {
-                n.next = 2;
-                break;
-              }
-              return n.abrupt("return");
-            case 2:
-              n.next = 4;
-              return _asyncRuntime.awrap(services.Netease.user_playlist(e));
-            case 4:
-              if (t = n.sent, !(0, utils.usable)(t)) {
-                n.next = 11;
-                break;
-              }
-              n.next = 8;
-              return _asyncRuntime.awrap(playlists.default.newOrder({
-                api: providers.default.netEase,
-                newArr: t.playlist,
-                on: r.state.autoSetPlaylistOrder
-              }));
-            case 8:
-              a = n.sent;
-              r.setState({
-                netEase: a
-              });
-              users.default.saveUserPlayList(a, providers.default.netEase);
-            case 11:
-            case "end":
-              return n.stop();
-          }
-        }, null, this);
+      }, r.getQQMusicPlaylist = async function (id) {
+        if (!id) return;
+        const profile = await services.QQMusic.profile(id);
+        if (!profile?.mymusic) throw new Error(locales.default.PLAYLIST_FETCH_FAILED);
+        const created = await services.QQMusic.user_created_list(id);
+        const liked = profile.mymusic.find(item => item.title === '喜欢' || item.title === '我喜欢');
+        const items = [...(liked ? [liked] : []), ...profile.mydiss.list, ...created];
+        const ordered = await playlists.default.newOrder({
+          api: providers.default.qqMusic,
+          newArr: items,
+          on: r.state.autoSetPlaylistOrder
+        });
+        await users.default.saveUserPlayList(ordered, providers.default.qqMusic);
+        r.setState({
+          qqMusic: ordered
+        });
+      }, r.getNeteasePlaylist = async function (id) {
+        if (!id) return;
+        const response = await services.Netease.user_playlist(id);
+        if (!Array.isArray(response?.playlist)) throw new Error(response?.message || locales.default.PLAYLIST_FETCH_FAILED);
+        const ordered = await playlists.default.newOrder({
+          api: providers.default.netEase,
+          newArr: response.playlist,
+          on: r.state.autoSetPlaylistOrder
+        });
+        await users.default.saveUserPlayList(ordered, providers.default.netEase);
+        r.setState({
+          netEase: ordered
+        });
       }, r.Playlist = function (e, t, a) {
         var n = r.state.userId;
         switch (t) {
@@ -403,34 +224,25 @@ var immer = require("immer"),
               index: a
             });
         }
-      }, r.collectPlaylistOrder = function (e) {
-        var t, a, n, i, u, l;
-        return _asyncRuntime.async(function (o) {
-          for (;;) switch (o.prev = o.next) {
-            case 0:
-              t = e.api;
-              a = e.index;
-              n = r.state;
-              i = n.netEase;
-              u = n.qqMusic;
-              o.next = 4;
-              return _asyncRuntime.awrap(playlists.default.collect({
-                playlist: {
-                  netEase: i,
-                  qqMusic: u
-                },
-                api: t,
-                index: a
-              }));
-            case 4:
-              (l = o.sent) && r.setState((0, immer.produce)(function (e) {
-                e[t] = l;
-              }));
-            case 6:
-            case "end":
-              return o.stop();
-          }
-        }, null, this);
+      }, r.collectPlaylistOrder = async function ({
+        api,
+        index
+      }) {
+        try {
+          const result = await playlists.default.collect({
+            playlist: {
+              netEase: r.state.netEase,
+              qqMusic: r.state.qqMusic
+            },
+            api,
+            index
+          });
+          if (result) r.setState({
+            [api]: result
+          });
+        } catch (error) {
+          toast('保存歌单顺序失败：' + error.message);
+        }
       }, r.renderPager = function () {
         var e = r.state.pagesOrder;
         return (0, utils.groupedArray)(e, 4).map(function (e, t) {

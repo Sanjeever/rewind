@@ -1,57 +1,46 @@
+const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
 var immer = require("immer"),
-  React = babelHelpers.interopRequireWildcard(require("react")),
+  React = _interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
-  reactNativeLargelist = require("react-native-largelist"),
+  reactNativeLargelist = require("./../components/Scrolling.js"),
   components = require("../components/index"),
   modals = require("../modals/index"),
   constants = require("../theme/constants"),
-  locales = babelHelpers.interopRequireDefault(require("../locales/index")),
+  locales = _interopRequireDefault(require("../locales/index")),
   events = require("../events/index"),
   utils = require("../utils/index"),
   trackInfo = require("../services/trackInfo"),
-  playlistFiles = babelHelpers.interopRequireDefault(require("../storage/playlistFiles")),
+  playlistFiles = _interopRequireDefault(require("../storage/playlistFiles")),
   g = constants.DEVICE_WIDTH,
-  v = function (e) {
-    function t(e) {
+  v = class t extends React.PureComponent {
+    constructor(e) {
       var a;
-      babelHelpers.classCallCheck(this, t);
-      (a = babelHelpers.possibleConstructorReturn(this, babelHelpers.getPrototypeOf(t).call(this, e)))._nativeOffset = {
+      (a = super(e))._nativeOffset = {
         x: new ReactNative.Animated.Value(0),
         y: new ReactNative.Animated.Value(0)
       };
-      a.onDeleteCustom = function (e) {
-        var t = a.state.oriList.filter(function (t) {
-          return -1 === e.indexOf(t.id);
+      a.onDeleteCustom = async function (ids) {
+        const tracks = a.state.oriList.filter(song => !ids.includes(song.id));
+        await a.updatePlaylist(tracks);
+        a.setState({
+          playlist: tracks,
+          oriList: tracks
         });
-        t && (a.setState({
-          playlist: t,
-          oriList: t
-        }), a.updatePlaylist(t));
       };
-      a.updatePlaylist = function (e) {
-        var t, n, l, r;
-        return regeneratorRuntime.async(function (s) {
-          for (;;) switch (s.prev = s.next) {
-            case 0:
-              n = a.state.playlistIndex;
-              s.next = 3;
-              return regeneratorRuntime.awrap(playlistFiles.default.getPlaylist());
-            case 3:
-              l = s.sent;
-              (null === (t = l.playlists) || void 0 === t ? void 0 : t.length) > 0 && (r = (0, immer.produce)(l.playlists, function (t) {
-                t[n].tracks = e;
-              }), playlistFiles.default.toPlaylist({
-                playlists: r
-              }));
-            case 5:
-            case "end":
-              return s.stop();
-          }
-        }, null, this);
+      a.updatePlaylist = async function (tracks) {
+        const current = await playlistFiles.default.getPlaylist();
+        const playlists = immer.produce(current.playlists, draft => {
+          draft[a.state.playlistIndex].tracks = tracks;
+        });
+        await playlistFiles.default.toPlaylist({
+          ...current,
+          playlists
+        });
       };
       a._renderIndexPath = function (e) {
         var t = e.row,
@@ -105,21 +94,17 @@ var immer = require("immer"),
           }
         }]);
       };
-      a.deleteItem = function (e) {
-        var t = a.state.playlistIndex,
-          n = a.state.playlist.filter(function (t, a) {
-            return a !== e;
+      a.deleteItem = async function (index) {
+        const tracks = a.state.playlist.filter((song, i) => i !== index);
+        try {
+          await a.updatePlaylist(tracks);
+          a.setState({
+            playlist: tracks,
+            oriList: tracks
           });
-        a.setState({
-          playlist: n,
-          oriList: n
-        });
-        playlistFiles.default.getPlaylist().then(function (e) {
-          var a = e.playlists;
-          a && (a[t].tracks = n, playlistFiles.default.toPlaylist({
-            playlists: a
-          }));
-        });
+        } catch (error) {
+          toast('保存歌单失败：' + error.message);
+        }
       };
       a.searchSong = function (e) {
         var t = a.state.oriList;
@@ -188,85 +173,78 @@ var immer = require("immer"),
       };
       return a;
     }
-    babelHelpers.createClass(t, [{
-      key: "componentDidMount",
-      value: function () {
-        var e = this.props.navigation.state.params,
-          t = e.playlist,
-          a = e.index,
-          n = t.tracks;
-        this.setState({
-          playlistIndex: a,
-          playlist: n,
-          oriList: n,
-          name: t.title,
-          loading: false
-        });
-      }
-    }, {
-      key: "render",
-      value: function () {
-        var e = this,
-          t = this.props.navigation.state.params.playlist.img;
-        return React.default.createElement(ReactNative.View, {
-          style: x.container
-        }, React.default.createElement(components.Background, null), React.default.createElement(reactNativeLargelist.LargeList, {
-          ref: function (t) {
-            return e._list = t;
-          },
-          data: [{
-            items: this.state.playlist
-          }],
-          heightForIndexPath: function () {
-            return constants.ITEM_HEIGHT;
-          },
-          renderIndexPath: this._renderIndexPath,
-          renderHeader: function () {
-            return React.default.createElement(ReactNative.View, null, React.default.createElement(components.PlaylistForeground, {
-              coverImgUrl: t,
-              onMult: function () {
-                return e.setState({
-                  showMult: true
-                });
-              },
-              disabledLastPlayedSong: true
-            }));
-          },
-          onScroll: this.onScroll,
-          onNativeContentOffsetExtract: this._nativeOffset
-        }), React.default.createElement(components.HeaderBar, {
-          headerStyle: x.header,
-          title: this.state.title,
-          goBack: this.goBack,
-          onTop: this.onTop,
-          textInput: !this.state.loading,
-          onChangeText: function (t) {
-            return e.searchSong(t);
-          },
-          opacity: this._nativeOffset.y.interpolate({
-            inputRange: [0, g - 100],
-            outputRange: [0, 1],
-            extrapolate: 'clamp'
-          }),
-          blur: true,
-          bold: true
-        }), React.default.createElement(modals.MultiplySelectModal, {
-          visible: this.state.showMult,
-          onClose: function () {
-            return e.setState({
-              showMult: false
-            });
-          },
-          data: this.state.playlist,
-          api: 'local',
-          isCustom: true,
-          onDeleteCustom: this.onDeleteCustom
-        }));
-      }
-    }]);
-    babelHelpers.inherits(t, e);
-    return t;
-  }(React.PureComponent),
+    "componentDidMount"() {
+      var e = this.props.route.params,
+        t = e.playlist,
+        a = e.index,
+        n = t.tracks;
+      this.setState({
+        playlistIndex: a,
+        playlist: n,
+        oriList: n,
+        name: t.title,
+        loading: false
+      });
+    }
+    "render"() {
+      var e = this,
+        t = this.props.route.params.playlist.img;
+      return React.default.createElement(ReactNative.View, {
+        style: x.container
+      }, React.default.createElement(components.Background, null), React.default.createElement(reactNativeLargelist.LargeList, {
+        ref: function (t) {
+          return e._list = t;
+        },
+        data: [{
+          items: this.state.playlist
+        }],
+        heightForIndexPath: function () {
+          return constants.ITEM_HEIGHT;
+        },
+        renderIndexPath: this._renderIndexPath,
+        renderHeader: function () {
+          return React.default.createElement(ReactNative.View, null, React.default.createElement(components.PlaylistForeground, {
+            coverImgUrl: t,
+            onMult: function () {
+              return e.setState({
+                showMult: true
+              });
+            },
+            disabledLastPlayedSong: true
+          }));
+        },
+        onScroll: this.onScroll,
+        onNativeContentOffsetExtract: this._nativeOffset
+      }), React.default.createElement(components.HeaderBar, {
+        headerStyle: x.header,
+        title: this.state.title,
+        goBack: this.goBack,
+        onTop: this.onTop,
+        textInput: !this.state.loading,
+        onChangeText: function (t) {
+          return e.searchSong(t);
+        },
+        opacity: this._nativeOffset.y.interpolate({
+          inputRange: [0, g - 100],
+          outputRange: [0, 1],
+          extrapolate: 'clamp'
+        }),
+        blur: true,
+        bold: true
+      }), React.default.createElement(modals.MultiplySelectModal, {
+        visible: this.state.showMult,
+        onClose: function () {
+          return e.setState({
+            showMult: false
+          });
+        },
+        data: this.state.playlist,
+        api: 'local',
+        isCustom: true,
+        onDeleteCustom: this.onDeleteCustom
+      }));
+    }
+  },
   x = ReactNative.StyleSheet.create({
     container: {
       flex: 1

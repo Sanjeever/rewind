@@ -1,15 +1,16 @@
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var providers = babelHelpers.interopRequireDefault(require("../../services/providers")),
-  names = babelHelpers.interopRequireDefault(require("../../events/names")),
-  locales = babelHelpers.interopRequireDefault(require("../../locales/index")),
+var providers = _interopRequireDefault(require("../../services/providers")),
+  names = _interopRequireDefault(require("../../events/names")),
+  locales = _interopRequireDefault(require("../../locales/index")),
   services = require("../../services/index"),
   events = require("../../events/index"),
   utils = require("../../utils/index"),
-  queue = babelHelpers.interopRequireDefault(require("../../events/queue")),
-  users = babelHelpers.interopRequireDefault(require("../../storage/users")),
+  queue = _interopRequireDefault(require("../../events/queue")),
+  users = _interopRequireDefault(require("../../storage/users")),
   p = function (e, t) {
     for (var a = 0; a < e.length; a++) {
       var r = t[a];
@@ -19,174 +20,81 @@ var providers = babelHelpers.interopRequireDefault(require("../../services/provi
   m = function (e) {
     'subscribe' === e ? toast(locales.default.COLLECT_SUCCESS) : 'unsubscribe' === e && toast(locales.default.DELETE_SUCCESS);
   },
-  b = function (e, t) {
-    var a, r, n;
-    return regeneratorRuntime.async(function (s) {
-      for (;;) switch (s.prev = s.next) {
-        case 0:
-          s.next = 2;
-          return regeneratorRuntime.awrap(services.Netease.subscribe_playlist({
-            id: e,
-            op: t
-          }));
-        case 2:
-          (a = s.sent) && (r = a.code, n = a.msg, 200 === r ? m(t) : toast(n));
-        case 4:
-        case "end":
-          return s.stop();
-      }
-    }, null, this);
+  b = async function (id, op) {
+    const response = await services.Netease.subscribe_playlist({
+      id,
+      op
+    });
+    if (response?.code !== 200) throw new Error(response?.msg || locales.default.ERROR);
+    m(op);
   },
-  v = function (e, t) {
-    return regeneratorRuntime.async(function (a) {
-      for (;;) switch (a.prev = a.next) {
-        case 0:
-          a.next = 2;
-          return regeneratorRuntime.awrap(services.QQMusic.subscribe_playlist({
-            id: e,
-            op: t
-          }));
-        case 2:
-          a.sent && m(t);
-        case 4:
-        case "end":
-          return a.stop();
-      }
-    }, null, this);
+  v = async function (id, op) {
+    const response = await services.QQMusic.subscribe_playlist({
+      id,
+      op
+    });
+    if (!response) throw new Error(locales.default.ERROR);
+    m(op);
   },
   g = {
-    deleteFromNetease: function (e) {
-      var t, a, r;
-      return regeneratorRuntime.async(function (n) {
-        for (;;) switch (n.prev = n.next) {
-          case 0:
-            t = e.playlistId;
-            a = e.trackid;
-            n.next = 3;
-            return regeneratorRuntime.awrap(services.Netease.playlist_tracks({
-              op: 'del',
-              pid: t,
-              tracks: a
-            }));
-          case 3:
-            r = n.sent;
-            (0, utils.usable)(r) && 200 !== r.code && toast(locales.default.ERROR);
-          case 5:
-          case "end":
-            return n.stop();
-        }
-      }, null, this);
+    deleteFromNetease: async function ({
+      playlistId,
+      trackid
+    }) {
+      const response = await services.Netease.playlist_tracks({
+        op: 'del',
+        pid: playlistId,
+        tracks: trackid
+      });
+      if (response?.code !== 200) throw new Error(response?.message || locales.default.ERROR);
     },
-    deleteFromQQMusic: function (e, t) {
-      var a, r, n, s;
-      return regeneratorRuntime.async(function (i) {
-        for (;;) switch (i.prev = i.next) {
-          case 0:
-            if (e && t) {
-              i.next = 2;
-              break;
-            }
-            return i.abrupt("return");
-          case 2:
-            i.next = 4;
-            return regeneratorRuntime.awrap(users.default.getUserInfo());
-          case 4:
-            if (!(a = i.sent)) {
-              i.next = 10;
-              break;
-            }
-            if (a.qqMusic) {
-              i.next = 8;
-              break;
-            }
-            return i.abrupt("return");
-          case 8:
-            r = a.qqMusic;
-            n = r.userId;
-            (s = r.cookies) ? services.QQMusic.dislike({
-              id: e,
-              dirid: t,
-              qq: n,
-              cookies: s
-            }).then(function (e) {
-              0 !== e.code && toast(locales.default.ERROR);
-            }) : toast(locales.default.ERROR);
-          case 10:
-          case "end":
-            return i.stop();
-        }
-      }, null, this);
+    deleteFromQQMusic: async function (id, dirid) {
+      if (!id || !dirid) throw new Error(locales.default.ERROR);
+      const account = (await users.default.getUserInfo())?.qqMusic;
+      if (!account?.cookies) throw new Error('请先登录 QQ 音乐');
+      const response = await services.QQMusic.dislike({
+        id,
+        dirid,
+        qq: account.userId,
+        cookies: account.cookies
+      });
+      if (response?.code !== 0) throw new Error(locales.default.ERROR);
     },
-    getFromNetease: function (e) {
-      var t, a, r, n, s, i;
-      return regeneratorRuntime.async(function (u) {
-        for (;;) switch (u.prev = u.next) {
-          case 0:
-            if (e) {
-              u.next = 2;
-              break;
-            }
-            return u.abrupt("return");
-          case 2:
-            u.next = 4;
-            return regeneratorRuntime.awrap(services.Netease.playlist_detail(e));
-          case 4:
-            if (t = u.sent, a = t.playlist, r = a.tracks, n = a.name, s = a.trackIds, i = t.moreFunc, n.includes('\u699c') && p(r, s), r) {
-              u.next = 9;
-              break;
-            }
-            return u.abrupt("return");
-          case 9:
-            users.default.saveNeteasePlayListCache(e, n, r);
-            return u.abrupt("return", {
-              id: e,
-              name: n,
-              tracks: r,
-              trackCount: r.length,
-              moreFunc: i
-            });
-          case 11:
-          case "end":
-            return u.stop();
-        }
-      }, null, this);
+    getFromNetease: async function (id) {
+      if (!id) return;
+      const response = await services.Netease.playlist_detail(id);
+      if (!response?.playlist) throw new Error(response?.message || locales.default.ERROR);
+      const {
+        tracks,
+        name,
+        trackIds
+      } = response.playlist;
+      if (name.includes('榜')) p(tracks, trackIds);
+      await users.default.saveNeteasePlayListCache(id, name, tracks);
+      return {
+        id,
+        name,
+        tracks,
+        trackCount: tracks.length,
+        moreFunc: response.moreFunc
+      };
     },
-    getFromQQMusic: function (e) {
-      var t, a, r, n;
-      return regeneratorRuntime.async(function (s) {
-        for (;;) switch (s.prev = s.next) {
-          case 0:
-            if (e) {
-              s.next = 2;
-              break;
-            }
-            return s.abrupt("return");
-          case 2:
-            s.next = 4;
-            return regeneratorRuntime.awrap(services.QQMusic.disslist({
-              id: e
-            }));
-          case 4:
-            if (t = s.sent) {
-              s.next = 7;
-              break;
-            }
-            return s.abrupt("return");
-          case 7:
-            a = t[0];
-            r = a.songlist;
-            n = a.dissname;
-            return s.abrupt("return", {
-              id: e,
-              name: n,
-              tracks: r,
-              trackCount: r.length
-            });
-          case 10:
-          case "end":
-            return s.stop();
-        }
-      }, null, this);
+    getFromQQMusic: async function (id) {
+      if (!id) return;
+      const response = await services.QQMusic.disslist({
+        id
+      });
+      if (!response?.[0]) throw new Error(locales.default.ERROR);
+      const {
+        songlist,
+        dissname
+      } = response[0];
+      return {
+        id,
+        name: dissname,
+        tracks: songlist,
+        trackCount: songlist.length
+      };
     },
     formatItemData: function (e, t) {
       if (e) {
@@ -263,53 +171,38 @@ var providers = babelHelpers.interopRequireDefault(require("../../services/provi
         song: t
       });
     },
-    onHeartMode: function (e) {
-      var t, a, r, n, s, i, d, f, p, m, b, v;
-      return regeneratorRuntime.async(function (g) {
-        for (;;) switch (g.prev = g.next) {
-          case 0:
-            if (t = e.state, a = t.heartMode, r = t.playlist, n = t.playlistId, s = t.api, true !== a) {
-              g.next = 12;
-              break;
-            }
-            i = utils.random.getInt(0, r.length);
-            d = r[i].id;
-            g.next = 6;
-            return regeneratorRuntime.awrap(services.Netease.heart_mode({
-              songId: d,
-              playlistId: n
-            }));
-          case 6:
-            if ('500' !== (f = g.sent).code) {
-              g.next = 10;
-              break;
-            }
-            toast(locales.default.NETEASE_NOT_LOGIN);
-            return g.abrupt("return");
-          case 10:
-            if ((p = f.data).length > 0) {
-              for (m = [], b = 0; b < p.length; b++) {
-                v = babelHelpers.objectSpread({
-                  id: p[b].id
-                }, p[b].songInfo);
-                m.push(v);
-              }
-              (0, events.toPlayer)({
-                item: m[0],
-                data: m,
-                index: 0,
-                api: s
-              });
-            }
-          case 12:
-          case "end":
-            return g.stop();
-        }
-      }, null, this);
+    onHeartMode: async function (page) {
+      const {
+        heartMode,
+        playlist,
+        playlistId,
+        api
+      } = page.state;
+      if (heartMode !== true || !playlist.length) return;
+      const song = playlist[utils.random.getInt(0, playlist.length)];
+      const response = await services.Netease.heart_mode({
+        songId: song.id,
+        playlistId
+      });
+      if (String(response?.code) === '500') {
+        toast(locales.default.NETEASE_NOT_LOGIN);
+        return;
+      }
+      if (response?.data?.length) {
+        const tracks = response.data.map(item => ({
+          id: item.id,
+          ...item.songInfo
+        }));
+        events.toPlayer({
+          item: tracks[0],
+          data: tracks,
+          index: 0,
+          api
+        });
+      }
     },
     onSubscribe: function (e, t, a) {
-      a === providers.default.netEase ? b(e, t) : a === providers.default.qqMusic && v(e, t);
-      users.default.saveUserPlayList([], a);
+      return a === providers.default.netEase ? b(e, t) : a === providers.default.qqMusic ? v(e, t) : Promise.reject(new Error('未知音乐来源'));
     }
   };
 exports.default = g;

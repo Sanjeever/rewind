@@ -1,29 +1,32 @@
+const _default = require("./../components/Text.js").default;
+const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+const _appStorage = require("./../storage/index.js");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var React = babelHelpers.interopRequireWildcard(require("react")),
+var React = _interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
-  FadingEdge = babelHelpers.interopRequireDefault(require("../components/FadingEdge")),
-  reactNativeLargelist = require("react-native-largelist"),
+  FadingEdge = _interopRequireDefault(require("../components/FadingEdge")),
+  reactNativeLargelist = require("./../components/Scrolling.js"),
   components = require("../components/index"),
-  providers = babelHelpers.interopRequireDefault(require("../services/providers")),
+  providers = _interopRequireDefault(require("../services/providers")),
   constants = require("../theme/constants"),
-  names = babelHelpers.interopRequireDefault(require("../events/names")),
-  icons = babelHelpers.interopRequireDefault(require("../theme/icons")),
-  keysModule = babelHelpers.interopRequireDefault(require("../storage/keys")),
-  locales = babelHelpers.interopRequireDefault(require("../locales/index")),
+  names = _interopRequireDefault(require("../events/names")),
+  icons = _interopRequireDefault(require("../theme/icons")),
+  keysModule = _interopRequireDefault(require("../storage/keys")),
+  locales = _interopRequireDefault(require("../locales/index")),
   events = require("../events/index"),
   trackInfo = require("../services/trackInfo"),
-  dimensions = babelHelpers.interopRequireDefault(require("../native/dimensions")),
+  dimensions = _interopRequireDefault(require("../native/dimensions")),
   sectionsModule = require("../screens/history/sections"),
   L = dimensions.default.get('SOFT_MENU_BAR_HEIGHT'),
-  T = function (e) {
-    function t() {
+  T = class t extends React.Component {
+    constructor() {
       var e, n, a;
-      babelHelpers.classCallCheck(this, t);
       for (var l = arguments.length, s = new Array(l), o = 0; o < l; o++) s[o] = arguments[o];
-      return babelHelpers.possibleConstructorReturn(a, (n = a = babelHelpers.possibleConstructorReturn(this, (e = babelHelpers.getPrototypeOf(t)).call.apply(e, [this].concat(s))), a.state = {
+      return n = a = super(...s), a.state = {
         checkedList: {
           netEase: [],
           qqMusic: [],
@@ -35,7 +38,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
         show_local: true,
         needBottomPadding: false
       }, a.loadSetting = function () {
-        storage.load({
+        _appStorage.storage.load({
           key: keysModule.default.settings
         }).then(function (e) {
           (null === e || void 0 === e ? void 0 : e.navbarPadding.on) && a.setState({
@@ -187,79 +190,72 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
         return a.state.checkedList[t].some(function (t) {
           return t === e;
         });
-      }, n));
+      }, n;
     }
-    babelHelpers.createClass(t, [{
-      key: "componentDidMount",
-      value: function () {
-        this.loadSetting();
-      }
-    }, {
-      key: "render",
-      value: function () {
-        var e = this,
-          t = this.props,
-          n = t.isOpen,
-          a = t.onClosed,
-          l = this.state,
-          u = l.selectedAll,
-          d = l.needBottomPadding,
-          f = this.getData();
-        return React.default.createElement(ReactNative.Modal, {
-          ref: "modal",
-          style: {
-            flex: 1
-          },
-          animationType: "fade",
-          visible: n,
-          onRequestClose: function () {
-            e.clean();
-            a();
-          }
-        }, React.default.createElement(ReactNative.View, {
-          style: [_.container, {
-            paddingBottom: d ? 5 + L : 5
-          }]
-        }, React.default.createElement(components.Background, null), React.default.createElement(components.HeaderBar, {
-          headerStyle: _.header,
-          title: this.pickedNum() + ' ' + locales.default.SELECTED,
-          goBack: a,
-          onTop: this.onTop,
-          backIcon: {
-            name: icons.default.WINDOW_CLOSE
-          }
-        }), React.default.createElement(FadingEdge.default, {
-          top: 30,
-          bottom: 30
-        }, React.default.createElement(reactNativeLargelist.LargeList, {
-          ref: function (t) {
-            return e._list = t;
-          },
-          data: f,
-          heightForIndexPath: this._heightForIndexPath,
-          heightForSection: this._heightForSection,
-          renderIndexPath: this._renderIndexPath,
-          renderSection: this._renderSection
-        })), React.default.createElement(ReactNative.View, {
-          style: _.btns
-        }, React.default.createElement(q, {
-          text: locales.default.PLAY,
-          name: icons.default.PLUS,
-          onPress: this.addToPlay
-        }), React.default.createElement(q, {
-          text: u ? locales.default.CANCEL : locales.default.SELECT_ALL,
-          name: u ? icons.default.CANCEL : icons.default.CHECK_ALL,
-          onPress: this.selectAll
-        }), React.default.createElement(q, {
-          text: locales.default.DELETE,
-          name: icons.default.DELETE,
-          onPress: this.onDelete
-        }))));
-      }
-    }]);
-    babelHelpers.inherits(t, e);
-    return t;
-  }(React.Component),
+    "componentDidMount"() {
+      this.loadSetting();
+    }
+    "render"() {
+      var e = this,
+        t = this.props,
+        n = t.isOpen,
+        a = t.onClosed,
+        l = this.state,
+        u = l.selectedAll,
+        d = l.needBottomPadding,
+        f = this.getData();
+      return React.default.createElement(ReactNative.Modal, {
+        ref: instance => this.modal = instance,
+        style: {
+          flex: 1
+        },
+        animationType: "fade",
+        visible: n,
+        onRequestClose: function () {
+          e.clean();
+          a();
+        }
+      }, React.default.createElement(ReactNative.View, {
+        style: [_.container, {
+          paddingBottom: d ? 5 + L : 5
+        }]
+      }, React.default.createElement(components.Background, null), React.default.createElement(components.HeaderBar, {
+        headerStyle: _.header,
+        title: this.pickedNum() + ' ' + locales.default.SELECTED,
+        goBack: a,
+        onTop: this.onTop,
+        backIcon: {
+          name: icons.default.WINDOW_CLOSE
+        }
+      }), React.default.createElement(FadingEdge.default, {
+        top: 30,
+        bottom: 30
+      }, React.default.createElement(reactNativeLargelist.LargeList, {
+        ref: function (t) {
+          return e._list = t;
+        },
+        data: f,
+        heightForIndexPath: this._heightForIndexPath,
+        heightForSection: this._heightForSection,
+        renderIndexPath: this._renderIndexPath,
+        renderSection: this._renderSection
+      })), React.default.createElement(ReactNative.View, {
+        style: _.btns
+      }, React.default.createElement(q, {
+        text: locales.default.PLAY,
+        name: icons.default.PLUS,
+        onPress: this.addToPlay
+      }), React.default.createElement(q, {
+        text: u ? locales.default.CANCEL : locales.default.SELECT_ALL,
+        name: u ? icons.default.CANCEL : icons.default.CHECK_ALL,
+        onPress: this.selectAll
+      }), React.default.createElement(q, {
+        text: locales.default.DELETE,
+        name: icons.default.DELETE,
+        onPress: this.onDelete
+      }))));
+    }
+  },
   q = function (e) {
     var t = e.onPress,
       n = e.name,
@@ -271,7 +267,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
       style: [_.btn, l]
     }, React.default.createElement(components.Icon, {
       name: n || icons.default.FORMAT_LIST_BULLETED
-    }), React.default.createElement(ReactNative.Text, null, a || locales.default.MULT_SELECT)));
+    }), React.default.createElement(_default, null, a || locales.default.MULT_SELECT)));
   },
   _ = ReactNative.StyleSheet.create({
     container: {

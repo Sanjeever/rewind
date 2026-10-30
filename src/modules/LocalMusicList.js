@@ -1,16 +1,16 @@
+const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var React = babelHelpers.interopRequireWildcard(require("react")),
-  reactNativeSpringScrollview = require("react-native-spring-scrollview"),
+var React = _interopRequireWildcard(require("react")),
+  reactNativeSpringScrollview = require("./../components/Scrolling.js"),
   components = require("../components/index"),
-  u = function (e) {
-    function r() {
+  u = class r extends React.Component {
+    constructor() {
       var e, t, n;
-      babelHelpers.classCallCheck(this, r);
       for (var l = arguments.length, i = new Array(l), u = 0; u < l; u++) i[u] = arguments[u];
-      return babelHelpers.possibleConstructorReturn(n, (t = n = babelHelpers.possibleConstructorReturn(this, (e = babelHelpers.getPrototypeOf(r)).call.apply(e, [this].concat(i))), n.onTop = function () {
+      return t = n = super(...i), n.onTop = function () {
         var e, r;
         null === (e = (r = n._scrollView).scrollToBegin) || void 0 === e || e.call(r);
       }, n.formatAudioName = function (e) {
@@ -33,26 +33,21 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
             return n.props.onDetail(r, t);
           }
         });
-      }, t));
+      }, t;
     }
-    babelHelpers.createClass(r, [{
-      key: "render",
-      value: function () {
-        var e = this,
-          r = this.props.data;
-        return r ? React.default.createElement(reactNativeSpringScrollview.SpringScrollView, {
-          ref: function (r) {
-            return e._scrollView = r;
-          }
-        }, r.map(function (r, t) {
-          return e._renderItem({
-            item: r,
-            index: t
-          });
-        })) : React.default.createElement(components.Spinkit, null);
-      }
-    }]);
-    babelHelpers.inherits(r, e);
-    return r;
-  }(React.Component);
+    "render"() {
+      var e = this,
+        r = this.props.data;
+      return r ? React.default.createElement(reactNativeSpringScrollview.SpringScrollView, {
+        ref: function (r) {
+          return e._scrollView = r;
+        }
+      }, r.map(function (r, t) {
+        return e._renderItem({
+          item: r,
+          index: t
+        });
+      })) : React.default.createElement(components.Spinkit, null);
+    }
+  };
 exports.default = u;

@@ -1,9 +1,10 @@
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.sortModeMap = exports.orderTexts = exports.FOREGROUND_HEIGHT = void 0;
 var constants = require("../../theme/constants"),
-  locales = babelHelpers.interopRequireDefault(require("../../locales/index")),
+  locales = _interopRequireDefault(require("../../locales/index")),
   n = constants.DEVICE_WIDTH;
 exports.FOREGROUND_HEIGHT = n;
 exports.sortModeMap = {

@@ -21,7 +21,7 @@ var React = _interopRequireWildcard(require("react")),
   mediaStore = _interopRequireDefault(require("../native/mediaStore")),
   history = require("../storage/history"),
   sectionsModule = require("./history/sections"),
-  module874 = _interopRequireDefault(require("../modules/module-874")),
+  HistorySelection = _interopRequireDefault(require("./../modules/HistorySelection.js")),
   H = class t extends React.Component {
     constructor() {
       var e, a, n;
@@ -226,7 +226,7 @@ var React = _interopRequireWildcard(require("react")),
         heightForSection: this._heightForSection,
         renderIndexPath: this._renderIndexPath,
         renderSection: this._renderSection
-      }), React.default.createElement(module874.default, {
+      }), React.default.createElement(HistorySelection.default, {
         isOpen: a,
         onClosed: function () {
           e.setState({

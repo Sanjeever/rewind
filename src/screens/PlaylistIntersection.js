@@ -1,28 +1,30 @@
+const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+const _toConsumableArray = require("@babel/runtime/helpers/toConsumableArray");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var React = babelHelpers.interopRequireWildcard(require("react")),
+var React = _interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
-  reactNativeLargelist = require("react-native-largelist"),
+  reactNativeLargelist = require("./../components/Scrolling.js"),
   components = require("../components/index"),
   constants = require("../theme/constants"),
-  locales = babelHelpers.interopRequireDefault(require("../locales/index")),
+  locales = _interopRequireDefault(require("../locales/index")),
   services = require("../services/index"),
   events = require("../events/index"),
   trackInfo = require("../services/trackInfo"),
-  module898 = babelHelpers.interopRequireDefault(require("../modules/module-898")),
-  module899 = babelHelpers.interopRequireDefault(require("../modules/module-899")),
+  IntersectionHeader = _interopRequireDefault(require("./../modules/IntersectionHeader.js")),
+  PlaylistComparison = _interopRequireDefault(require("./../modules/PlaylistComparison.js")),
   b = {
     intersection: 'intersection',
     difference: 'difference'
   },
-  y = function (e) {
-    function t() {
+  y = class t extends React.PureComponent {
+    constructor() {
       var e, n, r;
-      babelHelpers.classCallCheck(this, t);
       for (var a = arguments.length, l = new Array(a), o = 0; o < a; o++) l[o] = arguments[o];
-      return babelHelpers.possibleConstructorReturn(r, (n = r = babelHelpers.possibleConstructorReturn(this, (e = babelHelpers.getPrototypeOf(t)).call.apply(e, [this].concat(l))), r.state = {
+      return n = r = super(...l), r.state = {
         item: null,
         left: null,
         right: null,
@@ -31,25 +33,16 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
         intersectionData: [],
         differenceData: [],
         type: b.intersection
-      }, r.init = function (e) {
-        var t;
-        return regeneratorRuntime.async(function (n) {
-          for (;;) switch (n.prev = n.next) {
-            case 0:
-              n.next = 2;
-              return regeneratorRuntime.awrap(services.Netease.playlist_detail(e.id));
-            case 2:
-              t = n.sent;
-              e.playlist = t.playlist;
-              r.setState({
-                left: e,
-                selectorShow: true
-              });
-            case 5:
-            case "end":
-              return n.stop();
-          }
-        }, null, this);
+      }, r.init = async function (item) {
+        const response = await services.Netease.playlist_detail(item.id);
+        if (!response?.playlist) throw new Error(response?.message || locales.default.ERROR);
+        r.setState({
+          left: {
+            ...item,
+            playlist: response.playlist
+          },
+          selectorShow: true
+        });
       }, r.onTop = function () {
         var e;
         null === (e = r._list) || void 0 === e || e.scrollToIndexPath({
@@ -105,21 +98,9 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
         }, function () {
           r.fetchRightPlaylist();
         });
-      }, r.fetchRightPlaylist = function () {
-        var e, t;
-        return regeneratorRuntime.async(function (n) {
-          for (;;) switch (n.prev = n.next) {
-            case 0:
-              e = r.state.right;
-              n.next = 3;
-              return regeneratorRuntime.awrap(services.Netease.playlist_detail(e.id, true));
-            case 3:
-              (t = n.sent) && r.intersection(t);
-            case 5:
-            case "end":
-              return n.stop();
-          }
-        }, null, this);
+      }, r.fetchRightPlaylist = async function () {
+        const response = await services.Netease.playlist_detail(r.state.right.id, true);
+        if (response?.playlist) r.intersection(response);
       }, r.intersection = function (e) {
         var t = r.state.left;
         if (t && e) {
@@ -138,7 +119,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
             });
             r.difference(n, a, i);
           } else {
-            var l = babelHelpers.toConsumableArray(n).concat(babelHelpers.toConsumableArray(a));
+            var l = _toConsumableArray(n).concat(_toConsumableArray(a));
             r.setState({
               data: l,
               type: b.difference,
@@ -161,73 +142,66 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
         r.setState({
           differenceData: a
         });
-      }, n));
+      }, n;
     }
-    babelHelpers.createClass(t, [{
-      key: "componentDidMount",
-      value: function () {
-        var e = this.props.navigation.state.params;
-        if (e) {
-          var t = e.item;
-          this.init(t);
+    "componentDidMount"() {
+      var e = this.props.route.params;
+      if (e) {
+        var t = e.item;
+        this.init(t);
+      }
+    }
+    "render"() {
+      var e = this,
+        t = this.state,
+        n = t.left,
+        r = t.right,
+        a = t.selectorShow,
+        f = t.data,
+        d = t.type,
+        p = d === b.intersection ? locales.default.INTERSECTION : locales.default.DIFFERENCE;
+      return React.default.createElement(React.default.Fragment, null, React.default.createElement(components.PageContainer, {
+        title: p,
+        goBack: this.props.navigation.goBack,
+        onTop: this.onTop
+      }, React.default.createElement(reactNativeLargelist.LargeList, {
+        ref: function (t) {
+          return e._list = t;
+        },
+        data: [{
+          items: f
+        }],
+        heightForIndexPath: function () {
+          return constants.ITEM_HEIGHT;
+        },
+        renderIndexPath: this._renderIndexPath,
+        renderHeader: function () {
+          return React.default.createElement(ReactNative.View, {
+            style: {
+              paddingTop: 20
+            }
+          }, React.default.createElement(IntersectionHeader.default, {
+            left: n,
+            right: r,
+            onChangePlaylist: function () {
+              return e.setState({
+                selectorShow: true
+              });
+            },
+            iLength: f ? f.length : 0,
+            type: d,
+            toggleType: e.toggleType
+          }));
         }
-      }
-    }, {
-      key: "render",
-      value: function () {
-        var e = this,
-          t = this.state,
-          n = t.left,
-          r = t.right,
-          a = t.selectorShow,
-          f = t.data,
-          d = t.type,
-          p = d === b.intersection ? locales.default.INTERSECTION : locales.default.DIFFERENCE;
-        return React.default.createElement(React.default.Fragment, null, React.default.createElement(components.PageContainer, {
-          title: p,
-          goBack: this.props.navigation.goBack,
-          onTop: this.onTop
-        }, React.default.createElement(reactNativeLargelist.LargeList, {
-          ref: function (t) {
-            return e._list = t;
-          },
-          data: [{
-            items: f
-          }],
-          heightForIndexPath: function () {
-            return constants.ITEM_HEIGHT;
-          },
-          renderIndexPath: this._renderIndexPath,
-          renderHeader: function () {
-            return React.default.createElement(ReactNative.View, {
-              style: {
-                paddingTop: 20
-              }
-            }, React.default.createElement(module898.default, {
-              left: n,
-              right: r,
-              onChangePlaylist: function () {
-                return e.setState({
-                  selectorShow: true
-                });
-              },
-              iLength: f ? f.length : 0,
-              type: d,
-              toggleType: e.toggleType
-            }));
-          }
-        })), React.default.createElement(module899.default, {
-          visible: a,
-          onSelect: this.onSelect,
-          onRequestClose: function () {
-            return e.setState({
-              selectorShow: false
-            });
-          }
-        }));
-      }
-    }]);
-    babelHelpers.inherits(t, e);
-    return t;
-  }(React.PureComponent);
+      })), React.default.createElement(PlaylistComparison.default, {
+        visible: a,
+        onSelect: this.onSelect,
+        onRequestClose: function () {
+          return e.setState({
+            selectorShow: false
+          });
+        }
+      }));
+    }
+  };
 exports.default = y;

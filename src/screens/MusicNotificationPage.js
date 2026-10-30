@@ -15,7 +15,7 @@ var immer = require("immer"),
   keys = _interopRequireDefault(require("../storage/keys")),
   locales = _interopRequireDefault(require("../locales/index")),
   restartModule = _interopRequireDefault(require("../native/restart")),
-  module835 = _interopRequireDefault(require("../modules/module-835")),
+  NotificationOption = _interopRequireDefault(require("./../modules/NotificationOption.js")),
   h = notification.default.configObject,
   v = notification.default.configKeys,
   C = class t extends React.PureComponent {
@@ -101,7 +101,7 @@ var immer = require("immer"),
         }
       }, v.map(function (n, a) {
         var r = t[n];
-        return React.default.createElement(module835.default, {
+        return React.default.createElement(NotificationOption.default, {
           key: a,
           name: r.title,
           switched: r.on,
