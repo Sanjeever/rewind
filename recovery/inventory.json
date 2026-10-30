@@ -24298,6 +24298,16 @@
       "status": "confirmed",
       "location": "classes.dex: com.facebook.react.modules.systeminfo.b"
     },
+    "react": {
+      "version": "16.8.3",
+      "status": "confirmed",
+      "location": "JavaScript module 27: version"
+    },
+    "exoplayer": {
+      "version": "2.17.1",
+      "status": "confirmed",
+      "location": "classes.dex: d.f.a.b.u2"
+    },
     "storage": {
       "status": "confirmed",
       "location": "JavaScript modules 313, 663, 664",
@@ -24332,7 +24342,16 @@
         "lastPlayedTracks",
         "lastPlayedTime"
       ],
-      "database_schema": "not_yet_verified"
+      "database_schema": {
+        "status": "confirmed_on_api28",
+        "file": "databases/RKStorage",
+        "table": "catalystLocalStorage",
+        "columns": [
+          "key",
+          "value"
+        ],
+        "integrity_check": "ok"
+      }
     }
   }
 }

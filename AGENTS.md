@@ -14,3 +14,7 @@
 - 按独立结果做小步本地 commit，格式为 Conventional Commits，描述使用简短中文。显式暂存本次文件，提交前检查暂存 diff 并执行相应验证。
 - 随进展更新中文 README 的环境、依赖、安装构建命令、验证结果和已知限制，不预写成功结论。
 - 当前已执行成功的分析命令为 `pnpm inventory`，分析依赖通过 `pnpm install` 安装并锁定。清单记录文件哈希和模块关系，尚不能代替源码构建或功能验证。
+- 自有 JS 正常修改后运行 `pnpm bundle:android`，使用 `pnpm check:modules` 核对依赖与歌词解析。`restore-modules.cjs` 用于初次恢复，避免覆盖手工源码。
+- `pnpm prepare:runtime` 使用 Java 17 准备本地兼容运行库。Android 构建使用 JDK 8、AGP 4.2.2、Wrapper 6.7.1、Platform 32 和 Build Tools 30.0.3。已验证命令为 `.\android\gradlew.bat -p android assembleDebug --console=plain`，本机环境设置见 README。
+- 开发包名为 `com.kuss.rewind.dev`，保留原版 `com.kuss.rewind`。当前模拟器为 API 28 x86_64，序列号 `emulator-5556`。测试账号、音频与数据库快照保持本地，不提交。
+- 兼容 Java 运行库必须排除 `com/modules/` 和 `com/kuss/rewind/` 自有类。资源稳定 ID 使用最终开发包名，并作为资源处理任务输入，避免增量构建使用过期 ID。

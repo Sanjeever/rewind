@@ -6,7 +6,8 @@
   "scripts": {
     "inventory": "node scripts/inventory.cjs",
     "bundle:android": "node scripts/bundle.cjs",
-    "check:modules": "node scripts/check-modules.cjs"
+    "check:modules": "node scripts/check-modules.cjs",
+    "prepare:runtime": "pwsh -NoProfile -File scripts/prepare-runtime.ps1"
   },
   "devDependencies": {
     "@babel/generator": "7.26.10",

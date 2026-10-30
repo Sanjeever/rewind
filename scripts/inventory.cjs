@@ -53,7 +53,7 @@ for (const statement of ast.program.body) {
     },
   });
   const previous = previousMap.find(item => item.id === id.value);
-  modules.push({ id: id.value, dependencies: deps, classification: previous?.classification || 'unknown', source: previous?.source || null, package: previous?.package || null, exports: [...exports], native_modules: [...natives] });
+  modules.push({ id: id.value, dependencies: deps, classification: previous?.classification || 'unknown', source: previous?.source || null, exports: [...exports], native_modules: [...natives], package: previous?.package || null });
 }
 fs.mkdirSync('recovery', { recursive: true });
 fs.writeFileSync('recovery/module-map.json', JSON.stringify({ bundle_sha256: hash(Buffer.from(bundle)), modules }, null, 2) + '\n');
@@ -66,6 +66,8 @@ fs.writeFileSync('recovery/inventory.json', JSON.stringify({
     android_gradle_plugin: { version: '4.2.2', status: 'confirmed', location: 'META-INF/com/android/build/gradle/app-metadata.properties' },
     sdk: { min: 21, target: 32, compile: 32, status: 'confirmed', location: 'AndroidManifest.xml' },
     native_framework_version: { version: '0.56.1', status: 'confirmed', location: 'classes.dex: com.facebook.react.modules.systeminfo.b' },
+    react: { version: '16.8.3', status: 'confirmed', location: 'JavaScript module 27: version' },
+    exoplayer: { version: '2.17.1', status: 'confirmed', location: 'classes.dex: d.f.a.b.u2' },
     storage: {
       status: 'confirmed',
       location: 'JavaScript modules 313, 663, 664',
@@ -76,7 +78,7 @@ fs.writeFileSync('recovery/inventory.json', JSON.stringify({
       default_expires: null,
       enable_cache: false,
       keys: ['showTrans', 'showToolBtnStatus', 'autoSetPlaylistOrder', 'charts', 'restUsers', 'apiOrder', 'pagesOrder', 'lastPlayedSong', 'musicNotification', 'lyricFontSize', 'settings', 'lastPlayMode', 'background', 'musicHistory', 'searchHistory', 'userInfo', 'maxCacheSize', 'playlist', 'likelist', 'netEasePlaylistCache', 'firstTime', 'lastPlayedTracks', 'lastPlayedTime'],
-      database_schema: 'not_yet_verified',
+      database_schema: { status: 'confirmed_on_api28', file: 'databases/RKStorage', table: 'catalystLocalStorage', columns: ['key', 'value'], integrity_check: 'ok' },
     },
   },
 }, null, 2) + '\n');

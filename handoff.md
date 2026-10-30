@@ -43,7 +43,7 @@
 | 包名 | `output-metadata.json` 为 `com.kuss.rewind` |
 | 版本 | 四个构建均为 `3.5.0` |
 | ABI 与 versionCode | armeabi-v7a 为 2000098，arm64-v8a 为 3000098，x86 为 4000098，x86_64 为 5000098 |
-| JS bundle | 四个包均包含 `assets/index.android.bundle`，各为 1,808,058 字节；内容一致性尚未完整比较 |
+| JS bundle | 四个包均包含 `assets/index.android.bundle`，各为 1,808,058 字节；已逐项比较，内容一致 |
 | bundle 格式 | 纯文本 JavaScript，采用 Metro `__d(...)` 注册模块；arm64 包计数为 938，包含第三方模块 |
 | 入口 | 模块 0 调用 `AppRegistry.registerComponent('rewind', ...)`，引用模块 1 和 295 |
 | RN 版本线索 | JS 版本常量为 `{major:0,minor:56,patch:1,prerelease:null}`；原生版本和定制修改还需核对 |
@@ -78,7 +78,11 @@
 | `.github/workflows/check.yml` | 旧链接检查工作流，针对 master，不能作为构建或功能验证 |
 | `handoff.md` | 本交接说明 |
 
-2026-10-30 已建立 `main`、中文项目级 `AGENTS.md`、忽略规则、分析用 `package.json` 与 pnpm 锁文件。`scripts/inventory.cjs` 已成功生成四包逐项清单和 938 个模块映射，暂未分类业务模块。JS 与原生常量均确认 RN 0.56.1，min / target / compile SDK 为 21 / 32 / 32。模块 663 确认 react-native-storage 接 AsyncStorage。尚无 `android/` 和 `src/`，数据库结构、依赖精确版本、构建和实际功能仍待验证。用户要求暂停，恢复入口与本地工具状态记录在 README 的“暂停与继续入口”。
+2026-10-30 已恢复 265 个自有 JS 模块和 114 份自有 Java 文件，包含页面路由、播放器、服务、存储和原生桥接。`recovery/module-map.json` 记录 938 个模块的分类与源码路径，`recovery/native-map.json` 记录桥接名称和方法。当前兼容运行库保留框架与第三方实现，全部自有原生类从运行库剔除后重新编译。RN 0.56.1、React 16.8.3、ExoPlayer 2.17.1、SDK 21 / 32 / 32 均有明确版本证据。
+
+Android 工程使用 AGP 4.2.2、Wrapper 6.7.1、JDK 8，`assembleDebug` 已成功。API 28 x86_64 模拟器上原版与 `com.kuss.rewind.dev` 并存，恢复包已启动并检查首页、关于、设置和本地音乐。修改 JS 与原生版本信息、重新构建安装后，关于页实际显示 `3.5.0-dev · 源码验证`，临时 JS 验证文字已撤回。运行库准备命令为 `pnpm prepare:runtime`，构建和设备命令见 README。
+
+已确认数据库为 `RKStorage` 中的 `catalystLocalStorage(key, value)`，设置修改在强制结束进程后仍保留。本地文件路径已随当前包名生成，开发包使用自身外部目录。播放器已观察真实 AudioTrack、播放/暂停、两首曲目的队列与切换；进度跳转、歌单、歌词、账号和外部接口仍在逐项验证。代理访问音乐接口未取得上游响应，直连 DNS 超时，当前不能认定为服务端接口失效。
 
 ## 6. 实现方案
 

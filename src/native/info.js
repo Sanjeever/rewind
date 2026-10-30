@@ -9,3 +9,4 @@ var v = require("react-native").NativeModules.RNInfo,
 exports.isDebug = u;
 exports.versionName = d;
 exports.versionCode = r;
+exports.applicationId = v.applicationId;

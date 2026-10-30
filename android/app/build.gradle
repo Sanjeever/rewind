@@ -1,0 +1,58 @@
+apply plugin: 'com.android.application'
+
+def projectRoot = rootProject.projectDir.parentFile
+def runtimeDir = new File(projectRoot, '.recovery/runtime')
+def resourceDir = new File(runtimeDir, 'res')
+def stableIds = new File(runtimeDir, 'stable-ids.txt')
+if (new File(resourceDir, 'values/public.xml').exists()) {
+    def resources = new XmlSlurper().parse(new File(resourceDir, 'values/public.xml'))
+    stableIds.parentFile.mkdirs()
+    stableIds.text = resources.public.collect { item ->
+        "com.kuss.rewind.dev:${item.@type}/${item.@name} = ${item.@id}"
+    }.join('\n') + '\n'
+}
+
+android {
+    compileSdkVersion 32
+    buildToolsVersion '30.0.3'
+    defaultConfig {
+        applicationId 'com.kuss.rewind.dev'
+        minSdkVersion 21
+        targetSdkVersion 32
+        versionCode 5000098
+        versionName '3.5.0-dev'
+        ndk { abiFilters 'x86_64', 'arm64-v8a', 'armeabi-v7a', 'x86' }
+    }
+    sourceSets {
+        main {
+            res.srcDirs = [resourceDir]
+            assets.srcDirs = [new File(runtimeDir, 'assets'), new File(projectRoot, '.recovery/generated/assets')]
+            jniLibs.srcDirs = [new File(runtimeDir, 'jniLibs')]
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    aaptOptions {
+        additionalParameters '--stable-ids', stableIds.absolutePath
+        noCompress 'bundle', 'ttf'
+    }
+}
+
+dependencies {
+    implementation files(new File(runtimeDir, 'legacy-runtime.jar'))
+}
+
+task bundleJavaScript(type: Exec) {
+    workingDir projectRoot
+    commandLine 'node', 'scripts/bundle.cjs'
+    inputs.files fileTree(new File(projectRoot, 'src')), fileTree(new File(projectRoot, 'assets'))
+    inputs.files new File(projectRoot, 'index.js'), new File(projectRoot, 'recovery/module-map.json'), new File(projectRoot, 'scripts/bundle.cjs')
+    outputs.file new File(projectRoot, '.recovery/generated/assets/index.android.bundle')
+}
+preBuild.dependsOn bundleJavaScript
+
+tasks.matching { it.name.startsWith('process') && it.name.endsWith('Resources') }.configureEach {
+    inputs.file stableIds
+}
