@@ -101,9 +101,19 @@ var ReactNative = require("react-native"),
     });
   },
   v = async function (name, id, api, obj, external) {
-    let url = g(await services.QQMusic.getMusicUrl(id), api);
-    if (!url) url = await services.provider.getUrlFromOther(obj, providers.default.qqMusic);
-    if (!url) throw new Error('歌曲当前不可下载');
+    let url;
+    let primaryError;
+    try {
+      url = g(await services.QQMusic.getMusicUrl(id), api);
+    } catch (error) { primaryError = error; }
+    if (!url) {
+      try {
+        url = await services.provider.getUrlFromOther(obj, providers.default.qqMusic);
+        if (!url) throw new Error('歌曲当前不可下载');
+      } catch (error) {
+        throw new Error(primaryError ? primaryError.message + '；备用音源：' + error.message : error.message);
+      }
+    }
     return external === true ? w(url) : b({
       url,
       api,

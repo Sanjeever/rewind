@@ -1,23 +1,35 @@
 import providers from '../services/providers';
-import * as services from '../services';
+import {Netease, QQMusic, provider} from '../services';
 
-async function neteaseUrl(id, paid) {
-  const response = await (paid ? services.Netease.musicUrl({id}) : services.Netease.freeMusicUrl({id}));
-  const song = response?.data?.[0];
-  if (!song || (song.freeTrialInfo && !(song.payed > 0))) return null;
-  return song.url;
+async function neteaseUrl(song, allowPaid) {
+  const response = await (song.fee > 0 && allowPaid === true ? Netease.musicUrl({id: song.id}) : Netease.freeMusicUrl({id: song.id}));
+  if (response?.code !== 200) throw new Error(`网易云音源失败（${response?.code ?? '无状态码'}）：${response?.message || '服务拒绝请求'}`);
+  const result = response.data?.[0];
+  if (!result) throw new Error('网易云音源响应缺少歌曲');
+  if (result.freeTrialInfo && !(result.payed > 0)) throw new Error('网易云歌曲仅提供试听');
+  if (!result.url) throw new Error(`网易云未返回播放地址（${result.code ?? '无状态码'}）`);
+  return result.url;
 }
 
 export default {
-  async getUrl(api, request, allowPaid) {
-    const song = request.song;
-    let url;
-    if (api === providers.netEase) url = await neteaseUrl(song.id, song.fee > 0 && allowPaid === true);
-    else if (api === providers.qqMusic) {
-      const mid = song.songmid || song.mid;
-      if (typeof mid === 'string') url = await services.QQMusic.getMusicUrl(mid);
+  async getUrl(api, {song}, allowPaid) {
+    let primaryError;
+    try {
+      let url;
+      if (api === providers.netEase) url = await neteaseUrl(song, allowPaid);
+      else if (api === providers.qqMusic) url = await QQMusic.getMusicUrl(song.songmid || song.mid);
+      else throw new Error('未知音源来源：' + api);
+      if (typeof url !== 'string' || !url) throw new Error('来源未返回播放地址');
+      return url;
+    } catch (error) {
+      primaryError = error;
     }
-    if (typeof url !== 'string') url = await services.provider.getUrlFromOther(song, api);
-    return url;
+    try {
+      const url = await provider.getUrlFromOther(song, api);
+      if (typeof url !== 'string' || !url) throw new Error('未找到可播放的匹配歌曲');
+      return url;
+    } catch (error) {
+      throw new Error(primaryError.message + '；备用音源：' + error.message, {cause: primaryError});
+    }
   },
 };

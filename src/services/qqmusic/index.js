@@ -1,3 +1,4 @@
+const qqHttp = require("./http");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -21,46 +22,11 @@ var utils = require("../../utils/index"),
         mv: 4
       };
     }
-    "getMusicUrl"(e) {
-      return fetch("https://u.y.qq.com/cgi-bin/musicu.fcg?g_tk=5381&loginUin=1152921504792286499&hostUin=0&format=json&inCharset=utf8&outCharset=utf-8&notice=0&platform=yqq.json&needNewCode=0&data={\"req\":{\"module\":\"CDN.SrfCdnDispatchServer\",\"method\":\"GetCdnDispatch\",\"param\":{\"guid\":\"4422768122\",\"calltype\":0,\"userip\":\"\"}},\"req_0\":{\"module\":\"vkey.GetVkeyServer\",\"method\":\"CgiGetVkey\",\"param\":{\"guid\":\"4422768122\",\"songmid\":[\"" + e + "\"],\"songtype\":[0],\"uin\":\"1152921504792286499\",\"loginflag\":1,\"platform\":\"20\"}},\"comm\":{\"uin\":\"1152921504792286499\",\"format\":\"json\",\"ct\":24,\"cv\":0}}", {
-        withCredentials: true,
-        headers: {
-          'Accept-Encoding': 'identity;q=1, *;q=0',
-          'Accept-Language': 'zh-CN,zh;q=0.9',
-          Connection: 'keep-alive',
-          'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.84 Safari/537.36'
-        }
-      }).then(function (e) {
-        return e.json();
-      }).then(function (e) {
-        var t = e.req_0.data.midurlinfo[0].purl,
-          n = e.req.data.sip[2];
-        if (t) return "" + n + t;
-      }).catch(function () {});
+    getMusicUrl(mid) {
+      return qqHttp.getMusicUrl(mid);
     }
-    "searchSong"(e) {
-      var t = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : 1,
-        n = JSON.stringify({
-          data: {
-            method: 'DoSearchForQQMusicDesktop',
-            module: 'music.search.SearchCgiService',
-            param: {
-              search_type: 0,
-              query: e,
-              page_num: t,
-              num_per_page: 30
-            }
-          }
-        }),
-        r = "https://u.y.qq.com/cgi-bin/musicu.fcg?_=" + Date.now();
-      return fetch(r, {
-        method: 'POST',
-        body: n
-      }).then(function (e) {
-        return e.json();
-      }).then(function (e) {
-        return e.data.data.body.song.list;
-      });
+    searchSong(query, page = 1) {
+      return qqHttp.searchSongs(query, page);
     }
     "user_subed_artist"(e) {
       var t = e.userId,
