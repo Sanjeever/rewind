@@ -25,7 +25,7 @@ android {
     }
     sourceSets {
         main {
-            res.srcDirs = [resourceDir]
+            res.srcDirs = [resourceDir, 'src/main/res']
             assets.srcDirs = [new File(runtimeDir, 'assets'), new File(projectRoot, '.recovery/generated/assets')]
             jniLibs.srcDirs = [new File(runtimeDir, 'jniLibs')]
         }

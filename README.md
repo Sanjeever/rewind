@@ -23,7 +23,7 @@
 
 运行验证使用 Android Emulator 32.1.15、Google APIs Android 9 / API 28 x86_64 镜像，设备序列号 `emulator-5556`。本机 HAXM 7.6.5 可用。新版 Emulator 37 拒绝 HAXM，因此使用兼容版本。SDK、模拟器和 AVD 位于 `.recovery/`，没有修改主机虚拟化功能。
 
-已安装用于清单分析的开发依赖并生成 pnpm 锁文件，包括 Babel parser / traverse / generator / types 7.26.10 与 adm-zip 0.5.16。尚未安装应用运行依赖。
+已安装源码编译和清单分析依赖并生成 pnpm 锁文件，包括 Babel 7.26 系列与 adm-zip 0.5.16。应用运行库通过下述 `prepare:runtime` 准备。
 
 ```powershell
 pnpm install --frozen-lockfile
@@ -45,6 +45,8 @@ pnpm prepare:runtime
 ```
 
 此命令已执行成功。它从仓库发布材料准备框架、第三方运行库、资源和四个 ABI 的 JNI 库，输出均在 `.recovery/`。运行库剔除全部 127 个自有类，自有 Java 由当前 `android/app/src/main/java/` 编译。资源名称与资源 ID 映射由准备脚本和 Gradle 处理。
+
+41 份应用图标、布局、主题、字符串和网络配置已放入 `android/app/src/main/res/`，可直接修改后构建。准备脚本会排除运行库中的同名文件和同配置值，保留第三方公共资源。JS 图片注册信息位于 `assets/images/`，应用加载动画位于 `assets/animations/`。当前新增图片按 Android 资源流程维护，打包器尚未提供 Metro 图片导入流程。
 
 以下为本机实际执行成功的构建命令。其他机器需将 `JAVA_HOME` 和 SDK 路径改为实际安装位置，SDK 须包含 Platform 32 和 Build Tools 30.0.3。
 

@@ -26,10 +26,39 @@ foreach ($file in Get-ChildItem -LiteralPath $destination -Recurse -File -Filter
         $value = $attribute.Value
         foreach ($oldName in $renames.Keys) {
             $value = $value.Replace(('@drawable/' + $oldName), ('@drawable/' + $renames[$oldName]))
-            if ($attribute.OwnerElement.Name -eq 'public' -and $attribute.Name -eq 'name' -and $value -eq $oldName) { $value = $renames[$oldName] }
+            if ($attribute.OwnerElement.LocalName -eq 'public' -and $attribute.Name -eq 'name' -and $value -eq $oldName) { $value = $renames[$oldName] }
         }
         if ($value -ne $attribute.Value) { $attribute.Value = $value; $modified = $true }
     }
     if ($modified) { $document.Save($file.FullName); $changed++ }
 }
-Write-Output "已规范化 $($renames.Count) 个资源名称，更新 $changed 份 XML。输出位于 .recovery/runtime/res。"
+$ownedRoot = Join-Path $projectRoot 'android/app/src/main/res'
+$ownedValues = @{}
+foreach ($file in Get-ChildItem -LiteralPath $ownedRoot -Recurse -File) {
+    $relative = [System.IO.Path]::GetRelativePath($ownedRoot,$file.FullName)
+    if ($file.Directory.Name -like 'values*') {
+        [xml]$ownedXml = Get-Content -LiteralPath $file.FullName -Raw
+        foreach ($node in $ownedXml.SelectNodes('/resources/*[@name]')) {
+            $key = $file.Directory.Name + '|' + $node.LocalName + '|' + $node.GetAttribute('name')
+            $ownedValues[$key] = $true
+        }
+    } else {
+        $duplicate = Join-Path $destination $relative
+        if (Test-Path -LiteralPath $duplicate) { Remove-Item -LiteralPath $duplicate }
+    }
+}
+foreach ($file in Get-ChildItem -LiteralPath $destination -Recurse -File -Filter '*.xml' | Where-Object { $_.Directory.Name -like 'values*' }) {
+    $document = [System.Xml.XmlDocument]::new()
+    $document.PreserveWhitespace = $true
+    $document.Load($file.FullName)
+    $modified = $false
+    foreach ($node in @($document.SelectNodes('/resources/*[@name]'))) {
+        $key = $file.Directory.Name + '|' + $node.LocalName + '|' + $node.GetAttribute('name')
+        if ($node.LocalName -ne 'public' -and $ownedValues.ContainsKey($key)) {
+            $node.ParentNode.RemoveChild($node) | Out-Null
+            $modified = $true
+        }
+    }
+    if ($modified) { $document.Save($file.FullName) }
+}
+Write-Output "已规范化 $($renames.Count) 个资源名称，更新 $changed 份 XML，并排除源码目录已维护的应用资源。"
