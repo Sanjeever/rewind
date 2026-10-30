@@ -1,25 +1,28 @@
+const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+const _appStorage = require("./../storage/index.js");
+const _defineProperty = require("@babel/runtime/helpers/defineProperty");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
 var immer = require("immer"),
-  React = babelHelpers.interopRequireWildcard(require("react")),
+  React = _interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
-  SegmentedControl = babelHelpers.interopRequireDefault(require("../components/SegmentedControl")),
+  SegmentedControl = _interopRequireDefault(require("../components/SegmentedControl")),
   components = require("../components/index"),
-  TabbedViewPager = babelHelpers.interopRequireDefault(require("../native/TabbedViewPager")),
-  pagesModule = babelHelpers.interopRequireDefault(require("../settings/pages")),
-  icons = babelHelpers.interopRequireDefault(require("../theme/icons")),
-  keys = babelHelpers.interopRequireDefault(require("../storage/keys")),
-  locales = babelHelpers.interopRequireDefault(require("../locales/index")),
-  restartModule = babelHelpers.interopRequireDefault(require("../native/restart")),
-  module844 = babelHelpers.interopRequireDefault(require("../modules/module-844")),
-  v = function (e) {
-    function a() {
+  TabbedViewPager = _interopRequireDefault(require("../native/TabbedViewPager")),
+  pagesModule = _interopRequireDefault(require("../settings/pages")),
+  icons = _interopRequireDefault(require("../theme/icons")),
+  keys = _interopRequireDefault(require("../storage/keys")),
+  locales = _interopRequireDefault(require("../locales/index")),
+  restartModule = _interopRequireDefault(require("../native/restart")),
+  module844 = _interopRequireDefault(require("../modules/module-844")),
+  v = class a extends React.PureComponent {
+    constructor() {
       var e, t, r;
-      babelHelpers.classCallCheck(this, a);
       for (var n = arguments.length, s = new Array(n), i = 0; i < n; i++) s[i] = arguments[i];
-      return babelHelpers.possibleConstructorReturn(r, (t = r = babelHelpers.possibleConstructorReturn(this, (e = babelHelpers.getPrototypeOf(a)).call.apply(e, [this].concat(s))), r._TAB_NAMES = ['Up', 'Down'], r.state = {
+      return t = r = super(...s), r._TAB_NAMES = ['Up', 'Down'], r.state = {
         pages: pagesModule.default.pages,
         apis: pagesModule.default.apis,
         pagesOrder: null,
@@ -50,17 +53,17 @@ var immer = require("immer"),
                 e[r] = t[a];
               });
             });
-          storage.save({
+          _appStorage.storage.save({
             key: keys.default.apisOrder,
             data: u
           });
-          storage.save({
+          _appStorage.storage.save({
             key: keys.default.pagesOrder,
             data: i
           });
         }
       }, r.loadOrder = function () {
-        storage.load({
+        _appStorage.storage.load({
           key: keys.default.pagesOrder
         }).then(function (e) {
           e && r.setState({
@@ -69,7 +72,7 @@ var immer = require("immer"),
         }).catch(function () {
           return null;
         });
-        storage.load({
+        _appStorage.storage.load({
           key: keys.default.apisOrder
         }).then(function (e) {
           e && r.setState({
@@ -79,10 +82,10 @@ var immer = require("immer"),
           return null;
         });
       }, r.removeStorage = function () {
-        storage.remove({
+        _appStorage.storage.remove({
           key: keys.default.apisOrder
         });
-        storage.remove({
+        _appStorage.storage.remove({
           key: keys.default.pagesOrder
         });
         toast(locales.default.CACHE_CLEARED);
@@ -96,7 +99,7 @@ var immer = require("immer"),
         });
       }, r.onReleaseRow = function (e, a, t) {
         var n;
-        r.setState((n = {}, babelHelpers.defineProperty(n, t + "Order", a), babelHelpers.defineProperty(n, "changed", true), n));
+        r.setState((n = {}, _defineProperty(n, t + "Order", a), _defineProperty(n, "changed", true), n));
       }, r.renderApiRow = function (e) {
         var a = e.data,
           t = e.active;
@@ -105,82 +108,71 @@ var immer = require("immer"),
           active: t,
           type: "apis"
         });
-      }, t));
+      }, t;
     }
-    babelHelpers.createClass(a, [{
-      key: "componentDidMount",
-      value: function () {
-        this.loadOrder();
-        ReactNative.BackHandler.addEventListener('hardwareBackPress', this.onBackPress);
-      }
-    }, {
-      key: "componentWillUnmount",
-      value: function () {
-        ReactNative.BackHandler.removeEventListener('hardwareBackPress', this.onBackPress);
-      }
-    }, {
-      key: "alertChange",
-      value: function () {
-        var e = this;
-        ReactNative.Alert.alert(locales.default.WARN, locales.default.NEED_RELOAD_APP, [{
-          text: locales.default.CANCEL,
+    "componentDidMount"() {
+      this.loadOrder();
+      this.backSubscription = ReactNative.BackHandler.addEventListener('hardwareBackPress', this.onBackPress);
+    }
+    "componentWillUnmount"() {
+      this.backSubscription?.remove();
+    }
+    "alertChange"() {
+      var e = this;
+      ReactNative.Alert.alert(locales.default.WARN, locales.default.NEED_RELOAD_APP, [{
+        text: locales.default.CANCEL,
+        onPress: function () {
+          e.props.navigation.goBack();
+        },
+        style: 'cancel'
+      }, {
+        text: locales.default.CONFIRM,
+        onPress: this.confirmChange
+      }]);
+    }
+    "render"() {
+      var e = this,
+        a = this.state,
+        t = a.pages,
+        r = a.apis;
+      return React.default.createElement(components.PageContainer, {
+        title: locales.default.ORDER,
+        goBack: this.props.navigation.goBack,
+        rightIcon: [{
+          name: icons.default.CHECK,
           onPress: function () {
-            e.props.navigation.goBack();
-          },
-          style: 'cancel'
+            return e.alertChange();
+          }
         }, {
-          text: locales.default.CONFIRM,
-          onPress: this.confirmChange
-        }]);
-      }
-    }, {
-      key: "render",
-      value: function () {
-        var e = this,
-          a = this.state,
-          t = a.pages,
-          r = a.apis;
-        return React.default.createElement(components.PageContainer, {
-          title: locales.default.ORDER,
-          goBack: this.props.navigation.goBack,
-          rightIcon: [{
-            name: icons.default.CHECK,
-            onPress: function () {
-              return e.alertChange();
-            }
-          }, {
-            name: icons.default.WINDOW_CLOSE,
-            onPress: function () {
-              return e.removeStorage();
-            }
-          }],
-          disabledTopFadingEdge: true
-        }, React.default.createElement(TabbedViewPager.default, {
-          tabNames: this._TAB_NAMES
-        }, React.default.createElement(SegmentedControl.default, {
-          style: {
-            padding: 10,
-            paddingHorizontal: 15
-          },
-          data: t,
-          renderRow: this.renderPageRow,
-          onReleaseRow: function (a, t) {
-            return e.onReleaseRow(a, t, 'pages');
+          name: icons.default.WINDOW_CLOSE,
+          onPress: function () {
+            return e.removeStorage();
           }
-        }), React.default.createElement(SegmentedControl.default, {
-          style: {
-            padding: 10,
-            paddingHorizontal: 15
-          },
-          data: r,
-          renderRow: this.renderApiRow,
-          onReleaseRow: function (a, t) {
-            return e.onReleaseRow(a, t, 'apis');
-          }
-        })));
-      }
-    }]);
-    babelHelpers.inherits(a, e);
-    return a;
-  }(React.PureComponent);
+        }],
+        disabledTopFadingEdge: true
+      }, React.default.createElement(TabbedViewPager.default, {
+        tabNames: this._TAB_NAMES
+      }, React.default.createElement(SegmentedControl.default, {
+        style: {
+          padding: 10,
+          paddingHorizontal: 15
+        },
+        data: t,
+        renderRow: this.renderPageRow,
+        onReleaseRow: function (a, t) {
+          return e.onReleaseRow(a, t, 'pages');
+        }
+      }), React.default.createElement(SegmentedControl.default, {
+        style: {
+          padding: 10,
+          paddingHorizontal: 15
+        },
+        data: r,
+        renderRow: this.renderApiRow,
+        onReleaseRow: function (a, t) {
+          return e.onReleaseRow(a, t, 'apis');
+        }
+      })));
+    }
+  };
 exports.default = v;

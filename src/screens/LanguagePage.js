@@ -1,15 +1,17 @@
+const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var React = babelHelpers.interopRequireWildcard(require("react")),
+var React = _interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
-  reactNativeSpringScrollview = require("react-native-spring-scrollview"),
+  reactNativeSpringScrollview = require("./../components/Scrolling.js"),
   components = require("../components/index"),
-  icons = babelHelpers.interopRequireDefault(require("../theme/icons")),
-  locales = babelHelpers.interopRequireDefault(require("../locales/index")),
-  restartModule = babelHelpers.interopRequireDefault(require("../native/restart")),
-  languageModule = babelHelpers.interopRequireDefault(require("../native/language")),
+  icons = _interopRequireDefault(require("../theme/icons")),
+  locales = _interopRequireDefault(require("../locales/index")),
+  restartModule = _interopRequireDefault(require("../native/restart")),
+  languageModule = _interopRequireDefault(require("../native/language")),
   f = [{
     name: '\u4e2d\u6587/\u5927\u9646',
     code: 'zh_CN'
@@ -23,12 +25,11 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
     name: 'English',
     code: 'en_US'
   }],
-  h = function (e) {
-    function a() {
+  h = class a extends React.PureComponent {
+    constructor() {
       var e, n, t;
-      babelHelpers.classCallCheck(this, a);
       for (var r = arguments.length, l = new Array(r), o = 0; o < r; o++) l[o] = arguments[o];
-      return babelHelpers.possibleConstructorReturn(t, (n = t = babelHelpers.possibleConstructorReturn(this, (e = babelHelpers.getPrototypeOf(a)).call.apply(e, [this].concat(l))), t.state = {
+      return n = t = super(...l), t.state = {
         language: languageModule.default.language,
         changed: false
       }, t.onBackPress = function () {
@@ -43,69 +44,58 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
           language: e,
           changed: !(e === languageModule.default.language)
         });
-      }, n));
+      }, n;
     }
-    babelHelpers.createClass(a, [{
-      key: "componentDidMount",
-      value: function () {
-        ReactNative.BackHandler.addEventListener('hardwareBackPress', this.onBackPress);
-      }
-    }, {
-      key: "componentWillUnmount",
-      value: function () {
-        ReactNative.BackHandler.removeEventListener('hardwareBackPress', this.onBackPress);
-      }
-    }, {
-      key: "alertChange",
-      value: function () {
-        var e = this,
-          a = this.state.language;
-        languageModule.default.language !== a && ReactNative.Alert.alert(locales.default.CONFIRM_CHANGE_LANGUAGE, locales.default.NEED_RELOAD_APP, [{
-          text: locales.default.CANCEL,
+    "componentDidMount"() {
+      this.backSubscription = ReactNative.BackHandler.addEventListener('hardwareBackPress', this.onBackPress);
+    }
+    "componentWillUnmount"() {
+      this.backSubscription?.remove();
+    }
+    "alertChange"() {
+      var e = this,
+        a = this.state.language;
+      languageModule.default.language !== a && ReactNative.Alert.alert(locales.default.CONFIRM_CHANGE_LANGUAGE, locales.default.NEED_RELOAD_APP, [{
+        text: locales.default.CANCEL,
+        onPress: function () {
+          e.props.navigation.goBack();
+        },
+        style: 'cancel'
+      }, {
+        text: locales.default.CONFIRM,
+        onPress: function () {
+          return e.confirmChange(a);
+        }
+      }]);
+    }
+    "render"() {
+      var e = this,
+        a = this.state.language;
+      return React.default.createElement(components.PageContainer, {
+        title: locales.default.LANGUAGE,
+        goBack: this.props.navigation.goBack,
+        rightIcon: {
+          name: icons.default.CHECK,
           onPress: function () {
-            e.props.navigation.goBack();
-          },
-          style: 'cancel'
-        }, {
-          text: locales.default.CONFIRM,
+            return e.alertChange();
+          }
+        }
+      }, React.default.createElement(reactNativeSpringScrollview.SpringScrollView, {
+        style: {
+          flex: 1
+        }
+      }, f.map(function (n, t) {
+        return React.default.createElement(components.SongRow, {
+          key: t,
+          song: n.name,
+          singer: n.code,
+          index: t,
+          isChecked: n.code === a,
           onPress: function () {
-            return e.confirmChange(a);
+            return e.changeLanguage(n.code);
           }
-        }]);
-      }
-    }, {
-      key: "render",
-      value: function () {
-        var e = this,
-          a = this.state.language;
-        return React.default.createElement(components.PageContainer, {
-          title: locales.default.LANGUAGE,
-          goBack: this.props.navigation.goBack,
-          rightIcon: {
-            name: icons.default.CHECK,
-            onPress: function () {
-              return e.alertChange();
-            }
-          }
-        }, React.default.createElement(reactNativeSpringScrollview.SpringScrollView, {
-          style: {
-            flex: 1
-          }
-        }, f.map(function (n, t) {
-          return React.default.createElement(components.SongRow, {
-            key: t,
-            song: n.name,
-            singer: n.code,
-            index: t,
-            isChecked: n.code === a,
-            onPress: function () {
-              return e.changeLanguage(n.code);
-            }
-          });
-        })));
-      }
-    }]);
-    babelHelpers.inherits(a, e);
-    return a;
-  }(React.PureComponent);
+        });
+      })));
+    }
+  };
 exports.default = h;

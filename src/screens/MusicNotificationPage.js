@@ -1,26 +1,28 @@
+const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+const _appStorage = require("./../storage/index.js");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
 var immer = require("immer"),
-  React = babelHelpers.interopRequireWildcard(require("react")),
+  React = _interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
-  reactNativeSpringScrollview = require("react-native-spring-scrollview"),
+  reactNativeSpringScrollview = require("./../components/Scrolling.js"),
   components = require("../components/index"),
-  notification = babelHelpers.interopRequireDefault(require("../settings/notification")),
-  icons = babelHelpers.interopRequireDefault(require("../theme/icons")),
-  keys = babelHelpers.interopRequireDefault(require("../storage/keys")),
-  locales = babelHelpers.interopRequireDefault(require("../locales/index")),
-  restartModule = babelHelpers.interopRequireDefault(require("../native/restart")),
-  module835 = babelHelpers.interopRequireDefault(require("../modules/module-835")),
+  notification = _interopRequireDefault(require("../settings/notification")),
+  icons = _interopRequireDefault(require("../theme/icons")),
+  keys = _interopRequireDefault(require("../storage/keys")),
+  locales = _interopRequireDefault(require("../locales/index")),
+  restartModule = _interopRequireDefault(require("../native/restart")),
+  module835 = _interopRequireDefault(require("../modules/module-835")),
   h = notification.default.configObject,
   v = notification.default.configKeys,
-  C = function (e) {
-    function t() {
+  C = class t extends React.PureComponent {
+    constructor() {
       var e, n, a;
-      babelHelpers.classCallCheck(this, t);
       for (var r = arguments.length, i = new Array(r), l = 0; l < r; l++) i[l] = arguments[l];
-      return babelHelpers.possibleConstructorReturn(a, (n = a = babelHelpers.possibleConstructorReturn(this, (e = babelHelpers.getPrototypeOf(t)).call.apply(e, [this].concat(i))), a.state = {
+      return n = a = super(...i), a.state = {
         config: h,
         changed: false
       }, a.onBackPress = function () {
@@ -31,7 +33,7 @@ var immer = require("immer"),
           restartModule.default.restart();
         }, 99);
       }, a.loadConfig = function () {
-        storage.load({
+        _appStorage.storage.load({
           key: keys.default.musicNotification
         }).then(function (e) {
           e && a.setState({
@@ -39,7 +41,7 @@ var immer = require("immer"),
           });
         });
       }, a.saveConfig = function () {
-        storage.save({
+        _appStorage.storage.save({
           key: keys.default.musicNotification,
           data: a.state.config
         });
@@ -53,72 +55,61 @@ var immer = require("immer"),
         });
         a.saveConfig();
       }, a.removeStorage = function () {
-        storage.remove({
+        _appStorage.storage.remove({
           key: keys.default.musicNotification
         });
         a.setState({
           config: h
         });
-      }, n));
+      }, n;
     }
-    babelHelpers.createClass(t, [{
-      key: "componentDidMount",
-      value: function () {
-        this.loadConfig();
-        ReactNative.BackHandler.addEventListener('hardwareBackPress', this.onBackPress);
-      }
-    }, {
-      key: "componentWillUnmount",
-      value: function () {
-        ReactNative.BackHandler.removeEventListener('hardwareBackPress', this.onBackPress);
-      }
-    }, {
-      key: "alertChange",
-      value: function () {
-        var e = this;
-        ReactNative.Alert.alert(locales.default.WARN, locales.default.NEED_RELOAD_APP, [{
-          text: locales.default.CANCEL,
+    "componentDidMount"() {
+      this.loadConfig();
+      this.backSubscription = ReactNative.BackHandler.addEventListener('hardwareBackPress', this.onBackPress);
+    }
+    "componentWillUnmount"() {
+      this.backSubscription?.remove();
+    }
+    "alertChange"() {
+      var e = this;
+      ReactNative.Alert.alert(locales.default.WARN, locales.default.NEED_RELOAD_APP, [{
+        text: locales.default.CANCEL,
+        onPress: function () {
+          e.props.navigation.goBack();
+        },
+        style: 'cancel'
+      }, {
+        text: locales.default.CONFIRM,
+        onPress: this.confirmChange
+      }]);
+    }
+    "render"() {
+      var e = this,
+        t = this.state.config;
+      return React.default.createElement(components.PageContainer, {
+        title: locales.default.MUSIC_NOTIFICATION,
+        goBack: this.props.navigation.goBack,
+        rightIcon: [{
+          name: icons.default.BACKUP_RESTORE,
           onPress: function () {
-            e.props.navigation.goBack();
-          },
-          style: 'cancel'
-        }, {
-          text: locales.default.CONFIRM,
-          onPress: this.confirmChange
-        }]);
-      }
-    }, {
-      key: "render",
-      value: function () {
-        var e = this,
-          t = this.state.config;
-        return React.default.createElement(components.PageContainer, {
-          title: locales.default.MUSIC_NOTIFICATION,
-          goBack: this.props.navigation.goBack,
-          rightIcon: [{
-            name: icons.default.BACKUP_RESTORE,
-            onPress: function () {
-              return e.removeStorage();
-            }
-          }]
-        }, React.default.createElement(reactNativeSpringScrollview.SpringScrollView, {
-          style: {
-            padding: 10
+            return e.removeStorage();
           }
-        }, v.map(function (n, a) {
-          var r = t[n];
-          return React.default.createElement(module835.default, {
-            key: a,
-            name: r.title,
-            switched: r.on,
-            onSwitch: function () {
-              return e.onSwitch(n);
-            }
-          });
-        })));
-      }
-    }]);
-    babelHelpers.inherits(t, e);
-    return t;
-  }(React.PureComponent);
+        }]
+      }, React.default.createElement(reactNativeSpringScrollview.SpringScrollView, {
+        style: {
+          padding: 10
+        }
+      }, v.map(function (n, a) {
+        var r = t[n];
+        return React.default.createElement(module835.default, {
+          key: a,
+          name: r.title,
+          switched: r.on,
+          onSwitch: function () {
+            return e.onSwitch(n);
+          }
+        });
+      })));
+    }
+  };
 exports.default = C;

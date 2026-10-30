@@ -1,17 +1,19 @@
+const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var React = babelHelpers.interopRequireWildcard(require("react")),
+var React = _interopRequireWildcard(require("react")),
   components = require("../components/index"),
-  providers = babelHelpers.interopRequireDefault(require("../services/providers")),
-  names = babelHelpers.interopRequireDefault(require("../events/names")),
-  icons = babelHelpers.interopRequireDefault(require("../theme/icons")),
-  locales = babelHelpers.interopRequireDefault(require("../locales/index")),
+  providers = _interopRequireDefault(require("../services/providers")),
+  names = _interopRequireDefault(require("../events/names")),
+  icons = _interopRequireDefault(require("../theme/icons")),
+  locales = _interopRequireDefault(require("../locales/index")),
   events = require("../events/index"),
   utils = require("../utils/index"),
-  mediaStore = babelHelpers.interopRequireDefault(require("../native/mediaStore")),
-  module863 = babelHelpers.interopRequireDefault(require("../modules/module-863")),
+  mediaStore = _interopRequireDefault(require("../native/mediaStore")),
+  module863 = _interopRequireDefault(require("../modules/module-863")),
   h = {
     time: 'random',
     random: 'song',
@@ -19,12 +21,11 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
     artist: 'album',
     album: 'time'
   },
-  v = function (e) {
-    function t() {
+  v = class t extends React.Component {
+    constructor() {
       var e, a, r;
-      babelHelpers.classCallCheck(this, t);
       for (var n = arguments.length, i = new Array(n), l = 0; l < n; l++) i[l] = arguments[l];
-      return babelHelpers.possibleConstructorReturn(r, (a = r = babelHelpers.possibleConstructorReturn(this, (e = babelHelpers.getPrototypeOf(t)).call.apply(e, [this].concat(i))), r.state = {
+      return a = r = super(...i), r.state = {
         playList: null,
         oriList: [],
         sortMode: 'time'
@@ -86,88 +87,77 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
         }
       }, r.onTop = function () {
         var e, t;
-        null === (e = (t = r.refs.listParent).onTop) || void 0 === e || e.call(t);
-      }, a));
+        null === (e = (t = r.listParent).onTop) || void 0 === e || e.call(t);
+      }, a;
     }
-    babelHelpers.createClass(t, [{
-      key: "componentDidMount",
-      value: function () {
-        var e = this;
-        this.deleteReciver = events.emitter.addListener(names.default.DeleteFromLocal, function (t) {
-          var a = t.deleteIndex,
-            r = e.state.playList;
-          if (r) {
-            var n = r.filter(function (e, t) {
-              return a !== t;
-            });
-            e.setState({
-              playList: n
-            });
-          }
-        });
-        this.loadPlayList();
-      }
-    }, {
-      key: "componentWillUnmount",
-      value: function () {
-        this.deleteReciver.remove();
-      }
-    }, {
-      key: "render",
-      value: function () {
-        var e = this;
-        return React.default.createElement(components.PageContainer, {
-          title: locales.default.LOCAL_MUSIC,
-          goBack: this.goBack,
-          opacity: this.opacity,
-          onTop: this.onTop,
-          onChangeText: function (t) {
-            return e.searchSong(t);
-          },
-          rightIcon: [{
-            name: icons.default.SORT_VARIANT,
-            onPress: this.onSort
-          }, {
-            name: icons.default.MAGNIFY
-          }]
-        }, React.default.createElement(module863.default, {
-          data: this.state.playList,
-          playMusic: function (t, a) {
-            return e.playMusic(t, a);
-          },
-          onDetail: function (e, t) {
-            return (0, events.toDetailModal)({
-              item: e,
-              index: t,
-              api: providers.default.local
-            });
-          },
-          addToQueue: function (e) {
-            return (0, events.toInsertToList)({
-              data: e,
-              api: providers.default.local
-            });
-          },
-          ref: "listParent"
-        }));
-      }
-    }, {
-      key: "playMusic",
-      value: function (e) {
-        var t = this.state.playList,
-          a = t,
-          r = t.findIndex(function (t) {
-            return t.title === e.title;
+    "componentDidMount"() {
+      var e = this;
+      this.deleteReciver = events.emitter.addListener(names.default.DeleteFromLocal, function (t) {
+        var a = t.deleteIndex,
+          r = e.state.playList;
+        if (r) {
+          var n = r.filter(function (e, t) {
+            return a !== t;
           });
-        (0, events.toPlayer)({
-          item: e,
-          data: a,
-          index: r,
-          api: providers.default.local
+          e.setState({
+            playList: n
+          });
+        }
+      });
+      this.loadPlayList();
+    }
+    "componentWillUnmount"() {
+      this.deleteReciver.remove();
+    }
+    "render"() {
+      var e = this;
+      return React.default.createElement(components.PageContainer, {
+        title: locales.default.LOCAL_MUSIC,
+        goBack: this.goBack,
+        opacity: this.opacity,
+        onTop: this.onTop,
+        onChangeText: function (t) {
+          return e.searchSong(t);
+        },
+        rightIcon: [{
+          name: icons.default.SORT_VARIANT,
+          onPress: this.onSort
+        }, {
+          name: icons.default.MAGNIFY
+        }]
+      }, React.default.createElement(module863.default, {
+        data: this.state.playList,
+        playMusic: function (t, a) {
+          return e.playMusic(t, a);
+        },
+        onDetail: function (e, t) {
+          return (0, events.toDetailModal)({
+            item: e,
+            index: t,
+            api: providers.default.local
+          });
+        },
+        addToQueue: function (e) {
+          return (0, events.toInsertToList)({
+            data: e,
+            api: providers.default.local
+          });
+        },
+        ref: instance => this.listParent = instance
+      }));
+    }
+    "playMusic"(e) {
+      var t = this.state.playList,
+        a = t,
+        r = t.findIndex(function (t) {
+          return t.title === e.title;
         });
-      }
-    }]);
-    babelHelpers.inherits(t, e);
-    return t;
-  }(React.Component);
+      (0, events.toPlayer)({
+        item: e,
+        data: a,
+        index: r,
+        api: providers.default.local
+      });
+    }
+  };
 exports.default = v;

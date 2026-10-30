@@ -1,8 +1,9 @@
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var icons = babelHelpers.interopRequireDefault(require("../../theme/icons")),
+var icons = _interopRequireDefault(require("../../theme/icons")),
   endpoints = require("../../services/endpoints"),
   o = "http://q1.qlogo.cn/g?b=qq&nk=%qq&s=640&timestamp=" + Date.now(),
   r = {

@@ -1,31 +1,34 @@
+const _default = require("./../components/Text.js").default;
+const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+const _appStorage = require("./../storage/index.js");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var React = babelHelpers.interopRequireWildcard(require("react")),
+var React = _interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
-  reactNativeImageCropPicker = babelHelpers.interopRequireDefault(require("react-native-image-crop-picker")),
-  reactNativeSlider = babelHelpers.interopRequireDefault(require("react-native-slider")),
+  reactNativeImageCropPicker = _interopRequireDefault(require("react-native-image-crop-picker")),
+  reactNativeSlider = _interopRequireDefault(require("@react-native-community/slider")),
   components = require("../components/index"),
   constants = require("../theme/constants"),
-  names = babelHelpers.interopRequireDefault(require("../events/names")),
-  icons = babelHelpers.interopRequireDefault(require("../theme/icons")),
-  keys = babelHelpers.interopRequireDefault(require("../storage/keys")),
-  locales = babelHelpers.interopRequireDefault(require("../locales/index")),
+  names = _interopRequireDefault(require("../events/names")),
+  icons = _interopRequireDefault(require("../theme/icons")),
+  keys = _interopRequireDefault(require("../storage/keys")),
+  locales = _interopRequireDefault(require("../locales/index")),
   events = require("../events/index"),
-  restartModule = babelHelpers.interopRequireDefault(require("../native/restart")),
+  restartModule = _interopRequireDefault(require("../native/restart")),
   files = require("../storage/files"),
-  g = function (e) {
-    function t() {
+  g = class t extends React.Component {
+    constructor() {
       var e, l, a;
-      babelHelpers.classCallCheck(this, t);
       for (var n = arguments.length, r = new Array(n), i = 0; i < n; i++) r[i] = arguments[i];
-      return babelHelpers.possibleConstructorReturn(a, (l = a = babelHelpers.possibleConstructorReturn(this, (e = babelHelpers.getPrototypeOf(t)).call.apply(e, [this].concat(r))), a.state = {
+      return l = a = super(...r), a.state = {
         img: '',
         value: 1,
         blur: false
       }, a.clearRoll = function () {
-        storage.remove({
+        _appStorage.storage.remove({
           key: keys.default.background
         }).then(function () {
           toast(locales.default.BACKGROUND_CACHE_CLEARED);
@@ -91,111 +94,104 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
         a.setState({
           blur: e
         });
-      }, l));
+      }, l;
     }
-    babelHelpers.createClass(t, [{
-      key: "componentDidMount",
-      value: function () {
-        var e = this;
-        storage.load({
-          key: keys.default.background
-        }).then(function (t) {
-          t && e.setState({
-            img: t.path,
-            value: t.opacity,
-            blur: t.blur
-          });
-        }).catch(function () {
-          e.setState({
-            img: null
-          });
+    "componentDidMount"() {
+      var e = this;
+      _appStorage.storage.load({
+        key: keys.default.background
+      }).then(function (t) {
+        t && e.setState({
+          img: t.path,
+          value: t.opacity,
+          blur: t.blur
         });
-      }
-    }, {
-      key: "render",
-      value: function () {
-        var e = this,
-          t = this.state,
-          l = t.img,
-          a = t.value,
-          n = t.blur;
-        return React.default.createElement(ReactNative.View, {
-          style: [C.container, C.background]
-        }, React.default.createElement(ReactNative.Image, {
-          style: [ReactNative.StyleSheet.absoluteFill, C.background, {
-            opacity: a
-          }],
-          source: {
-            uri: l
-          },
-          blurRadius: n ? 10 : 0
-        }), React.default.createElement(components.HeaderBar, {
-          title: locales.default.BACKGROUND,
-          goBack: this.props.navigation.goBack,
-          rightIcon: {
-            name: icons.default.BACKUP_RESTORE,
-            onPress: this.onAlert
-          }
-        }), React.default.createElement(ReactNative.View, {
-          style: C.btn
-        }, React.default.createElement(ReactNative.View, {
-          style: [{
-            flexDirection: 'row',
-            alignItems: 'center',
-            marginBottom: 10
-          }]
-        }, React.default.createElement(ReactNative.Text, null, "\u80cc\u666f\u56fe\uff1a"), React.default.createElement(ReactNative.TouchableOpacity, {
-          onPress: this.openRoll
-        }, React.default.createElement(components.Icon, {
-          name: icons.default.IMAGE,
-          color: "#fff"
-        }))), React.default.createElement(ReactNative.View, {
-          style: [{
-            flexDirection: 'row',
-            alignItems: 'center'
-          }]
-        }, React.default.createElement(ReactNative.Text, null, "\u900f\u660e\u5ea6\uff1a"), React.default.createElement(reactNativeSlider.default, {
-          maximumTrackTintColor: "rgba(255,255,255,0.1)",
-          minimumTrackTintColor: 'rgba(255,255,255,0.8)',
-          thumbTintColor: '#fff',
-          thumbStyle: [{
-            height: 10,
-            width: 10
-          }],
-          style: {
-            width: 200
-          },
-          value: a,
-          onValueChange: function (t) {
-            return e.setState({
-              value: t
-            });
-          },
-          onSlidingComplete: function () {
-            return e.setState({
-              value: a
-            });
-          }
-        })), React.default.createElement(ReactNative.View, {
-          style: [{
-            flexDirection: 'row',
-            alignItems: 'center'
-          }]
-        }, React.default.createElement(ReactNative.Text, null, "\u6a21\u7cca\u6548\u679c\uff1a"), React.default.createElement(components.Switch, {
-          value: n,
-          onValueChange: this.onBlur
-        }))), React.default.createElement(ReactNative.View, {
-          style: C.send
-        }, React.default.createElement(ReactNative.TouchableOpacity, {
-          onPress: this.emit
-        }, React.default.createElement(ReactNative.Text, {
-          style: [C.textBtn]
-        }, "\u786e\u8ba4"))));
-      }
-    }]);
-    babelHelpers.inherits(t, e);
-    return t;
-  }(React.Component),
+      }).catch(function () {
+        e.setState({
+          img: null
+        });
+      });
+    }
+    "render"() {
+      var e = this,
+        t = this.state,
+        l = t.img,
+        a = t.value,
+        n = t.blur;
+      return React.default.createElement(ReactNative.View, {
+        style: [C.container, C.background]
+      }, React.default.createElement(ReactNative.Image, {
+        style: [ReactNative.StyleSheet.absoluteFill, C.background, {
+          opacity: a
+        }],
+        source: {
+          uri: l
+        },
+        blurRadius: n ? 10 : 0
+      }), React.default.createElement(components.HeaderBar, {
+        title: locales.default.BACKGROUND,
+        goBack: this.props.navigation.goBack,
+        rightIcon: {
+          name: icons.default.BACKUP_RESTORE,
+          onPress: this.onAlert
+        }
+      }), React.default.createElement(ReactNative.View, {
+        style: C.btn
+      }, React.default.createElement(ReactNative.View, {
+        style: [{
+          flexDirection: 'row',
+          alignItems: 'center',
+          marginBottom: 10
+        }]
+      }, React.default.createElement(_default, null, "\u80cc\u666f\u56fe\uff1a"), React.default.createElement(ReactNative.TouchableOpacity, {
+        onPress: this.openRoll
+      }, React.default.createElement(components.Icon, {
+        name: icons.default.IMAGE,
+        color: "#fff"
+      }))), React.default.createElement(ReactNative.View, {
+        style: [{
+          flexDirection: 'row',
+          alignItems: 'center'
+        }]
+      }, React.default.createElement(_default, null, "\u900f\u660e\u5ea6\uff1a"), React.default.createElement(reactNativeSlider.default, {
+        maximumTrackTintColor: "rgba(255,255,255,0.1)",
+        minimumTrackTintColor: 'rgba(255,255,255,0.8)',
+        thumbTintColor: '#fff',
+        thumbStyle: [{
+          height: 10,
+          width: 10
+        }],
+        style: {
+          width: 200
+        },
+        value: a,
+        onValueChange: function (t) {
+          return e.setState({
+            value: t
+          });
+        },
+        onSlidingComplete: function () {
+          return e.setState({
+            value: a
+          });
+        }
+      })), React.default.createElement(ReactNative.View, {
+        style: [{
+          flexDirection: 'row',
+          alignItems: 'center'
+        }]
+      }, React.default.createElement(_default, null, "\u6a21\u7cca\u6548\u679c\uff1a"), React.default.createElement(components.Switch, {
+        value: n,
+        onValueChange: this.onBlur
+      }))), React.default.createElement(ReactNative.View, {
+        style: C.send
+      }, React.default.createElement(ReactNative.TouchableOpacity, {
+        onPress: this.emit
+      }, React.default.createElement(_default, {
+        style: [C.textBtn]
+      }, "\u786e\u8ba4"))));
+    }
+  },
   C = ReactNative.StyleSheet.create({
     container: {
       flex: 1,

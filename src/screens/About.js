@@ -1,28 +1,31 @@
+const _default = require("@react-native-clipboard/clipboard").default;
+const _default2 = require("./../components/Text.js").default;
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var lottieReactNative = babelHelpers.interopRequireDefault(require("lottie-react-native")),
-  React = babelHelpers.interopRequireWildcard(require("react")),
+var lottieReactNative = _interopRequireDefault(require("lottie-react-native")),
+  React = _interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
-  reactNativeSpringScrollview = require("react-native-spring-scrollview"),
-  TouchableScale = babelHelpers.interopRequireDefault(require("../components/TouchableScale")),
+  reactNativeSpringScrollview = require("./../components/Scrolling.js"),
+  TouchableScale = _interopRequireDefault(require("../components/TouchableScale")),
   components = require("../components/index"),
-  Placeholders = babelHelpers.interopRequireDefault(require("./about/Placeholders")),
-  icons = babelHelpers.interopRequireDefault(require("../theme/icons")),
-  locales = babelHelpers.interopRequireDefault(require("../locales/index")),
+  Placeholders = _interopRequireDefault(require("./about/Placeholders")),
+  icons = _interopRequireDefault(require("../theme/icons")),
+  locales = _interopRequireDefault(require("../locales/index")),
   endpoints = require("../services/endpoints"),
   infoModule = require("../native/info"),
-  linkData = babelHelpers.interopRequireDefault(require("./about/linkData")),
-  CreditsSection = babelHelpers.interopRequireDefault(require("./about/CreditsSection")),
-  LinkList = babelHelpers.interopRequireDefault(require("./about/LinkList")),
-  styles = babelHelpers.interopRequireDefault(require("./about/styles")),
-  h = function (e) {
-    function l() {
+  linkData = _interopRequireDefault(require("./about/linkData")),
+  CreditsSection = _interopRequireDefault(require("./about/CreditsSection")),
+  LinkList = _interopRequireDefault(require("./about/LinkList")),
+  styles = _interopRequireDefault(require("./about/styles")),
+  h = class l extends React.PureComponent {
+    constructor() {
       var e, t, a;
-      babelHelpers.classCallCheck(this, l);
       for (var n = arguments.length, r = new Array(n), o = 0; o < n; o++) r[o] = arguments[o];
-      return babelHelpers.possibleConstructorReturn(a, (t = a = babelHelpers.possibleConstructorReturn(this, (e = babelHelpers.getPrototypeOf(l)).call.apply(e, [this].concat(r))), a.ICON_SIZE = 27, a.state = {
+      return t = a = super(...r), a.ICON_SIZE = 27, a.state = {
         speed: 1,
         ended: false
       }, a.linking = function (e) {
@@ -36,7 +39,7 @@ var lottieReactNative = babelHelpers.interopRequireDefault(require("lottie-react
         return null === (e = (t = a._scrollView).scrollToBegin) || void 0 === e ? void 0 : e.call(t);
       }, a.onClip = function (e) {
         toast(locales.default.COPIED + " " + e);
-        ReactNative.Clipboard.setString(e);
+        _default.setString(e);
       }, a.onThanks = function () {
         return a.props.navigation.navigate('Tip', {
           url: endpoints.HOST_PAGE + "/thanks"
@@ -51,7 +54,7 @@ var lottieReactNative = babelHelpers.interopRequireDefault(require("lottie-react
           ended: t
         });
       }, a.renderAll = function () {
-        return React.default.createElement(React.default.Fragment, null, React.default.createElement(ReactNative.Text, {
+        return React.default.createElement(React.default.Fragment, null, React.default.createElement(_default2, {
           style: [styles.default.text, {
             marginBottom: 10
           }]
@@ -114,52 +117,47 @@ var lottieReactNative = babelHelpers.interopRequireDefault(require("lottie-react
             subtitle: l
           });
         });
-      }, t));
+      }, t;
     }
-    babelHelpers.createClass(l, [{
-      key: "render",
-      value: function () {
-        var e = this,
-          l = this.state,
-          a = l.ended,
-          b = l.speed;
-        return React.default.createElement(components.PageContainer, {
-          title: a ? '\u25a0 \u25a0 \u25a0' : locales.default.ABOUT,
-          goBack: this.goBack,
-          onTop: this.onTop,
-          rightIcon: {
-            name: icons.default.HELP_CIRCLE_OUTLINE,
-            onPress: this.onHelp
-          },
-          blur: true
-        }, React.default.createElement(reactNativeSpringScrollview.SpringScrollView, {
-          ref: function (t) {
-            return e._scrollView = t;
-          },
-          style: {
-            padding: 15
-          }
-        }, React.default.createElement(ReactNative.View, {
-          style: styles.default.lottieContainer
-        }, React.default.createElement(TouchableScale.default, {
-          onPress: this.onSpeedUp
-        }, React.default.createElement(lottieReactNative.default, {
-          source: require("../../assets/animations/loading"),
-          loop: true,
-          autoPlay: true,
-          style: styles.default.lottieView,
-          speed: b
-        })), a ? React.default.createElement(Placeholders.default.Text, {
-          style: [styles.default.text, styles.default.version],
-          numbers: 3
-        }) : React.default.createElement(ReactNative.Text, {
-          style: [styles.default.text, styles.default.version]
-        }, infoModule.versionName)), a ? React.default.createElement(LinkList.default, {
-          info: linkData.default
-        }) : this.renderAll()));
-      }
-    }]);
-    babelHelpers.inherits(l, e);
-    return l;
-  }(React.PureComponent);
+    "render"() {
+      var e = this,
+        l = this.state,
+        a = l.ended,
+        b = l.speed;
+      return React.default.createElement(components.PageContainer, {
+        title: a ? '\u25a0 \u25a0 \u25a0' : locales.default.ABOUT,
+        goBack: this.goBack,
+        onTop: this.onTop,
+        rightIcon: {
+          name: icons.default.HELP_CIRCLE_OUTLINE,
+          onPress: this.onHelp
+        },
+        blur: true
+      }, React.default.createElement(reactNativeSpringScrollview.SpringScrollView, {
+        ref: function (t) {
+          return e._scrollView = t;
+        },
+        style: {
+          padding: 15
+        }
+      }, React.default.createElement(ReactNative.View, {
+        style: styles.default.lottieContainer
+      }, React.default.createElement(TouchableScale.default, {
+        onPress: this.onSpeedUp
+      }, React.default.createElement(lottieReactNative.default, {
+        source: require("../../assets/animations/loading"),
+        loop: true,
+        autoPlay: true,
+        style: styles.default.lottieView,
+        speed: b
+      })), a ? React.default.createElement(Placeholders.default.Text, {
+        style: [styles.default.text, styles.default.version],
+        numbers: 3
+      }) : React.default.createElement(_default2, {
+        style: [styles.default.text, styles.default.version]
+      }, infoModule.versionName)), a ? React.default.createElement(LinkList.default, {
+        info: linkData.default
+      }) : this.renderAll()));
+    }
+  };
 exports.default = h;

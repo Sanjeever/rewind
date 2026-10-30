@@ -1,10 +1,11 @@
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.sectionTitleMap = exports.sectionStyle = exports.sections = exports.SECTION_HEIGHT = void 0;
 var ReactNative = require("react-native"),
-  providers = babelHelpers.interopRequireDefault(require("../../services/providers")),
-  locales = babelHelpers.interopRequireDefault(require("../../locales/index")),
+  providers = _interopRequireDefault(require("../../services/providers")),
+  locales = _interopRequireDefault(require("../../locales/index")),
   s = Object.keys(providers.default);
 exports.sections = s;
 var o = {

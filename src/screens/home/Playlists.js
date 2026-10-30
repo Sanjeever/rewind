@@ -1,19 +1,23 @@
+const _default = require("./../../components/Text.js").default;
+const _default2 = require("./../../components/Pager.js").default;
+const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
 var immer = require("immer"),
-  React = babelHelpers.interopRequireWildcard(require("react")),
+  React = _interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
-  reactNativeLargelist = require("react-native-largelist"),
-  reactNativeSpringScrollview = require("react-native-spring-scrollview"),
+  reactNativeLargelist = require("./../../components/Scrolling.js"),
+  reactNativeSpringScrollview = require("./../../components/Scrolling.js"),
   components = require("../../components/index"),
-  PlaylistTabs = babelHelpers.interopRequireDefault(require("../../components/PlaylistTabs")),
+  PlaylistTabs = _interopRequireDefault(require("../../components/PlaylistTabs")),
   constants = require("../../theme/constants"),
-  icons = babelHelpers.interopRequireDefault(require("../../theme/icons")),
-  locales = babelHelpers.interopRequireDefault(require("../../locales/index")),
-  playlistFiles = babelHelpers.interopRequireDefault(require("../../storage/playlistFiles")),
-  CreatePlaylist = babelHelpers.interopRequireDefault(require("../../modals/CreatePlaylist")),
+  icons = _interopRequireDefault(require("../../theme/icons")),
+  locales = _interopRequireDefault(require("../../locales/index")),
+  playlistFiles = _interopRequireDefault(require("../../storage/playlistFiles")),
+  CreatePlaylist = _interopRequireDefault(require("../../modals/CreatePlaylist")),
   netease = require("../../../assets/images/netease"),
   qqmusic = require("../../../assets/images/qqmusic"),
   b = {
@@ -21,12 +25,11 @@ var immer = require("immer"),
     netEase: '\u65e0\u7f51\u6613\u4e91\u6b4c\u5355\uff0c\u70b9\u51fb\u83b7\u53d6',
     qqMusic: '\u65e0QQ\u97f3\u4e50\u6b4c\u5355\uff0c\u70b9\u51fb\u83b7\u53d6'
   },
-  E = function (e) {
-    function t() {
+  E = class t extends React.PureComponent {
+    constructor() {
       var e, n, r;
-      babelHelpers.classCallCheck(this, t);
       for (var a = arguments.length, g = new Array(a), E = 0; E < a; E++) g[E] = arguments[E];
-      return babelHelpers.possibleConstructorReturn(r, (n = r = babelHelpers.possibleConstructorReturn(this, (e = babelHelpers.getPrototypeOf(t)).call.apply(e, [this].concat(g))), r._nativeOffset = {
+      return n = r = super(...g), r._nativeOffset = {
         x: new ReactNative.Animated.Value(0),
         y: new ReactNative.Animated.Value(0)
       }, r.state = {
@@ -115,35 +118,19 @@ var immer = require("immer"),
         r.setState({
           showModal: !r.state.showModal
         });
-      }, r.createPL = function (e) {
-        var t = e.title,
-          n = e.img,
-          a = r.state.custom,
-          l = {
-            title: t,
-            img: n,
-            tracks: []
-          };
-        a.push(l);
-        r.setState({
-          custom: a
-        }, function () {
-          playlistFiles.default.toPlaylist({
-            playlists: r.state.custom
-          });
-          toast(locales.default.CREATE_SUCCESS);
-        });
+      }, r.createPL = async function ({title, img}) {
+        const playlists = [...r.state.custom, {title, img, tracks: []}];
+        await playlistFiles.default.toPlaylist({playlists});
+        r.setState({custom: playlists, showModal: false});
       }, r.refreshLocal = function () {
-        r.loadLocalPlaylist();
-      }, r.loadLocalPlaylist = function () {
-        playlistFiles.default.getPlaylist().then(function (e) {
-          var t, n, a;
-          (null === (t = e.playlists) || void 0 === t ? void 0 : t.length) > 0 && (r.setState({
-            custom: e.playlists
-          }), null === (n = (a = r._customScrollView).endRefresh) || void 0 === n || n.call(a));
-        }).catch(function (e) {
-          return e;
-        });
+        return r.loadLocalPlaylist();
+      }, r.loadLocalPlaylist = async function () {
+        try {
+          const {playlists} = await playlistFiles.default.getPlaylist();
+          r.setState({custom: playlists});
+        } finally {
+          r._customScrollView?.endRefresh();
+        }
       }, r.alertDeleteLocalPL = function (e, t) {
         ReactNative.Alert.alert(locales.default.CONFIRM_DELETE_CUSTOM_MIX, locales.default.CAN_NOT_RECOVER, [{
           text: locales.default.CANCEL,
@@ -157,16 +144,14 @@ var immer = require("immer"),
             return r.deleteLocalPL(t);
           }
         }]);
-      }, r.deleteLocalPL = function (e) {
+      }, r.deleteLocalPL = async function (e) {
         var t = (0, immer.produce)(r.state.custom, function (t) {
           t.splice(e, 1);
         });
-        r.setState({
-          custom: t
-        });
-        playlistFiles.default.toPlaylist({
+        await playlistFiles.default.toPlaylist({
           playlists: t
         });
+        r.setState({custom: t});
       }, r.emptyTip = function (e) {
         return React.default.createElement(reactNativeSpringScrollview.SpringScrollView, {
           contentStyle: {
@@ -185,7 +170,7 @@ var immer = require("immer"),
           }
         }, React.default.createElement(ReactNative.View, {
           style: P.btnCon
-        }, React.default.createElement(ReactNative.Text, {
+        }, React.default.createElement(_default, {
           style: P.labelText
         }, b[e])))));
       }, r.onEmptyTip = function (e) {
@@ -282,41 +267,34 @@ var immer = require("immer"),
           r = {};
         e.title ? (r.title = (null === (n = e.title) || void 0 === n ? void 0 : n.length) > 0 && 0 === t ? '\u2661' : e.title, r.picurl = '' !== e.picurl ? e.picurl : null, r.num = '' !== e.subtitle ? e.subtitle.replace(/\u9996.+/, '') : null, r.id = e.id || e.dissid, r.dirid = e.dirid) : (r.title = e.dissname, r.num = e.songnum, r.picurl = e.logo, r.id = e.dissid, r.dirid = e.dirid);
         return r;
-      }, n));
+      }, n;
     }
-    babelHelpers.createClass(t, [{
-      key: "componentDidMount",
-      value: function () {
-        this.loadLocalPlaylist();
-      }
-    }, {
-      key: "render",
-      value: function () {
-        var e = this;
-        return React.default.createElement(ReactNative.View, {
-          style: {
-            flex: 1
-          }
-        }, React.default.createElement(ReactNative.ViewPagerAndroid, {
-          ref: "viewPager",
-          style: {
-            flex: 1
-          },
-          initialPage: 1
-        }, this.renderPagerContent()), React.default.createElement(CreatePlaylist.default, {
-          showModal: this.state.showModal,
-          closeModal: function () {
-            return e.setState({
-              showModal: false
-            });
-          },
-          createPL: this.createPL
-        }));
-      }
-    }]);
-    babelHelpers.inherits(t, e);
-    return t;
-  }(React.PureComponent);
+    "componentDidMount"() {
+      this.loadLocalPlaylist();
+    }
+    "render"() {
+      var e = this;
+      return React.default.createElement(ReactNative.View, {
+        style: {
+          flex: 1
+        }
+      }, React.default.createElement(_default2, {
+        ref: instance => this.viewPager = instance,
+        style: {
+          flex: 1
+        },
+        initialPage: 1
+      }, this.renderPagerContent()), React.default.createElement(CreatePlaylist.default, {
+        showModal: this.state.showModal,
+        closeModal: function () {
+          return e.setState({
+            showModal: false
+          });
+        },
+        createPL: this.createPL
+      }));
+    }
+  };
 exports.default = E;
 var P = ReactNative.StyleSheet.create({
   headerCon: {

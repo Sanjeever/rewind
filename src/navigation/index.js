@@ -1,174 +1,55 @@
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-var reactNavigation = require("react-navigation"),
-  AboutModule = babelHelpers.interopRequireDefault(require("../screens/About")),
-  AlbumPageModule = babelHelpers.interopRequireDefault(require("../screens/AlbumPage")),
-  ArtistPageModule = babelHelpers.interopRequireDefault(require("../screens/ArtistPage")),
-  CommentPageModule = babelHelpers.interopRequireDefault(require("../screens/CommentPage")),
-  CustomPlaylistModule = babelHelpers.interopRequireDefault(require("../screens/CustomPlaylist")),
-  HappyBirthdayModule = babelHelpers.interopRequireDefault(require("../screens/HappyBirthday")),
-  CachePageModule = babelHelpers.interopRequireDefault(require("../screens/CachePage")),
-  FeaturePageModule = babelHelpers.interopRequireDefault(require("../screens/FeaturePage")),
-  LanguagePageModule = babelHelpers.interopRequireDefault(require("../screens/LanguagePage")),
-  MusicNotificationPageModule = babelHelpers.interopRequireDefault(require("../screens/MusicNotificationPage")),
-  OrderPageModule = babelHelpers.interopRequireDefault(require("../screens/OrderPage")),
-  SkinModule = babelHelpers.interopRequireDefault(require("../screens/Skin")),
-  HomeModule = babelHelpers.interopRequireDefault(require("../screens/Home")),
-  ListenRecordModule = babelHelpers.interopRequireDefault(require("../screens/ListenRecord")),
-  LocalMusicModule = babelHelpers.interopRequireDefault(require("../screens/LocalMusic")),
-  InitialLoginModule = babelHelpers.interopRequireDefault(require("../screens/InitialLogin")),
-  NeteaseLoginModule = babelHelpers.interopRequireDefault(require("../screens/NeteaseLogin")),
-  QQMusicLoginModule = babelHelpers.interopRequireDefault(require("../screens/QQMusicLogin")),
-  LyricPageModule = babelHelpers.interopRequireDefault(require("../screens/LyricPage")),
-  MusicHistoryModule = babelHelpers.interopRequireDefault(require("../screens/MusicHistory")),
-  ChartsModule = babelHelpers.interopRequireDefault(require("../screens/Charts")),
-  CloudModule = babelHelpers.interopRequireDefault(require("../screens/Cloud")),
-  FavsModule = babelHelpers.interopRequireDefault(require("../screens/Favs")),
-  HotPlaylistModule = babelHelpers.interopRequireDefault(require("../screens/HotPlaylist")),
-  MsgModule = babelHelpers.interopRequireDefault(require("../screens/Msg")),
-  MsgHistoryModule = babelHelpers.interopRequireDefault(require("../screens/MsgHistory")),
-  RadioModule = babelHelpers.interopRequireDefault(require("../screens/Radio")),
-  RadioDetailModule = babelHelpers.interopRequireDefault(require("../screens/RadioDetail")),
-  MusicRecommendModule = babelHelpers.interopRequireDefault(require("../screens/MusicRecommend")),
-  SubNewSongsModule = babelHelpers.interopRequireDefault(require("../screens/SubNewSongs")),
-  PlaylistModule = babelHelpers.interopRequireDefault(require("../screens/Playlist")),
-  PlaylistIntersectionModule = babelHelpers.interopRequireDefault(require("../screens/PlaylistIntersection")),
-  SearchPageModule = babelHelpers.interopRequireDefault(require("../screens/SearchPage")),
-  SettingsModule = babelHelpers.interopRequireDefault(require("../screens/Settings")),
-  TipModule = babelHelpers.interopRequireDefault(require("../screens/Tip")),
-  FollowPageModule = babelHelpers.interopRequireDefault(require("../screens/FollowPage")),
-  UserInfoModule = babelHelpers.interopRequireDefault(require("../screens/UserInfo")),
-  UserManagerModule = babelHelpers.interopRequireDefault(require("../screens/UserManager")),
-  VideoModule = babelHelpers.interopRequireDefault(require("../screens/Video")),
-  WebViewPageModule = babelHelpers.interopRequireDefault(require("../screens/WebViewPage")),
-  z = (0, reactNavigation.StackNavigator)({
-    Home: {
-      screen: HomeModule.default
-    },
-    Skin: {
-      screen: SkinModule.default
-    },
-    About: {
-      screen: AboutModule.default
-    },
-    SearchPage: {
-      screen: SearchPageModule.default
-    },
-    Settings: {
-      screen: SettingsModule.default
-    },
-    MusicHistory: {
-      screen: MusicHistoryModule.default
-    },
-    CustomPlaylist: {
-      screen: CustomPlaylistModule.default
-    },
-    NeteaseLogin: {
-      screen: NeteaseLoginModule.default
-    },
-    QQMusicLogin: {
-      screen: QQMusicLoginModule.default
-    },
-    InitialLogin: {
-      screen: InitialLoginModule.default
-    },
-    Playlist: {
-      screen: PlaylistModule.default
-    },
-    LocalMusic: {
-      screen: LocalMusicModule.default
-    },
-    ArtistPage: {
-      screen: ArtistPageModule.default
-    },
-    AlbumPage: {
-      screen: AlbumPageModule.default
-    },
-    Msg: {
-      screen: MsgModule.default
-    },
-    MsgHistory: {
-      screen: MsgHistoryModule.default
-    },
-    MusicRecommend: {
-      screen: MusicRecommendModule.default
-    },
-    Radio: {
-      screen: RadioModule.default
-    },
-    RadioDetail: {
-      screen: RadioDetailModule.default
-    },
-    Charts: {
-      screen: ChartsModule.default
-    },
-    HotPlaylist: {
-      screen: HotPlaylistModule.default
-    },
-    Favs: {
-      screen: FavsModule.default
-    },
-    CachePage: {
-      screen: CachePageModule.default
-    },
-    WebViewPage: {
-      screen: WebViewPageModule.default
-    },
-    Tip: {
-      screen: TipModule.default
-    },
-    Cloud: {
-      screen: CloudModule.default
-    },
-    UserManager: {
-      screen: UserManagerModule.default
-    },
-    UserInfo: {
-      screen: UserInfoModule.default
-    },
-    FollowPage: {
-      screen: FollowPageModule.default
-    },
-    LanguagePage: {
-      screen: LanguagePageModule.default
-    },
-    FeaturePage: {
-      screen: FeaturePageModule.default
-    },
-    OrderPage: {
-      screen: OrderPageModule.default
-    },
-    MusicNotificationPage: {
-      screen: MusicNotificationPageModule.default
-    },
-    CommentPage: {
-      screen: CommentPageModule.default
-    },
-    ListenRecord: {
-      screen: ListenRecordModule.default
-    },
-    PlaylistIntersection: {
-      screen: PlaylistIntersectionModule.default
-    },
-    LyricPage: {
-      screen: LyricPageModule.default
-    },
-    HappyBirthday: {
-      screen: HappyBirthdayModule.default
-    },
-    SubNewSongs: {
-      screen: SubNewSongsModule.default
-    },
-    Video: {
-      screen: VideoModule.default
-    }
-  }, {
-    headerMode: 'null',
-    navigationOptions: {
-      gesturesEnabled: false,
-      drawerLockMode: 'locked-closed'
-    }
-  });
-exports.default = z;
+import React from 'react';
+import {NavigationContainer, DarkTheme} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {navigationRef} from '../utils/universalNavigator';
+import Home from '../screens/Home';
+import Skin from '../screens/Skin';
+import About from '../screens/About';
+import SearchPage from '../screens/SearchPage';
+import Settings from '../screens/Settings';
+import MusicHistory from '../screens/MusicHistory';
+import CustomPlaylist from '../screens/CustomPlaylist';
+import NeteaseLogin from '../screens/NeteaseLogin';
+import QQMusicLogin from '../screens/QQMusicLogin';
+import InitialLogin from '../screens/InitialLogin';
+import Playlist from '../screens/Playlist';
+import LocalMusic from '../screens/LocalMusic';
+import ArtistPage from '../screens/ArtistPage';
+import AlbumPage from '../screens/AlbumPage';
+import Msg from '../screens/Msg';
+import MsgHistory from '../screens/MsgHistory';
+import MusicRecommend from '../screens/MusicRecommend';
+import Radio from '../screens/Radio';
+import RadioDetail from '../screens/RadioDetail';
+import Charts from '../screens/Charts';
+import HotPlaylist from '../screens/HotPlaylist';
+import Favs from '../screens/Favs';
+import CachePage from '../screens/CachePage';
+import WebViewPage from '../screens/WebViewPage';
+import Tip from '../screens/Tip';
+import Cloud from '../screens/Cloud';
+import UserManager from '../screens/UserManager';
+import UserInfo from '../screens/UserInfo';
+import FollowPage from '../screens/FollowPage';
+import LanguagePage from '../screens/LanguagePage';
+import FeaturePage from '../screens/FeaturePage';
+import OrderPage from '../screens/OrderPage';
+import MusicNotificationPage from '../screens/MusicNotificationPage';
+import CommentPage from '../screens/CommentPage';
+import ListenRecord from '../screens/ListenRecord';
+import PlaylistIntersection from '../screens/PlaylistIntersection';
+import LyricPage from '../screens/LyricPage';
+import HappyBirthday from '../screens/HappyBirthday';
+import SubNewSongs from '../screens/SubNewSongs';
+import Video from '../screens/Video';
+
+const Stack = createNativeStackNavigator();
+const screens = {Home, Skin, About, SearchPage, Settings, MusicHistory, CustomPlaylist, NeteaseLogin, QQMusicLogin, InitialLogin, Playlist, LocalMusic, ArtistPage, AlbumPage, Msg, MsgHistory, MusicRecommend, Radio, RadioDetail, Charts, HotPlaylist, Favs, CachePage, WebViewPage, Tip, Cloud, UserManager, UserInfo, FollowPage, LanguagePage, FeaturePage, OrderPage, MusicNotificationPage, CommentPage, ListenRecord, PlaylistIntersection, LyricPage, HappyBirthday, SubNewSongs, Video};
+
+export default function Navigation({animationEnabled = true}) {
+  return <NavigationContainer ref={navigationRef} theme={DarkTheme}>
+    <Stack.Navigator screenOptions={{headerShown: false, contentStyle: {backgroundColor: '#000'}, animation: animationEnabled ? 'slide_from_right' : 'none'}}>
+      {Object.entries(screens).map(([name, component]) => <Stack.Screen key={name} name={name} component={component} />)}
+    </Stack.Navigator>
+  </NavigationContainer>;
+}

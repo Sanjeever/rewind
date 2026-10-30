@@ -1,33 +1,38 @@
+const _default = require("./../../components/Pager.js").default;
+const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+const _asyncRuntime = require("@babel/runtime/helpers/regeneratorRuntime")();
+const _appStorage = require("./../../storage/index.js");
+const _toConsumableArray = require("@babel/runtime/helpers/toConsumableArray");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
 var immer = require("immer"),
-  React = babelHelpers.interopRequireWildcard(require("react")),
+  React = _interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
-  FadingEdge = babelHelpers.interopRequireDefault(require("../../components/FadingEdge")),
+  FadingEdge = _interopRequireDefault(require("../../components/FadingEdge")),
   components = require("../../components/index"),
-  providers = babelHelpers.interopRequireDefault(require("../../services/providers")),
+  providers = _interopRequireDefault(require("../../services/providers")),
   defaults = require("../../settings/defaults"),
   constants = require("../../theme/constants"),
-  names = babelHelpers.interopRequireDefault(require("../../events/names")),
-  pagesModule = babelHelpers.interopRequireDefault(require("../../settings/pages")),
-  keysModule = babelHelpers.interopRequireDefault(require("../../storage/keys")),
+  names = _interopRequireDefault(require("../../events/names")),
+  pagesModule = _interopRequireDefault(require("../../settings/pages")),
+  keysModule = _interopRequireDefault(require("../../storage/keys")),
   endpoints = require("../../services/endpoints"),
   services = require("../../services/index"),
   events = require("../../events/index"),
   utils = require("../../utils/index"),
-  types = babelHelpers.interopRequireWildcard(require("../../utils/types")),
-  playlists = babelHelpers.interopRequireDefault(require("../../storage/playlists")),
-  users = babelHelpers.interopRequireDefault(require("../../storage/users")),
-  Playlists = babelHelpers.interopRequireDefault(require("./Playlists")),
-  PlaylistHeader = babelHelpers.interopRequireDefault(require("./PlaylistHeader")),
-  P = function (e) {
-    function t() {
+  types = _interopRequireWildcard(require("../../utils/types")),
+  playlists = _interopRequireDefault(require("../../storage/playlists")),
+  users = _interopRequireDefault(require("../../storage/users")),
+  Playlists = _interopRequireDefault(require("./Playlists")),
+  PlaylistHeader = _interopRequireDefault(require("./PlaylistHeader")),
+  P = class t extends React.PureComponent {
+    constructor() {
       var e, a, r;
-      babelHelpers.classCallCheck(this, t);
       for (var n = arguments.length, l = new Array(n), o = 0; o < n; o++) l[o] = arguments[o];
-      return babelHelpers.possibleConstructorReturn(r, (a = r = babelHelpers.possibleConstructorReturn(this, (e = babelHelpers.getPrototypeOf(t)).call.apply(e, [this].concat(l))), r.showNetease = true, r.showQQMusic = true, r.state = {
+      return a = r = super(...l), r.showNetease = true, r.showQQMusic = true, r.state = {
         netEase: [],
         qqMusic: [],
         showList: true,
@@ -37,7 +42,7 @@ var immer = require("immer"),
         pagesOrder: pagesModule.default.pages,
         apisOrder: pagesModule.default.apis
       }, r.dailySignin = function () {
-        return regeneratorRuntime.async(function (e) {
+        return _asyncRuntime.async(function (e) {
           for (;;) switch (e.prev = e.next) {
             case 0:
               services.Netease.daily_signin();
@@ -48,11 +53,11 @@ var immer = require("immer"),
         }, null, this);
       }, r.happyBirthday = function () {
         var e, t, a, n, s, i;
-        return regeneratorRuntime.async(function (u) {
+        return _asyncRuntime.async(function (u) {
           for (;;) switch (u.prev = u.next) {
             case 0:
               u.next = 2;
-              return regeneratorRuntime.awrap(users.default.getUserInfo());
+              return _asyncRuntime.awrap(users.default.getUserInfo());
             case 2:
               if (e = u.sent) {
                 u.next = 5;
@@ -62,7 +67,7 @@ var immer = require("immer"),
             case 5:
               t = e.netEase.userId;
               u.next = 8;
-              return regeneratorRuntime.awrap(services.Netease.profile(t));
+              return _asyncRuntime.awrap(services.Netease.profile(t));
             case 8:
               a = u.sent;
               n = a.code;
@@ -76,7 +81,7 @@ var immer = require("immer"),
           }
         }, null, this);
       }, r.loadOrder = function () {
-        storage.load({
+        _appStorage.storage.load({
           key: keysModule.default.pagesOrder
         }).then(function (e) {
           e && r.setState({
@@ -85,7 +90,7 @@ var immer = require("immer"),
         }).catch(function () {
           return null;
         });
-        storage.load({
+        _appStorage.storage.load({
           key: keysModule.default.apisOrder
         }).then(function (e) {
           e && r.setState({
@@ -116,11 +121,11 @@ var immer = require("immer"),
         return e && e[t] && types.isObject(e[t]);
       }, r.loadStorage = function () {
         var e;
-        return regeneratorRuntime.async(function (t) {
+        return _asyncRuntime.async(function (t) {
           for (;;) switch (t.prev = t.next) {
             case 0:
               t.next = 2;
-              return regeneratorRuntime.awrap(users.default.getUserPlayList());
+              return _asyncRuntime.awrap(users.default.getUserPlayList());
             case 2:
               if (e = t.sent, types.isObject(e) || true === r.state.isConnected) {
                 t.next = 6;
@@ -142,7 +147,7 @@ var immer = require("immer"),
         }, null, this);
       }, r.loadPlaylistById = function (e, t) {
         var a, n;
-        return regeneratorRuntime.async(function (s) {
+        return _asyncRuntime.async(function (s) {
           for (;;) switch (s.prev = s.next) {
             case 0:
               if (true === r.state.isConnected) {
@@ -152,7 +157,7 @@ var immer = require("immer"),
               return s.abrupt("return");
             case 3:
               s.next = 5;
-              return regeneratorRuntime.awrap(users.default.getUserInfo());
+              return _asyncRuntime.awrap(users.default.getUserInfo());
             case 5:
               if (n = s.sent, !types.isObject(n)) {
                 s.next = 16;
@@ -163,16 +168,16 @@ var immer = require("immer"),
                 break;
               }
               s.next = 10;
-              return regeneratorRuntime.awrap(r["loadPlaylist_" + e](n));
+              return _asyncRuntime.awrap(r["loadPlaylist_" + e](n));
             case 10:
               s.next = 16;
               break;
             case 12:
               s.next = 14;
-              return regeneratorRuntime.awrap(r.loadPlaylist_netEase(n));
+              return _asyncRuntime.awrap(r.loadPlaylist_netEase(n));
             case 14:
               s.next = 16;
-              return regeneratorRuntime.awrap(r.loadPlaylist_qqMusic(n));
+              return _asyncRuntime.awrap(r.loadPlaylist_qqMusic(n));
             case 16:
               null === t || void 0 === t || null === (a = t.endRefresh) || void 0 === a || a.call(t);
             case 17:
@@ -182,7 +187,7 @@ var immer = require("immer"),
         }, null, this);
       }, r.loadPlaylist_netEase = function (e) {
         var t;
-        return regeneratorRuntime.async(function (a) {
+        return _asyncRuntime.async(function (a) {
           for (;;) switch (a.prev = a.next) {
             case 0:
               if (!r.isValid(e, providers.default.netEase)) {
@@ -199,17 +204,17 @@ var immer = require("immer"),
                 userId: t
               });
               a.next = 7;
-              return regeneratorRuntime.awrap(r.getNeteasePlaylist(t));
+              return _asyncRuntime.awrap(r.getNeteasePlaylist(t));
             case 7:
               a.next = 9;
-              return regeneratorRuntime.awrap(r.netEaselikelist(t));
+              return _asyncRuntime.awrap(r.netEaselikelist(t));
             case 9:
             case "end":
               return a.stop();
           }
         }, null, this);
       }, r.loadPlaylist_qqMusic = function (e) {
-        return regeneratorRuntime.async(function (t) {
+        return _asyncRuntime.async(function (t) {
           for (;;) switch (t.prev = t.next) {
             case 0:
               if (!r.isValid(e, providers.default.qqMusic)) {
@@ -217,10 +222,10 @@ var immer = require("immer"),
                 break;
               }
               t.next = 3;
-              return regeneratorRuntime.awrap(r.getQQMusicPlaylist(e.qqMusic.userId));
+              return _asyncRuntime.awrap(r.getQQMusicPlaylist(e.qqMusic.userId));
             case 3:
               t.next = 5;
-              return regeneratorRuntime.awrap(r.qqMusicLikelist());
+              return _asyncRuntime.awrap(r.qqMusicLikelist());
             case 5:
             case "end":
               return t.stop();
@@ -235,7 +240,7 @@ var immer = require("immer"),
           userId: 0
         });
       }, r.netEaseRefreshLogin = function () {
-        return regeneratorRuntime.async(function (e) {
+        return _asyncRuntime.async(function (e) {
           for (;;) switch (e.prev = e.next) {
             case 0:
               if (true === r.state.isConnected) {
@@ -252,7 +257,7 @@ var immer = require("immer"),
         }, null, this);
       }, r.netEaselikelist = function (e) {
         var t, a;
-        return regeneratorRuntime.async(function (r) {
+        return _asyncRuntime.async(function (r) {
           for (;;) switch (r.prev = r.next) {
             case 0:
               if (e) {
@@ -262,7 +267,7 @@ var immer = require("immer"),
               return r.abrupt("return");
             case 2:
               r.next = 4;
-              return regeneratorRuntime.awrap(services.Netease.likelist(e));
+              return _asyncRuntime.awrap(services.Netease.likelist(e));
             case 4:
               t = r.sent;
               (0, utils.usable)(t) && (a = t.ids, 200 === t.code && users.default.saveUserLikeList(a, providers.default.netEase));
@@ -272,7 +277,7 @@ var immer = require("immer"),
           }
         }, null, this);
       }, r.qqMusicLikelist = function () {
-        storage.load({
+        _appStorage.storage.load({
           key: keysModule.default.playlist
         }).then(function (e) {
           if (e.qqMusic) {
@@ -294,7 +299,7 @@ var immer = require("immer"),
         });
       }, r.getQQMusicPlaylist = function (e) {
         var t, a, n, s, i, u, l;
-        return regeneratorRuntime.async(function (o) {
+        return _asyncRuntime.async(function (o) {
           for (;;) switch (o.prev = o.next) {
             case 0:
               if (e) {
@@ -304,11 +309,11 @@ var immer = require("immer"),
               return o.abrupt("return");
             case 2:
               o.next = 4;
-              return regeneratorRuntime.awrap(services.QQMusic.profile(e));
+              return _asyncRuntime.awrap(services.QQMusic.profile(e));
             case 4:
               t = o.sent;
               o.next = 7;
-              return regeneratorRuntime.awrap(services.QQMusic.user_created_list(e));
+              return _asyncRuntime.awrap(services.QQMusic.user_created_list(e));
             case 7:
               if (a = o.sent, n = t.mymusic, s = t.mydiss, n) {
                 o.next = 11;
@@ -319,9 +324,9 @@ var immer = require("immer"),
               i = n.find(function (e) {
                 return '\u559c\u6b22' === e.title || '\u6211\u559c\u6b22' === e.title;
               });
-              u = [i].concat(babelHelpers.toConsumableArray(s.list), babelHelpers.toConsumableArray(a));
+              u = [i].concat(_toConsumableArray(s.list), _toConsumableArray(a));
               o.next = 15;
-              return regeneratorRuntime.awrap(playlists.default.newOrder({
+              return _asyncRuntime.awrap(playlists.default.newOrder({
                 api: providers.default.qqMusic,
                 newArr: u,
                 on: r.state.autoSetPlaylistOrder
@@ -339,7 +344,7 @@ var immer = require("immer"),
         }, null, this);
       }, r.getNeteasePlaylist = function (e) {
         var t, a;
-        return regeneratorRuntime.async(function (n) {
+        return _asyncRuntime.async(function (n) {
           for (;;) switch (n.prev = n.next) {
             case 0:
               if (e) {
@@ -349,14 +354,14 @@ var immer = require("immer"),
               return n.abrupt("return");
             case 2:
               n.next = 4;
-              return regeneratorRuntime.awrap(services.Netease.user_playlist(e));
+              return _asyncRuntime.awrap(services.Netease.user_playlist(e));
             case 4:
               if (t = n.sent, !(0, utils.usable)(t)) {
                 n.next = 11;
                 break;
               }
               n.next = 8;
-              return regeneratorRuntime.awrap(playlists.default.newOrder({
+              return _asyncRuntime.awrap(playlists.default.newOrder({
                 api: providers.default.netEase,
                 newArr: t.playlist,
                 on: r.state.autoSetPlaylistOrder
@@ -400,7 +405,7 @@ var immer = require("immer"),
         }
       }, r.collectPlaylistOrder = function (e) {
         var t, a, n, i, u, l;
-        return regeneratorRuntime.async(function (o) {
+        return _asyncRuntime.async(function (o) {
           for (;;) switch (o.prev = o.next) {
             case 0:
               t = e.api;
@@ -409,7 +414,7 @@ var immer = require("immer"),
               i = n.netEase;
               u = n.qqMusic;
               o.next = 4;
-              return regeneratorRuntime.awrap(playlists.default.collect({
+              return _asyncRuntime.awrap(playlists.default.collect({
                 playlist: {
                   netEase: i,
                   qqMusic: u
@@ -443,7 +448,7 @@ var immer = require("immer"),
           }));
         });
       }, r.renderHeader = function () {
-        return React.default.createElement(ReactNative.ViewPagerAndroid, {
+        return React.default.createElement(_default, {
           initialPage: 0,
           style: {
             height: 100,
@@ -479,85 +484,75 @@ var immer = require("immer"),
           case 'subNewSongs':
             r.props.navigation.navigate('SubNewSongs');
         }
-      }, a));
+      }, a;
     }
-    babelHelpers.createClass(t, [{
-      key: "UNSAFE_componentWillMount",
-      value: function () {
-        var e = this;
-        utils.firstTimeChecker.check().then(function (t) {
-          true === t && e.alertOpenTip();
+    "UNSAFE_componentWillMount"() {
+      var e = this;
+      utils.firstTimeChecker.check().then(function (t) {
+        true === t && e.alertOpenTip();
+      });
+    }
+    "componentDidMount"() {
+      var e = this;
+      require('@react-native-community/netinfo').default.fetch().then(function (network) {
+        var t = network.isConnected;
+        e.setState({
+          isConnected: t
+        }, function () {
+          e.loadStorage();
+          e.loadPlaylistById();
+          e.dailySignin();
         });
-      }
-    }, {
-      key: "componentDidMount",
-      value: function () {
-        var e = this;
-        ReactNative.NetInfo.isConnected.fetch().done(function (t) {
-          e.setState({
-            isConnected: t
-          }, function () {
-            e.loadStorage();
-            e.loadPlaylistById();
-            e.dailySignin();
+      });
+      this.loginedListener = events.emitter.addListener(names.default.UserLogined, function () {
+        setTimeout(function () {
+          e.loadStorage();
+          e.loadPlaylistById();
+        }, 500);
+      });
+      this.playlistSetOrderListener = events.emitter.addListener(names.default.PlaylistSetOrder, function (t) {
+        var a = t.index,
+          r = t.api;
+        true === e.state.autoSetPlaylistOrder && e.collectPlaylistOrder({
+          index: a,
+          api: r
+        });
+      });
+      this.setStateListener = events.emitter.addListener(names.default.SetHomeState, function (t) {
+        e.setState((0, immer.produce)(function (e) {
+          Object.keys(t).forEach(function (a) {
+            e[a] = t[a];
           });
-        });
-        this.loginedListener = events.emitter.addListener(names.default.UserLogined, function () {
-          setTimeout(function () {
-            e.loadStorage();
-            e.loadPlaylistById();
-          }, 500);
-        });
-        this.playlistSetOrderListener = events.emitter.addListener(names.default.PlaylistSetOrder, function (t) {
-          var a = t.index,
-            r = t.api;
-          true === e.state.autoSetPlaylistOrder && e.collectPlaylistOrder({
-            index: a,
-            api: r
-          });
-        });
-        this.setStateListener = events.emitter.addListener(names.default.SetHomeState, function (t) {
-          e.setState((0, immer.produce)(function (e) {
-            Object.keys(t).forEach(function (a) {
-              e[a] = t[a];
-            });
-          }));
-        });
-        this.loadOrder();
-        this.happyBirthday();
-        this.netEaseRefreshLogin();
-      }
-    }, {
-      key: "componentWillUnmount",
-      value: function () {
-        this.loginedListener.remove();
-        this.playlistSetOrderListener.remove();
-        this.setStateListener.remove();
-      }
-    }, {
-      key: "render",
-      value: function () {
-        var e = this.state,
-          t = e.netEase,
-          a = e.qqMusic,
-          r = e.apisOrder;
-        return React.default.createElement(ReactNative.View, {
-          style: M.container
-        }, React.default.createElement(components.Background, null), this.renderHeader(), React.default.createElement(FadingEdge.default, {
-          top: 30
-        }, React.default.createElement(Playlists.default, {
-          apisOrder: r,
-          navigation: this.props.navigation,
-          netEase: t,
-          qqMusic: a,
-          Playlist: this.Playlist,
-          onRefresh: this.loadPlaylistById
-        })));
-      }
-    }]);
-    babelHelpers.inherits(t, e);
-    return t;
-  }(React.PureComponent);
+        }));
+      });
+      this.loadOrder();
+      this.happyBirthday();
+      this.netEaseRefreshLogin();
+    }
+    "componentWillUnmount"() {
+      this.loginedListener.remove();
+      this.playlistSetOrderListener.remove();
+      this.setStateListener.remove();
+    }
+    "render"() {
+      var e = this.state,
+        t = e.netEase,
+        a = e.qqMusic,
+        r = e.apisOrder;
+      return React.default.createElement(ReactNative.View, {
+        style: M.container
+      }, React.default.createElement(components.Background, null), this.renderHeader(), React.default.createElement(FadingEdge.default, {
+        top: 30
+      }, React.default.createElement(Playlists.default, {
+        apisOrder: r,
+        navigation: this.props.navigation,
+        netEase: t,
+        qqMusic: a,
+        Playlist: this.Playlist,
+        onRefresh: this.loadPlaylistById
+      })));
+    }
+  };
 exports.default = P;
 var M = ReactNative.StyleSheet.create({
   container: {

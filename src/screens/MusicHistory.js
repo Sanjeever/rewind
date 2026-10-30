@@ -1,35 +1,38 @@
+const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+const _appStorage = require("./../storage/index.js");
+const _defineProperty = require("@babel/runtime/helpers/defineProperty");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var React = babelHelpers.interopRequireWildcard(require("react")),
+var React = _interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
-  reactNativeLargelist = require("react-native-largelist"),
+  reactNativeLargelist = require("./../components/Scrolling.js"),
   components = require("../components/index"),
-  providers = babelHelpers.interopRequireDefault(require("../services/providers")),
+  providers = _interopRequireDefault(require("../services/providers")),
   constants = require("../theme/constants"),
-  icons = babelHelpers.interopRequireDefault(require("../theme/icons")),
-  keys = babelHelpers.interopRequireDefault(require("../storage/keys")),
-  locales = babelHelpers.interopRequireDefault(require("../locales/index")),
+  icons = _interopRequireDefault(require("../theme/icons")),
+  keys = _interopRequireDefault(require("../storage/keys")),
+  locales = _interopRequireDefault(require("../locales/index")),
   events = require("../events/index"),
-  types = babelHelpers.interopRequireWildcard(require("../utils/types")),
+  types = _interopRequireWildcard(require("../utils/types")),
   trackInfo = require("../services/trackInfo"),
-  mediaStore = babelHelpers.interopRequireDefault(require("../native/mediaStore")),
+  mediaStore = _interopRequireDefault(require("../native/mediaStore")),
   history = require("../storage/history"),
   sectionsModule = require("./history/sections"),
-  module874 = babelHelpers.interopRequireDefault(require("../modules/module-874")),
-  H = function (e) {
-    function t() {
+  module874 = _interopRequireDefault(require("../modules/module-874")),
+  H = class t extends React.Component {
+    constructor() {
       var e, a, n;
-      babelHelpers.classCallCheck(this, t);
       for (var l = arguments.length, o = new Array(l), f = 0; f < l; f++) o[f] = arguments[f];
-      return babelHelpers.possibleConstructorReturn(n, (a = n = babelHelpers.possibleConstructorReturn(this, (e = babelHelpers.getPrototypeOf(t)).call.apply(e, [this].concat(o))), n.state = {
+      return a = n = super(...o), n.state = {
         qqMusic: [],
         netEase: [],
         local: [],
         showModal: false
       }, n.loadHistory = function () {
-        storage.load({
+        _appStorage.storage.load({
           key: keys.default.musicHistory
         }).then(function (e) {
           if (e) {
@@ -48,7 +51,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
         });
       }, n.attachLocalPath = function (e, t) {
         e.length < 1 || mediaStore.default.attachLocalPath(e).then(function (e) {
-          n.setState(babelHelpers.defineProperty({}, t, e));
+          n.setState(_defineProperty({}, t, e));
         });
       }, n.listPick = function () {
         n.setState({
@@ -120,7 +123,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
         var a = n.state[e].filter(function (e, a) {
           return !t.includes(a);
         });
-        n.setState(babelHelpers.defineProperty({}, e, a));
+        n.setState(_defineProperty({}, e, a));
       }, n.sectionDataLength = function (e) {
         var t,
           a = n.state,
@@ -178,72 +181,63 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
           case providers.default.local:
             a = o;
         }
-        n.setState(babelHelpers.defineProperty({}, t, (0, history.cleanedData)(a, e, t)));
-      }, a));
+        n.setState(_defineProperty({}, t, (0, history.cleanedData)(a, e, t)));
+      }, a;
     }
-    babelHelpers.createClass(t, [{
-      key: "componentWillUnmount",
-      value: function () {
-        var e = this.state,
-          t = {
-            qqMusic: e.qqMusic,
-            netEase: e.netEase,
-            local: e.local
-          };
-        storage.save({
-          key: keys.default.musicHistory,
-          data: t
-        });
-      }
-    }, {
-      key: "componentDidMount",
-      value: function () {
-        this.loadHistory();
-      }
-    }, {
-      key: "render",
-      value: function () {
-        var e = this,
-          t = this.state,
-          a = t.showModal,
-          n = t.netEase,
-          l = t.qqMusic,
-          s = t.local,
-          c = this.getData();
-        return React.default.createElement(components.PageContainer, {
-          title: locales.default.RECENT_PLAY,
-          goBack: function () {
-            return e.props.navigation.goBack();
-          },
-          rightIcon: {
-            name: icons.default.CHECKBOX_MULTIPLE_MARKED_CIRCLE_OUTLINE,
-            onPress: this.listPick
-          },
-          onTop: this.onTop
-        }, React.default.createElement(reactNativeLargelist.LargeList, {
-          ref: function (t) {
-            return e._list = t;
-          },
-          data: c,
-          heightForIndexPath: this._heightForIndexPath,
-          heightForSection: this._heightForSection,
-          renderIndexPath: this._renderIndexPath,
-          renderSection: this._renderSection
-        }), React.default.createElement(module874.default, {
-          isOpen: a,
-          onClosed: function () {
-            e.setState({
-              showModal: false
-            });
-          },
-          netEase: n,
-          qqMusic: l,
-          local: s,
-          onDelete: this.onPickDelete
-        }));
-      }
-    }]);
-    babelHelpers.inherits(t, e);
-    return t;
-  }(React.Component);
+    "componentWillUnmount"() {
+      var e = this.state,
+        t = {
+          qqMusic: e.qqMusic,
+          netEase: e.netEase,
+          local: e.local
+        };
+      _appStorage.storage.save({
+        key: keys.default.musicHistory,
+        data: t
+      });
+    }
+    "componentDidMount"() {
+      this.loadHistory();
+    }
+    "render"() {
+      var e = this,
+        t = this.state,
+        a = t.showModal,
+        n = t.netEase,
+        l = t.qqMusic,
+        s = t.local,
+        c = this.getData();
+      return React.default.createElement(components.PageContainer, {
+        title: locales.default.RECENT_PLAY,
+        goBack: function () {
+          return e.props.navigation.goBack();
+        },
+        rightIcon: {
+          name: icons.default.CHECKBOX_MULTIPLE_MARKED_CIRCLE_OUTLINE,
+          onPress: this.listPick
+        },
+        onTop: this.onTop
+      }, React.default.createElement(reactNativeLargelist.LargeList, {
+        ref: function (t) {
+          return e._list = t;
+        },
+        data: c,
+        heightForIndexPath: this._heightForIndexPath,
+        heightForSection: this._heightForSection,
+        renderIndexPath: this._renderIndexPath,
+        renderSection: this._renderSection
+      }), React.default.createElement(module874.default, {
+        isOpen: a,
+        onClosed: function () {
+          e.setState({
+            showModal: false
+          });
+        },
+        netEase: n,
+        qqMusic: l,
+        local: s,
+        onDelete: this.onPickDelete
+      }));
+    }
+  };
 exports.default = H;

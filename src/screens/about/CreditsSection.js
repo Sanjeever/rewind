@@ -1,10 +1,12 @@
+const _default = require("./../../components/Text.js").default;
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var React = babelHelpers.interopRequireDefault(require("react")),
+var React = _interopRequireDefault(require("react")),
   ReactNative = require("react-native"),
-  styles = babelHelpers.interopRequireDefault(require("./styles")),
+  styles = _interopRequireDefault(require("./styles")),
   n = function (e) {
     var t = e.onPress,
       l = e.renderAvatar,
@@ -19,12 +21,12 @@ var React = babelHelpers.interopRequireDefault(require("react")),
         paddingHorizontal: 10,
         flex: 1
       }
-    }, React.default.createElement(ReactNative.Text, {
+    }, React.default.createElement(_default, {
       style: [styles.default.text, {
         opacity: .8,
         fontWeight: 'bold'
       }]
-    }, a), React.default.createElement(ReactNative.Text, {
+    }, a), React.default.createElement(_default, {
       style: [styles.default.text, {
         opacity: .6
       }]

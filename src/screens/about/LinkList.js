@@ -1,11 +1,12 @@
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var React = babelHelpers.interopRequireDefault(require("react")),
+var React = _interopRequireDefault(require("react")),
   ReactNative = require("react-native"),
-  Placeholders = babelHelpers.interopRequireDefault(require("./Placeholders")),
-  styles = babelHelpers.interopRequireDefault(require("./styles")),
+  Placeholders = _interopRequireDefault(require("./Placeholders")),
+  styles = _interopRequireDefault(require("./styles")),
   i = function (e) {
     var t = e.info;
     return React.default.createElement(React.default.Fragment, null, React.default.createElement(Placeholders.default.Text, {

@@ -1,9 +1,12 @@
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+const _objectWithoutProperties = require("@babel/runtime/helpers/objectWithoutProperties");
+const _extends = require("@babel/runtime/helpers/extends");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var React = babelHelpers.interopRequireDefault(require("react")),
-  PulsingPlaceholder = babelHelpers.interopRequireDefault(require("../../components/PulsingPlaceholder")),
+var React = _interopRequireDefault(require("react")),
+  PulsingPlaceholder = _interopRequireDefault(require("../../components/PulsingPlaceholder")),
   i = {
     PlaceHolder: function (e) {
       var t = e.style;
@@ -29,8 +32,8 @@ var React = babelHelpers.interopRequireDefault(require("react")),
     Text: function (e) {
       var t = e.numbers,
         r = void 0 === t ? 14 : t,
-        l = babelHelpers.objectWithoutProperties(e, ["numbers"]);
-      return React.default.createElement(PulsingPlaceholder.default, babelHelpers.extends({}, l, {
+        l = _objectWithoutProperties(e, ["numbers"]);
+      return React.default.createElement(PulsingPlaceholder.default, _extends({}, l, {
         textMode: true
       }), '\u25a0'.repeat(r).split('').join(' '));
     }
