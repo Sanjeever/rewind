@@ -2,7 +2,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var cookies = babelHelpers.interopRequireDefault(require("@react-native-community/cookies")),
+var cookiesModule = babelHelpers.interopRequireDefault(require("@react-native-community/cookies")),
   React = babelHelpers.interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
   reactNativeSpringScrollview = require("react-native-spring-scrollview"),
@@ -166,7 +166,7 @@ var cookies = babelHelpers.interopRequireDefault(require("@react-native-communit
           }).catch(function () {
             toast(locales.default.ERROR);
           });
-          cookies.default.setFromResponse('http://c.y.qq.com', r).then(function (e) {
+          cookiesModule.default.setFromResponse('http://c.y.qq.com', r).then(function (e) {
             return toast(e);
           });
         }

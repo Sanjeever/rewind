@@ -6,7 +6,7 @@ var ReactNative = require("react-native"),
   rnFetchBlob = babelHelpers.interopRequireDefault(require("rn-fetch-blob")),
   providers = babelHelpers.interopRequireDefault(require("./providers")),
   locales = babelHelpers.interopRequireDefault(require("../locales/index")),
-  _ = require("./index"),
+  services = require("./index"),
   utils = require("../utils/index"),
   audioTagger = babelHelpers.interopRequireDefault(require("../native/audioTagger")),
   f = rnFetchBlob.default.fs.dirs.MusicDir + '/rewind/',
@@ -80,7 +80,7 @@ var ReactNative = require("react-native"),
       for (;;) switch (c.prev = c.next) {
         case 0:
           c.next = 2;
-          return regeneratorRuntime.awrap(_.Netease.musicUrl({
+          return regeneratorRuntime.awrap(services.Netease.musicUrl({
             id: t
           }));
         case 2:
@@ -104,7 +104,7 @@ var ReactNative = require("react-native"),
       for (;;) switch (p.prev = p.next) {
         case 0:
           p.next = 2;
-          return regeneratorRuntime.awrap(_.Netease.freeMusicUrl({
+          return regeneratorRuntime.awrap(services.Netease.freeMusicUrl({
             id: t
           }));
         case 2:
@@ -129,7 +129,7 @@ var ReactNative = require("react-native"),
           break;
         case 14:
           p.next = 16;
-          return regeneratorRuntime.awrap(_.provider.getUrlFromOther(a));
+          return regeneratorRuntime.awrap(services.provider.getUrlFromOther(a));
         case 16:
           s = p.sent;
           i = 'mp3';
@@ -153,14 +153,14 @@ var ReactNative = require("react-native"),
       for (;;) switch (c.prev = c.next) {
         case 0:
           c.next = 2;
-          return regeneratorRuntime.awrap(_.QQMusic.getMusicUrl(t));
+          return regeneratorRuntime.awrap(services.QQMusic.getMusicUrl(t));
         case 2:
           if (u = c.sent, s = g(u, r)) {
             c.next = 8;
             break;
           }
           c.next = 7;
-          return regeneratorRuntime.awrap(_.provider.getUrlFromOther(a, providers.default.qqMusic));
+          return regeneratorRuntime.awrap(services.provider.getUrlFromOther(a, providers.default.qqMusic));
         case 7:
           s = c.sent;
         case 8:

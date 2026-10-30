@@ -15,7 +15,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
   events = require("../events/index"),
   utils = require("../utils/index"),
   queue = babelHelpers.interopRequireDefault(require("../events/queue")),
-  sharedUrls = require("../services/sharedUrls"),
+  sharedUrlsModule = require("../services/sharedUrls"),
   Description = babelHelpers.interopRequireDefault(require("./album/Description")),
   y = constants.DEVICE_WIDTH,
   w = function (e) {
@@ -166,7 +166,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
         var e = a.state,
           t = e.api,
           n = e.id;
-        return sharedUrls.sharedUrls[t].album + n;
+        return sharedUrlsModule.sharedUrls[t].album + n;
       };
       a.onLikeAlbumImpl = function () {
         var e = a.state,

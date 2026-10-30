@@ -59,4 +59,22 @@ for (const applicationId of ['com.kuss.rewind','com.kuss.rewind.dev']) {
   assert.equal(exports.playlist_dir,`/storage/emulated/0/Android/data/${applicationId}/files/playlist`);
   assert.equal(exports.cache_dir,`/storage/emulated/0/Android/data/${applicationId}/cache/`);
 }
-console.log('通过：938 个模块引用完整、运行库保持一致、4 组歌词对照一致，原版与开发包目录分别生成');
+let fatalHandler;
+let alertArguments;
+const errorExports = {};
+vm.runInNewContext(fs.readFileSync('src/bootstrap/errors.js','utf8'),{
+  exports:errorExports,
+  babelHelpers:{interopRequireDefault:value=>({default:value})},
+  require:spec=>{
+    if(spec==='react-native') return {Alert:{alert:(...args)=>{alertArguments=args;}}};
+    if(spec==='react-native-exception-handler') return {setJSExceptionHandler:handler=>{fatalHandler=handler;},setNativeExceptionHandler:()=>{}};
+    if(spec==='../locales/index') return {ERROR:'Error',RESTART_APP:'Restart',CONFIRM:'Confirm'};
+    if(spec==='../native/restart') return {restart:()=>{}};
+    throw new Error(spec);
+  },
+});
+errorExports.default();
+fatalHandler(new Error('render failed'),true);
+assert.equal(alertArguments[1],'Error: render failed');
+assert(Array.isArray(alertArguments[2]));
+console.log(`通过：${after.size} 个模块引用完整、运行库保持一致、歌词对照、目录隔离与错误提示参数正确`);

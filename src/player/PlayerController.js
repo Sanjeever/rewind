@@ -27,7 +27,7 @@ var React = require("react"),
   cache = babelHelpers.interopRequireDefault(require("./cache")),
   lyricPreferences = babelHelpers.interopRequireDefault(require("./lyricPreferences")),
   queue = babelHelpers.interopRequireDefault(require("./queue")),
-  playMode = babelHelpers.interopRequireDefault(require("./playMode")),
+  playModeModule = babelHelpers.interopRequireDefault(require("./playMode")),
   lyrics = babelHelpers.interopRequireDefault(require("./lyrics")),
   trackUrl = babelHelpers.interopRequireDefault(require("./trackUrl")),
   notification = babelHelpers.interopRequireDefault(require("./notification")),
@@ -663,7 +663,7 @@ var React = require("react"),
         n.setState({
           isLike: !r
         });
-        playMode.default.onLike(a, t, r);
+        playModeModule.default.onLike(a, t, r);
       }, n.onCollect = function () {
         var e = n.props,
           t = e.api,

@@ -13,7 +13,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
   locales = babelHelpers.interopRequireDefault(require("../locales/index")),
   events = require("../events/index"),
   trackInfo = require("../services/trackInfo"),
-  sharedUrls = require("../services/sharedUrls"),
+  sharedUrlsModule = require("../services/sharedUrls"),
   h = function (e) {
     return e.replace(/100y100/gi, '500y500').replace(/150x150/, '500x500');
   },
@@ -53,7 +53,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
         var n,
           l = e.api,
           r = T(a.state.item, t);
-        l === providers.default.netEase ? n = sharedUrls.sharedUrls.netEase[t] + r : l === providers.default.qqMusic && (n = sharedUrls.sharedUrls.qqMusic[t] + r + '.html');
+        l === providers.default.netEase ? n = sharedUrlsModule.sharedUrls.netEase[t] + r : l === providers.default.qqMusic && (n = sharedUrlsModule.sharedUrls.qqMusic[t] + r + '.html');
         a.linking(n);
       }, a.copy = function (e) {
         ReactNative.Clipboard.setString(e);

@@ -2,10 +2,10 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var _ = babelHelpers.interopRequireDefault(require("@runtime/40")),
+var Runtime40 = babelHelpers.interopRequireDefault(require("@runtime/40")),
   React = babelHelpers.interopRequireDefault(require("react")),
   ReactNative = require("react-native"),
-  s = _.default,
+  s = Runtime40.default,
   p = 'viewPager',
   d = function (e) {
     function t() {

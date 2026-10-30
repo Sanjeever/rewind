@@ -8,7 +8,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
   names = babelHelpers.interopRequireDefault(require("../events/names")),
   keys = babelHelpers.interopRequireDefault(require("../storage/keys")),
   events = require("../events/index"),
-  background = require("../theme/background"),
+  backgroundModule = require("../theme/background"),
   d = function (e) {
     function t() {
       var e, r, a;
@@ -29,14 +29,14 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
           opacity: e.opacity,
           blur: e.blur,
           error: false
-        }), (0, background.initBackgroundState)());
+        }), (0, backgroundModule.initBackgroundState)());
       }, a.loadBackground = function () {
         var e;
         return regeneratorRuntime.async(function (t) {
           for (;;) switch (t.prev = t.next) {
             case 0:
               t.next = 2;
-              return regeneratorRuntime.awrap((0, background.getBackground)());
+              return regeneratorRuntime.awrap((0, backgroundModule.getBackground)());
             case 2:
               e = t.sent;
               a.setState(babelHelpers.objectSpread({}, e));

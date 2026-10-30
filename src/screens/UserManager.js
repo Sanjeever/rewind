@@ -15,7 +15,7 @@ var immer = require("immer"),
   events = require("../events/index"),
   utils = require("../utils/index"),
   types = babelHelpers.interopRequireWildcard(require("../utils/types")),
-  users = babelHelpers.interopRequireDefault(require("../storage/users")),
+  usersModule = babelHelpers.interopRequireDefault(require("../storage/users")),
   U = function (e) {
     function t() {
       var e, r, n;
@@ -33,18 +33,18 @@ var immer = require("immer"),
         }), true);
       }, n.saveUsers = function () {
         var e = n.state.users;
-        types.isArray(e) && e.length > 0 && users.default.saveRestUsers(e.slice(1));
+        types.isArray(e) && e.length > 0 && usersModule.default.saveRestUsers(e.slice(1));
       }, n.getInfo = function () {
         var e, t, r, s;
         return regeneratorRuntime.async(function (a) {
           for (;;) switch (a.prev = a.next) {
             case 0:
               a.next = 2;
-              return regeneratorRuntime.awrap(users.default.getUserInfo());
+              return regeneratorRuntime.awrap(usersModule.default.getUserInfo());
             case 2:
               e = a.sent;
               a.next = 5;
-              return regeneratorRuntime.awrap(users.default.getRestUsers());
+              return regeneratorRuntime.awrap(usersModule.default.getRestUsers());
             case 5:
               t = a.sent;
               types.isObject(e) && (r = e.netEase, s = [], types.isObject(r) && types.isString(r.avatarUrl) && (s.push(r), types.isArray(t) && t.length > 0 && (s = babelHelpers.toConsumableArray(s).concat(babelHelpers.toConsumableArray(t))), n.setState({
@@ -108,7 +108,7 @@ var immer = require("immer"),
         n.setState({
           users: r
         });
-        users.default.saveUserStorage(e, providers.default.netEase);
+        usersModule.default.saveUserStorage(e, providers.default.netEase);
         events.emitter.emit(names.default.UserLogined);
         toast("\u5df2\u5207\u6362\u5230 " + e.nickname);
       }, n.renderItem = function (e) {

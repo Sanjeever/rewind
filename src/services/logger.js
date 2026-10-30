@@ -2,7 +2,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var _ = babelHelpers.interopRequireDefault(require("@runtime/660")),
+var Runtime660 = babelHelpers.interopRequireDefault(require("@runtime/660")),
   info = require("../native/info"),
   types = require("../utils/types"),
   f = 0;
@@ -21,7 +21,7 @@ function d(e, t) {
       data: [t.message]
     });
   }
-  fetch((0, _.default)().url + 'log-to-console', {
+  fetch((0, Runtime660.default)().url + 'log-to-console', {
     method: 'POST',
     body: o
   });

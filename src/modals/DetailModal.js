@@ -13,7 +13,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
   names = babelHelpers.interopRequireDefault(require("../events/names")),
   icons = babelHelpers.interopRequireDefault(require("../theme/icons")),
   locales = babelHelpers.interopRequireDefault(require("../locales/index")),
-  download = babelHelpers.interopRequireDefault(require("../services/download")),
+  downloadModule = babelHelpers.interopRequireDefault(require("../services/download")),
   events = require("../events/index"),
   utils = require("../utils/index"),
   trackInfo = require("../services/trackInfo"),
@@ -267,7 +267,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
           o = (0, trackInfo.extractFullInfo)(t.mainSong ? t.mainSong : t),
           i = l.songName(o.song, o.singer),
           r = o.uid;
-        download.default.download(i, r, a, o, n);
+        downloadModule.default.download(i, r, a, o, n);
       }, l.saveCover = function () {
         var e = l.state,
           t = e.song,

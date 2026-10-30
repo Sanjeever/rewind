@@ -8,8 +8,8 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
   components = require("../components/index"),
   icons = babelHelpers.interopRequireDefault(require("../theme/icons")),
   locales = babelHelpers.interopRequireDefault(require("../locales/index")),
-  restart = babelHelpers.interopRequireDefault(require("../native/restart")),
-  language = babelHelpers.interopRequireDefault(require("../native/language")),
+  restartModule = babelHelpers.interopRequireDefault(require("../native/restart")),
+  languageModule = babelHelpers.interopRequireDefault(require("../native/language")),
   f = [{
     name: '\u4e2d\u6587/\u5927\u9646',
     code: 'zh_CN'
@@ -29,19 +29,19 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
       babelHelpers.classCallCheck(this, a);
       for (var r = arguments.length, l = new Array(r), o = 0; o < r; o++) l[o] = arguments[o];
       return babelHelpers.possibleConstructorReturn(t, (n = t = babelHelpers.possibleConstructorReturn(this, (e = babelHelpers.getPrototypeOf(a)).call.apply(e, [this].concat(l))), t.state = {
-        language: language.default.language,
+        language: languageModule.default.language,
         changed: false
       }, t.onBackPress = function () {
         return true === t.state.changed && (t.alertChange(), true);
       }, t.confirmChange = function (e) {
-        language.default.setLanguageCode(e);
+        languageModule.default.setLanguageCode(e);
         setTimeout(function () {
-          restart.default.restart();
+          restartModule.default.restart();
         }, 99);
       }, t.changeLanguage = function (e) {
         t.setState({
           language: e,
-          changed: !(e === language.default.language)
+          changed: !(e === languageModule.default.language)
         });
       }, n));
     }
@@ -60,7 +60,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
       value: function () {
         var e = this,
           a = this.state.language;
-        language.default.language !== a && ReactNative.Alert.alert(locales.default.CONFIRM_CHANGE_LANGUAGE, locales.default.NEED_RELOAD_APP, [{
+        languageModule.default.language !== a && ReactNative.Alert.alert(locales.default.CONFIRM_CHANGE_LANGUAGE, locales.default.NEED_RELOAD_APP, [{
           text: locales.default.CANCEL,
           onPress: function () {
             e.props.navigation.goBack();

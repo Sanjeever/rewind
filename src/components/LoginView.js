@@ -5,7 +5,7 @@ exports.default = void 0;
 var React = babelHelpers.interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
   reactNativeAnimatable = babelHelpers.interopRequireWildcard(require("react-native-animatable")),
-  _ = require("./index"),
+  components = require("./index"),
   providers = babelHelpers.interopRequireDefault(require("../services/providers")),
   constants = require("../theme/constants"),
   icons = babelHelpers.interopRequireDefault(require("../theme/icons")),
@@ -25,7 +25,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
           style: y.container
         }, React.default.createElement(ReactNative.View, {
           style: y.inputCon
-        }, React.default.createElement(_.Input, {
+        }, React.default.createElement(components.Input, {
           style: [{
             fontSize: 18
           }, y.inputText],
@@ -34,7 +34,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
             return n(e);
           },
           keyboardType: "numeric"
-        })), React.default.createElement(_.TextButton, {
+        })), React.default.createElement(components.TextButton, {
           onPress: t,
           style: y.btnCon,
           text: locales.default.CONFIRM,
@@ -48,14 +48,14 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
             justifyContent: 'space-between',
             flexDirection: 'row'
           }]
-        }, React.default.createElement(_.Icon, {
+        }, React.default.createElement(components.Icon, {
           style: y.textBtn,
           name: icons.default.QQCHAT,
           size: 30,
           onPress: function () {
             return a('qqmusic_qq');
           }
-        }), React.default.createElement(_.Icon, {
+        }), React.default.createElement(components.Icon, {
           style: y.textBtn,
           name: icons.default.WECHAT,
           size: 30,
@@ -74,7 +74,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
           style: y.container
         }, React.default.createElement(ReactNative.View, {
           style: y.inputCon
-        }, React.default.createElement(_.Input, {
+        }, React.default.createElement(components.Input, {
           style: [{
             fontSize: 18
           }, y.inputText],
@@ -84,7 +84,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
           }
         })), React.default.createElement(ReactNative.View, {
           style: y.inputCon
-        }, React.default.createElement(_.Input, {
+        }, React.default.createElement(components.Input, {
           style: [{
             fontSize: 18
           }, y.inputText],
@@ -94,20 +94,20 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
             return a(e, 'password');
           },
           secureTextEntry: true
-        })), React.default.createElement(_.TextButton, {
+        })), React.default.createElement(components.TextButton, {
           onPress: t,
           style: [y.btnCon, y.textBtn],
           text: locales.default.LOG_IN,
           textStyle: {
             opacity: 1
           }
-        }), React.default.createElement(_.TextButton, {
+        }), React.default.createElement(components.TextButton, {
           onPress: n,
           text: locales.default.FETCH_PLAYLIST,
           style: {
             marginTop: 20
           }
-        }), React.default.createElement(_.TextButton, {
+        }), React.default.createElement(components.TextButton, {
           onPress: o,
           text: locales.default.LOG_OUT,
           style: {
@@ -120,7 +120,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
             justifyContent: 'space-between',
             flexDirection: 'row'
           }]
-        }, React.default.createElement(_.Icon, {
+        }, React.default.createElement(components.Icon, {
           style: [y.textBtn, {
             marginTop: 0
           }],
@@ -129,7 +129,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
           onPress: function () {
             return s('netease_qq');
           }
-        }), React.default.createElement(_.Icon, {
+        }), React.default.createElement(components.Icon, {
           style: [y.textBtn, {
             marginTop: 0
           }],
@@ -165,7 +165,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
             uri: t
           },
           style: y.avatar
-        }) : React.default.createElement(_.Icon, {
+        }) : React.default.createElement(components.Icon, {
           name: icons.default.ACCOUNT,
           size: 50
         }), React.default.createElement(ReactNative.Text, {

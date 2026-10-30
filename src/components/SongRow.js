@@ -6,7 +6,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
   reactNativeAnimatable = babelHelpers.interopRequireWildcard(require("react-native-animatable")),
   TouchableScale = babelHelpers.interopRequireDefault(require("./TouchableScale")),
-  _ = require("./index"),
+  components = require("./index"),
   constants = require("../theme/constants"),
   icons = babelHelpers.interopRequireDefault(require("../theme/icons")),
   events = require("../events/index"),
@@ -118,7 +118,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
         alignItems: 'center',
         justifyContent: 'center'
       }
-    }, React.default.createElement(_.Icon, {
+    }, React.default.createElement(components.Icon, {
       name: icons.default.PLAY,
       size: 12,
       style: T.mv
@@ -134,7 +134,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
       activeScale: .7
     }, React.default.createElement(ReactNative.View, {
       style: t
-    }, React.default.createElement(_.Icon, {
+    }, React.default.createElement(components.Icon, {
       name: a || icons.default.DOTS_VERTICAL,
       size: l || 20
     })));
@@ -157,7 +157,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
         style: {
           alignItems: 'center'
         }
-      }, s ? React.default.createElement(_.Icon, {
+      }, s ? React.default.createElement(components.Icon, {
         name: s,
         size: 15
       }) : null, l ? React.default.createElement(ReactNative.Text, {
@@ -190,7 +190,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
       onPress: a
     }, React.default.createElement(ReactNative.View, {
       style: T.index
-    }, l ? React.default.createElement(_.Icon, {
+    }, l ? React.default.createElement(components.Icon, {
       name: icons.default.EMOTICON_HAPPY_OUTLINE,
       size: 20
     }) : React.default.createElement(ReactNative.Text, {
@@ -225,7 +225,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
     }, o ? React.default.createElement(reactNativeAnimatable.View, {
       animation: "fadeIn",
       useNativeDriver: true
-    }, React.default.createElement(_.Icon, {
+    }, React.default.createElement(components.Icon, {
       name: icons.default.CHECK_CIRCLE,
       size: 15,
       style: {

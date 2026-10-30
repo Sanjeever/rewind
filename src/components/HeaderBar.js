@@ -8,7 +8,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
   constants = require("../theme/constants"),
   icons = babelHelpers.interopRequireDefault(require("../theme/icons")),
   locales = babelHelpers.interopRequireDefault(require("../locales/index")),
-  _ = require("./index"),
+  components = require("./index"),
   Input = babelHelpers.interopRequireDefault(require("./Input")),
   f = function (e) {
     function t() {
@@ -135,7 +135,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
             bottom: 0,
             opacity: t
           }, b.borderline]
-        }, React.default.createElement(_.Background, {
+        }, React.default.createElement(components.Background, {
           blur: true
         })), React.default.createElement(ReactNative.View, {
           style: [b.tool, u, (c || o) && {
@@ -155,10 +155,10 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
     var t = e.onPress,
       n = e.name,
       r = e.size;
-    return React.default.createElement(_.TouchableBorderless, {
+    return React.default.createElement(components.TouchableBorderless, {
       style: b.padding,
       onPress: t
-    }, React.default.createElement(_.Icon, {
+    }, React.default.createElement(components.Icon, {
       style: b.iconStyle,
       name: n,
       size: r

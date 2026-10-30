@@ -5,7 +5,7 @@ exports.default = void 0;
 var lottieReactNative = babelHelpers.interopRequireDefault(require("lottie-react-native")),
   React = babelHelpers.interopRequireDefault(require("react")),
   reactNativeSpringScrollview = require("react-native-spring-scrollview"),
-  _ = require("./index"),
+  components = require("./index"),
   constants = require("../theme/constants"),
   layout = require("../theme/layout"),
   f = function (e) {
@@ -16,7 +16,7 @@ var lottieReactNative = babelHelpers.interopRequireDefault(require("lottie-react
     babelHelpers.createClass(t, [{
       key: "render",
       value: function () {
-        if ('refreshing' === this.state.status) return React.default.createElement(_.Spinkit, null);
+        if ('refreshing' === this.state.status) return React.default.createElement(components.Spinkit, null);
         var e = this.props.offset.interpolate({
           inputRange: [-120, -60],
           outputRange: [1, 0]

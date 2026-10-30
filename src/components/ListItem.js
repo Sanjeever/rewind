@@ -5,7 +5,7 @@ exports.default = void 0;
 var React = babelHelpers.interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
   TouchableScale = babelHelpers.interopRequireDefault(require("./TouchableScale")),
-  _ = require("./index"),
+  components = require("./index"),
   constants = require("../theme/constants"),
   icons = babelHelpers.interopRequireDefault(require("../theme/icons")),
   d = '6y-UleORITEDbvrOLV0Q8A==/5639395138885805',
@@ -27,7 +27,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
             justifyContent: 'center',
             backgroundColor: '#111'
           }]
-        }, React.default.createElement(_.Icon, {
+        }, React.default.createElement(components.Icon, {
           name: l || icons.default.ACCOUNT_MUSIC
         })) : React.default.createElement(ReactNative.Image, {
           style: b.img,
@@ -46,7 +46,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
           r = e.trans,
           l = e.vip,
           o = e.numberOfLines;
-        return '\u2661' === t ? React.default.createElement(_.Icon, {
+        return '\u2661' === t ? React.default.createElement(components.Icon, {
           name: icons.default.HEART_OUTLINE,
           style: {
             backgroundColor: 0
@@ -65,7 +65,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
         }, React.default.createElement(ReactNative.Text, {
           numberOfLines: o,
           style: [b.bold, b.title]
-        }, t), React.default.createElement(_.Icon, {
+        }, t), React.default.createElement(components.Icon, {
           iconStyle: {
             marginLeft: 5
           },
@@ -99,7 +99,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
         }, this.renderTitle(), n ? React.default.createElement(ReactNative.Text, {
           numberOfLines: 1,
           style: [b.subtitle]
-        }, n) : null), u && React.default.createElement(_.Icon, babelHelpers.extends({
+        }, n) : null), u && React.default.createElement(components.Icon, babelHelpers.extends({
           style: {
             marginHorizontal: 10
           }

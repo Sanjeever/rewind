@@ -11,7 +11,7 @@ var immer = require("immer"),
   icons = babelHelpers.interopRequireDefault(require("../theme/icons")),
   keys = babelHelpers.interopRequireDefault(require("../storage/keys")),
   locales = babelHelpers.interopRequireDefault(require("../locales/index")),
-  restart = babelHelpers.interopRequireDefault(require("../native/restart")),
+  restartModule = babelHelpers.interopRequireDefault(require("../native/restart")),
   module835 = babelHelpers.interopRequireDefault(require("../modules/module-835")),
   h = notification.default.configObject,
   v = notification.default.configKeys,
@@ -28,7 +28,7 @@ var immer = require("immer"),
       }, a.confirmChange = function () {
         a.saveConfig();
         setTimeout(function () {
-          restart.default.restart();
+          restartModule.default.restart();
         }, 99);
       }, a.loadConfig = function () {
         storage.load({

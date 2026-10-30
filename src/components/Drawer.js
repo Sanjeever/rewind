@@ -7,7 +7,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
   reactNativeSpringScrollview = require("react-native-spring-scrollview"),
   components = require("./index"),
   utils = require("../utils/index"),
-  update = babelHelpers.interopRequireDefault(require("../services/update")),
+  updateModule = babelHelpers.interopRequireDefault(require("../services/update")),
   ProfileHeader = babelHelpers.interopRequireDefault(require("./ProfileHeader")),
   DrawerActions = babelHelpers.interopRequireDefault(require("./DrawerActions")),
   b = function (e) {
@@ -47,7 +47,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
             return e.navigate('Settings');
           },
           update: function () {
-            return update.default.checkAndAlert();
+            return updateModule.default.checkAndAlert();
           },
           timer: function () {
             return utils.stopTimer.open();

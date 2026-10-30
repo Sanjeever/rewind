@@ -13,7 +13,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
   services = require("../services/index"),
   utils = require("../utils/index"),
   types = babelHelpers.interopRequireWildcard(require("../utils/types")),
-  sharedUrls = require("../services/sharedUrls"),
+  sharedUrlsModule = require("../services/sharedUrls"),
   users = babelHelpers.interopRequireDefault(require("../storage/users")),
   module814 = babelHelpers.interopRequireDefault(require("../modules/module-814")),
   module815 = babelHelpers.interopRequireDefault(require("../modules/module-815")),
@@ -270,7 +270,7 @@ var x = {
         var e = a.state,
           t = e.api,
           n = e.id;
-        return sharedUrls.sharedUrls[t].artist + n;
+        return sharedUrlsModule.sharedUrls[t].artist + n;
       }, a.getAlbumData = function (e, t, n) {
         var r = a.state,
           s = r.albumsGroup,

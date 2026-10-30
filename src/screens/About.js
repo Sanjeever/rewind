@@ -12,7 +12,7 @@ var lottieReactNative = babelHelpers.interopRequireDefault(require("lottie-react
   icons = babelHelpers.interopRequireDefault(require("../theme/icons")),
   locales = babelHelpers.interopRequireDefault(require("../locales/index")),
   endpoints = require("../services/endpoints"),
-  info = require("../native/info"),
+  infoModule = require("../native/info"),
   linkData = babelHelpers.interopRequireDefault(require("./about/linkData")),
   CreditsSection = babelHelpers.interopRequireDefault(require("./about/CreditsSection")),
   LinkList = babelHelpers.interopRequireDefault(require("./about/LinkList")),
@@ -154,7 +154,7 @@ var lottieReactNative = babelHelpers.interopRequireDefault(require("lottie-react
           numbers: 3
         }) : React.default.createElement(ReactNative.Text, {
           style: [styles.default.text, styles.default.version]
-        }, info.versionName)), a ? React.default.createElement(LinkList.default, {
+        }, infoModule.versionName)), a ? React.default.createElement(LinkList.default, {
           info: linkData.default
         }) : this.renderAll()));
       }

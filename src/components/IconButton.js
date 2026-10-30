@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = void 0;
 var React = babelHelpers.interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
-  _ = require("./index"),
+  components = require("./index"),
   o = function (e) {
     function t() {
       babelHelpers.classCallCheck(this, t);
@@ -28,7 +28,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
         }, React.default.createElement(ReactNative.TouchableOpacity, {
           onPress: t,
           disabled: n
-        }, React.default.createElement(_.Icon, {
+        }, React.default.createElement(components.Icon, {
           name: r,
           size: l || 20
         })));

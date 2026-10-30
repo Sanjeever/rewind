@@ -2,9 +2,9 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var LruCache = babelHelpers.interopRequireDefault(require("@runtime/781")),
+var Runtime781 = babelHelpers.interopRequireDefault(require("@runtime/781")),
   providers = babelHelpers.interopRequireDefault(require("../services/providers")),
-  o = new LruCache.default(100),
+  o = new Runtime781.default(100),
   s = function (e, r) {
     var t = e.song;
     return r === providers.default.qqMusic ? t.songmid || t.mid : String(t.id);

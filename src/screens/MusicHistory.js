@@ -16,7 +16,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
   trackInfo = require("../services/trackInfo"),
   mediaStore = babelHelpers.interopRequireDefault(require("../native/mediaStore")),
   history = require("../storage/history"),
-  sections = require("./history/sections"),
+  sectionsModule = require("./history/sections"),
   module874 = babelHelpers.interopRequireDefault(require("../modules/module-874")),
   H = function (e) {
     function t() {
@@ -61,7 +61,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
           y: 0
         });
       }, n.getData = function () {
-        return sections.sections.map(function (e) {
+        return sectionsModule.sections.map(function (e) {
           return {
             items: n.state[e].length > 0 ? n.state[e] : []
           };
@@ -69,21 +69,21 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
       }, n._heightForIndexPath = function () {
         return constants.ITEM_HEIGHT;
       }, n._heightForSection = function (e) {
-        var t = sections.sections[e];
-        return 0 === n.sectionDataLength(t) ? 0 : sections.SECTION_HEIGHT;
+        var t = sectionsModule.sections[e];
+        return 0 === n.sectionDataLength(t) ? 0 : sectionsModule.SECTION_HEIGHT;
       }, n._renderSection = function (e) {
-        var t = sections.sections[e],
-          a = sections.sectionTitleMap[t],
+        var t = sectionsModule.sections[e],
+          a = sectionsModule.sectionTitleMap[t],
           l = n.sectionDataLength(t);
         return React.default.createElement(ReactNative.View, {
-          style: sections.sectionStyle.container
+          style: sectionsModule.sectionStyle.container
         }, React.default.createElement(components.Title, {
-          style: [sections.sectionStyle.numbers]
+          style: [sectionsModule.sectionStyle.numbers]
         }, l), React.default.createElement(components.Title, null, a));
       }, n._renderIndexPath = function (e) {
         var t = e.section,
           a = e.row,
-          l = sections.sections[t],
+          l = sectionsModule.sections[t],
           o = a,
           c = n.state[l][o],
           u = (0, trackInfo.extractFullInfo)(c);

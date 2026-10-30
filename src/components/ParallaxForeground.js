@@ -7,7 +7,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
   reactNativeAnimatable = babelHelpers.interopRequireWildcard(require("react-native-animatable")),
   constants = require("../theme/constants"),
   icons = babelHelpers.interopRequireDefault(require("../theme/icons")),
-  _ = require("./index"),
+  components = require("./index"),
   d = function (e) {
     function t() {
       var e, a, n;
@@ -27,7 +27,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
               extrapolate: 'clamp'
             })
           }
-        }, React.default.createElement(_.GradientMask, {
+        }, React.default.createElement(components.GradientMask, {
           from: "bottom",
           style: {
             width: '100%',
@@ -80,7 +80,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
           }]
         }) : React.default.createElement(ReactNative.View, {
           style: [f.foregroundImg, f.foregroundIconCon]
-        }, React.default.createElement(_.Icon, {
+        }, React.default.createElement(components.Icon, {
           name: icons.default.ACCOUNT_MUSIC,
           size: 70
         })), this.renderBottomMask(), React.default.createElement(ReactNative.Animated.View, {
@@ -91,7 +91,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
               extrapolate: 'clamp'
             })
           }]
-        }, React.default.createElement(_.Selectable, {
+        }, React.default.createElement(components.Selectable, {
           style: [f.bold]
         }, n, Boolean(d) && React.default.createElement(ReactNative.Text, {
           style: f.alias
@@ -100,7 +100,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
             key: t,
             style: f.subtitle
           }, e);
-        }), Boolean(c) && React.default.createElement(_.Icon, {
+        }), Boolean(c) && React.default.createElement(components.Icon, {
           name: icons.default.INFORMATION_OUTLINE,
           style: f.info,
           onPress: c

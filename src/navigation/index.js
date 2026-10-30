@@ -3,166 +3,166 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 var reactNavigation = require("react-navigation"),
-  About = babelHelpers.interopRequireDefault(require("../screens/About")),
-  AlbumPage = babelHelpers.interopRequireDefault(require("../screens/AlbumPage")),
-  ArtistPage = babelHelpers.interopRequireDefault(require("../screens/ArtistPage")),
-  CommentPage = babelHelpers.interopRequireDefault(require("../screens/CommentPage")),
-  CustomPlaylist = babelHelpers.interopRequireDefault(require("../screens/CustomPlaylist")),
-  HappyBirthday = babelHelpers.interopRequireDefault(require("../screens/HappyBirthday")),
-  CachePage = babelHelpers.interopRequireDefault(require("../screens/CachePage")),
-  FeaturePage = babelHelpers.interopRequireDefault(require("../screens/FeaturePage")),
-  LanguagePage = babelHelpers.interopRequireDefault(require("../screens/LanguagePage")),
-  MusicNotificationPage = babelHelpers.interopRequireDefault(require("../screens/MusicNotificationPage")),
-  OrderPage = babelHelpers.interopRequireDefault(require("../screens/OrderPage")),
-  Skin = babelHelpers.interopRequireDefault(require("../screens/Skin")),
-  Home = babelHelpers.interopRequireDefault(require("../screens/Home")),
-  ListenRecord = babelHelpers.interopRequireDefault(require("../screens/ListenRecord")),
-  LocalMusic = babelHelpers.interopRequireDefault(require("../screens/LocalMusic")),
-  InitialLogin = babelHelpers.interopRequireDefault(require("../screens/InitialLogin")),
-  NeteaseLogin = babelHelpers.interopRequireDefault(require("../screens/NeteaseLogin")),
-  QQMusicLogin = babelHelpers.interopRequireDefault(require("../screens/QQMusicLogin")),
-  LyricPage = babelHelpers.interopRequireDefault(require("../screens/LyricPage")),
-  MusicHistory = babelHelpers.interopRequireDefault(require("../screens/MusicHistory")),
-  Charts = babelHelpers.interopRequireDefault(require("../screens/Charts")),
-  Cloud = babelHelpers.interopRequireDefault(require("../screens/Cloud")),
-  Favs = babelHelpers.interopRequireDefault(require("../screens/Favs")),
-  HotPlaylist = babelHelpers.interopRequireDefault(require("../screens/HotPlaylist")),
-  Msg = babelHelpers.interopRequireDefault(require("../screens/Msg")),
-  MsgHistory = babelHelpers.interopRequireDefault(require("../screens/MsgHistory")),
-  Radio = babelHelpers.interopRequireDefault(require("../screens/Radio")),
-  RadioDetail = babelHelpers.interopRequireDefault(require("../screens/RadioDetail")),
-  MusicRecommend = babelHelpers.interopRequireDefault(require("../screens/MusicRecommend")),
-  SubNewSongs = babelHelpers.interopRequireDefault(require("../screens/SubNewSongs")),
-  Playlist = babelHelpers.interopRequireDefault(require("../screens/Playlist")),
-  PlaylistIntersection = babelHelpers.interopRequireDefault(require("../screens/PlaylistIntersection")),
-  SearchPage = babelHelpers.interopRequireDefault(require("../screens/SearchPage")),
-  Settings = babelHelpers.interopRequireDefault(require("../screens/Settings")),
-  Tip = babelHelpers.interopRequireDefault(require("../screens/Tip")),
-  FollowPage = babelHelpers.interopRequireDefault(require("../screens/FollowPage")),
-  UserInfo = babelHelpers.interopRequireDefault(require("../screens/UserInfo")),
-  UserManager = babelHelpers.interopRequireDefault(require("../screens/UserManager")),
-  Video = babelHelpers.interopRequireDefault(require("../screens/Video")),
-  WebViewPage = babelHelpers.interopRequireDefault(require("../screens/WebViewPage")),
+  AboutModule = babelHelpers.interopRequireDefault(require("../screens/About")),
+  AlbumPageModule = babelHelpers.interopRequireDefault(require("../screens/AlbumPage")),
+  ArtistPageModule = babelHelpers.interopRequireDefault(require("../screens/ArtistPage")),
+  CommentPageModule = babelHelpers.interopRequireDefault(require("../screens/CommentPage")),
+  CustomPlaylistModule = babelHelpers.interopRequireDefault(require("../screens/CustomPlaylist")),
+  HappyBirthdayModule = babelHelpers.interopRequireDefault(require("../screens/HappyBirthday")),
+  CachePageModule = babelHelpers.interopRequireDefault(require("../screens/CachePage")),
+  FeaturePageModule = babelHelpers.interopRequireDefault(require("../screens/FeaturePage")),
+  LanguagePageModule = babelHelpers.interopRequireDefault(require("../screens/LanguagePage")),
+  MusicNotificationPageModule = babelHelpers.interopRequireDefault(require("../screens/MusicNotificationPage")),
+  OrderPageModule = babelHelpers.interopRequireDefault(require("../screens/OrderPage")),
+  SkinModule = babelHelpers.interopRequireDefault(require("../screens/Skin")),
+  HomeModule = babelHelpers.interopRequireDefault(require("../screens/Home")),
+  ListenRecordModule = babelHelpers.interopRequireDefault(require("../screens/ListenRecord")),
+  LocalMusicModule = babelHelpers.interopRequireDefault(require("../screens/LocalMusic")),
+  InitialLoginModule = babelHelpers.interopRequireDefault(require("../screens/InitialLogin")),
+  NeteaseLoginModule = babelHelpers.interopRequireDefault(require("../screens/NeteaseLogin")),
+  QQMusicLoginModule = babelHelpers.interopRequireDefault(require("../screens/QQMusicLogin")),
+  LyricPageModule = babelHelpers.interopRequireDefault(require("../screens/LyricPage")),
+  MusicHistoryModule = babelHelpers.interopRequireDefault(require("../screens/MusicHistory")),
+  ChartsModule = babelHelpers.interopRequireDefault(require("../screens/Charts")),
+  CloudModule = babelHelpers.interopRequireDefault(require("../screens/Cloud")),
+  FavsModule = babelHelpers.interopRequireDefault(require("../screens/Favs")),
+  HotPlaylistModule = babelHelpers.interopRequireDefault(require("../screens/HotPlaylist")),
+  MsgModule = babelHelpers.interopRequireDefault(require("../screens/Msg")),
+  MsgHistoryModule = babelHelpers.interopRequireDefault(require("../screens/MsgHistory")),
+  RadioModule = babelHelpers.interopRequireDefault(require("../screens/Radio")),
+  RadioDetailModule = babelHelpers.interopRequireDefault(require("../screens/RadioDetail")),
+  MusicRecommendModule = babelHelpers.interopRequireDefault(require("../screens/MusicRecommend")),
+  SubNewSongsModule = babelHelpers.interopRequireDefault(require("../screens/SubNewSongs")),
+  PlaylistModule = babelHelpers.interopRequireDefault(require("../screens/Playlist")),
+  PlaylistIntersectionModule = babelHelpers.interopRequireDefault(require("../screens/PlaylistIntersection")),
+  SearchPageModule = babelHelpers.interopRequireDefault(require("../screens/SearchPage")),
+  SettingsModule = babelHelpers.interopRequireDefault(require("../screens/Settings")),
+  TipModule = babelHelpers.interopRequireDefault(require("../screens/Tip")),
+  FollowPageModule = babelHelpers.interopRequireDefault(require("../screens/FollowPage")),
+  UserInfoModule = babelHelpers.interopRequireDefault(require("../screens/UserInfo")),
+  UserManagerModule = babelHelpers.interopRequireDefault(require("../screens/UserManager")),
+  VideoModule = babelHelpers.interopRequireDefault(require("../screens/Video")),
+  WebViewPageModule = babelHelpers.interopRequireDefault(require("../screens/WebViewPage")),
   z = (0, reactNavigation.StackNavigator)({
     Home: {
-      screen: Home.default
+      screen: HomeModule.default
     },
     Skin: {
-      screen: Skin.default
+      screen: SkinModule.default
     },
     About: {
-      screen: About.default
+      screen: AboutModule.default
     },
     SearchPage: {
-      screen: SearchPage.default
+      screen: SearchPageModule.default
     },
     Settings: {
-      screen: Settings.default
+      screen: SettingsModule.default
     },
     MusicHistory: {
-      screen: MusicHistory.default
+      screen: MusicHistoryModule.default
     },
     CustomPlaylist: {
-      screen: CustomPlaylist.default
+      screen: CustomPlaylistModule.default
     },
     NeteaseLogin: {
-      screen: NeteaseLogin.default
+      screen: NeteaseLoginModule.default
     },
     QQMusicLogin: {
-      screen: QQMusicLogin.default
+      screen: QQMusicLoginModule.default
     },
     InitialLogin: {
-      screen: InitialLogin.default
+      screen: InitialLoginModule.default
     },
     Playlist: {
-      screen: Playlist.default
+      screen: PlaylistModule.default
     },
     LocalMusic: {
-      screen: LocalMusic.default
+      screen: LocalMusicModule.default
     },
     ArtistPage: {
-      screen: ArtistPage.default
+      screen: ArtistPageModule.default
     },
     AlbumPage: {
-      screen: AlbumPage.default
+      screen: AlbumPageModule.default
     },
     Msg: {
-      screen: Msg.default
+      screen: MsgModule.default
     },
     MsgHistory: {
-      screen: MsgHistory.default
+      screen: MsgHistoryModule.default
     },
     MusicRecommend: {
-      screen: MusicRecommend.default
+      screen: MusicRecommendModule.default
     },
     Radio: {
-      screen: Radio.default
+      screen: RadioModule.default
     },
     RadioDetail: {
-      screen: RadioDetail.default
+      screen: RadioDetailModule.default
     },
     Charts: {
-      screen: Charts.default
+      screen: ChartsModule.default
     },
     HotPlaylist: {
-      screen: HotPlaylist.default
+      screen: HotPlaylistModule.default
     },
     Favs: {
-      screen: Favs.default
+      screen: FavsModule.default
     },
     CachePage: {
-      screen: CachePage.default
+      screen: CachePageModule.default
     },
     WebViewPage: {
-      screen: WebViewPage.default
+      screen: WebViewPageModule.default
     },
     Tip: {
-      screen: Tip.default
+      screen: TipModule.default
     },
     Cloud: {
-      screen: Cloud.default
+      screen: CloudModule.default
     },
     UserManager: {
-      screen: UserManager.default
+      screen: UserManagerModule.default
     },
     UserInfo: {
-      screen: UserInfo.default
+      screen: UserInfoModule.default
     },
     FollowPage: {
-      screen: FollowPage.default
+      screen: FollowPageModule.default
     },
     LanguagePage: {
-      screen: LanguagePage.default
+      screen: LanguagePageModule.default
     },
     FeaturePage: {
-      screen: FeaturePage.default
+      screen: FeaturePageModule.default
     },
     OrderPage: {
-      screen: OrderPage.default
+      screen: OrderPageModule.default
     },
     MusicNotificationPage: {
-      screen: MusicNotificationPage.default
+      screen: MusicNotificationPageModule.default
     },
     CommentPage: {
-      screen: CommentPage.default
+      screen: CommentPageModule.default
     },
     ListenRecord: {
-      screen: ListenRecord.default
+      screen: ListenRecordModule.default
     },
     PlaylistIntersection: {
-      screen: PlaylistIntersection.default
+      screen: PlaylistIntersectionModule.default
     },
     LyricPage: {
-      screen: LyricPage.default
+      screen: LyricPageModule.default
     },
     HappyBirthday: {
-      screen: HappyBirthday.default
+      screen: HappyBirthdayModule.default
     },
     SubNewSongs: {
-      screen: SubNewSongs.default
+      screen: SubNewSongsModule.default
     },
     Video: {
-      screen: Video.default
+      screen: VideoModule.default
     }
   }, {
     headerMode: 'null',

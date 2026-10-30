@@ -1,6 +1,6 @@
 var React = babelHelpers.interopRequireWildcard(require("react")),
   ReactNative = babelHelpers.interopRequireWildcard(require("react-native")),
-  _ = babelHelpers.interopRequireDefault(require("@runtime/40")),
+  Runtime40 = babelHelpers.interopRequireDefault(require("@runtime/40")),
   module757 = babelHelpers.interopRequireDefault(require("./module-757")),
   d = function (e) {
     function t() {
@@ -20,7 +20,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
     return t;
   }(React.Component);
 d.propTypes = {
-  sss: _.default.string
+  sss: Runtime40.default.string
 };
 var u = (0, ReactNative.requireNativeComponent)('RecyclerViewItemView'),
   c = function (e) {
@@ -202,19 +202,19 @@ var u = (0, ReactNative.requireNativeComponent)('RecyclerViewItemView'),
     return t;
   }(React.default.PureComponent);
 c.propTypes = babelHelpers.objectSpread({}, ReactNative.View.propTypes, {
-  renderItem: _.default.func,
-  dataSource: _.default.instanceOf(module757.default),
-  windowSize: _.default.number,
-  initialListSize: _.default.number,
-  initialScrollIndex: _.default.number,
-  itemAnimatorEnabled: _.default.bool,
-  ListHeaderComponent: _.default.element,
-  ListFooterComponent: _.default.element,
-  ListEmptyComponent: _.default.element,
-  ItemSeparatorComponent: _.default.element,
-  onVisibleItemsChange: _.default.func,
-  isScrollOverMode: _.default.bool,
-  showVerticalScrollBar: _.default.bool
+  renderItem: Runtime40.default.func,
+  dataSource: Runtime40.default.instanceOf(module757.default),
+  windowSize: Runtime40.default.number,
+  initialListSize: Runtime40.default.number,
+  initialScrollIndex: Runtime40.default.number,
+  itemAnimatorEnabled: Runtime40.default.bool,
+  ListHeaderComponent: Runtime40.default.element,
+  ListFooterComponent: Runtime40.default.element,
+  ListEmptyComponent: Runtime40.default.element,
+  ItemSeparatorComponent: Runtime40.default.element,
+  onVisibleItemsChange: Runtime40.default.func,
+  isScrollOverMode: Runtime40.default.bool,
+  showVerticalScrollBar: Runtime40.default.bool
 });
 c.defaultProps = {
   dataSource: new module757.default(),

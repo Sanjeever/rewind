@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 var slider = babelHelpers.interopRequireDefault(require("@react-native-community/slider")),
-  _ = babelHelpers.interopRequireDefault(require("@runtime/927")),
+  Runtime927 = babelHelpers.interopRequireDefault(require("@runtime/927")),
   React = babelHelpers.interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
   reactNativeTextTicker = babelHelpers.interopRequireDefault(require("react-native-text-ticker")),
@@ -311,7 +311,7 @@ var slider = babelHelpers.interopRequireDefault(require("@react-native-community
         var e = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : 0,
           t = this.state.showRemainingTime ? '-' : '';
         e = Math.min(Math.max(e, 0), this.state.duration);
-        return this.state.showHours ? "" + t + (0, _.default)(Math.floor(e / 3600).toFixed(0), 2, 0) + ":" + (0, _.default)((Math.floor(e / 60) % 60).toFixed(0), 2, 0) + ":" + (0, _.default)(Math.floor(e % 60).toFixed(0), 2, 0) : "" + t + (0, _.default)(Math.floor(e / 60).toFixed(0), 2, 0) + ":" + (0, _.default)(Math.floor(e % 60).toFixed(0), 2, 0);
+        return this.state.showHours ? "" + t + (0, Runtime927.default)(Math.floor(e / 3600).toFixed(0), 2, 0) + ":" + (0, Runtime927.default)((Math.floor(e / 60) % 60).toFixed(0), 2, 0) + ":" + (0, Runtime927.default)(Math.floor(e % 60).toFixed(0), 2, 0) : "" + t + (0, Runtime927.default)(Math.floor(e / 60).toFixed(0), 2, 0) + ":" + (0, Runtime927.default)(Math.floor(e % 60).toFixed(0), 2, 0);
       }
     }, {
       key: "setSeekerPosition",

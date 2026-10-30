@@ -11,12 +11,12 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
   constants = require("../theme/constants"),
   names = babelHelpers.interopRequireDefault(require("../events/names")),
   icons = babelHelpers.interopRequireDefault(require("../theme/icons")),
-  keys = babelHelpers.interopRequireDefault(require("../storage/keys")),
+  keysModule = babelHelpers.interopRequireDefault(require("../storage/keys")),
   locales = babelHelpers.interopRequireDefault(require("../locales/index")),
   events = require("../events/index"),
   trackInfo = require("../services/trackInfo"),
   dimensions = babelHelpers.interopRequireDefault(require("../native/dimensions")),
-  sections = require("../screens/history/sections"),
+  sectionsModule = require("../screens/history/sections"),
   L = dimensions.default.get('SOFT_MENU_BAR_HEIGHT'),
   T = function (e) {
     function t() {
@@ -36,7 +36,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
         needBottomPadding: false
       }, a.loadSetting = function () {
         storage.load({
-          key: keys.default.settings
+          key: keysModule.default.settings
         }).then(function (e) {
           (null === e || void 0 === e ? void 0 : e.navbarPadding.on) && a.setState({
             needBottomPadding: true
@@ -58,7 +58,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
           y: 0
         });
       }, a.getData = function () {
-        return sections.sections.map(function (e) {
+        return sectionsModule.sections.map(function (e) {
           return {
             items: a.props[e].length > 0 ? a.props[e] : []
           };
@@ -66,21 +66,21 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
       }, a._heightForIndexPath = function () {
         return constants.ITEM_HEIGHT;
       }, a._heightForSection = function (e) {
-        var t = sections.sections[e];
-        return 0 === a.sectionDataLength(t) ? 0 : sections.SECTION_HEIGHT;
+        var t = sectionsModule.sections[e];
+        return 0 === a.sectionDataLength(t) ? 0 : sectionsModule.SECTION_HEIGHT;
       }, a._renderSection = function (e) {
-        var t = sections.sections[e],
-          n = sections.sectionTitleMap[t],
+        var t = sectionsModule.sections[e],
+          n = sectionsModule.sectionTitleMap[t],
           l = a.sectionDataLength(t);
         return React.default.createElement(ReactNative.View, {
-          style: sections.sectionStyle.container
+          style: sectionsModule.sectionStyle.container
         }, React.default.createElement(components.Title, {
-          style: [sections.sectionStyle.numbers]
+          style: [sectionsModule.sectionStyle.numbers]
         }, l), React.default.createElement(components.Title, null, n));
       }, a._renderIndexPath = function (e) {
         var t = e.section,
           n = e.row,
-          l = sections.sections[t],
+          l = sectionsModule.sections[t],
           s = n,
           o = a.props[l][s],
           u = (0, trackInfo.extractFullInfo)(o),

@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 var names = babelHelpers.interopRequireDefault(require("../events/names")),
-  _ = require("./index"),
+  utils = require("./index"),
   types = require("./types"),
   events = require("../events/index"),
   l = {
@@ -13,7 +13,7 @@ var names = babelHelpers.interopRequireDefault(require("../events/names")),
         for (;;) switch (t.prev = t.next) {
           case 0:
             t.next = 2;
-            return regeneratorRuntime.awrap(_.dialogs.showTimePicker());
+            return regeneratorRuntime.awrap(utils.dialogs.showTimePicker());
           case 2:
             e = t.sent;
             (0, types.isNumber)(e) && events.emitter.emit(names.default.CloseTimerEvent, e);

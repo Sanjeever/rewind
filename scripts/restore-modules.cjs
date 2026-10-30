@@ -229,16 +229,26 @@ for (const m of map.modules.filter(m => m.source && (!selected.size || selected.
   });
   traverse(ast, {
     Program(p) {
+      const usedNames = new Set();
+      p.traverse({ Identifier(identifier) { usedNames.add(identifier.node.name); } });
       for (const [name, binding] of Object.entries(p.scope.bindings)) {
         if (!binding.path.isVariableDeclarator()) continue;
         let init = binding.path.node.init;
         if (t.isCallExpression(init) && t.isMemberExpression(init.callee) && init.callee.object.name === 'babelHelpers') init = init.arguments[0];
         if (!t.isCallExpression(init) || init.callee.name !== 'require' || !t.isStringLiteral(init.arguments[0])) continue;
         const spec = init.arguments[0].value;
-        let label = spec === 'react' ? 'React' : spec === 'react-native' ? 'ReactNative' : path.basename(spec).replace(/\.js$/, '');
-        if (label === 'index') label = path.basename(path.dirname(spec));
+        const resolved = spec.startsWith('.') ? path.resolve(path.dirname(m.source),spec) : spec;
+        let label = spec === 'react' ? 'React' : spec === 'react-native' ? 'ReactNative' : spec.startsWith('@runtime/') ? 'Runtime'+spec.slice(9) : path.basename(spec).replace(/\.js$/, '');
+        if (label === 'index') label = path.basename(path.dirname(resolved));
         label = t.toIdentifier(label);
-        if (label !== name) p.scope.rename(name, p.scope.hasBinding(label) ? p.scope.generateUidIdentifier(label).name : label);
+        while (label !== name && usedNames.has(label)) label += 'Module';
+        if (label !== name) {
+          const references = p.scope.getBinding(name).referencePaths.length;
+          p.scope.rename(name,label);
+          p.scope.crawl();
+          if (p.scope.getBinding(label).referencePaths.length !== references) throw new Error(`模块 ${m.id} 重命名改变了变量绑定`);
+          usedNames.add(label);
+        }
       }
     }
   });

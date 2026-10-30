@@ -3,10 +3,10 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = function () {
   (0, reactNativeExceptionHandler.setJSExceptionHandler)(function (e, t) {
-    t && ReactNative.Alert.alert(locales.default.ERROR, [{
+    t && ReactNative.Alert.alert(locales.default.ERROR, String(e), [{
       text: locales.default.RESTART_APP,
       onPress: function () {
-        restart.default.restart();
+        restartModule.default.restart();
       }
     }, {
       text: locales.default.CONFIRM,
@@ -20,4 +20,4 @@ exports.default = function () {
 var ReactNative = require("react-native"),
   reactNativeExceptionHandler = require("react-native-exception-handler"),
   locales = babelHelpers.interopRequireDefault(require("../locales/index")),
-  restart = babelHelpers.interopRequireDefault(require("../native/restart"));
+  restartModule = babelHelpers.interopRequireDefault(require("../native/restart"));

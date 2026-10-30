@@ -13,7 +13,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
   keys = babelHelpers.interopRequireDefault(require("../storage/keys")),
   services = require("../services/index"),
   types = babelHelpers.interopRequireWildcard(require("../utils/types")),
-  history = require("../storage/history"),
+  historyModule = require("../storage/history"),
   sections = require("../screens/search/sections"),
   S = function (e) {
     function t() {
@@ -50,7 +50,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
         r.setState({
           history: [a].concat(babelHelpers.toConsumableArray(n))
         });
-        (0, history.searchHistory)(e, t);
+        (0, historyModule.searchHistory)(e, t);
       }, r.search_suggest = function (e) {
         switch (r.props.api) {
           case providers.default.netEase:

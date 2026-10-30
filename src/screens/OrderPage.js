@@ -8,11 +8,11 @@ var immer = require("immer"),
   SegmentedControl = babelHelpers.interopRequireDefault(require("../components/SegmentedControl")),
   components = require("../components/index"),
   TabbedViewPager = babelHelpers.interopRequireDefault(require("../native/TabbedViewPager")),
-  pages = babelHelpers.interopRequireDefault(require("../settings/pages")),
+  pagesModule = babelHelpers.interopRequireDefault(require("../settings/pages")),
   icons = babelHelpers.interopRequireDefault(require("../theme/icons")),
   keys = babelHelpers.interopRequireDefault(require("../storage/keys")),
   locales = babelHelpers.interopRequireDefault(require("../locales/index")),
-  restart = babelHelpers.interopRequireDefault(require("../native/restart")),
+  restartModule = babelHelpers.interopRequireDefault(require("../native/restart")),
   module844 = babelHelpers.interopRequireDefault(require("../modules/module-844")),
   v = function (e) {
     function a() {
@@ -20,8 +20,8 @@ var immer = require("immer"),
       babelHelpers.classCallCheck(this, a);
       for (var n = arguments.length, s = new Array(n), i = 0; i < n; i++) s[i] = arguments[i];
       return babelHelpers.possibleConstructorReturn(r, (t = r = babelHelpers.possibleConstructorReturn(this, (e = babelHelpers.getPrototypeOf(a)).call.apply(e, [this].concat(s))), r._TAB_NAMES = ['Up', 'Down'], r.state = {
-        pages: pages.default.pages,
-        apis: pages.default.apis,
+        pages: pagesModule.default.pages,
+        apis: pagesModule.default.apis,
         pagesOrder: null,
         apisOrder: null,
         changed: false
@@ -30,7 +30,7 @@ var immer = require("immer"),
       }, r.confirmChange = function () {
         r.saveOrder();
         setTimeout(function () {
-          restart.default.restart();
+          restartModule.default.restart();
         }, 99);
       }, r.saveOrder = function () {
         var e = r.state,

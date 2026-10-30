@@ -11,10 +11,10 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
   constants = require("../theme/constants"),
   names = babelHelpers.interopRequireDefault(require("../events/names")),
   icons = babelHelpers.interopRequireDefault(require("../theme/icons")),
-  keys = babelHelpers.interopRequireDefault(require("../storage/keys")),
+  keysModule = babelHelpers.interopRequireDefault(require("../storage/keys")),
   locales = babelHelpers.interopRequireDefault(require("../locales/index")),
   events = require("../events/index"),
-  restart = babelHelpers.interopRequireDefault(require("../native/restart")),
+  restartModule = babelHelpers.interopRequireDefault(require("../native/restart")),
   b = function (e) {
     function t() {
       var e, n, a;
@@ -35,7 +35,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
         return new Promise(function (t) {
           if (!e) return t(false);
           storage.save({
-            key: keys.default.settings,
+            key: keysModule.default.settings,
             data: a.state.settings
           }).then(function () {
             events.emitter.emit(names.default.SettingsChanged);
@@ -63,7 +63,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
           settings: defaults.defaultSettings
         });
         storage.remove({
-          key: keys.default.settings
+          key: keysModule.default.settings
         });
         toast(locales.default.CACHE_CLEARED);
       }, a.onValueChange = function (e) {
@@ -113,7 +113,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
         });
       }, a.restart = function () {
         a.save().then(function () {
-          restart.default.restart();
+          restartModule.default.restart();
         });
       }, a.onShowBottomPaddingModal = function () {
         a.setState({
@@ -127,7 +127,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
           modified: true
         });
         storage.save({
-          key: keys.default.settings,
+          key: keysModule.default.settings,
           data: t
         });
       }, n));
@@ -137,7 +137,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
       value: function () {
         var e = this;
         storage.load({
-          key: keys.default.settings
+          key: keysModule.default.settings
         }).then(function (t) {
           if ('object' == typeof t) {
             var n = e.isSettingsUpdated(t) ? defaults.defaultSettings : t;

@@ -11,8 +11,8 @@ var immer = require("immer"),
   defaults = require("../../settings/defaults"),
   constants = require("../../theme/constants"),
   names = babelHelpers.interopRequireDefault(require("../../events/names")),
-  pages = babelHelpers.interopRequireDefault(require("../../settings/pages")),
-  keys = babelHelpers.interopRequireDefault(require("../../storage/keys")),
+  pagesModule = babelHelpers.interopRequireDefault(require("../../settings/pages")),
+  keysModule = babelHelpers.interopRequireDefault(require("../../storage/keys")),
   endpoints = require("../../services/endpoints"),
   services = require("../../services/index"),
   events = require("../../events/index"),
@@ -34,8 +34,8 @@ var immer = require("immer"),
         isConnected: true,
         userId: 0,
         autoSetPlaylistOrder: defaults.defaultSettings.autoSetPlaylistOrder.on,
-        pagesOrder: pages.default.pages,
-        apisOrder: pages.default.apis
+        pagesOrder: pagesModule.default.pages,
+        apisOrder: pagesModule.default.apis
       }, r.dailySignin = function () {
         return regeneratorRuntime.async(function (e) {
           for (;;) switch (e.prev = e.next) {
@@ -77,7 +77,7 @@ var immer = require("immer"),
         }, null, this);
       }, r.loadOrder = function () {
         storage.load({
-          key: keys.default.pagesOrder
+          key: keysModule.default.pagesOrder
         }).then(function (e) {
           e && r.setState({
             pagesOrder: e
@@ -86,7 +86,7 @@ var immer = require("immer"),
           return null;
         });
         storage.load({
-          key: keys.default.apisOrder
+          key: keysModule.default.apisOrder
         }).then(function (e) {
           e && r.setState({
             apisOrder: e
@@ -273,7 +273,7 @@ var immer = require("immer"),
         }, null, this);
       }, r.qqMusicLikelist = function () {
         storage.load({
-          key: keys.default.playlist
+          key: keysModule.default.playlist
         }).then(function (e) {
           if (e.qqMusic) {
             var t = (0, utils.delve)(e, 'qqMusic.0.id');

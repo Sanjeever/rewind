@@ -6,7 +6,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
   reactNativeAnimatable = babelHelpers.interopRequireWildcard(require("react-native-animatable")),
   TouchableScale = babelHelpers.interopRequireDefault(require("./TouchableScale")),
-  _ = require("./index"),
+  components = require("./index"),
   constants = require("../theme/constants"),
   icons = babelHelpers.interopRequireDefault(require("../theme/icons")),
   trackInfo = require("../services/trackInfo"),
@@ -27,7 +27,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
         },
         TriggerTouchableComponent: ReactNative.TouchableOpacity
       }
-    }, React.default.createElement(_.IconButton, {
+    }, React.default.createElement(components.IconButton, {
       name: icons.default.MENU_OPEN,
       size: 25,
       disabled: true
@@ -55,7 +55,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
       }
     }, React.default.createElement(reactNativePopupMenu.MenuOption, {
       onSelect: a
-    }, React.default.createElement(_.Icon, {
+    }, React.default.createElement(components.Icon, {
       name: icons.default.CONTENT_COPY,
       style: {
         margin: 2
@@ -63,7 +63,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
       size: 23
     })), React.default.createElement(reactNativePopupMenu.MenuOption, {
       onSelect: n
-    }, React.default.createElement(_.Icon, {
+    }, React.default.createElement(components.Icon, {
       name: icons.default.LINK_VARIANT,
       style: {
         margin: 2
@@ -71,7 +71,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
       size: 25
     })), React.default.createElement(reactNativePopupMenu.MenuOption, {
       onSelect: t
-    }, React.default.createElement(_.Icon, {
+    }, React.default.createElement(components.Icon, {
       name: icons.default.WEB,
       style: {
         margin: 2
@@ -79,7 +79,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
       size: 25
     })), React.default.createElement(reactNativePopupMenu.MenuOption, {
       onSelect: r
-    }, React.default.createElement(_.Icon, {
+    }, React.default.createElement(components.Icon, {
       name: icons.default.SHARE_VARIANT_OUTLINE,
       style: {
         margin: 2
@@ -140,23 +140,23 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
         }, React.default.createElement(reactNativeAnimatable.Text, {
           style: C.sortText,
           animation: 'fadeIn'
-        }, f)) : null, E && React.default.createElement(_.IconButton, {
+        }, f)) : null, E && React.default.createElement(components.IconButton, {
           name: icons.default.SORT_VARIANT,
           size: 25,
           onPress: E
-        }), a && React.default.createElement(_.IconButton, {
+        }), a && React.default.createElement(components.IconButton, {
           name: icons.default.BACKUP_RESTORE,
           onPress: n,
           size: 25
-        }), g && p && React.default.createElement(_.IconButton, {
+        }), g && p && React.default.createElement(components.IconButton, {
           name: icons.default.HEART_PULSE,
           size: 25,
           onPress: g
-        }), !p && u && React.default.createElement(_.IconButton, {
+        }), !p && u && React.default.createElement(components.IconButton, {
           name: r ? icons.default.PLAYLIST_REMOVE : icons.default.PLAYLIST_PLUS,
           size: 25,
           onPress: u
-        }), b && React.default.createElement(_.IconButton, {
+        }), b && React.default.createElement(components.IconButton, {
           name: icons.default.CHECKBOX_MULTIPLE_MARKED_CIRCLE_OUTLINE,
           size: 25,
           onPress: b
@@ -206,7 +206,7 @@ var h = function (e) {
         justifyContent: 'center',
         borderRadius: E / 2
       }]
-    }, React.default.createElement(_.Icon, {
+    }, React.default.createElement(components.Icon, {
       name: icons.default.DISC,
       size: 100,
       color: '#111'
@@ -226,7 +226,7 @@ var h = function (e) {
         alignItems: 'center',
         paddingLeft: 13
       }
-    }, React.default.createElement(_.Icon, {
+    }, React.default.createElement(components.Icon, {
       name: icons.default.PLAY
     }), React.default.createElement(ReactNative.Text, {
       style: {
@@ -257,7 +257,7 @@ var h = function (e) {
         borderRadius: 13,
         marginRight: 3
       }
-    })), React.default.createElement(_.SongRow, {
+    })), React.default.createElement(components.SongRow, {
       containerStyle: {
         flex: 1
       },
@@ -266,7 +266,7 @@ var h = function (e) {
       alias: r.alias,
       index: null,
       disabled: true
-    }), React.default.createElement(_.Icon, {
+    }), React.default.createElement(components.Icon, {
       name: icons.default.PLAY
     })));
   },

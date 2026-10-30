@@ -3,18 +3,18 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 var moment = babelHelpers.interopRequireDefault(require("moment")),
-  language = babelHelpers.interopRequireDefault(require("../native/language")),
-  _ = require("@runtime/572"),
-  _2 = require("@runtime/573"),
-  _3 = require("@runtime/574"),
+  languageModule = babelHelpers.interopRequireDefault(require("../native/language")),
+  Runtime572 = require("@runtime/572"),
+  Runtime573 = require("@runtime/573"),
+  Runtime574 = require("@runtime/574"),
   i = {
-    zh_CN: _3,
-    zh_TW: _3,
-    zh_HK: _3,
-    en_US: _2
+    zh_CN: Runtime574,
+    zh_TW: Runtime574,
+    zh_HK: Runtime574,
+    en_US: Runtime573
   };
-moment.default.extend(_);
-moment.default.locale(i[language.default.language]);
+moment.default.extend(Runtime572);
+moment.default.locale(i[languageModule.default.language]);
 var D = function (e) {
     var t = new Date(e);
     return {

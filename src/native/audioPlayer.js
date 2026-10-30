@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 var ReactNative = require("react-native"),
-  _ = babelHelpers.interopRequireDefault(require("@runtime/64")),
+  Runtime64 = babelHelpers.interopRequireDefault(require("@runtime/64")),
   names = babelHelpers.interopRequireDefault(require("../events/names")),
   a = ReactNative.NativeModules.RNAudioPlayer,
   s = {},
@@ -49,7 +49,7 @@ var ReactNative = require("react-native"),
       u._loaded && a.setCurrentTime(e, t);
       return u;
     };
-    var i = (0, _.default)(t);
+    var i = (0, Runtime64.default)(t);
     i ? (this._filename = i.uri, n = null) : this._filename = t;
     this._loaded = false;
     this._duration = -1;

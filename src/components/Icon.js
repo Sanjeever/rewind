@@ -2,12 +2,12 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var _ = babelHelpers.interopRequireDefault(require("@runtime/40")),
+var Runtime40 = babelHelpers.interopRequireDefault(require("@runtime/40")),
   React = babelHelpers.interopRequireDefault(require("react")),
   ReactNative = require("react-native"),
-  _2 = babelHelpers.interopRequireDefault(require("@runtime/381")),
+  Runtime381 = babelHelpers.interopRequireDefault(require("@runtime/381")),
   iconGlyphs = babelHelpers.interopRequireDefault(require("../theme/iconGlyphs")),
-  d = (0, _2.default)(iconGlyphs.default, 'Material Design Icons', 'MaterialCommunityIcons.ttf'),
+  d = (0, Runtime381.default)(iconGlyphs.default, 'Material Design Icons', 'MaterialCommunityIcons.ttf'),
   c = function (e) {
     var r = e.onPress,
       t = e.component,
@@ -67,16 +67,16 @@ var _ = babelHelpers.interopRequireDefault(require("@runtime/40")),
     }));
   };
 b.propTypes = {
-  type: _.default.string,
-  name: _.default.string,
-  size: _.default.number,
-  color: _.default.string,
-  component: _.default.element,
-  underlayColor: _.default.string,
-  reverse: _.default.bool,
-  raised: _.default.bool,
-  onPress: _.default.func,
-  reverseColor: _.default.string
+  type: Runtime40.default.string,
+  name: Runtime40.default.string,
+  size: Runtime40.default.number,
+  color: Runtime40.default.string,
+  component: Runtime40.default.element,
+  underlayColor: Runtime40.default.string,
+  reverse: Runtime40.default.bool,
+  raised: Runtime40.default.bool,
+  onPress: Runtime40.default.func,
+  reverseColor: Runtime40.default.string
 };
 b.defaultProps = {
   underlayColor: 'white',

@@ -16,7 +16,7 @@ Object.defineProperty(exports, "base64", {
 Object.defineProperty(exports, "md5", {
   enumerable: true,
   get: function () {
-    return _.default;
+    return Runtime557.default;
   }
 });
 Object.defineProperty(exports, "dialogs", {
@@ -52,7 +52,7 @@ Object.defineProperty(exports, "parseLyric", {
 Object.defineProperty(exports, "random", {
   enumerable: true,
   get: function () {
-    return random.default;
+    return randomModule.default;
   }
 });
 Object.defineProperty(exports, "getRipple", {
@@ -82,13 +82,13 @@ Object.defineProperty(exports, "universalNavigator", {
 exports.keepBound = exports.emojiStrip = exports.groupedArray = exports.extractKeyValue = exports.swap = exports.delay = exports.stripper = exports.shuffle = exports.usable = exports.delve = void 0;
 var animInterpolate = babelHelpers.interopRequireDefault(require("./animInterpolate")),
   base64 = babelHelpers.interopRequireDefault(require("./base64")),
-  _ = babelHelpers.interopRequireDefault(require("@runtime/557")),
+  Runtime557 = babelHelpers.interopRequireDefault(require("@runtime/557")),
   dialogs = babelHelpers.interopRequireDefault(require("./dialogs")),
   filterHelper = babelHelpers.interopRequireDefault(require("./filterHelper")),
   firstTimeChecker = babelHelpers.interopRequireDefault(require("./firstTimeChecker")),
   parseArtist = babelHelpers.interopRequireDefault(require("./parseArtist")),
   parseLyric = babelHelpers.interopRequireDefault(require("./parseLyric")),
-  random = babelHelpers.interopRequireDefault(require("./random")),
+  randomModule = babelHelpers.interopRequireDefault(require("./random")),
   getRipple = babelHelpers.interopRequireDefault(require("./getRipple")),
   stopTimer = babelHelpers.interopRequireDefault(require("./stopTimer")),
   timeFormatter = babelHelpers.interopRequireDefault(require("./timeFormatter")),

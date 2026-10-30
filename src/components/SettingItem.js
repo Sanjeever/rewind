@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = void 0;
 var React = babelHelpers.interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
-  _ = require("./index"),
+  components = require("./index"),
   icons = babelHelpers.interopRequireDefault(require("../theme/icons")),
   u = function (e) {
     function t() {
@@ -59,10 +59,10 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
         }, t), r ? React.default.createElement(ReactNative.Text, {
           numberOfLines: 1,
           style: [c.text, c.subtitle, h]
-        }, r) : null), y && React.default.createElement(_.Switch, {
+        }, r) : null), y && React.default.createElement(components.Switch, {
           value: g,
           onValueChange: v
-        }), S && React.default.createElement(_.Icon, {
+        }), S && React.default.createElement(components.Icon, {
           name: icons.default.CHEVRON_RIGHT,
           style: {
             marginRight: 10

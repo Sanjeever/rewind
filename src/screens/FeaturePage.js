@@ -7,7 +7,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
   components = require("../components/index"),
   locales = babelHelpers.interopRequireDefault(require("../locales/index")),
   audioPlayer = babelHelpers.interopRequireDefault(require("../native/audioPlayer")),
-  language = babelHelpers.interopRequireDefault(require("../native/language")),
+  languageModule = babelHelpers.interopRequireDefault(require("../native/language")),
   d = function (e) {
     function t() {
       var e, a, l;
@@ -23,7 +23,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
         var e = this,
           t = [{
             title: locales.default.LANGUAGE,
-            subtitle: language.default.language,
+            subtitle: languageModule.default.language,
             page: 'LanguagePage'
           }, {
             title: locales.default.BACKGROUND,

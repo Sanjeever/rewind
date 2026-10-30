@@ -13,7 +13,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
   keys = babelHelpers.interopRequireDefault(require("../storage/keys")),
   locales = babelHelpers.interopRequireDefault(require("../locales/index")),
   events = require("../events/index"),
-  restart = babelHelpers.interopRequireDefault(require("../native/restart")),
+  restartModule = babelHelpers.interopRequireDefault(require("../native/restart")),
   files = require("../storage/files"),
   g = function (e) {
     function t() {
@@ -35,7 +35,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
         });
         (0, files.removeBackground)();
         setTimeout(function () {
-          restart.default.restart();
+          restartModule.default.restart();
         }, 99);
       }, a.openRoll = function () {
         var e = 2 * (0 | constants.DEVICE_WIDTH),

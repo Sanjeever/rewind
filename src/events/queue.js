@@ -3,14 +3,14 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 var names = babelHelpers.interopRequireDefault(require("./names")),
-  _ = require("./index"),
+  events = require("./index"),
   utils = require("../utils/index"),
   o = {
     playMV: function (e, t) {
       return regeneratorRuntime.async(function (a) {
         for (;;) switch (a.prev = a.next) {
           case 0:
-            _.emitter.emit(names.default.AUDIO_NOISY);
+            events.emitter.emit(names.default.AUDIO_NOISY);
             utils.universalNavigator.navigate('Video', {
               mvid: e,
               api: t
