@@ -2,7 +2,9 @@
 
 # 倒带 rewind
 
-本项目以倒带 v3.5.0 Android 发布包为基础重建。发布包中的应用逻辑和资源经过模块整理，形成 JavaScript 业务源码与自有 Android 原生能力，供二次开发使用。当前使用正式 React Native 依赖、Metro、自动链接与标准 Android 构建流程，原迁移交接及验收记录见 [handoff.md](handoff.md)。
+本项目以倒带 v3.5.0 Android 发布包为基础重建。发布包中的应用逻辑和资源经过模块整理，形成 JavaScript 业务源码与自有 Android 原生能力，供二次开发使用。本文说明开发环境、构建方式、架构取舍与验证范围。
+
+标准 React Native 工程迁移已落地，在线听歌仍未完成可用性验收，具体见[验证记录与未解决问题](#验证记录与未解决问题)。
 
 [倒带公告牌](https://t.me/Rewind_News) · [倒带反馈群](https://t.me/Rewind_Group)
 
@@ -16,16 +18,18 @@
 | React Native CLI | 20.2.0 |
 | JDK | 17 |
 | Gradle / AGP | Wrapper 9.4.1 / 9.2.1 |
-| Kotlin / KSP | 2.2.10 / 2.2.10-2.0.2 |
-| Android SDK | Platform 37.0、36；Build Tools 37.0.0、36.0.0；Platform Tools |
+| Kotlin | 2.2.10 |
+| Android SDK | Platform 37.0；Build Tools 37.0.0、36.0.0；Platform Tools |
 | Android NDK | 27.1.12297006 |
 | Android 设备 | API 24 及以上 |
 
-框架与构建入口依据 [0.88.1 官方模板](https://www.npmjs.com/package/@react-native-community/template/v/0.88.1)建立。AGP 与依赖实际解析到 Kotlin 2.2.10，项目同步锁定该版本与匹配的 KSP。部分原生依赖还使用 Build Tools 36。应用使用新架构与 Hermes。
+JS 版本与 Node 约束以 [package.json](package.json) 和锁文件为准；Android 版本见 [android/build.gradle](android/build.gradle)、[gradle.properties](android/gradle.properties) 与 [Wrapper 配置](android/gradle/wrapper/gradle-wrapper.properties)。框架与构建入口依据[对应官方模板](https://www.npmjs.com/package/@react-native-community/template/v/0.88.1)建立，AGP 由固定版本的 React Native Gradle 插件提供。Kotlin 与 AsyncStorage 的编译器要求对齐，KSP 由该依赖按 Kotlin 版本匹配；部分原生库使用 AGP 默认的 Build Tools。
 
-设置 `JAVA_HOME` 为 JDK 17，`ANDROID_HOME` 或 `ANDROID_SDK_ROOT` 为本机 SDK 目录，并将 SDK 的 `platform-tools` 加入 `PATH`。Windows 与 macOS 使用相同 pnpm 命令，脚本自动选择 `gradlew.bat` 或 `gradlew`。Android Studio 生成的 `android/local.properties` 保持本地忽略，不提交机器路径。
+设置 `JAVA_HOME` 指向所需 JDK，优先用 `ANDROID_HOME` 指向本机 SDK，并将 SDK 的 `platform-tools` 加入 `PATH`。使用 `ANDROID_SDK_ROOT` 时也须保证 `adb` 在 `PATH` 中，因为当前 React Native CLI 通过 `ANDROID_HOME` 或 `PATH` 定位它。Gradle 还支持本地 `android/local.properties`，该文件保持忽略，不提交机器路径。
 
-Apple Silicon 使用 ARM64 模拟器，Intel Mac 与 Windows x64 使用 x86_64 模拟器。当前默认打包 `arm64-v8a`、`x86_64`；单一设备构建可向 Gradle 传入 `-PreactNativeArchitectures=arm64-v8a` 或 `x86_64`。
+pnpm 使用严格依赖布局，根开发依赖中的 Gradle 插件、Codegen 和 Hermes 编译器供构建工具定位，不能按业务 JS 是否导入来判断它们是否多余。
+
+Apple Silicon 使用 ARM64 模拟器，Intel Mac 与 Windows x64 使用 x86_64 模拟器。默认 ABI 由上述 `gradle.properties` 定义；单一设备构建可向 Gradle 传入 `-PreactNativeArchitectures=arm64-v8a` 或 `x86_64`。
 
 ## 安装与开发
 
@@ -34,18 +38,20 @@ pnpm install --frozen-lockfile
 pnpm start
 ```
 
-保持 Metro 运行，在另一终端连接设备或启动模拟器，然后执行：
+保持 Metro 运行，在另一终端连接已授权 USB 调试的设备或启动模拟器，然后执行：
 
 ```sh
 pnpm android --no-packager
 ```
 
-Debug 构建使用 Metro。应用内开发菜单支持刷新，首页菜单图标长按也可打开开发菜单。单独构建与安装 Debug：
+Debug 构建使用 Metro。应用内开发菜单支持刷新，首页菜单图标长按也可打开开发菜单。Windows、macOS 使用相同 pnpm 命令，[scripts/android.cjs](scripts/android.cjs) 自动选择对应 Gradle Wrapper。单独构建与安装 Debug：
 
 ```sh
 pnpm android:build
 pnpm android:install
 ```
+
+通过 Gradle 单独安装 Debug 到 USB 真机时，还需将设备端口转发到 Metro，默认端口为 `8081`。单设备可执行 `adb reverse tcp:8081 tcp:8081`，多设备时用 `adb -s` 指定目标；上述 `pnpm android` 流程会尝试自动配置转发。
 
 不依赖 Metro 的本地验证构建：
 
@@ -54,45 +60,58 @@ pnpm android:build:standalone
 pnpm android:install:standalone
 ```
 
-`standalone` 通过 React Native Gradle 插件打包 JS、图片和 Hermes 字节码，使用本机开发签名。产物位于 `android/app/build/outputs/apk/standalone/`，不作为正式发布包。`release` 保留正式签名配置入口，凭据与私钥由本地环境管理。
+`standalone` 通过 React Native Gradle 插件打包 JS、图片和 Hermes 字节码，使用本机开发签名，用于验证脱离 Metro 的运行。产物位于 `android/app/build/outputs/apk/standalone/`。当前 `release` 未配置发布签名，`standalone` 也不作为正式发布包；签名配置见 [android/app/build.gradle](android/app/build.gradle)。
 
-应用 ID 为 `com.kuss.rewind.dev`，当前 versionCode 为 `5000099`。覆盖升级需要保留相同开发签名；更换开发设备时应保留本地签名，不能通过卸载或清空数据代替升级验证。
+应用标识和版本以该构建文件为准。覆盖安装须保留相同应用 ID 与开发签名，并检查 versionCode；更换开发设备时应保留本地签名。原发布包的私钥不在本项目中，现有升级证据来自本工程可控签名的兼容基线，不承诺覆盖安装原发布包。
 
 ```sh
 pnpm test
 pnpm bundle:android
 ```
 
-10 项测试覆盖旧数据复制、读回校验、迁移幂等性、损坏歌单保护、设置合并、签名摘要与歌词时间解析。单独 Metro 包写入 `.cache/metro/`；Android 常规构建由 Gradle 插件管理打包，无需预先执行该命令。
+单元测试使用 Node 内置测试框架，覆盖[迁移纯逻辑](src/storage/migrate.test.cjs)、[设置合并](src/settings/merge.test.cjs)、[旧字符编码的签名摘要](src/utils/md5.test.cjs)与[歌词时间解析](src/utils/parseLyric.test.cjs)。迁移测试使用内存后端，不替代 SQLite、原生文件写入、播放器或网络的设备验证。
 
-## 源码与数据
+单独 Metro 包写入 `.cache/metro/`。常规 Android 构建由 Gradle 插件管理打包，无需预先执行 `pnpm bundle:android`。
 
-- `index.js` 在数据迁移成功后加载 `src/App.js`，迁移失败会显示具体错误。
-- `src/screens/`、`src/components/`、`src/navigation/` 保存页面、组件和标准导航。`src/modules/` 按业务名称保存列表、搜索和评论组件。
-- `src/player/` 保存队列、播放控制与歌词状态；`android/app/src/main/kotlin/com/kuss/rewind/player/` 使用 Media3 媒体服务与系统媒体会话。
-- `src/native/` 为原生接口，第三方能力通过正式依赖与自动链接接入。媒体扫描返回 content URI，公共音乐通过 MediaStore 导出。
-- `src/storage/` 保留设置、用户、历史和上次播放信息的业务键。迁移将旧 `RKStorage` 包装值和索引原样写入独立存储，逐项读回成功后记录完成状态，保留原数据库。
-- 歌单继续位于同一应用外部 files 目录下的 `playlist/playlist.json`，写入按顺序执行并原子替换。音频缓存继续使用应用外部 cache 目录中的 `audio-cache`。
-- `assets/` 保存普通 Metro 图片与动画；Android 图标、启动动画、字体保留在原生资源目录。资源来源沿用原发布包的重建说明。
+## 架构与数据兼容
 
-## 已验证与限制
+工程范围为 Android 应用，保留已有页面和业务语义，迁移不包含 iOS 适配、产品重设计或新增音乐来源。沿用现有 JS 与类组件，不要求全量改为 TypeScript 或 hooks，避免无关重写扩大行为变化。
 
-2026-10-30 在 macOS 26.6.2、Apple M4 arm64、Node 26.11.0、pnpm 11.5.2、JDK 17.0.17 和 API 36 ARM64 模拟器完成以下检查。
+- **正式构建与新架构。** 旧兼容包固定打包第三方实现，无法靠安装 npm 依赖替换实际运行代码，因此改用 Metro、正式依赖和自动链接。保持 Hermes 与新架构，最低 Android 版本随目标框架提高，旧 Android 5/6 不在支持范围。自有原生模块保留 JS 接口，通过互操作方式注册，减少同时重写原生能力与业务调用的风险。
+- **单一播放队列。** JS 维护队列与业务播放模式，Media3 服务持有当前音频、媒体会话和音频焦点，避免通知与页面各自维护队列导致不同步。关闭时释放媒体资源，由 Activity 正常生命周期卸载界面；提前销毁 ReactHost 曾触发 Fabric Surface 生命周期断言。
+- **保留旧数据格式。** 旧 `RKStorage` 包含业务包装值、索引与未知键，不能按普通业务 JSON 重建。[迁移逻辑](src/storage/migrate.cjs)原样复制并读回校验，成功后标记完成，保留旧数据库。迁移或歌单校验失败时停止启动并显示错误，不能用清空数据、改包名或更换目录规避问题。
+- **保留文件位置。** 歌单继续使用同一应用外部 files 目录下的 `playlist/playlist.json`，更新串行写入并原子替换，降低中断写入损坏文件的风险。音频缓存继续使用应用外部 cache 目录中的 `audio-cache`；路径以 [src/storage/paths.js](src/storage/paths.js) 为准。
+
+| 代码位置 | 职责 |
+| --- | --- |
+| `src/screens/`、`src/components/`、`src/modules/`、`src/navigation/` | 页面、业务组件与导航 |
+| `src/player/`、`src/services/`、`src/storage/` | 播放业务、音乐服务与持久化 |
+| `src/native/`、`android/app/src/main/kotlin/` | JS 原生接口与 Android 实现 |
+| `assets/`、`android/app/src/main/res/`、`android/app/src/main/assets/` | Metro 图片与动画、Android 资源和字体 |
+
+## 验证记录与未解决问题
+
+以下记录来自 2026-10-30 的人工验收，模拟器环境为 macOS Apple M4 与 API 36 ARM64。它们说明已检查的范围，相关行为变更后须重新验证；工程迁移或构建通过不代表全部在线业务可用。
 
 | 项目 | 实际结果 |
 | --- | --- |
-| 依赖与构建 | 冻结锁文件安装、10 项测试、生产模式 Metro 打包、默认双 ABI Debug 与 standalone 构建通过 |
+| 依赖与构建 | 冻结锁文件安装、现有单元测试、生产模式 Metro 打包、默认 ABI 的 Debug 与 standalone 构建通过 |
 | 调试与独立运行 | 标准 `pnpm android --no-packager` 完成构建、安装和启动，Debug 连接 Metro 并刷新；关闭 Metro 后 standalone 可启动、导航和播放 |
 | 源码到 APK | 临时修改自有 JS 标题与原生版本，重建后在独立包观察到两处变化；标记已移除并重建 |
-| 真实覆盖升级 | 先用兼容基线实际生成设置、歌单、历史、队列和播放进度，再以相同应用 ID、开发签名与 UID 覆盖安装，全程未卸载或清空数据 |
+| 真实覆盖升级 | 在模拟器用兼容基线 `f0026e1` 实际生成设置、歌单、历史、队列和播放进度，再以相同应用 ID、开发签名与 UID 覆盖安装，全程未卸载或清空数据 |
 | 全新安装 | 在独立 API 36 模拟器安装同一 standalone 包，完成媒体/通知权限与首次启动流程；重启保留初始化状态，本地 MP3 播放进度正常推进 |
 | 数据保护 | 旧 RKStorage 保持字节一致；旧歌单在原路径继续使用。升级后修改设置、通过界面收藏本地音频，重启与后续覆盖安装均保留；生产包遇到损坏歌单会显示启动错误，文件未被空数据覆盖，恢复备份后可启动 |
 | 本地播放 | 真实 MP3 解码、播放/暂停、上一首/下一首、进度跳转、两首队列、随机/单曲循环/列表模式、后台前台服务和系统媒体指令通过；一分钟后台定时关闭后媒体会话与服务释放 |
 | 文件与缓存 | MediaStore 扫描、音乐标签写入、音频与图片导出、系统删除确认的取消/允许通过；真实 HTTP 音频缓存后关闭测试服务，缓存仍能跳转播放 |
-| 页面与在线数据 | 首页、设置、本地音乐、歌单、历史、搜索、登录入口及表单、专辑和歌词页面完成对应检查；网易云真实搜索、专辑、歌手与歌词/翻译返回并显示 |
+| 页面与在线数据 | 首页、设置、本地音乐、歌单、历史、搜索、登录入口及表单、专辑和歌词页面完成对应检查；网易云真实搜索、专辑、歌手与歌词/翻译返回并显示，未完成账号认证 |
+| 实体手机 | Android 13 ARM64 手机完成安装、启动、媒体授权与本地音乐列表展示；用户断开设备前未开始播放测试 |
 
-Windows 构建入口、Wrapper 换行与可执行权限已检查，但缺少 Windows 宿主，未完成 Windows 干净检出实测。当前没有物理 Android 设备，设备听感、耳机/蓝牙、跨应用音频焦点、长时间后台与其他 Android 版本仍未实测。
+Windows 构建入口、Wrapper 换行与可执行权限已检查，Windows 干净检出尚未实测。实体机播放与听感、耳机/蓝牙、跨应用音频焦点、长时间后台，以及其他 Android 版本的运行仍未验收。
 
-网易云音源请求返回 `-460` 网络环境风控错误，未通过在线播放验收。QQ 搜索曾返回真实结果，也出现空列表，尚未完成稳定在线播放。没有可用登录账号，完整认证、账号数据真实升级、在线收藏与歌单同步未验收；账号包装值与多来源合并通过存储测试，不代表真实登录通过。歌词获取和显示已验证，在线音频与歌词同步仍受音源限制。
+在线功能仍有未解决项，不能按预期行为或单纯外部限制处理：
 
-评论分词服务尚未配置，调用会明确报错。项目不内置腾讯云凭据，也不保存原发布签名、安装包或发布元数据。兼容 ZIP、旧 Java/JNI 源码、自定义模块映射和专用提取打包脚本均已移除。
+- 网易云音源请求在上述验收中返回 `-460`，服务提示网络环境风险；触发原因未定位，更换网络或登录是否能恢复尚未验证。
+- QQ 搜索曾返回结果，也出现空列表，尚未完成稳定在线播放。[QQ 服务实现](src/services/qqmusic/index.js)中的 `getMusicUrl` 仍有空 catch，会丢失请求异常信息；后续需排查服务响应与客户端处理，不能将搜索成功等同于音源可播。
+- 完整认证、真实账号升级、在线收藏与歌单同步均未验收。账号包装值的迁移测试不能替代真实登录，歌词获取和显示也不能替代音频与歌词同步验证。
+
+评论分词服务仍未接入，当前明确返回未配置错误，不能算作已恢复能力。云凭据从客户端移除是安全约束；恢复分词需要另行接入服务，不能重新内置密钥。项目不保存原发布签名、安装包或发布元数据。
