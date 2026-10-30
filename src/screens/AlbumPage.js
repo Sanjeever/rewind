@@ -343,10 +343,10 @@ var React = _interopRequireWildcard(require("react")),
         animOffsetY: this._nativeOffset.y,
         onInfo: this.onDesc
       }), n.map(function (t, a) {
-        return e._renderItem({
+        return React.default.cloneElement(e._renderItem({
           item: t,
           index: a
-        });
+        }), {key: t.id || a});
       }), React.default.createElement(components.EmptyFooter, null)), !!h && React.default.createElement(Description.default, {
         showModal: h,
         albumImg: i,

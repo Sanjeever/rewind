@@ -1,4 +1,3 @@
-const _asyncRuntime = require("@babel/runtime/helpers/regeneratorRuntime")();
 const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
 const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 const _appStorage = require("./../storage/index.js");
@@ -49,22 +48,10 @@ var React = _interopRequireWildcard(require("react")),
             maxCacheSize: e
           });
         }).catch(function () {});
-      }, n.getCacheSize = function () {
-        var e;
-        return _asyncRuntime.async(function (t) {
-          for (;;) switch (t.prev = t.next) {
-            case 0:
-              t.next = 2;
-              return _asyncRuntime.awrap((0, files.getCurrentCache)());
-            case 2:
-              (e = t.sent) > 0 && n.setState({
-                cacheSize: e
-              });
-            case 4:
-            case "end":
-              return t.stop();
-          }
-        }, null, this);
+      }, n.getCacheSize = async function () {
+        n.setState({
+          cacheSize: await files.getCurrentCache()
+        });
       }, n.removeSettings = function () {
         _appStorage.storage.remove({
           key: keys.default.maxCacheSize
@@ -75,23 +62,11 @@ var React = _interopRequireWildcard(require("react")),
           });
           toast(locales.default.CACHE_SETTING_DONE);
         });
-      }, n.onSetCacheMax = function () {
-        var e;
-        return _asyncRuntime.async(function (t) {
-          for (;;) switch (t.prev = t.next) {
-            case 0:
-              t.next = 2;
-              return _asyncRuntime.awrap(utils.dialogs.showCacheSizePicker());
-            case 2:
-              e = t.sent;
-              (0, types.isNumber)(e) && n.setState({
-                maxCacheSize: e
-              });
-            case 4:
-            case "end":
-              return t.stop();
-          }
-        }, null, this);
+      }, n.onSetCacheMax = async function () {
+        const size = await utils.dialogs.showCacheSizePicker();
+        if (types.isNumber(size) && size > 0) n.setState({
+          maxCacheSize: size
+        });
       }, n.onDelete = async function () {
         try {
           await (0, files.clearCache)();

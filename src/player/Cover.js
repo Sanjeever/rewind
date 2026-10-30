@@ -16,7 +16,7 @@ var React = _interopRequireWildcard(require("react")),
   trackInfo = require("../services/trackInfo"),
   playOrder = require("./playOrder"),
   TrackTitle = _interopRequireDefault(require("./TrackTitle")),
-  g = class t extends React.PureComponent {
+  g = class t extends React.Component {
     constructor() {
       var e, n, r;
       for (var a = arguments.length, g = new Array(a), y = 0; y < a; y++) g[y] = arguments[y];

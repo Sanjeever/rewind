@@ -1,7 +1,6 @@
 const _default = require("./Text.js").default;
 const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
 const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
-const _asyncRuntime = require("@babel/runtime/helpers/regeneratorRuntime")();
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -20,24 +19,15 @@ var React = _interopRequireWildcard(require("react")),
       for (var r = arguments.length, s = new Array(r), l = 0; l < r; l++) s[l] = arguments[l];
       return n = a = super(...s), a.state = {
         netEaseLogined: true
-      }, a.checkNetEaseLogined = function () {
-        var e;
-        return _asyncRuntime.async(function (t) {
-          for (;;) switch (t.prev = t.next) {
-            case 0:
-              t.next = 2;
-              return _asyncRuntime.awrap(services.Netease.cloud(1));
-            case 2:
-              (e = t.sent) && (301 === e.code ? a.setState({
-                netEaseLogined: false
-              }) : a.setState({
-                netEaseLogined: true
-              }));
-            case 4:
-            case "end":
-              return t.stop();
-          }
-        }, null, this);
+      }, a.checkNetEaseLogined = async function () {
+        try {
+          const result = await services.Netease.cloud(1);
+          if (result) a.setState({
+            netEaseLogined: result.code !== 301
+          });
+        } catch (error) {
+          toast(error.message);
+        }
       }, a.sponsor = function () {
         events.emitter.emit(names.default.SavePicModal, {
           type: 'sponsor',

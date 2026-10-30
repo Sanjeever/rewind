@@ -1,124 +1,44 @@
 const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
-const _asyncRuntime = require("@babel/runtime/helpers/regeneratorRuntime")();
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
 var reactNativeDialogs = _interopRequireDefault(require("../native/dialogs"));
-var l = function (e, r, t) {
-    var a,
-      n,
-      l,
-      s,
-      i,
-      c,
-      o,
-      v = arguments;
-    return _asyncRuntime.async(function (b) {
-      for (;;) switch (b.prev = b.next) {
-        case 0:
-          a = v.length > 3 && void 0 !== v[3] ? v[3] : function (e) {
-            return -1 === e.value;
-          };
-          b.next = 3;
-          return _asyncRuntime.awrap(reactNativeDialogs.default.showPicker(r, null, {
-            items: e
-          }));
-        case 3:
-          if (n = b.sent, l = n.selectedItem) {
-            b.next = 7;
-            break;
-          }
-          return b.abrupt("return", void 0);
-        case 7:
-          if (!a(l)) {
-            b.next = 16;
-            break;
-          }
-          b.next = 10;
-          return _asyncRuntime.awrap(reactNativeDialogs.default.prompt(t, null, {
-            keyboardType: 'decimal-pad'
-          }));
-        case 10:
-          i = b.sent;
-          c = i.action;
-          o = i.text;
-          c === reactNativeDialogs.default.actionPositive && (s = Number(o));
-          b.next = 17;
-          break;
-        case 16:
-          s = l.value;
-        case 17:
-          return b.abrupt("return", s);
-        case 18:
-        case "end":
-          return b.stop();
-      }
-    }, null, this);
+var l = async function (items, title, promptTitle, custom = item => item.value === -1) {
+    const {
+      selectedItem
+    } = await reactNativeDialogs.default.showPicker(title, null, {
+      items
+    });
+    if (!selectedItem) return;
+    if (!custom(selectedItem)) return selectedItem.value;
+    const {
+      action,
+      text
+    } = await reactNativeDialogs.default.prompt(promptTitle, null, {
+      keyboardType: 'decimal-pad'
+    });
+    if (action === reactNativeDialogs.default.actionPositive) return Number(text);
   },
   s = {
     showNumberPicker: l,
     showTimePicker: function () {
-      var e;
-      return _asyncRuntime.async(function (r) {
-        for (;;) switch (r.prev = r.next) {
-          case 0:
-            r.next = 2;
-            return _asyncRuntime.awrap(l([{
-              label: '5 \u5206\u949f',
-              value: 5
-            }, {
-              label: '10 \u5206\u949f',
-              value: 10
-            }, {
-              label: '15 \u5206\u949f',
-              value: 15
-            }, {
-              label: '30 \u5206\u949f',
-              value: 30
-            }, {
-              label: '\u81ea\u5b9a\u4e49',
-              value: -1
-            }], '\u5728\u4ee5\u4e0b\u65f6\u95f4\u540e\u505c\u6b62', '\u8f93\u5165\u5728\u65f6\u95f4\u540e\u505c\u6b62(\u5206\u949f)'));
-          case 2:
-            e = r.sent;
-            return r.abrupt("return", e);
-          case 4:
-          case "end":
-            return r.stop();
-        }
-      }, null, this);
+      return l([5, 10, 15, 30].map(value => ({
+        label: value + ' 分钟',
+        value
+      })).concat({
+        label: '自定义',
+        value: -1
+      }), '在以下时间后停止', '输入在多少分钟后停止');
     },
     showCacheSizePicker: function () {
-      var e;
-      return _asyncRuntime.async(function (r) {
-        for (;;) switch (r.prev = r.next) {
-          case 0:
-            r.next = 2;
-            return _asyncRuntime.awrap(l([{
-              label: '128 MB',
-              value: 128
-            }, {
-              label: '256 MB',
-              value: 256
-            }, {
-              label: '512 MB',
-              value: 512
-            }, {
-              label: '1024 MB',
-              value: 1024
-            }, {
-              label: '\u81ea\u5b9a\u4e49\u5927\u5c0f',
-              value: -1
-            }], '\u9009\u62e9\u7f13\u5b58\u4e0a\u9650', '\u8f93\u5165\u4f60\u60f3\u8981\u7684\u7f13\u5b58\u4e0a\u9650(MB)'));
-          case 2:
-            e = r.sent;
-            return r.abrupt("return", e);
-          case 4:
-          case "end":
-            return r.stop();
-        }
-      }, null, this);
+      return l([128, 256, 512, 1024].map(value => ({
+        label: value + ' MB',
+        value
+      })).concat({
+        label: '自定义大小',
+        value: -1
+      }), '选择缓存上限', '输入缓存上限(MB)');
     }
   };
 exports.default = s;

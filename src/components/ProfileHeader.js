@@ -1,6 +1,5 @@
 const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
 const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
-const _asyncRuntime = require("@babel/runtime/helpers/regeneratorRuntime")();
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -20,44 +19,22 @@ var React = _interopRequireWildcard(require("react")),
       for (var r = arguments.length, o = new Array(r), u = 0; u < r; u++) o[u] = arguments[u];
       return a = n = super(...o), n.state = {
         data: []
-      }, n.getUserInfo = function () {
-        var e, t, a, r;
-        return _asyncRuntime.async(function (i) {
-          for (;;) switch (i.prev = i.next) {
-            case 0:
-              i.next = 2;
-              return _asyncRuntime.awrap(users.default.getUserInfo());
-            case 2:
-              if (e = i.sent, types.isObject(e)) {
-                i.next = 6;
-                break;
-              }
-              n.setState({
-                data: []
-              });
-              return i.abrupt("return");
-            case 6:
-              t = e.netEase;
-              a = e.qqMusic;
-              r = [];
-              types.isObject(t) && types.isString(t.avatarUrl) && r.push({
-                avatarUrl: t.avatarUrl + '?param=200y200',
-                nickname: t.nickname,
-                page: 'NeteaseLogin'
-              });
-              types.isObject(a) && types.isString(a.avatarUrl) && r.push({
-                avatarUrl: a.avatarUrl,
-                nickname: a.nickname,
-                page: 'QQMusicLogin'
-              });
-              n.setState({
-                data: r
-              });
-            case 11:
-            case "end":
-              return i.stop();
-          }
-        }, null, this);
+      }, n.getUserInfo = async function () {
+        const accounts = await users.default.getUserInfo();
+        const data = [];
+        if (typeof accounts?.netEase?.avatarUrl === 'string') data.push({
+          avatarUrl: accounts.netEase.avatarUrl + '?param=200y200',
+          nickname: accounts.netEase.nickname,
+          page: 'NeteaseLogin'
+        });
+        if (typeof accounts?.qqMusic?.avatarUrl === 'string') data.push({
+          avatarUrl: accounts.qqMusic.avatarUrl,
+          nickname: accounts.qqMusic.nickname,
+          page: 'QQMusicLogin'
+        });
+        n.setState({
+          data
+        });
       }, n.easterEgg = function (e) {
         toast("\u4f60\u597d\u554a\uff0c" + e);
       }, n.renderAvatars = function () {

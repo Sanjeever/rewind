@@ -54,7 +54,7 @@ var React = _interopRequireDefault(require("react")),
       }))) : r && l ? React.default.createElement(ReactNative.View, {
         style: [styles.default.container, a && a]
       }, playerLayers.default.map(function (t) {
-        return (0, PlayerView.renderPlayerComponent)(e, t);
+        return React.default.createElement(React.default.Fragment, {key: t}, (0, PlayerView.renderPlayerComponent)(e, t));
       })) : null;
     }
   };

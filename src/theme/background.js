@@ -1,5 +1,4 @@
 const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
-const _asyncRuntime = require("@babel/runtime/helpers/regeneratorRuntime")();
 const _appStorage = require("./../storage/index.js");
 Object.defineProperty(exports, "__esModule", {
   value: true
@@ -12,52 +11,27 @@ var keys = _interopRequireDefault(require("../storage/keys")),
 exports.getBackground = function () {
   return i ? o : s();
 };
-var s = function () {
-  var e;
-  return _asyncRuntime.async(function (r) {
-    for (;;) switch (r.prev = r.next) {
-      case 0:
-        r.prev = 0;
-        r.next = 3;
-        return _asyncRuntime.awrap(_appStorage.storage.load({
-          key: keys.default.background
-        }));
-      case 3:
-        if ('string' == typeof (e = r.sent).path) {
-          r.next = 10;
-          break;
-        }
-        r.next = 7;
-        return _asyncRuntime.awrap(p());
-      case 7:
-        o = r.sent;
-        r.next = 11;
-        break;
-      case 10:
-        o = {
-          url: e.path,
-          opacity: e.opacity,
-          blur: e.blur,
-          error: false
-        };
-      case 11:
-        return r.abrupt("return", o);
-      case 14:
-        r.prev = 14;
-        r.t0 = r.catch(0);
-        o = {
-          error: true
-        };
-        return r.abrupt("return", o);
-      case 18:
-        r.prev = 18;
-        i = true;
-        return r.finish(18);
-      case 21:
-      case "end":
-        return r.stop();
-    }
-  }, null, this, [[0, 14, 18, 21]]);
+var s = async function () {
+  try {
+    const background = await _appStorage.storage.load({
+      key: keys.default.background
+    });
+    o = typeof background.path === 'string' ? {
+      url: background.path,
+      opacity: background.opacity,
+      blur: background.blur,
+      error: false
+    } : await p();
+    return o;
+  } catch (error) {
+    if (error.name !== 'NotFoundError') throw error;
+    o = {
+      error: true
+    };
+    return o;
+  } finally {
+    i = true;
+  }
 };
 exports.initBackgroundState = s;
 var p = function () {

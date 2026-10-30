@@ -1,8 +1,6 @@
 const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
 const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 const _appStorage = require("./../storage/index.js");
-const _asyncRuntime = require("@babel/runtime/helpers/regeneratorRuntime")();
-const _objectSpread = require("@babel/runtime/helpers/objectSpread2");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -34,21 +32,10 @@ var React = _interopRequireWildcard(require("react")),
           blur: e.blur,
           error: false
         }), (0, backgroundModule.initBackgroundState)());
-      }, a.loadBackground = function () {
-        var e;
-        return _asyncRuntime.async(function (t) {
-          for (;;) switch (t.prev = t.next) {
-            case 0:
-              t.next = 2;
-              return _asyncRuntime.awrap((0, backgroundModule.getBackground)());
-            case 2:
-              e = t.sent;
-              a.setState(_objectSpread({}, e));
-            case 4:
-            case "end":
-              return t.stop();
-          }
-        }, null, this);
+      }, a.loadBackground = async function () {
+        a.setState({
+          ...(await backgroundModule.getBackground())
+        });
       }, r;
     }
     "componentDidMount"() {
