@@ -1,0 +1,15 @@
+.recovery/
+node_modules/
+.gradle/
+**/build/
+android/local.properties
+*.jks
+*.keystore
+*.pem
+*.key
+.env
+.env.*
+*.log
+.idea/
+.vscode/
+local.properties
