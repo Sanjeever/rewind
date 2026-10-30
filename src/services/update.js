@@ -1,5 +1,4 @@
 const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
-const _asyncRuntime = require("@babel/runtime/helpers/regeneratorRuntime")();
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -19,48 +18,23 @@ var ReactNative = require("react-native"),
     });
   },
   l = {
-    checkAndAlert: function () {
-      var e, n, t;
-      return _asyncRuntime.async(function (r) {
-        for (;;) switch (r.prev = r.next) {
-          case 0:
-            r.next = 2;
-            return _asyncRuntime.awrap(c());
-          case 2:
-            e = r.sent;
-            n = e.log;
-            t = e.url;
-            n ? ReactNative.Alert.alert('\u65b0\u7248\u672c\u5df2\u4e0a\u7ebf', '\n' + n, [{
-              text: '\u53d6\u6d88',
-              onPress: function () {
-                return null;
-              },
-              style: 'cancel'
-            }, {
-              text: '\u6d4f\u89c8\u5668\u6253\u5f00',
-              onPress: function () {
-                return ReactNative.Linking.openURL(t);
-              }
-            }]) : toast(locales.default.UPDATE_NOT_READY);
-          case 5:
-          case "end":
-            return r.stop();
-        }
-      }, null, this);
+    checkAndAlert: async function () {
+      try {
+        const response = await c();
+        if (response.log) ReactNative.Alert.alert('新版本已上线', '\n' + response.log, [{
+          text: '取消',
+          style: 'cancel'
+        }, {
+          text: '浏览器打开',
+          onPress: () => ReactNative.Linking.openURL(response.url)
+        }]);else toast(locales.default.UPDATE_NOT_READY);
+      } catch (error) {
+        toast('检查更新失败：' + error.message);
+      }
     },
-    onlyCheck: function () {
-      return _asyncRuntime.async(function (e) {
-        for (;;) switch (e.prev = e.next) {
-          case 0:
-            e.next = 2;
-            return _asyncRuntime.awrap(c());
-          case 2:
-            e.sent.log && toast(locales.default.UPDATE_READY);
-          case 5:
-          case "end":
-            return e.stop();
-        }
-      }, null, this);
+    onlyCheck: async function () {
+      const response = await c();
+      if (response.log) toast(locales.default.UPDATE_READY);
     }
   };
 exports.default = l;

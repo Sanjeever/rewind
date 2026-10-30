@@ -13,12 +13,20 @@ async function read(key) {
   }
 }
 
-async function saveProvider(key, api, data) {
-  const current = await read(key);
-  return storage.save({key, data: {...current, [api]: data}});
+let writes = Promise.resolve();
+function saveProvider(key, api, data) {
+  const write = async () => {
+    const current = {...await read(key)};
+    if (data === undefined) delete current[api];
+    else current[api] = data;
+    await storage.save({key, data: current});
+  };
+  writes = writes.then(write, write);
+  return writes;
 }
 
 export default {
+  removeProvider: (key, api) => saveProvider(key, api, undefined),
   getUserInfo: () => read(keys.userInfo),
   getUserPlayList: () => read(keys.playlist),
   async saveUserStorage(info, api) {

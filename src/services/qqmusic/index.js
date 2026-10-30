@@ -1,4 +1,3 @@
-const _asyncRuntime = require("@babel/runtime/helpers/regeneratorRuntime")();
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -347,44 +346,19 @@ var utils = require("../../utils/index"),
           trans: (0, utils.parseLyric)(i)
         };
       }).catch(function (e) {
-        return e;
+        throw e;
       });
     }
-    "getMV"(e) {
-      var t, n, r, i, o, c, a;
-      return _asyncRuntime.async(function (s) {
-        for (;;) switch (s.prev = s.next) {
-          case 0:
-            s.next = 2;
-            return _asyncRuntime.awrap(this.getMVFiles(e));
-          case 2:
-            if (!((null === (t = s.sent) || void 0 === t ? void 0 : t.length) > 0)) {
-              s.next = 12;
-              break;
-            }
-            n = t[0];
-            r = n.host;
-            i = n.format_id;
-            o = n.vid;
-            c = n.filename;
-            s.next = 7;
-            return _asyncRuntime.awrap(this.getMVUrl(r, i, o, c));
-          case 7:
-            if (!(a = s.sent)) {
-              s.next = 10;
-              break;
-            }
-            return s.abrupt("return", a);
-          case 10:
-            s.next = 13;
-            break;
-          case 12:
-            return s.abrupt("return", null);
-          case 13:
-          case "end":
-            return s.stop();
-        }
-      }, null, this);
+    async "getMV"(id) {
+      const files = await this.getMVFiles(id);
+      if (!files?.length) return null;
+      const {
+        host,
+        format_id,
+        vid,
+        filename
+      } = files[0];
+      return this.getMVUrl(host, format_id, vid, filename);
     }
     "getMVUrl"(e, t, n, r) {
       return fetch("http://vv.video.qq.com/getkey?otype=json&platform=11&format=" + t + "&vid=" + n + "&filename=" + r + "&appver=3.2.19.333").then(function (e) {

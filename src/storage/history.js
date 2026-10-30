@@ -1,120 +1,35 @@
-const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
-const _appStorage = require("./index.js");
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.searchHistory = exports.musicHistory = exports.cleanedData = void 0;
-var providers = _interopRequireDefault(require("../services/providers")),
-  keys = _interopRequireDefault(require("./keys")),
-  u = function (e) {
-    return e.songmid || e.mid;
-  },
-  r = function (e, a, t) {
-    var s = -1;
-    switch (t) {
-      case providers.default.netEase:
-        s = e.findIndex(function (e) {
-          return e.id === a.id;
-        });
-        break;
-      case providers.default.qqMusic:
-        s = e.findIndex(function (e) {
-          return u(e) === u(a);
-        });
-        break;
-      case providers.default.local:
-        s = e.findIndex(function (e) {
-          return e.path === a.path;
-        });
+import {storage} from './index';
+import providers from '../services/providers';
+import keys from './keys';
+
+let writes = Promise.resolve();
+function update(key, empty, transform) {
+  const write = async () => {
+    let value;
+    try { value = await storage.load({key}); }
+    catch (error) {
+      if (error.name !== 'NotFoundError') throw error;
+      value = empty;
     }
-    e.splice(s >>> 0, 1);
-    e.splice(0, 0, a);
-    return e;
+    await storage.save({key, data: transform(value)});
   };
-exports.cleanedData = r;
-exports.musicHistory = function (e, a) {
-  if (e) {
-    var t = {},
-      s = [];
-    _appStorage.storage.load({
-      key: keys.default.musicHistory
-    }).then(function (c) {
-      var u = c[a];
-      if (u) {
-        switch (s = r(u, e, a), a) {
-          case providers.default.netEase:
-            t.qqMusic = c.qqMusic;
-            t.netEase = s;
-            t.local = c.local;
-            break;
-          case providers.default.qqMusic:
-            t.qqMusic = s;
-            t.netEase = c.netEase;
-            t.local = c.local;
-            break;
-          case providers.default.local:
-            t.qqMusic = c.qqMusic;
-            t.netEase = c.netEase;
-            t.local = s;
-        }
-        _appStorage.storage.save({
-          key: keys.default.musicHistory,
-          data: t
-        }).catch(function (e) {
-          return e;
-        });
-      }
-    }).catch(function () {
-      switch (s.push(e), a) {
-        case providers.default.netEase:
-          t.qqMusic = [];
-          t.netEase = s;
-          t.local = [];
-          break;
-        case providers.default.qqMusic:
-          t.qqMusic = s;
-          t.netEase = [];
-          t.local = [];
-          break;
-        case providers.default.local:
-          t.qqMusic = [];
-          t.netEase = [];
-          t.local = s;
-      }
-      _appStorage.storage.save({
-        key: keys.default.musicHistory,
-        data: t
-      }).catch(function (e) {
-        return e;
-      });
-    });
-  }
-};
-exports.searchHistory = function (e, a) {
-  _appStorage.storage.load({
-    key: keys.default.searchHistory
-  }).then(function (t) {
-    var s = t,
-      c = {
-        text: e,
-        api: a
-      };
-    (s = s.filter(function (a) {
-      return a.text !== e;
-    })).push(c);
-    s.reverse();
-    _appStorage.storage.save({
-      key: keys.default.searchHistory,
-      data: s
-    });
-  }).catch(function () {
-    var t = [{
-      text: e,
-      api: a
-    }];
-    _appStorage.storage.save({
-      key: keys.default.searchHistory,
-      data: t
-    });
-  });
-};
+  writes = writes.then(write, write);
+  return writes;
+}
+
+export function cleanedData(tracks, song, api) {
+  const identity = item => api === providers.qqMusic ? item.songmid || item.mid : api === providers.local ? item.path : item.id;
+  return [song, ...tracks.filter(item => identity(item) !== identity(song))];
+}
+
+export function musicHistory(song, api) {
+  if (!song) return Promise.resolve();
+  return update(keys.musicHistory, {netEase: [], qqMusic: [], local: []}, previous => ({
+    ...previous,
+    [api]: cleanedData(previous[api] || [], song, api),
+  }));
+}
+
+export function searchHistory(text, api) {
+  return update(keys.searchHistory, [], previous => [{text, api}, ...previous.filter(item => item.text !== text)]);
+}

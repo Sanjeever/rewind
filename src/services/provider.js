@@ -1,6 +1,5 @@
 const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
-const _asyncRuntime = require("@babel/runtime/helpers/regeneratorRuntime")();
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -26,152 +25,46 @@ var providers = _interopRequireDefault(require("./providers")),
       return e.id !== r.id && e.dt === r.dt;
     }) || null : t[0] : null;
   },
-  f = function (e) {
-    var r,
-      n,
-      t,
-      a,
-      u,
-      l,
-      f,
-      d = arguments;
-    return _asyncRuntime.async(function (g) {
-      for (;;) switch (g.prev = g.next) {
-        case 0:
-          r = d.length > 1 && void 0 !== d[1] && d[1];
-          n = null;
-          t = c(e);
-          a = t.text;
-          g.next = 5;
-          return _asyncRuntime.awrap(netease.default.search({
-            keywords: a
-          }));
-        case 5:
-          if (u = g.sent, types.isObject(u)) {
-            g.next = 8;
-            break;
-          }
-          return g.abrupt("return", null);
-        case 8:
-          if (l = o(u.result, e, r), !types.isObject(l)) {
-            g.next = 14;
-            break;
-          }
-          g.next = 12;
-          return _asyncRuntime.awrap(netease.default.freeMusicUrl({
-            id: l.id
-          }));
-        case 12:
-          f = g.sent;
-          n = f.data ? f.data[0].url : null;
-        case 14:
-          return g.abrupt("return", n);
-        case 15:
-        case "end":
-          return g.stop();
-      }
-    }, null, this);
+  f = async function (song, alternate = false) {
+    const {
+      text
+    } = c(song);
+    const result = await netease.default.search({
+      keywords: text
+    });
+    if (!types.isObject(result)) return null;
+    const match = o(result.result, song, alternate);
+    if (!types.isObject(match)) return null;
+    const response = await netease.default.freeMusicUrl({
+      id: match.id
+    });
+    return response?.data?.[0]?.url || null;
   },
-  d = function (e) {
-    var r, n, t, a, u, i, o, f, d, g, p, b, x;
-    return _asyncRuntime.async(function (m) {
-      for (;;) switch (m.prev = m.next) {
-        case 0:
-          r = c(e);
-          n = r.text;
-          t = r.song;
-          a = r.singer;
-          m.next = 3;
-          return _asyncRuntime.awrap(qqmusic.default.searchSong(n));
-        case 3:
-          if (u = m.sent, i = function (e) {
-            var r = e.name === t,
-              n = e.singer[0].name === a;
-            if (r && n) return true;
-          }, !types.isArray(u)) {
-            m.next = 23;
-            break;
-          }
-          if (o = f, (f = u[0]).name === t) {
-            m.next = 18;
-            break;
-          }
-          if (!(d = u.slice(1).find(i))) {
-            m.next = 14;
-            break;
-          }
-          o = d;
-          m.next = 18;
-          break;
-        case 14:
-          m.next = 16;
-          return _asyncRuntime.awrap(qqmusic.default.searchSong(t));
-        case 16:
-          (g = m.sent) && g.length > 0 && (p = g.find(i)) && (o = p);
-        case 18:
-          b = o.songmid ? o.songmid : o.mid;
-          m.next = 21;
-          return _asyncRuntime.awrap(qqmusic.default.getMusicUrl(b));
-        case 21:
-          x = m.sent;
-          return m.abrupt("return", x || null);
-        case 23:
-        case "end":
-          return m.stop();
-      }
-    }, null, this);
+  d = async function (song) {
+    const {
+      text,
+      song: title,
+      singer
+    } = c(song);
+    const exact = item => item.name === title && item.singer?.[0]?.name === singer;
+    const candidates = await qqmusic.default.searchSong(text);
+    if (!Array.isArray(candidates) || !candidates.length) return null;
+    let match = candidates[0].name === title ? candidates[0] : candidates.slice(1).find(exact);
+    if (!match) {
+      const more = await qqmusic.default.searchSong(title);
+      match = more?.find(exact);
+    }
+    if (!match) return null;
+    return (await qqmusic.default.getMusicUrl(match.songmid || match.mid)) || null;
   },
   g = {
-    getUrlFromOther: function (e) {
-      var r,
-        n,
-        t,
-        a,
-        s = arguments;
-      return _asyncRuntime.async(function (i) {
-        for (;;) switch (i.prev = i.next) {
-          case 0:
-            if (r = s.length > 1 && void 0 !== s[1] ? s[1] : providers.default.netEase, i.prev = 1, r !== providers.default.qqMusic) {
-              i.next = 9;
-              break;
-            }
-            i.next = 5;
-            return _asyncRuntime.awrap(f(e));
-          case 5:
-            t = i.sent;
-            n = t || null;
-            i.next = 18;
-            break;
-          case 9:
-            if (r !== providers.default.netEase) {
-              i.next = 18;
-              break;
-            }
-            i.next = 12;
-            return _asyncRuntime.awrap(d(e));
-          case 12:
-            if (a = i.sent, n = a || null) {
-              i.next = 18;
-              break;
-            }
-            i.next = 17;
-            return _asyncRuntime.awrap(f(e, true));
-          case 17:
-            n = i.sent;
-          case 18:
-            i.next = 23;
-            break;
-          case 20:
-            i.prev = 20;
-            i.t0 = i.catch(1);
-            return i.abrupt("return", null);
-          case 23:
-            return i.abrupt("return", n);
-          case 24:
-          case "end":
-            return i.stop();
-        }
-      }, null, this, [[1, 20]]);
+    getUrlFromOther: async function (song, api = providers.default.netEase) {
+      if (api === providers.default.qqMusic) return f(song);
+      if (api === providers.default.netEase) {
+        const url = await d(song);
+        return url || f(song, true);
+      }
+      return null;
     }
   };
 exports.default = g;
