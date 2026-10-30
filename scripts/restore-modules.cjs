@@ -19,7 +19,7 @@ const packageEntries = {
   351: 'react-native-animatable',
   548: "react-native-touchable-scale",
   559: 'react-native-dialogs',
-  571: 'moment',
+  571: 'dayjs',
   576: 'react-navigation',
   638: 'react-native-popup-menu',
   643: "lottie-react-native",

@@ -2,7 +2,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var moment = babelHelpers.interopRequireDefault(require("moment")),
+var dayjs = babelHelpers.interopRequireDefault(require("dayjs")),
   languageModule = babelHelpers.interopRequireDefault(require("../native/language")),
   Runtime572 = require("@runtime/572"),
   Runtime573 = require("@runtime/573"),
@@ -13,8 +13,8 @@ var moment = babelHelpers.interopRequireDefault(require("moment")),
     zh_HK: Runtime574,
     en_US: Runtime573
   };
-moment.default.extend(Runtime572);
-moment.default.locale(i[languageModule.default.language]);
+dayjs.default.extend(Runtime572);
+dayjs.default.locale(i[languageModule.default.language]);
 var D = function (e) {
     var t = new Date(e);
     return {
@@ -46,12 +46,12 @@ var D = function (e) {
       return Math.floor((r - a) / 864e5);
     },
     isSameDay: function (e, t) {
-      return (0, moment.default)(e).isSame((0, moment.default)(t), 'day');
+      return (0, dayjs.default)(e).isSame((0, dayjs.default)(t), 'day');
     },
     localeString: function (e) {
       var t = 'dddd, MMM D';
-      (0, moment.default)(e).isSame(Date.now(), 'year') || (t += ', YYYY');
-      return (0, moment.default)(e).format(t);
+      (0, dayjs.default)(e).isSame(Date.now(), 'year') || (t += ', YYYY');
+      return (0, dayjs.default)(e).format(t);
     }
   };
 exports.default = g;

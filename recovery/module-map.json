@@ -7576,7 +7576,7 @@
       "source": null,
       "exports": [],
       "native_modules": [],
-      "package": "moment"
+      "package": "dayjs"
     },
     {
       "id": 572,

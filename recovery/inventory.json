@@ -24275,6 +24275,241 @@
       ]
     }
   ],
+  "runtime_packages": [
+    {
+      "module_id": 1,
+      "name": "react-native",
+      "name_status": "confirmed",
+      "version": "0.56.1",
+      "version_status": "confirmed",
+      "evidence": "ReactNativeVersion 常量及原生系统版本常量"
+    },
+    {
+      "module_id": 26,
+      "name": "react",
+      "name_status": "confirmed",
+      "version": "16.8.3",
+      "version_status": "confirmed",
+      "evidence": "模块 27 version"
+    },
+    {
+      "module_id": 297,
+      "name": "react-native-spring-scrollview",
+      "name_status": "inferred_from_interface",
+      "version": null,
+      "version_status": "unknown",
+      "evidence": "JavaScript 模块 297 的导出与调用接口"
+    },
+    {
+      "module_id": 308,
+      "name": "react-native-text-ticker",
+      "name_status": "inferred_from_interface",
+      "version": null,
+      "version_status": "unknown",
+      "evidence": "JavaScript 模块 308 的导出与调用接口"
+    },
+    {
+      "module_id": 319,
+      "name": "rn-fetch-blob",
+      "name_status": "inferred_from_interface",
+      "version": null,
+      "version_status": "unknown",
+      "evidence": "JavaScript 模块 319 的导出与调用接口"
+    },
+    {
+      "module_id": 327,
+      "name": "base-64",
+      "name_status": "confirmed",
+      "version": "0.1.0",
+      "version_status": "confirmed",
+      "evidence": "模块 327 version"
+    },
+    {
+      "module_id": 348,
+      "name": "react-native-linear-gradient",
+      "name_status": "inferred_from_interface",
+      "version": null,
+      "version_status": "unknown",
+      "evidence": "JavaScript 模块 348 的导出与调用接口"
+    },
+    {
+      "module_id": 351,
+      "name": "react-native-animatable",
+      "name_status": "inferred_from_interface",
+      "version": null,
+      "version_status": "unknown",
+      "evidence": "JavaScript 模块 351 的导出与调用接口"
+    },
+    {
+      "module_id": 548,
+      "name": "react-native-touchable-scale",
+      "name_status": "inferred_from_interface",
+      "version": null,
+      "version_status": "unknown",
+      "evidence": "JavaScript 模块 548 的导出与调用接口"
+    },
+    {
+      "module_id": 559,
+      "name": "react-native-dialogs",
+      "name_status": "inferred_from_interface",
+      "version": null,
+      "version_status": "unknown",
+      "evidence": "JavaScript 模块 559 的导出与调用接口"
+    },
+    {
+      "module_id": 571,
+      "name": "dayjs",
+      "name_status": "inferred_from_interface",
+      "version": null,
+      "version_status": "unknown",
+      "evidence": "JavaScript 模块 571 的导出与调用接口"
+    },
+    {
+      "module_id": 576,
+      "name": "react-navigation",
+      "name_status": "inferred_from_interface",
+      "version": null,
+      "version_status": "unknown",
+      "evidence": "JavaScript 模块 576 的导出与调用接口"
+    },
+    {
+      "module_id": 638,
+      "name": "react-native-popup-menu",
+      "name_status": "inferred_from_interface",
+      "version": null,
+      "version_status": "unknown",
+      "evidence": "JavaScript 模块 638 的导出与调用接口"
+    },
+    {
+      "module_id": 643,
+      "name": "lottie-react-native",
+      "name_status": "inferred_from_interface",
+      "version": null,
+      "version_status": "unknown",
+      "evidence": "JavaScript 模块 643 的导出与调用接口"
+    },
+    {
+      "module_id": 664,
+      "name": "react-native-storage",
+      "name_status": "inferred_from_interface",
+      "version": null,
+      "version_status": "unknown",
+      "evidence": "JavaScript 模块 664 的导出与调用接口"
+    },
+    {
+      "module_id": 667,
+      "name": "immer",
+      "name_status": "inferred_from_interface",
+      "version": null,
+      "version_status": "unknown",
+      "evidence": "JavaScript 模块 667 的导出与调用接口"
+    },
+    {
+      "module_id": 671,
+      "name": "react-native-fading-edge",
+      "name_status": "inferred_from_interface",
+      "version": null,
+      "version_status": "unknown",
+      "evidence": "JavaScript 模块 671 的导出与调用接口"
+    },
+    {
+      "module_id": 675,
+      "name": "@react-native-community/cookies",
+      "name_status": "inferred_from_interface",
+      "version": null,
+      "version_status": "unknown",
+      "evidence": "JavaScript 模块 675 的导出与调用接口"
+    },
+    {
+      "module_id": 676,
+      "name": "axios",
+      "name_status": "confirmed",
+      "version": "0.27.2",
+      "version_status": "confirmed",
+      "evidence": "模块 677 VERSION 引用模块 704 version"
+    },
+    {
+      "module_id": 728,
+      "name": "react-native-largelist",
+      "name_status": "inferred_from_interface",
+      "version": null,
+      "version_status": "unknown",
+      "evidence": "JavaScript 模块 728 的导出与调用接口"
+    },
+    {
+      "module_id": 766,
+      "name": "react-native-slider",
+      "name_status": "inferred_from_interface",
+      "version": null,
+      "version_status": "unknown",
+      "evidence": "JavaScript 模块 766 的导出与调用接口"
+    },
+    {
+      "module_id": 792,
+      "name": "react-native-exception-handler",
+      "name_status": "inferred_from_interface",
+      "version": null,
+      "version_status": "unknown",
+      "evidence": "JavaScript 模块 792 的导出与调用接口"
+    },
+    {
+      "module_id": 828,
+      "name": "highlight-words-core",
+      "name_status": "inferred_from_interface",
+      "version": null,
+      "version_status": "unknown",
+      "evidence": "JavaScript 模块 828 的导出与调用接口"
+    },
+    {
+      "module_id": 838,
+      "name": "react-native-segmented-control-tab",
+      "name_status": "inferred_from_interface",
+      "version": null,
+      "version_status": "unknown",
+      "evidence": "JavaScript 模块 838 的导出与调用接口"
+    },
+    {
+      "module_id": 848,
+      "name": "react-native-image-crop-picker",
+      "name_status": "inferred_from_interface",
+      "version": null,
+      "version_status": "unknown",
+      "evidence": "JavaScript 模块 848 的导出与调用接口"
+    },
+    {
+      "module_id": 901,
+      "name": "react-native-tab-view",
+      "name_status": "inferred_from_interface",
+      "version": null,
+      "version_status": "unknown",
+      "evidence": "JavaScript 模块 901 的导出与调用接口"
+    },
+    {
+      "module_id": 925,
+      "name": "@react-native-community/slider",
+      "name_status": "inferred_from_interface",
+      "version": null,
+      "version_status": "unknown",
+      "evidence": "JavaScript 模块 925 的导出与调用接口"
+    },
+    {
+      "module_id": 928,
+      "name": "react-native-video",
+      "name_status": "inferred_from_interface",
+      "version": null,
+      "version_status": "unknown",
+      "evidence": "JavaScript 模块 928 的导出与调用接口"
+    }
+  ],
+  "unidentified_libraries": [
+    {
+      "module_id": 781,
+      "name": null,
+      "version": null,
+      "status": "unknown",
+      "role": "带过期时间的 LRU Map"
+    }
+  ],
   "evidence": {
     "javascript": {
       "version": "0.56.1",
@@ -24307,6 +24542,13 @@
       "version": "2.17.1",
       "status": "confirmed",
       "location": "classes.dex: d.f.a.b.u2"
+    },
+    "javascript_engine": {
+      "name": "JavaScriptCore",
+      "name_status": "confirmed",
+      "version": null,
+      "version_status": "unknown",
+      "location": "lib/*/libjsc.so 与 libjscexecutor.so"
     },
     "storage": {
       "status": "confirmed",

@@ -57,10 +57,25 @@ for (const statement of ast.program.body) {
 }
 fs.mkdirSync('recovery', { recursive: true });
 fs.writeFileSync('recovery/module-map.json', JSON.stringify({ bundle_sha256: hash(Buffer.from(bundle)), modules }, null, 2) + '\n');
+const knownVersions = {
+  1: { version:'0.56.1', evidence:'ReactNativeVersion 常量及原生系统版本常量' },
+  26: { version:'16.8.3', evidence:'模块 27 version' },
+  327: { version:'0.1.0', evidence:'模块 327 version' },
+  676: { version:'0.27.2', evidence:'模块 677 VERSION 引用模块 704 version' },
+};
 fs.writeFileSync('recovery/inventory.json', JSON.stringify({
   application_id: metadata.applicationId,
   version: '3.5.0',
   packages,
+  runtime_packages: modules.filter(item=>item.package).map(item=>({
+    module_id:item.id,
+    name:item.package,
+    name_status:knownVersions[item.id]?'confirmed':'inferred_from_interface',
+    version:knownVersions[item.id]?.version || null,
+    version_status:knownVersions[item.id]?'confirmed':'unknown',
+    evidence:knownVersions[item.id]?.evidence || `JavaScript 模块 ${item.id} 的导出与调用接口`,
+  })),
+  unidentified_libraries: [{module_id:781,name:null,version:null,status:'unknown',role:'带过期时间的 LRU Map'}],
   evidence: {
     javascript: { version: '0.56.1', status: 'confirmed', location: 'assets/index.android.bundle: ReactNativeVersion' },
     android_gradle_plugin: { version: '4.2.2', status: 'confirmed', location: 'META-INF/com/android/build/gradle/app-metadata.properties' },
@@ -68,6 +83,7 @@ fs.writeFileSync('recovery/inventory.json', JSON.stringify({
     native_framework_version: { version: '0.56.1', status: 'confirmed', location: 'classes.dex: com.facebook.react.modules.systeminfo.b' },
     react: { version: '16.8.3', status: 'confirmed', location: 'JavaScript module 27: version' },
     exoplayer: { version: '2.17.1', status: 'confirmed', location: 'classes.dex: d.f.a.b.u2' },
+    javascript_engine: { name:'JavaScriptCore', name_status:'confirmed', version:null, version_status:'unknown', location:'lib/*/libjsc.so 与 libjscexecutor.so' },
     storage: {
       status: 'confirmed',
       location: 'JavaScript modules 313, 663, 664',
