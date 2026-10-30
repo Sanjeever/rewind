@@ -1,31 +1,33 @@
+const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+const _extends = require("@babel/runtime/helpers/extends");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var React = babelHelpers.interopRequireWildcard(require("react")),
+var React = _interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
   reactNativeTabView = require("react-native-tab-view"),
   components = require("../components/index"),
-  providers = babelHelpers.interopRequireDefault(require("../services/providers")),
+  providers = _interopRequireDefault(require("../services/providers")),
   constants = require("../theme/constants"),
-  icons = babelHelpers.interopRequireDefault(require("../theme/icons")),
-  locales = babelHelpers.interopRequireDefault(require("../locales/index")),
+  icons = _interopRequireDefault(require("../theme/icons")),
+  locales = _interopRequireDefault(require("../locales/index")),
   types = require("../utils/types"),
   sections = require("./search/sections"),
-  module911 = babelHelpers.interopRequireDefault(require("../modules/module-911")),
-  module912 = babelHelpers.interopRequireDefault(require("../modules/module-912")),
-  module880 = babelHelpers.interopRequireDefault(require("../modules/module-880")),
-  module913 = babelHelpers.interopRequireDefault(require("../modules/module-913")),
-  module914 = babelHelpers.interopRequireDefault(require("../modules/module-914")),
-  module915 = babelHelpers.interopRequireDefault(require("../modules/module-915")),
-  netease = require("../../assets/images/netease"),
-  qqmusic = require("../../assets/images/qqmusic"),
-  v = function (e) {
-    function t() {
+  AlbumSearchResults = _interopRequireDefault(require("./../modules/AlbumSearchResults.js")),
+  VideoSearchResults = _interopRequireDefault(require("./../modules/VideoSearchResults.js")),
+  PlaylistSearchResults = _interopRequireDefault(require("./../modules/PlaylistSearchResults.js")),
+  ArtistSearchResults = _interopRequireDefault(require("./../modules/ArtistSearchResults.js")),
+  SongSearchResults = _interopRequireDefault(require("./../modules/SongSearchResults.js")),
+  SearchSuggestions = _interopRequireDefault(require("./../modules/SearchSuggestions.js")),
+  netease = require("../../assets/images/netease.png"),
+  qqmusic = require("../../assets/images/qqmusic.png"),
+  v = class t extends React.PureComponent {
+    constructor() {
       var e, a, n;
-      babelHelpers.classCallCheck(this, t);
       for (var r = arguments.length, l = new Array(r), o = 0; o < r; o++) l[o] = arguments[o];
-      return babelHelpers.possibleConstructorReturn(n, (a = n = babelHelpers.possibleConstructorReturn(this, (e = babelHelpers.getPrototypeOf(t)).call.apply(e, [this].concat(l))), n.animating = false, n.search = null, n.state = {
+      return a = n = super(...l), n.animating = false, n.search = null, n.state = {
         api: providers.default.netEase,
         index: 0,
         routes: [{
@@ -98,7 +100,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
           index: e
         });
       }, n._renderHeader = function (e) {
-        return React.default.createElement(reactNativeTabView.TabBar, babelHelpers.extends({
+        return React.default.createElement(reactNativeTabView.TabBar, _extends({
           pressColor: 'rgba(0,0,0,0.3)',
           renderText: n._renderText,
           tabStyle: H.tabStyle,
@@ -116,95 +118,88 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
           };
         switch (t.key) {
           case '1':
-            return React.default.createElement(module914.default, a);
+            return React.default.createElement(SongSearchResults.default, a);
           case '2':
-            return React.default.createElement(module913.default, a);
+            return React.default.createElement(ArtistSearchResults.default, a);
           case '3':
-            return React.default.createElement(module911.default, a);
+            return React.default.createElement(AlbumSearchResults.default, a);
           case '4':
-            return React.default.createElement(module880.default, a);
+            return React.default.createElement(PlaylistSearchResults.default, a);
           case '5':
-            return React.default.createElement(module912.default, a);
+            return React.default.createElement(VideoSearchResults.default, a);
         }
-      }, a));
+      }, a;
     }
-    babelHelpers.createClass(t, [{
-      key: "componentDidMount",
-      value: function () {
-        var e = this.props.navigation.state.params;
-        if (e) {
-          var t = e.text;
-          t && this.onChangeText(t);
+    "componentDidMount"() {
+      var e = this.props.route.params;
+      if (e) {
+        var t = e.text;
+        t && this.onChangeText(t);
+      }
+    }
+    "render"() {
+      var e = this,
+        t = this.state,
+        a = t.api,
+        n = t.focusing,
+        r = t.show;
+      return React.default.createElement(ReactNative.View, {
+        style: H.container
+      }, React.default.createElement(components.Background, null), React.default.createElement(ReactNative.View, {
+        style: H.toolbar
+      }, React.default.createElement(components.TouchableBorderless, {
+        onPress: function () {
+          return e.props.navigation.goBack();
+        },
+        style: {
+          padding: 6
         }
-      }
-    }, {
-      key: "render",
-      value: function () {
-        var e = this,
-          t = this.state,
-          a = t.api,
-          n = t.focusing,
-          r = t.show;
-        return React.default.createElement(ReactNative.View, {
-          style: H.container
-        }, React.default.createElement(components.Background, null), React.default.createElement(ReactNative.View, {
-          style: H.toolbar
-        }, React.default.createElement(components.TouchableBorderless, {
-          onPress: function () {
-            return e.props.navigation.goBack();
-          },
-          style: {
-            padding: 6
-          }
-        }, React.default.createElement(components.Icon, {
-          name: icons.default.ARROW_LEFT
-        })), React.default.createElement(components.Input, {
-          autoFocus: true,
-          style: H.textInput,
-          placeholder: "Everything\u2026\u2026",
-          onChangeText: this.onChangeText,
-          onSubmitEditing: this.onSubmitEditing,
-          onFocus: function () {
-            return e.onTextInputFocus(true);
-          }
-        }), React.default.createElement(components.TouchableBorderless, {
-          onPress: this.changedApi,
-          style: {
-            padding: 6
-          }
-        }, React.default.createElement(ReactNative.View, {
-          style: {
-            height: '100%',
-            width: '100%',
-            alignItems: 'center',
-            justifyContent: 'center',
-            flex: 1
-          }
-        }, React.default.createElement(ReactNative.Image, {
-          source: a === providers.default.netEase ? netease : qqmusic,
-          style: {
-            height: 25,
-            width: 25
-          }
-        })))), React.default.createElement(module915.default, {
-          focusing: n,
-          onRef: function (t) {
-            return e._suggestion = t;
-          },
-          api: a,
-          onSuggest: this.handleOnSuggest
-        }), true === r && false === n ? React.default.createElement(reactNativeTabView.TabViewAnimated, {
-          style: H.container,
-          navigationState: this.state,
-          renderScene: this._renderScene,
-          renderHeader: this._renderHeader,
-          onIndexChange: this._handleIndexChange
-        }) : null);
-      }
-    }]);
-    babelHelpers.inherits(t, e);
-    return t;
-  }(React.PureComponent),
+      }, React.default.createElement(components.Icon, {
+        name: icons.default.ARROW_LEFT
+      })), React.default.createElement(components.Input, {
+        autoFocus: true,
+        style: H.textInput,
+        placeholder: "Everything\u2026\u2026",
+        onChangeText: this.onChangeText,
+        onSubmitEditing: this.onSubmitEditing,
+        onFocus: function () {
+          return e.onTextInputFocus(true);
+        }
+      }), React.default.createElement(components.TouchableBorderless, {
+        onPress: this.changedApi,
+        style: {
+          padding: 6
+        }
+      }, React.default.createElement(ReactNative.View, {
+        style: {
+          height: '100%',
+          width: '100%',
+          alignItems: 'center',
+          justifyContent: 'center',
+          flex: 1
+        }
+      }, React.default.createElement(ReactNative.Image, {
+        source: a === providers.default.netEase ? netease : qqmusic,
+        style: {
+          height: 25,
+          width: 25
+        }
+      })))), React.default.createElement(SearchSuggestions.default, {
+        focusing: n,
+        onRef: function (t) {
+          return e._suggestion = t;
+        },
+        api: a,
+        onSuggest: this.handleOnSuggest
+      }), true === r && false === n ? React.default.createElement(reactNativeTabView.TabView, {
+        style: H.container,
+        navigationState: this.state,
+        renderScene: this._renderScene,
+        renderTabBar: this._renderHeader,
+        onIndexChange: this._handleIndexChange
+      }) : null);
+    }
+  },
   H = ReactNative.StyleSheet.create({
     container: {
       flex: 1

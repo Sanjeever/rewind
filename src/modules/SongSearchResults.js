@@ -1,26 +1,28 @@
+const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+const _toConsumableArray = require("@babel/runtime/helpers/toConsumableArray");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var React = babelHelpers.interopRequireWildcard(require("react")),
+var React = _interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
-  reactNativeLargelist = require("react-native-largelist"),
+  reactNativeLargelist = require("./../components/Scrolling.js"),
   components = require("../components/index"),
-  ParallaxList = babelHelpers.interopRequireDefault(require("../components/ParallaxList")),
-  providers = babelHelpers.interopRequireDefault(require("../services/providers")),
+  ParallaxList = _interopRequireDefault(require("../components/ParallaxList")),
+  providers = _interopRequireDefault(require("../services/providers")),
   constants = require("../theme/constants"),
-  locales = babelHelpers.interopRequireDefault(require("../locales/index")),
+  locales = _interopRequireDefault(require("../locales/index")),
   services = require("../services/index"),
   events = require("../events/index"),
   utils = require("../utils/index"),
   trackInfo = require("../services/trackInfo"),
-  searchTypes = babelHelpers.interopRequireDefault(require("../services/searchTypes")),
-  m = function (e) {
-    function t() {
+  searchTypes = _interopRequireDefault(require("../services/searchTypes")),
+  m = class t extends React.PureComponent {
+    constructor() {
       var e, a, r;
-      babelHelpers.classCallCheck(this, t);
       for (var n = arguments.length, o = new Array(n), i = 0; i < n; i++) o[i] = arguments[i];
-      return babelHelpers.possibleConstructorReturn(r, (a = r = babelHelpers.possibleConstructorReturn(this, (e = babelHelpers.getPrototypeOf(t)).call.apply(e, [this].concat(o))), r.state = {
+      return a = r = super(...o), r.state = {
         data: [],
         loaded: false,
         preSearch: ''
@@ -41,7 +43,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
             }).then(function (e) {
               var t = e.result.songs;
               r.setState({
-                data: babelHelpers.toConsumableArray(r.state.data).concat(babelHelpers.toConsumableArray(t))
+                data: _toConsumableArray(r.state.data).concat(_toConsumableArray(t))
               });
               r.endLoading();
             });
@@ -49,7 +51,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
           case providers.default.qqMusic:
             services.QQMusic.searchSong(t, a / 30 + 1).then(function (e) {
               r.setState({
-                data: babelHelpers.toConsumableArray(r.state.data).concat(babelHelpers.toConsumableArray(e))
+                data: _toConsumableArray(r.state.data).concat(_toConsumableArray(e))
               });
               r.endLoading();
             });
@@ -117,41 +119,34 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
             type: 'insert'
           });
         }
-      }, a));
+      }, a;
     }
-    babelHelpers.createClass(t, [{
-      key: "UNSAFE_componentWillReceiveProps",
-      value: function (e) {
-        var t = e.index,
-          a = e.search;
-        t === searchTypes.default.songs && this.state.preSearch !== a && this.fetchData(a);
-      }
-    }, {
-      key: "render",
-      value: function () {
-        var e = this,
-          t = this.state.data;
-        return t.length < 1 ? React.default.createElement(components.Spinkit, null) : React.default.createElement(ReactNative.View, {
-          style: _.container
-        }, React.default.createElement(reactNativeLargelist.LargeList, {
-          ref: function (t) {
-            return e._list = t;
-          },
-          data: [{
-            items: t
-          }],
-          heightForIndexPath: function () {
-            return constants.ITEM_HEIGHT;
-          },
-          renderIndexPath: this._renderIndexPath,
-          onLoading: this.getMore,
-          loadingFooter: ParallaxList.default
-        }));
-      }
-    }]);
-    babelHelpers.inherits(t, e);
-    return t;
-  }(React.PureComponent),
+    "UNSAFE_componentWillReceiveProps"(e) {
+      var t = e.index,
+        a = e.search;
+      t === searchTypes.default.songs && this.state.preSearch !== a && this.fetchData(a);
+    }
+    "render"() {
+      var e = this,
+        t = this.state.data;
+      return t.length < 1 ? React.default.createElement(components.Spinkit, null) : React.default.createElement(ReactNative.View, {
+        style: _.container
+      }, React.default.createElement(reactNativeLargelist.LargeList, {
+        ref: function (t) {
+          return e._list = t;
+        },
+        data: [{
+          items: t
+        }],
+        heightForIndexPath: function () {
+          return constants.ITEM_HEIGHT;
+        },
+        renderIndexPath: this._renderIndexPath,
+        onLoading: this.getMore,
+        loadingFooter: ParallaxList.default
+      }));
+    }
+  },
   _ = ReactNative.StyleSheet.create({
     container: {
       flex: 1

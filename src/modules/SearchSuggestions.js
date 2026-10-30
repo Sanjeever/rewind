@@ -1,32 +1,36 @@
+const _default = require("./../components/Text.js").default;
+const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+const _appStorage = require("./../storage/index.js");
+const _toConsumableArray = require("@babel/runtime/helpers/toConsumableArray");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var React = babelHelpers.interopRequireWildcard(require("react")),
+var React = _interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
-  FadingEdge = babelHelpers.interopRequireDefault(require("../components/FadingEdge")),
-  reactNativeSpringScrollview = require("react-native-spring-scrollview"),
+  FadingEdge = _interopRequireDefault(require("../components/FadingEdge")),
+  reactNativeSpringScrollview = require("./../components/Scrolling.js"),
   components = require("../components/index"),
-  providers = babelHelpers.interopRequireDefault(require("../services/providers")),
+  providers = _interopRequireDefault(require("../services/providers")),
   constants = require("../theme/constants"),
-  icons = babelHelpers.interopRequireDefault(require("../theme/icons")),
-  keys = babelHelpers.interopRequireDefault(require("../storage/keys")),
+  icons = _interopRequireDefault(require("../theme/icons")),
+  keys = _interopRequireDefault(require("../storage/keys")),
   services = require("../services/index"),
-  types = babelHelpers.interopRequireWildcard(require("../utils/types")),
+  types = _interopRequireWildcard(require("../utils/types")),
   historyModule = require("../storage/history"),
   sections = require("../screens/search/sections"),
-  S = function (e) {
-    function t() {
+  S = class t extends React.PureComponent {
+    constructor() {
       var e, a, r;
-      babelHelpers.classCallCheck(this, t);
       for (var n = arguments.length, u = new Array(n), l = 0; l < n; l++) u[l] = arguments[l];
-      return babelHelpers.possibleConstructorReturn(r, (a = r = babelHelpers.possibleConstructorReturn(this, (e = babelHelpers.getPrototypeOf(t)).call.apply(e, [this].concat(u))), r.state = {
+      return a = r = super(...u), r.state = {
         songs: [],
         albums: [],
         artists: [],
         history: []
       }, r.loadHistory = function () {
-        storage.load({
+        _appStorage.storage.load({
           key: keys.default.searchHistory
         }).then(function (e) {
           r.setState({
@@ -48,7 +52,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
           },
           n = r.state.history;
         r.setState({
-          history: [a].concat(babelHelpers.toConsumableArray(n))
+          history: [a].concat(_toConsumableArray(n))
         });
         (0, historyModule.searchHistory)(e, t);
       }, r.search_suggest = function (e) {
@@ -59,60 +63,20 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
           case providers.default.qqMusic:
             r.suggest_qqMusic(e);
         }
-      }, r.suggest_netEase = function (e) {
-        var t, a, n, s, i, u;
-        return regeneratorRuntime.async(function (l) {
-          for (;;) switch (l.prev = l.next) {
-            case 0:
-              l.next = 2;
-              return regeneratorRuntime.awrap(services.Netease.search_suggest(e));
-            case 2:
-              if (t = l.sent, a = t.code, n = t.result, 200 === a) {
-                l.next = 6;
-                break;
-              }
-              return l.abrupt("return");
-            case 6:
-              s = n.songs;
-              i = n.albums;
-              u = n.artists;
-              r.setState({
-                songs: s || [],
-                albums: i || [],
-                artists: u || []
-              });
-            case 8:
-            case "end":
-              return l.stop();
-          }
-        }, null, this);
-      }, r.suggest_qqMusic = function (e) {
-        var t, a, n, s, i, u;
-        return regeneratorRuntime.async(function (l) {
-          for (;;) switch (l.prev = l.next) {
-            case 0:
-              l.next = 2;
-              return regeneratorRuntime.awrap(services.QQMusic.search_suggest(e));
-            case 2:
-              if (t = l.sent, a = t.code, n = t.data, 0 === a) {
-                l.next = 6;
-                break;
-              }
-              return l.abrupt("return");
-            case 6:
-              s = n.song;
-              i = n.album;
-              u = n.singer;
-              r.setState({
-                songs: s.itemlist || [],
-                albums: i.itemlist || [],
-                artists: u.itemlist || []
-              });
-            case 8:
-            case "end":
-              return l.stop();
-          }
-        }, null, this);
+      }, r.suggest_netEase = async function (keywords) {
+        const response = await services.Netease.search_suggest(keywords);
+        if (response?.code === 200) r.setState({
+          songs: response.result.songs || [],
+          albums: response.result.albums || [],
+          artists: response.result.artists || []
+        });
+      }, r.suggest_qqMusic = async function (keywords) {
+        const response = await services.QQMusic.search_suggest(keywords);
+        if (response?.code === 0) r.setState({
+          songs: response.data.song.itemlist || [],
+          albums: response.data.album.itemlist || [],
+          artists: response.data.singer.itemlist || []
+        });
       }, r._renderContent = function () {
         return sections.SECTIONS.map(function (e) {
           return React.default.createElement(React.default.Fragment, null, r._renderSection(e), r._renderItem(e));
@@ -126,7 +90,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
             flexDirection: 'row',
             alignItems: 'center'
           }
-        }, React.default.createElement(ReactNative.Text, {
+        }, React.default.createElement(_default, {
           style: [E.text, E.sectionHeader]
         }, sections.SECTION_NAMES[e]), t && React.default.createElement(components.Icon, {
           name: icons.default.WINDOW_CLOSE,
@@ -173,42 +137,35 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
         r.setState({
           history: []
         });
-        storage.remove({
+        _appStorage.storage.remove({
           key: keys.default.searchHistory
         });
-      }, a));
+      }, a;
     }
-    babelHelpers.createClass(t, [{
-      key: "componentDidMount",
-      value: function () {
-        this.loadHistory();
-        this.props.onRef(this);
-      }
-    }, {
-      key: "render",
-      value: function () {
-        return this.props.focusing ? React.default.createElement(ReactNative.View, {
-          style: {
-            top: 40 + constants.STATUS_BAR_HEIGHT,
-            flex: 1,
-            alignSelf: 'center',
-            width: '100%',
-            height: '100%',
-            position: 'absolute',
-            paddingHorizontal: 20
-          }
-        }, React.default.createElement(FadingEdge.default, {
-          top: 50
-        }, React.default.createElement(reactNativeSpringScrollview.SpringScrollView, {
-          contentStyle: {
-            paddingTop: 20
-          }
-        }, this._renderContent()))) : null;
-      }
-    }]);
-    babelHelpers.inherits(t, e);
-    return t;
-  }(React.PureComponent);
+    "componentDidMount"() {
+      this.loadHistory();
+      this.props.onRef(this);
+    }
+    "render"() {
+      return this.props.focusing ? React.default.createElement(ReactNative.View, {
+        style: {
+          top: 40 + constants.STATUS_BAR_HEIGHT,
+          flex: 1,
+          alignSelf: 'center',
+          width: '100%',
+          height: '100%',
+          position: 'absolute',
+          paddingHorizontal: 20
+        }
+      }, React.default.createElement(FadingEdge.default, {
+        top: 50
+      }, React.default.createElement(reactNativeSpringScrollview.SpringScrollView, {
+        contentStyle: {
+          paddingTop: 20
+        }
+      }, this._renderContent()))) : null;
+    }
+  };
 exports.default = S;
 var y = function (e) {
     var t = e.name,
@@ -226,11 +183,11 @@ var y = function (e) {
         marginLeft: 10,
         flexDirection: 'row'
       }
-    }, React.default.createElement(ReactNative.Text, {
+    }, React.default.createElement(_default, {
       style: [E.text, {
         fontSize: 16
       }]
-    }, t, a ? "(" + a + ")" : ''), Boolean(r) && React.default.createElement(ReactNative.Text, {
+    }, t, a ? "(" + a + ")" : ''), Boolean(r) && React.default.createElement(_default, {
       style: [E.text, E.fadeText]
     }, r)));
   },

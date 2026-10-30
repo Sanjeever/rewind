@@ -1,24 +1,26 @@
+const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+const _toConsumableArray = require("@babel/runtime/helpers/toConsumableArray");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var React = babelHelpers.interopRequireWildcard(require("react")),
+var React = _interopRequireWildcard(require("react")),
   ReactNative = require("react-native"),
-  reactNativeLargelist = require("react-native-largelist"),
+  reactNativeLargelist = require("./../components/Scrolling.js"),
   components = require("../components/index"),
-  ParallaxList = babelHelpers.interopRequireDefault(require("../components/ParallaxList")),
-  providers = babelHelpers.interopRequireDefault(require("../services/providers")),
+  ParallaxList = _interopRequireDefault(require("../components/ParallaxList")),
+  providers = _interopRequireDefault(require("../services/providers")),
   constants = require("../theme/constants"),
   services = require("../services/index"),
-  queue = babelHelpers.interopRequireDefault(require("../events/queue")),
-  trackDescription = babelHelpers.interopRequireDefault(require("../services/trackDescription")),
-  searchTypes = babelHelpers.interopRequireDefault(require("../services/searchTypes")),
-  v = function (e) {
-    function t() {
+  queue = _interopRequireDefault(require("../events/queue")),
+  trackDescription = _interopRequireDefault(require("../services/trackDescription")),
+  searchTypes = _interopRequireDefault(require("../services/searchTypes")),
+  v = class t extends React.PureComponent {
+    constructor() {
       var e, a, r;
-      babelHelpers.classCallCheck(this, t);
       for (var l = arguments.length, i = new Array(l), s = 0; s < l; s++) i[s] = arguments[s];
-      return babelHelpers.possibleConstructorReturn(r, (a = r = babelHelpers.possibleConstructorReturn(this, (e = babelHelpers.getPrototypeOf(t)).call.apply(e, [this].concat(i))), r.state = {
+      return a = r = super(...i), r.state = {
         data: [],
         loaded: false,
         preSearch: ''
@@ -41,7 +43,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
               if ((null === t || void 0 === t ? void 0 : t.length) > 0) {
                 var a = r.formatAllData(t);
                 r.setState({
-                  data: babelHelpers.toConsumableArray(r.state.data).concat(babelHelpers.toConsumableArray(a))
+                  data: _toConsumableArray(r.state.data).concat(_toConsumableArray(a))
                 });
               }
               r.endLoading();
@@ -57,7 +59,7 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
               if ((null === t || void 0 === t ? void 0 : t.length) > 0) {
                 var a = r.formatAllData(t);
                 r.setState({
-                  data: babelHelpers.toConsumableArray(r.state.data).concat(babelHelpers.toConsumableArray(a))
+                  data: _toConsumableArray(r.state.data).concat(_toConsumableArray(a))
                 });
               }
               r.endLoading();
@@ -99,41 +101,34 @@ var React = babelHelpers.interopRequireWildcard(require("react")),
         var t = r.props.api,
           a = t === providers.default.netEase ? e.id : e.v_id;
         queue.default.playMV(a, t);
-      }, a));
+      }, a;
     }
-    babelHelpers.createClass(t, [{
-      key: "UNSAFE_componentWillReceiveProps",
-      value: function (e) {
-        var t = e.index,
-          a = e.search;
-        t === searchTypes.default.mvs && this.state.preSearch !== a && this.fetchData(a);
-      }
-    }, {
-      key: "render",
-      value: function () {
-        var e = this,
-          t = this.state.data;
-        return t.length < 1 ? React.default.createElement(components.Spinkit, null) : React.default.createElement(ReactNative.View, {
-          style: m.container
-        }, React.default.createElement(reactNativeLargelist.LargeList, {
-          ref: function (t) {
-            return e._list = t;
-          },
-          data: [{
-            items: t
-          }],
-          heightForIndexPath: function () {
-            return constants.ITEM_HEIGHT;
-          },
-          renderIndexPath: this._renderIndexPath,
-          onLoading: this.getMore,
-          loadingFooter: ParallaxList.default
-        }));
-      }
-    }]);
-    babelHelpers.inherits(t, e);
-    return t;
-  }(React.PureComponent),
+    "UNSAFE_componentWillReceiveProps"(e) {
+      var t = e.index,
+        a = e.search;
+      t === searchTypes.default.mvs && this.state.preSearch !== a && this.fetchData(a);
+    }
+    "render"() {
+      var e = this,
+        t = this.state.data;
+      return t.length < 1 ? React.default.createElement(components.Spinkit, null) : React.default.createElement(ReactNative.View, {
+        style: m.container
+      }, React.default.createElement(reactNativeLargelist.LargeList, {
+        ref: function (t) {
+          return e._list = t;
+        },
+        data: [{
+          items: t
+        }],
+        heightForIndexPath: function () {
+          return constants.ITEM_HEIGHT;
+        },
+        renderIndexPath: this._renderIndexPath,
+        onLoading: this.getMore,
+        loadingFooter: ParallaxList.default
+      }));
+    }
+  },
   m = ReactNative.StyleSheet.create({
     container: {
       flex: 1
