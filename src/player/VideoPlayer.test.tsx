@@ -114,3 +114,20 @@ test('卸载清除点击和控制计时，停止加载动画，迟到计时不�
   jest.runAllTimers();
   expect(seek).not.toHaveBeenCalled();
 });
+test('父级更新全屏和样式不撤销用户暂停，明确 paused 属性变化仍可控制播放', async () => {
+  await act(async () => {
+    tree = renderer.create(<VideoPlayer source={{uri: 'https://video'}} />);
+  });
+  const player = tree.root.findByType(VideoPlayer).instance as InstanceType<typeof VideoPlayer>;
+  await act(async () => player._togglePlayPause());
+  await act(async () =>
+    tree.update(<VideoPlayer source={{uri: 'https://video'}} isFullscreen style={{flex: 1}} />),
+  );
+  expect(player.state.paused).toBe(true);
+  expect(player.state.isFullscreen).toBe(true);
+  await act(async () => tree.update(<VideoPlayer source={{uri: 'https://video'}} paused />));
+  await act(async () =>
+    tree.update(<VideoPlayer source={{uri: 'https://video'}} paused={false} />),
+  );
+  expect(player.state.paused).toBe(false);
+});

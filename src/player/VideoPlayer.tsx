@@ -56,6 +56,7 @@ class VideoPlayer extends React.Component<Props, VideoPlayerState> {
   lastTouch = Date.now();
   layoutHeight = 0;
   componentDidUpdate = (previous: Props) => {
+    if (previous.paused !== this.props.paused) this.setState({paused: this.props.paused});
     const isFullscreen = this.props.isFullscreen;
     if (previous.isFullscreen !== isFullscreen) {
       this.setState({
@@ -162,10 +163,6 @@ class VideoPlayer extends React.Component<Props, VideoPlayerState> {
       rotate: new ReactNative.Animated.Value(0),
       MAX_VALUE: 360,
     },
-  };
-  styles: {videoStyle: Props['videoStyle']; containerStyle: Props['style']} = {
-    videoStyle: this.props.videoStyle || {},
-    containerStyle: this.props.style || {},
   };
   _onLoadStart(event?: OnLoadStartData) {
     this.setState(
@@ -433,19 +430,6 @@ class VideoPlayer extends React.Component<Props, VideoPlayerState> {
       currentTime: seconds,
     });
   }
-  UNSAFE_componentWillReceiveProps(next: Props) {
-    if (this.state.paused !== next.paused) {
-      this.setState({
-        paused: next.paused,
-      });
-    }
-    if (this.styles.videoStyle !== next.videoStyle) {
-      this.styles.videoStyle = next.videoStyle;
-    }
-    if (this.styles.containerStyle !== next.style) {
-      this.styles.containerStyle = next.style;
-    }
-  }
   componentDidMount() {
     this.mounted = true;
   }
@@ -690,7 +674,7 @@ class VideoPlayer extends React.Component<Props, VideoPlayerState> {
   render() {
     return (
       <ReactNative.View
-        style={[g.player.container, this.styles.containerStyle]}
+        style={[g.player.container, this.props.style]}
         {...this._panResponder.panHandlers}
         onLayout={(t) => {
           this.layoutHeight = t.nativeEvent.layout.height;
@@ -711,7 +695,7 @@ class VideoPlayer extends React.Component<Props, VideoPlayerState> {
           onLoad={this.events.onLoad}
           onEnd={this.events.onEnd}
           onSeek={this.events.onSeek}
-          style={[g.player.video, this.styles.videoStyle]}
+          style={[g.player.video, this.props.videoStyle]}
           source={this.props.source}
         />
         {this.renderError()}
