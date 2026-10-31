@@ -1,3 +1,4 @@
+import type {Locale} from './zh_CN';
 export default {
   ABOUT: 'About',
   ACTION_NEXT: 'Next',
@@ -190,4 +191,4 @@ export default {
   WARN: 'Warn',
   WECHAT_LOGIN_LIMIT: 'Sorry, You need to use another device to scan',
   WEEKLY: 'Weekly',
-};
+} satisfies Locale;

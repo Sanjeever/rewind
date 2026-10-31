@@ -7,7 +7,7 @@ import {
   getRandomIndex,
   getNextPlayIndexByPagerPos,
 } from './playOrder.js';
-import {getTrackKey} from '../services/trackFields.js';
+import {getTrackKey} from '../services/trackFields';
 function queue(tracks, index = 0, api = 'netEase') {
   return {
     tracks,

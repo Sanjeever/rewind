@@ -1,3 +1,4 @@
+import type {Locale} from './zh_CN';
 export default {
   ABOUT: '關於',
   ACTION_NEXT: '下一首',
@@ -190,4 +191,4 @@ export default {
   WARN: '提示',
   WECHAT_LOGIN_LIMIT: '由於微信限制，使用另一臺裝置掃碼登入才有效',
   WEEKLY: '最近一週',
-};
+} satisfies Locale;

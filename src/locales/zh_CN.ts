@@ -1,4 +1,4 @@
-export default {
+const zhCN = {
   ABOUT: '关于',
   ACTION_NEXT: '下一首',
   ACTION_PLAY_PAUSE: '播放/暂停',
@@ -191,3 +191,6 @@ export default {
   WECHAT_LOGIN_LIMIT: '由于微信限制，使用另一台设备扫码登入才有效',
   WEEKLY: '最近一周',
 };
+export type Locale = typeof zhCN;
+export type LocaleKey = keyof Locale;
+export default zhCN;

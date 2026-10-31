@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {normalizeTrack, extractFullInfo, getTrackKey} from './trackInfo.js';
+import {normalizeTrack, extractFullInfo, getTrackKey} from './trackInfo';
 test('网易云、QQ 与本地歌曲使用一致的展示结构，保留原始数据供旧接口与存储使用', () => {
   const sources = [
     {

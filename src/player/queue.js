@@ -1,4 +1,4 @@
-import {getTrackKey} from '../services/trackFields.js';
+import {getTrackKey} from '../services/trackFields';
 
 function tagTrack(song, api) {
   return {...song, api: song.api || api};

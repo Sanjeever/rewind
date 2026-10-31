@@ -1,4 +1,6 @@
-import providers from './providers.js';
+import providers from './providers';
+import type {ArtworkSize, DisplayTrack, TrackFields} from './track';
+import type {Provider} from './providers';
 import {
   getAlbum,
   getAlias,
@@ -8,19 +10,19 @@ import {
   getSong,
   getTrackKey,
   getUid,
-} from './trackFields.js';
+} from './trackFields';
 
 export {getUid, getTrackKey};
 
-export function extractBasicInfo(song = {}) {
+export function extractBasicInfo(song: TrackFields = {}) {
   return {song: getSong(song), album: getAlbum(song), singer: getSinger(song)};
 }
 
-export function extractFullInfo(song = {}, size = 'small') {
+export function extractFullInfo(song: TrackFields = {}, size: ArtworkSize = 'small') {
   const api = getApi(song);
   return {
     ...extractBasicInfo(song),
-    qqAlbumId: song.album?.mid || song.albummid,
+    qqAlbumId: (typeof song.album === 'object' && song.album?.mid) || song.albummid,
     localAlbumId: song.albumId,
     api,
     alias: getAlias(song),
@@ -29,7 +31,10 @@ export function extractFullInfo(song = {}, size = 'small') {
   };
 }
 
-export function normalizeTrack(source, api = getApi(source)) {
+export function normalizeTrack<T extends TrackFields>(
+  source: T,
+  api: Provider = getApi(source),
+): DisplayTrack<T> {
   const singers = getSinger(source);
   return {
     key: getTrackKey(source, api),
@@ -48,13 +53,13 @@ export function normalizeTrack(source, api = getApi(source)) {
   };
 }
 
-export function extractSingerItem(song, api) {
+export function extractSingerItem(song: TrackFields, api: Provider) {
   if (api === providers.netEase) return song.ar || song.artists;
-  if (api === providers.qqMusic) return song.singer;
+  if (api === providers.qqMusic) return Array.isArray(song.singer) ? song.singer : undefined;
   return null;
 }
 
-export function extractSingerName(song, api) {
+export function extractSingerName(song: TrackFields, api: Provider) {
   return (
     extractSingerItem(song, api)
       ?.map((artist) => artist.name)
@@ -62,11 +67,11 @@ export function extractSingerName(song, api) {
   );
 }
 
-export function extractAlbumName(song, api) {
+export function extractAlbumName(song: TrackFields, api: Provider) {
   return api === providers.netEase || api === providers.qqMusic ? getAlbum(song) : '';
 }
 
-export function extractAlbumItem(song, api) {
+export function extractAlbumItem(song: TrackFields, api: Provider) {
   if (api === providers.netEase) return song.al || song.album;
   if (api === providers.qqMusic)
     return song.album || {albummid: song.albummid, albumname: song.albumname};
