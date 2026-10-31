@@ -10,17 +10,13 @@ import type {OnlineProvider} from '../services/providers';
 import trackDescription from '../services/trackDescription';
 import searchTypes from '../services/searchTypes';
 import queue from '../events/queue';
+import type {Navigation} from '../navigation/types';
 
 export interface EntitySearchProps {
   search: string;
   api: OnlineProvider;
   index: number;
-  navigation: {
-    navigate(
-      screen: 'Playlist' | 'AlbumPage' | 'ArtistPage',
-      params: {playlist?: SearchEntity; item?: SearchEntity; api: OnlineProvider},
-    ): void;
-  };
+  navigation: Pick<Navigation, 'navigate'>;
 }
 interface Props extends EntitySearchProps {
   kind: EntityKind;
@@ -102,7 +98,8 @@ export default class EntitySearchResults extends React.PureComponent<Props, Stat
     const {kind, api, navigation} = this.props;
     if (kind === 'mvs') queue.playMV((api === 'netEase' ? item.id : item.v_id)!, api);
     else if (kind === 'playlists') navigation.navigate('Playlist', {playlist: item, api});
-    else navigation.navigate(kind === 'albums' ? 'AlbumPage' : 'ArtistPage', {item, api});
+    else if (kind === 'albums') navigation.navigate('AlbumPage', {item, api});
+    else navigation.navigate('ArtistPage', {item, api});
   };
   renderItem = ({row}: {row: number}) => {
     const item = this.state.data[row];
@@ -135,7 +132,7 @@ export default class EntitySearchResults extends React.PureComponent<Props, Stat
         heightForIndexPath={() => ITEM_HEIGHT}
         renderIndexPath={this.renderItem}
         renderFooter={this.renderStatus}
-        onLoading={this.loadMore}
+        onLoading={this.state.hasMore && !this.state.error ? this.loadMore : undefined}
       />
     );
   }

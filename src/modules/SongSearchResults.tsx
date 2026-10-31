@@ -141,7 +141,7 @@ export default class SongSearchResults extends React.PureComponent<Props, State>
         heightForIndexPath={() => ITEM_HEIGHT}
         renderIndexPath={this.renderSong}
         renderFooter={this.renderStatus}
-        onLoading={this.loadMore}
+        onLoading={this.state.hasMore && !this.state.error ? this.loadMore : undefined}
       />
     );
   }

@@ -11,11 +11,30 @@ const search = jest.fn(
   () => new Promise<Page>((resolve, reject) => requests.push({resolve, reject})),
 );
 const Loading = () => React.createElement('Loading');
+const Indicator = () => React.createElement('Indicator');
+const NativeList = React.forwardRef(function List(
+  {
+    sections,
+    onEndReached,
+    ListFooterComponent,
+  }: {sections: {data: unknown[]}[]; onEndReached(): void; ListFooterComponent: React.ReactNode},
+  ref,
+) {
+  React.useImperativeHandle(ref, () => ({}));
+  React.useEffect(() => {
+    if (sections.every((section) => section.data.length === 0)) onEndReached();
+  }, [onEndReached, sections]);
+  return React.createElement('List', {}, ListFooterComponent);
+});
 const Retry = ({onPress, text}: {onPress(): void; text: string}) =>
   React.createElement('Retry', {onPress}, text);
 jest.unstable_mockModule('react-native', () => ({
   StyleSheet: {create: <T,>(value: T) => value},
   View: ({children}: {children: React.ReactNode}) => React.createElement('View', {}, children),
+  ScrollView: undefined,
+  RefreshControl: undefined,
+  SectionList: NativeList,
+  ActivityIndicator: Indicator,
 }));
 jest.unstable_mockModule('../theme/constants', () => ({ITEM_HEIGHT: 70}));
 jest.unstable_mockModule('../services/searchEntities', () => ({searchEntities: search}));
@@ -26,15 +45,6 @@ jest.unstable_mockModule('../components', () => ({
 }));
 jest.unstable_mockModule('../components/Text', () => ({
   default: ({children}: {children: React.ReactNode}) => React.createElement('Text', {}, children),
-}));
-jest.unstable_mockModule('../components/Scrolling', () => ({
-  LargeList: React.forwardRef(function List(
-    {renderFooter}: {renderFooter(): React.ReactNode},
-    ref,
-  ) {
-    React.useImperativeHandle(ref, () => ({endLoading() {}}));
-    return React.createElement('List', {}, renderFooter());
-  }),
 }));
 jest.unstable_mockModule('../services/trackDescription', () => ({
   default: ({item}: {item: SearchEntity}) => ({title: item.name}),
@@ -63,8 +73,10 @@ test.each<EntityKind>(['playlists', 'albums', 'singers', 'mvs'])(
   '%s 空结果完成加载，失败显示重试并可恢复',
   async (kind) => {
     await act(async () => {
-      tree = renderer.create(<Results {...props(kind)} />);
+      tree = renderer.create(<Results {...props(kind)} index={0} />);
     });
+    expect(tree.root.findAllByType(Indicator)).toHaveLength(0);
+    await act(async () => tree.update(<Results {...props(kind)} />));
     expect(tree.toJSON()).toMatchObject({type: 'Loading'});
     await act(async () => requests[0].reject(new Error('服务拒绝')));
     expect(JSON.stringify(tree.toJSON())).toContain('服务拒绝');
@@ -74,6 +86,7 @@ test.each<EntityKind>(['playlists', 'albums', 'singers', 'mvs'])(
     await act(async () => requests[1].resolve({items: [], offset: 0, hasMore: false}));
     expect(JSON.stringify(tree.toJSON())).toContain('无搜索结果');
     expect(tree.root.findAllByType(Loading)).toHaveLength(0);
+    expect(tree.root.findAllByType(Indicator)).toHaveLength(0);
   },
 );
 
