@@ -42,3 +42,7 @@ test('响应校验向界面给出简短错误，同时保留原始校验原因',
     });
   }
 });
+test('网易云 MV 搜索零结果允许原始 null 列表', () => {
+  const value = {code: 200, result: {hlWords: null, mvCount: 0, mvs: null}};
+  expect(responses.search.parse(value)).toEqual(value);
+});

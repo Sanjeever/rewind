@@ -28,7 +28,7 @@ const search = response({
       albumCount: optional(z.number()),
       playlists: optional(z.array(playlist)),
       playlistCount: optional(z.number()),
-      mvs: optional(z.array(video)),
+      mvs: optional(z.nullable(z.array(video))),
       mvCount: optional(z.number()),
       userprofiles: optional(z.array(profile)),
     }),
