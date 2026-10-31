@@ -7,6 +7,12 @@ const seek = jest.fn();
 const Host = ({children}: {children?: React.ReactNode}) =>
   React.createElement('View', {}, children);
 const Slider = (props: object) => React.createElement('Slider', props);
+const Button = ({children, ...props}: {children?: React.ReactNode; onPress(): void}) =>
+  React.createElement('Button', props, children);
+const NativeVideo = React.forwardRef(function Video(_props, ref) {
+  React.useImperativeHandle(ref, () => ({seek}));
+  return React.createElement('Video');
+});
 class Value {
   interpolate() {
     return 0;
@@ -19,7 +25,7 @@ jest.unstable_mockModule('react-native', () => ({
   View: Host,
   Image: Host,
   ImageBackground: Host,
-  TouchableHighlight: Host,
+  TouchableHighlight: Button,
   Animated: {Value, View: Host, timing: animation, parallel: animation, sequence: animation},
   Easing: {linear: (value: number) => value},
   PanResponder: {create: () => ({panHandlers: {}})},
@@ -34,10 +40,7 @@ jest.unstable_mockModule('../theme/constants', () => ({
   COLORS: {primary: '#fff', primaryAlpha50: '#777'},
 }));
 jest.unstable_mockModule('react-native-video', () => ({
-  default: React.forwardRef(function Video(_props, ref) {
-    React.useImperativeHandle(ref, () => ({seek}));
-    return React.createElement('Video');
-  }),
+  default: NativeVideo,
 }));
 const {default: VideoPlayer} = await import('./VideoPlayer');
 let tree: renderer.ReactTestRenderer;
@@ -130,4 +133,20 @@ test('父级更新全屏和样式不撤销用户暂停，明确 paused 属性变
     tree.update(<VideoPlayer source={{uri: 'https://video'}} paused={false} />),
   );
   expect(player.state.paused).toBe(false);
+});
+test('实际播放按钮切换原生 paused 属性，进度拖动保留暂停状态', async () => {
+  await act(async () => {
+    tree = renderer.create(<VideoPlayer source={{uri: 'https://video'}} />);
+  });
+  const button = tree.root
+    .findAllByType(Button)
+    .find((node) => node.findAllByType(Host).some((icon) => icon.props.name === 'pause'));
+  expect(button).toBeDefined();
+  await act(async () => button!.props.onPress());
+  expect(tree.root.findByType(NativeVideo).props.paused).toBe(true);
+  await act(async () => tree.root.findByType(Slider).props.onSlidingStart(0.5));
+  await act(async () => tree.root.findByType(Slider).props.onSlidingComplete(0.5));
+  expect(tree.root.findByType(NativeVideo).props.paused).toBe(true);
+  await act(async () => button!.props.onPress());
+  expect(tree.root.findByType(NativeVideo).props.paused).toBe(false);
 });

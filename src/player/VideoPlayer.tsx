@@ -81,7 +81,8 @@ class VideoPlayer extends React.Component<Props, VideoPlayerState> {
     }
   };
   _panResponder = ReactNative.PanResponder.create({
-    onStartShouldSetPanResponderCapture: (e) => {
+    // 在冒泡阶段接收画面手势，让按钮与原生滑块先处理触摸。
+    onStartShouldSetPanResponder: (e) => {
       if (e.nativeEvent.pageY > 80 && e.nativeEvent.pageY < this.layoutHeight - 100) {
         return true;
       }
