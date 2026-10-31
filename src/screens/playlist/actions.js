@@ -1,16 +1,16 @@
-const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
-Object.defineProperty(exports, "__esModule", {
-  value: true
+const _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
+Object.defineProperty(exports, '__esModule', {
+  value: true,
 });
 exports.default = void 0;
-var providers = _interopRequireDefault(require("../../services/providers")),
-  names = _interopRequireDefault(require("../../events/names")),
-  locales = _interopRequireDefault(require("../../locales/index")),
-  services = require("../../services/index"),
-  events = require("../../events/index"),
-  utils = require("../../utils/index"),
-  queue = _interopRequireDefault(require("../../events/queue")),
-  users = _interopRequireDefault(require("../../storage/users")),
+var providers = _interopRequireDefault(require('../../services/providers')),
+  names = _interopRequireDefault(require('../../events/names')),
+  locales = _interopRequireDefault(require('../../locales/index')),
+  services = require('../../services/index'),
+  events = require('../../events/index'),
+  utils = require('../../utils/index'),
+  queue = _interopRequireDefault(require('../../events/queue')),
+  users = _interopRequireDefault(require('../../storage/users')),
   p = function (e, t) {
     for (var a = 0; a < e.length; a++) {
       var r = t[a];
@@ -18,12 +18,14 @@ var providers = _interopRequireDefault(require("../../services/providers")),
     }
   },
   m = function (e) {
-    'subscribe' === e ? toast(locales.default.COLLECT_SUCCESS) : 'unsubscribe' === e && toast(locales.default.DELETE_SUCCESS);
+    'subscribe' === e
+      ? toast(locales.default.COLLECT_SUCCESS)
+      : 'unsubscribe' === e && toast(locales.default.DELETE_SUCCESS);
   },
   b = async function (id, op) {
     const response = await services.Netease.subscribe_playlist({
       id,
-      op
+      op,
     });
     if (response?.code !== 200) throw new Error(response?.msg || locales.default.ERROR);
     m(op);
@@ -31,20 +33,17 @@ var providers = _interopRequireDefault(require("../../services/providers")),
   v = async function (id, op) {
     const response = await services.QQMusic.subscribe_playlist({
       id,
-      op
+      op,
     });
     if (!response) throw new Error(locales.default.ERROR);
     m(op);
   },
   g = {
-    deleteFromNetease: async function ({
-      playlistId,
-      trackid
-    }) {
+    deleteFromNetease: async function ({playlistId, trackid}) {
       const response = await services.Netease.playlist_tracks({
         op: 'del',
         pid: playlistId,
-        tracks: trackid
+        tracks: trackid,
       });
       if (response?.code !== 200) throw new Error(response?.message || locales.default.ERROR);
     },
@@ -56,7 +55,7 @@ var providers = _interopRequireDefault(require("../../services/providers")),
         id,
         dirid,
         qq: account.userId,
-        cookies: account.cookies
+        cookies: account.cookies,
       });
       if (response?.code !== 0) throw new Error(locales.default.ERROR);
     },
@@ -64,11 +63,7 @@ var providers = _interopRequireDefault(require("../../services/providers")),
       if (!id) return;
       const response = await services.Netease.playlist_detail(id);
       if (!response?.playlist) throw new Error(response?.message || locales.default.ERROR);
-      const {
-        tracks,
-        name,
-        trackIds
-      } = response.playlist;
+      const {tracks, name, trackIds} = response.playlist;
       if (name.includes('榜')) p(tracks, trackIds);
       await users.default.saveNeteasePlayListCache(id, name, tracks);
       return {
@@ -76,24 +71,21 @@ var providers = _interopRequireDefault(require("../../services/providers")),
         name,
         tracks,
         trackCount: tracks.length,
-        moreFunc: response.moreFunc
+        moreFunc: response.moreFunc,
       };
     },
     getFromQQMusic: async function (id) {
       if (!id) return;
       const response = await services.QQMusic.disslist({
-        id
+        id,
       });
       if (!response?.[0]) throw new Error(locales.default.ERROR);
-      const {
-        songlist,
-        dissname
-      } = response[0];
+      const {songlist, dissname} = response[0];
       return {
         id,
         name: dissname,
         tracks: songlist,
-        trackCount: songlist.length
+        trackCount: songlist.length,
       };
     },
     formatItemData: function (e, t) {
@@ -119,7 +111,8 @@ var providers = _interopRequireDefault(require("../../services/providers")),
     },
     onMV: function (e, t) {
       var a;
-      if (t === providers.default.netEase) a = e.mv || e.mvid;else if (t === providers.default.qqMusic) {
+      if (t === providers.default.netEase) a = e.mv || e.mvid;
+      else if (t === providers.default.qqMusic) {
         var r;
         a = (null === (r = e.mv) || void 0 === r ? void 0 : r.vid) || e.vid;
       }
@@ -128,7 +121,7 @@ var providers = _interopRequireDefault(require("../../services/providers")),
     addToQueue: function (e, t) {
       (0, events.toInsertToList)({
         data: e,
-        api: t
+        api: t,
       });
     },
     onDetail: function (e, t, a) {
@@ -139,7 +132,7 @@ var providers = _interopRequireDefault(require("../../services/providers")),
         item: e,
         index: t,
         api: s,
-        playlistId: n
+        playlistId: n,
       });
     },
     playMusic: function (e, t, a) {
@@ -152,57 +145,57 @@ var providers = _interopRequireDefault(require("../../services/providers")),
         c = r.playlistId,
         d = false === o ? u : i,
         f = t;
-      true === n && d.forEach(function (t, a) {
-        t.id === e.id && (f = a);
-      });
+      true === n &&
+        d.forEach(function (t, a) {
+          t.id === e.id && (f = a);
+        });
       (0, events.toPlayer)({
         item: e,
         data: d,
         index: f,
         api: s,
         localPath: e.localPath,
-        pid: c
+        pid: c,
       });
       a.collectPlaylistOrder();
     },
     savePic: function (e, t) {
       events.emitter.emit(names.default.SavePicModal, {
         img: e,
-        song: t
+        song: t,
       });
     },
     onHeartMode: async function (page) {
-      const {
-        heartMode,
-        playlist,
-        playlistId,
-        api
-      } = page.state;
+      const {heartMode, playlist, playlistId, api} = page.state;
       if (heartMode !== true || !playlist.length) return;
       const song = playlist[utils.random.getInt(0, playlist.length)];
       const response = await services.Netease.heart_mode({
         songId: song.id,
-        playlistId
+        playlistId,
       });
       if (String(response?.code) === '500') {
         toast(locales.default.NETEASE_NOT_LOGIN);
         return;
       }
       if (response?.data?.length) {
-        const tracks = response.data.map(item => ({
+        const tracks = response.data.map((item) => ({
           id: item.id,
-          ...item.songInfo
+          ...item.songInfo,
         }));
         events.toPlayer({
           item: tracks[0],
           data: tracks,
           index: 0,
-          api
+          api,
         });
       }
     },
     onSubscribe: function (e, t, a) {
-      return a === providers.default.netEase ? b(e, t) : a === providers.default.qqMusic ? v(e, t) : Promise.reject(new Error('未知音乐来源'));
-    }
+      return a === providers.default.netEase
+        ? b(e, t)
+        : a === providers.default.qqMusic
+          ? v(e, t)
+          : Promise.reject(new Error('未知音乐来源'));
+    },
   };
 exports.default = g;

@@ -1,5 +1,12 @@
 import React from 'react';
-import {Animated, AppState, BackHandler, DeviceEventEmitter, LayoutAnimation, PanResponder} from 'react-native';
+import {
+  Animated,
+  AppState,
+  BackHandler,
+  DeviceEventEmitter,
+  LayoutAnimation,
+  PanResponder,
+} from 'react-native';
 import providers from '../services/providers';
 import {DEVICE_WIDTH, DEVICE_HEIGHT} from '../theme/constants';
 import names from '../events/names';
@@ -42,36 +49,75 @@ export default class PlayerController extends React.PureComponent {
   queueKeys = [];
   savedFMQueue = null;
   audioFocusType = null;
-  ANIMATION_CONFIG = LayoutAnimation.create(400, LayoutAnimation.Types.easeOut, LayoutAnimation.Properties.opacity);
+  ANIMATION_CONFIG = LayoutAnimation.create(
+    400,
+    LayoutAnimation.Types.easeOut,
+    LayoutAnimation.Properties.opacity,
+  );
   animatedOpacity = new Animated.Value(1);
-  cachedGetWebMusicUrl = cache((request, api) => trackUrl.getUrl(api, request, this.props.settings.defaultHighQuality));
+  cachedGetWebMusicUrl = cache((request, api) =>
+    trackUrl.getUrl(api, request, this.props.settings.defaultHighQuality),
+  );
   state = {
-    url: '', playState: 'paused', currentTime: 0, duration: 0,
-    expanded: false, playMode: 'list', showLyric: false, loaded: false,
-    showTool: true, isLike: false, volume: 1, color: '#fff', showSlider: false,
-    showTrans: true, showCoverElevation: true, randomArray: [], isFM: false,
-    lyricFontSize: 15, retriedTimes: 0, currentMiniLyric: '', pid: undefined,
-    playingSongUID: undefined, lastPlayedTracksLoaded: false, isBackground: false,
+    url: '',
+    playState: 'paused',
+    currentTime: 0,
+    duration: 0,
+    expanded: false,
+    playMode: 'list',
+    showLyric: false,
+    loaded: false,
+    showTool: true,
+    isLike: false,
+    volume: 1,
+    color: '#fff',
+    showSlider: false,
+    showTrans: true,
+    showCoverElevation: true,
+    randomArray: [],
+    isFM: false,
+    lyricFontSize: 15,
+    retriedTimes: 0,
+    currentMiniLyric: '',
+    pid: undefined,
+    playingSongUID: undefined,
+    lastPlayedTracksLoaded: false,
+    isBackground: false,
   };
 
   componentDidMount() {
     this.mounted = true;
-    this.playbackStateSubscription = DeviceEventEmitter.addListener('rewind.playbackState', this.handlePlaybackState);
-    lyricPreferences.loadAll().then(preferences => {
-      if (!this.mounted) return;
-      this.setState({...preferences, randomArray: createPlayOrder(this.props.tracks.length)});
-    }).catch(error => toast('读取播放设置失败：' + error.message));
+    this.playbackStateSubscription = DeviceEventEmitter.addListener(
+      'rewind.playbackState',
+      this.handlePlaybackState,
+    );
+    lyricPreferences
+      .loadAll()
+      .then((preferences) => {
+        if (!this.mounted) return;
+        this.setState({...preferences, randomArray: createPlayOrder(this.props.tracks.length)});
+      })
+      .catch((error) => toast('读取播放设置失败：' + error.message));
     this.notificationCleanup = notification.init({
-      previous: () => this.changeSong('pre'), next: () => this.changeSong('next'),
-      play: this.playSound, pause: this.pauseSound, stop: this.exit,
+      previous: () => this.changeSong('pre'),
+      next: () => this.changeSong('next'),
+      play: this.playSound,
+      pause: this.pauseSound,
+      stop: this.exit,
     });
     AudioPlayer.setHandleAudioFocus(!this.props.settings.playWithOthers);
     this.backSubscription = BackHandler.addEventListener('hardwareBackPress', this.onBackPress);
     this.appStateSubscription = AppState.addEventListener('change', this.handleAppStateChange);
-    this.unsubscribeCommands = subscribePlaybackCommands({play: this.handlePlayCommand, insert: this.insertIntoQueue, remove: this.removeTrack});
+    this.unsubscribeCommands = subscribePlaybackCommands({
+      play: this.handlePlayCommand,
+      insert: this.insertIntoQueue,
+      remove: this.removeTrack,
+    });
     this.subscriptions = [
-      emitter.addListener(names.HidePlayer, event => this.setState({hidePlayer: !!event?.hide})),
-      emitter.addListener(names.PlayerClose, () => { if (this.state.expanded) this._playerClose(true); }),
+      emitter.addListener(names.HidePlayer, (event) => this.setState({hidePlayer: !!event?.hide})),
+      emitter.addListener(names.PlayerClose, () => {
+        if (this.state.expanded) this._playerClose(true);
+      }),
       emitter.addListener(names.FM_MODE, this.onFmMode),
       emitter.addListener(names.AUDIO_NOISY, this.pauseSound),
       emitter.addListener(names.CloseTimerEvent, this.setCloseTimer),
@@ -109,7 +155,7 @@ export default class PlayerController extends React.PureComponent {
     this.playbackRequest++;
     this.lyricRequest++;
     this.unsubscribeCommands();
-    this.subscriptions.forEach(subscription => subscription.remove());
+    this.subscriptions.forEach((subscription) => subscription.remove());
     this.playbackStateSubscription.remove();
     this.backSubscription.remove();
     this.appStateSubscription.remove();
@@ -129,10 +175,11 @@ export default class PlayerController extends React.PureComponent {
 
   handlePlaybackState = ({playing}) => {
     const playState = playing ? 'playing' : 'paused';
-    if (playState !== this.state.playState) this.setState({playState}, this.intervalCurrentTimeGetter);
+    if (playState !== this.state.playState)
+      this.setState({playState}, this.intervalCurrentTimeGetter);
   };
 
-  handlePlayCommand = command => {
+  handlePlayCommand = (command) => {
     if (command.type === 'clearPlayingList') return this.clearPlayingList();
     if (!command.song || !Array.isArray(command.data) || !command.data[command.index]) {
       toast('播放指令缺少歌曲或有效队列位置');
@@ -140,22 +187,34 @@ export default class PlayerController extends React.PureComponent {
     }
     const request = ++this.playbackRequest;
     this.switchSong();
-    this.props.setPlayerData(current => {
-      const selected = selectQueue(current, command, this.state.playMode);
-      const info = extractFullInfo(selected.songItem);
-      return {...selected, songItemInfo: {song: info.song, singer: info.singer, uid: info.uid}};
-    }, selected => {
-      if (request !== this.playbackRequest) return;
-      this.syncPlayOrder(selected.tracks);
-      this.loadPlayerResource(selected, command.pid, request);
-    });
+    this.props.setPlayerData(
+      (current) => {
+        const selected = selectQueue(current, command, this.state.playMode);
+        const info = extractFullInfo(selected.songItem);
+        return {...selected, songItemInfo: {song: info.song, singer: info.singer, uid: info.uid}};
+      },
+      (selected) => {
+        if (request !== this.playbackRequest) return;
+        this.syncPlayOrder(selected.tracks);
+        this.loadPlayerResource(selected, command.pid, request);
+      },
+    );
   };
 
   syncPlayOrder = (tracks, playNext = []) => {
-    const keys = tracks.map(song => getTrackKey(song));
-    if (playNext.length || keys.length !== this.queueKeys.length || keys.some((key, index) => key !== this.queueKeys[index])) {
-      const randomArray = reconcilePlayOrder(this.queueKeys, keys, this.state.randomArray,
-        getTrackKey(this.props.songItem, this.props.api), playNext);
+    const keys = tracks.map((song) => getTrackKey(song));
+    if (
+      playNext.length ||
+      keys.length !== this.queueKeys.length ||
+      keys.some((key, index) => key !== this.queueKeys[index])
+    ) {
+      const randomArray = reconcilePlayOrder(
+        this.queueKeys,
+        keys,
+        this.state.randomArray,
+        getTrackKey(this.props.songItem, this.props.api),
+        playNext,
+      );
       this.setState({randomArray});
       this.queueKeys = keys;
     }
@@ -168,17 +227,27 @@ export default class PlayerController extends React.PureComponent {
       this.handlePlayCommand({song: songs[0], data: songs, index: 0, api});
       return;
     }
-    this.props.setPlayerData(current => {
-      const next = insertNext(current, songs, api);
-      return {tracks: next.tracks, playingIndex: next.playingIndex};
-    }, selected => this.syncPlayOrder(selected.tracks, songs.map(song => getTrackKey(song, api))));
+    this.props.setPlayerData(
+      (current) => {
+        const next = insertNext(current, songs, api);
+        return {tracks: next.tracks, playingIndex: next.playingIndex};
+      },
+      (selected) =>
+        this.syncPlayOrder(
+          selected.tracks,
+          songs.map((song) => getTrackKey(song, api)),
+        ),
+    );
   };
 
   removeTrack = ({item}) => {
-    this.props.setPlayerData(current => {
-      const next = removeFromQueue(current, item);
-      return {tracks: next.tracks, playingIndex: next.playingIndex};
-    }, selected => this.syncPlayOrder(selected.tracks));
+    this.props.setPlayerData(
+      (current) => {
+        const next = removeFromQueue(current, item);
+        return {tracks: next.tracks, playingIndex: next.playingIndex};
+      },
+      (selected) => this.syncPlayOrder(selected.tracks),
+    );
   };
 
   switchSong = () => {
@@ -187,15 +256,35 @@ export default class PlayerController extends React.PureComponent {
     this.audio = null;
     if (this.currentTimeTimer) timer.clearTimeout(this.currentTimeTimer);
     this.props.setLyric(null, false);
-    this.setState({playState: 'paused', duration: 0, currentTime: 0, loaded: false, currentMiniLyric: ''});
+    this.setState({
+      playState: 'paused',
+      duration: 0,
+      currentTime: 0,
+      loaded: false,
+      currentMiniLyric: '',
+    });
   };
 
   clearPlayingList = () => {
     this.playbackRequest++;
     this.switchSong();
     this.queueKeys = [];
-    this.setState({url: '', expanded: false, playerStyle: null, imgStyle: null, showLyric: false, showSlider: false, randomArray: []});
-    this.props.setPlayerData({tracks: [], songItem: null, songItemInfo: {singer: null, song: null}, playingIndex: null, api: null});
+    this.setState({
+      url: '',
+      expanded: false,
+      playerStyle: null,
+      imgStyle: null,
+      showLyric: false,
+      showSlider: false,
+      randomArray: [],
+    });
+    this.props.setPlayerData({
+      tracks: [],
+      songItem: null,
+      songItemInfo: {singer: null, song: null},
+      playingIndex: null,
+      api: null,
+    });
     wakeLock.deactivate();
   };
 
@@ -205,7 +294,12 @@ export default class PlayerController extends React.PureComponent {
     musicHistory(song, api);
     this.setState({url: info.img, playingSongUID: info.uid, pid, isFM: Boolean(song.isFM)}, () => {
       if (request !== this.playbackRequest) return;
-      AudioPlayer.setNowPlaying({title: info.song, artwork: api === providers.local ? null : info.img, album: info.album, artist: parseArtist(info.singer)});
+      AudioPlayer.setNowPlaying({
+        title: info.song,
+        artwork: api === providers.local ? null : info.img,
+        album: info.album,
+        artist: parseArtist(info.singer),
+      });
       this.prepareMusic({song}, info, api, request);
     });
     this.loadLikelist(song, api, request);
@@ -216,7 +310,7 @@ export default class PlayerController extends React.PureComponent {
     try {
       let source;
       const local = command.song.localPath;
-      if (local?.length && await isUsableFile(local)) source = local;
+      if (local?.length && (await isUsableFile(local))) source = local;
       else if (api === providers.local) {
         source = command.song.path;
         this.setLocalArtWork(info.localAlbumId, command.song, request);
@@ -232,7 +326,7 @@ export default class PlayerController extends React.PureComponent {
   };
 
   preparePlay = (source, request = this.playbackRequest) => {
-    this.audio = new AudioPlayer(source, error => {
+    this.audio = new AudioPlayer(source, (error) => {
       if (request !== this.playbackRequest) return;
       if (error) return this.errorWhenPlay(error);
       this.setState({duration: this.audio.getDuration(), loaded: true, retriedTimes: 0}, () => {
@@ -243,11 +337,13 @@ export default class PlayerController extends React.PureComponent {
         } else this.playSound();
       });
     });
-    lastSong.save(this.props.api, this.props.songItem).catch(error => toast('保存播放记录失败：' + error.message));
+    lastSong
+      .save(this.props.api, this.props.songItem)
+      .catch((error) => toast('保存播放记录失败：' + error.message));
     this.saveLastPlayedTracks();
   };
 
-  errorWhenPlay = error => {
+  errorWhenPlay = (error) => {
     toast('播放失败：' + (error.message || error.type));
     const retries = this.state.retriedTimes;
     if (this.props.settings.autoErrorNext || retries >= 5) {
@@ -263,12 +359,14 @@ export default class PlayerController extends React.PureComponent {
   saveLastPlayedTracks = () => {
     if (!this.props.settings.autoLoadLastPlayedTracks) return;
     const {tracks, playingIndex: index, api} = this.props;
-    return lastQueue.save({tracks, index, api}).catch(error => toast('保存队列失败：' + error.message));
+    return lastQueue
+      .save({tracks, index, api})
+      .catch((error) => toast('保存队列失败：' + error.message));
   };
 
   playSound = () => {
     const request = this.playbackRequest;
-    this.audio?.play(finished => {
+    this.audio?.play((finished) => {
       if (request !== this.playbackRequest) return;
       if (finished) this.finishPlay();
       else toast('音频播放中断');
@@ -276,14 +374,14 @@ export default class PlayerController extends React.PureComponent {
   };
 
   pauseSound = () => this.audio?.pause();
-  setVolume = volume => this.audio?.setVolume(volume);
+  setVolume = (volume) => this.audio?.setVolume(volume);
   seekTo = (seconds, play = true) => {
     this.audio?.setCurrentTime(seconds, play);
     if (play) this.playSound();
   };
-  togglePlay = () => this.state.playState === 'playing' ? this.pauseSound() : this.playSound();
+  togglePlay = () => (this.state.playState === 'playing' ? this.pauseSound() : this.playSound());
 
-  seekToLastPlayedTime = async request => {
+  seekToLastPlayedTime = async (request) => {
     try {
       const seconds = await lastTime.get();
       if (request !== this.playbackRequest) return;
@@ -297,7 +395,9 @@ export default class PlayerController extends React.PureComponent {
   exit = async () => {
     try {
       if (this.props.settings.autoLoadLastPlayedTracks) {
-        const seconds = this.audio?.isLoaded() ? await new Promise(resolve => this.audio.getCurrentTime(resolve)) : this.state.currentTime;
+        const seconds = this.audio?.isLoaded()
+          ? await new Promise((resolve) => this.audio.getCurrentTime(resolve))
+          : this.state.currentTime;
         await lastTime.save(seconds);
       }
       shutdown.fire();
@@ -306,13 +406,15 @@ export default class PlayerController extends React.PureComponent {
     }
   };
 
-  changeSong = type => {
+  changeSong = (type) => {
     const {tracks, playingIndex, api} = this.props;
     if (!tracks.length) return;
-    if (type === 'next' && this.state.isFM && playingIndex === tracks.length - 1) return this.startFM();
-    const index = this.state.playMode === 'random'
-      ? getRandomIndex({type, playingIndex, randomArray: this.state.randomArray})
-      : getNextPlayIndex({type, playingIndex, tracks});
+    if (type === 'next' && this.state.isFM && playingIndex === tracks.length - 1)
+      return this.startFM();
+    const index =
+      this.state.playMode === 'random'
+        ? getRandomIndex({type, playingIndex, randomArray: this.state.randomArray})
+        : getNextPlayIndex({type, playingIndex, tracks});
     this.handlePlayCommand({song: tracks[index], data: tracks, index, api, pid: this.state.pid});
   };
 
@@ -323,12 +425,18 @@ export default class PlayerController extends React.PureComponent {
     this.recordPlayed(finishedSong);
   };
 
-  recordPlayed = async song => {
+  recordPlayed = async (song) => {
     if (song.api !== providers.netEase || !this.props.settings.recordPlayCount) return;
     try {
-      const response = await Netease.play_count(song.id, song.album?.id || song.al?.id, Math.floor(song.dt / 1000));
+      const response = await Netease.play_count(
+        song.id,
+        song.album?.id || song.al?.id,
+        Math.floor(song.dt / 1000),
+      );
       if (response?.code !== 200) throw new Error('播放记录响应无效');
-    } catch (error) { toast('记录播放次数失败：' + error.message); }
+    } catch (error) {
+      toast('记录播放次数失败：' + error.message);
+    }
   };
 
   intervalCurrentTimeGetter = () => {
@@ -340,20 +448,23 @@ export default class PlayerController extends React.PureComponent {
     if (!this.state.expanded && !this.props.settings.hideMiniLyric) this.getCurrentMiniLyric();
   };
 
-  getMusicTimeInfo = type => {
+  getMusicTimeInfo = (type) => {
     const request = this.playbackRequest;
     if (type === 'duration' && this.audio) this.setState({duration: this.audio.getDuration()});
-    else if (type === 'currentTime') this.audio?.getCurrentTime(currentTime => {
-      if (request === this.playbackRequest) this.setState({currentTime});
-    });
+    else if (type === 'currentTime')
+      this.audio?.getCurrentTime((currentTime) => {
+        if (request === this.playbackRequest) this.setState({currentTime});
+      });
   };
 
-  handleAppStateChange = state => {
+  handleAppStateChange = (state) => {
     if (state !== 'background' && state !== 'active') return;
     const isBackground = state === 'background';
     this.setState({isBackground}, this.intervalCurrentTimeGetter);
     if (isBackground && this.props.settings.autoLoadLastPlayedTracks) {
-      lastTime.save(this.state.currentTime).catch(error => toast('保存进度失败：' + error.message));
+      lastTime
+        .save(this.state.currentTime)
+        .catch((error) => toast('保存进度失败：' + error.message));
     }
   };
 
@@ -375,7 +486,7 @@ export default class PlayerController extends React.PureComponent {
     this.audioFocusType = type;
   };
 
-  setCloseTimer = minutes => {
+  setCloseTimer = (minutes) => {
     if (this.closeTimer) timer.clearTimeout(this.closeTimer);
     this.closeTimer = null;
     if (minutes < 1) return toast(locales.COUNTDOWN_CANCELED);
@@ -405,7 +516,12 @@ export default class PlayerController extends React.PureComponent {
   loadLikelist = async (song, api, request) => {
     try {
       const likes = await storage.load({key: keys.likelist});
-      if (request === this.playbackRequest) this.setState({isLike: (likes[api] || []).includes(api === providers.qqMusic ? song.mid || song.songmid : song.id)});
+      if (request === this.playbackRequest)
+        this.setState({
+          isLike: (likes[api] || []).includes(
+            api === providers.qqMusic ? song.mid || song.songmid : song.id,
+          ),
+        });
     } catch (error) {
       if (request !== this.playbackRequest) return;
       if (error.name !== 'NotFoundError') toast('读取收藏失败：' + error.message);
@@ -421,7 +537,11 @@ export default class PlayerController extends React.PureComponent {
       if (image) {
         const info = extractFullInfo({...song, img: image});
         this.setState({url: info.img});
-        AudioPlayer.updatePlayback({title: info.song, artwork: info.img, artist: parseArtist(info.singer)});
+        AudioPlayer.updatePlayback({
+          title: info.song,
+          artwork: info.img,
+          artist: parseArtist(info.singer),
+        });
       }
     } catch (error) {
       if (request === this.playbackRequest) toast('本地封面加载失败：' + error.message);
@@ -433,7 +553,8 @@ export default class PlayerController extends React.PureComponent {
     if (seconds < lines[0].total) return 0;
     let selected = null;
     for (let index = 0; index < lines.length; index++) {
-      if (Number.isFinite(lines[index].total) && seconds + 0.3 >= lines[index].total) selected = index;
+      if (Number.isFinite(lines[index].total) && seconds + 0.3 >= lines[index].total)
+        selected = index;
     }
     return selected;
   };
@@ -442,7 +563,10 @@ export default class PlayerController extends React.PureComponent {
     const lines = this.props.lyric;
     const line = lines?.[this.getLyricIndex(lines, this.state.currentTime + 0.2)];
     if (!line || /词|曲|音|：|:/.test(line.txt)) return;
-    const currentMiniLyric = !this.props.settings.hideMiniLyricTrans && line.trans ? line.trans.txt + ' / ' + line.txt : line.txt;
+    const currentMiniLyric =
+      !this.props.settings.hideMiniLyricTrans && line.trans
+        ? line.trans.txt + ' / ' + line.txt
+        : line.txt;
     this.setState({currentMiniLyric});
   };
 
@@ -451,10 +575,18 @@ export default class PlayerController extends React.PureComponent {
     try {
       await playModeActions.onLike(songItem, api, this.state.isLike);
       this.loadLikelist(songItem, api, this.playbackRequest);
-    } catch (error) { toast('更新收藏失败：' + error.message); }
+    } catch (error) {
+      toast('更新收藏失败：' + error.message);
+    }
   };
-  onCollect = () => emitter.emit(names.CollectModal, {api: this.props.api, song: this.props.songItem});
-  onDetail = () => emitter.emit(names.DetailModal, {api: this.props.api, song: this.props.songItem, index: this.props.playingIndex});
+  onCollect = () =>
+    emitter.emit(names.CollectModal, {api: this.props.api, song: this.props.songItem});
+  onDetail = () =>
+    emitter.emit(names.DetailModal, {
+      api: this.props.api,
+      song: this.props.songItem,
+      index: this.props.playingIndex,
+    });
   onChangePlaylist = () => emitter.emit(names.ChangePlaylist);
   onNowPlaying = () => this.props.setDisplayNowPlaying(true);
   onTimer = () => stopTimer.open();
@@ -486,8 +618,9 @@ export default class PlayerController extends React.PureComponent {
         universalNavigator.navigate('NeteaseLogin');
         return;
       }
-      if (!Array.isArray(response?.data) || !response.data.length) throw new Error('私人电台未返回歌曲');
-      const tracks = response.data.map(song => ({...song, isFM: true}));
+      if (!Array.isArray(response?.data) || !response.data.length)
+        throw new Error('私人电台未返回歌曲');
+      const tracks = response.data.map((song) => ({...song, isFM: true}));
       this.handlePlayCommand({song: tracks[0], data: tracks, index: 0, api: providers.netEase});
     } catch (error) {
       if (request === this.playbackRequest) toast('私人电台加载失败：' + error.message);
@@ -496,13 +629,25 @@ export default class PlayerController extends React.PureComponent {
   stopFM = () => {
     const saved = this.savedFMQueue;
     this.savedFMQueue = null;
-    if (saved?.songItem) this.handlePlayCommand({song: saved.songItem, data: saved.tracks, index: saved.playingIndex, api: saved.api});
+    if (saved?.songItem)
+      this.handlePlayCommand({
+        song: saved.songItem,
+        data: saved.tracks,
+        index: saved.playingIndex,
+        api: saved.api,
+      });
     else this.clearPlayingList();
   };
 
   onBackPress = () => {
-    if (this.state.showLyric) { this.onTap(); return true; }
-    if (this.state.expanded) { this._playerClose(); return true; }
+    if (this.state.showLyric) {
+      this.onTap();
+      return true;
+    }
+    if (this.state.expanded) {
+      this._playerClose();
+      return true;
+    }
     return false;
   };
   _playerOpen = () => {
@@ -511,63 +656,102 @@ export default class PlayerController extends React.PureComponent {
     LayoutAnimation.configureNext(this.ANIMATION_CONFIG);
     this.setState({
       url: extractFullInfo(this.props.songItem, 'big').img,
-      playerStyle: {width: DEVICE_WIDTH, height: DEVICE_HEIGHT, top: 0, left: 0, position: 'absolute', marginBottom: 0},
+      playerStyle: {
+        width: DEVICE_WIDTH,
+        height: DEVICE_HEIGHT,
+        top: 0,
+        left: 0,
+        position: 'absolute',
+        marginBottom: 0,
+      },
       expanded: true,
     });
     wakeLock.activate();
   };
-  _playerClose = skipAnimation => {
+  _playerClose = (skipAnimation) => {
     emitter.emit(names.PlayerShow, false);
     if (this.showSliderTimer) timer.clearTimeout(this.showSliderTimer);
     if (!skipAnimation) LayoutAnimation.configureNext(this.ANIMATION_CONFIG);
-    this.setState({url: extractFullInfo(this.props.songItem).img, playerStyle: null, imgStyle: null, expanded: false, showLyric: false, showSlider: false});
+    this.setState({
+      url: extractFullInfo(this.props.songItem).img,
+      playerStyle: null,
+      imgStyle: null,
+      expanded: false,
+      showLyric: false,
+      showSlider: false,
+    });
     wakeLock.deactivate();
   };
   onTap = () => {
     const showLyric = !this.state.showLyric;
     this.setState({showSlider: false, showCoverElevation: false});
-    Animated.timing(this.animatedOpacity, {toValue: 0, duration: 200, useNativeDriver: true}).start(() => {
-      this.setState({showLyric, showSlider: true});
-      Animated.timing(this.animatedOpacity, {toValue: 1, duration: 200, useNativeDriver: true})
-        .start(() => this.setState({showCoverElevation: true}));
-    });
+    Animated.timing(this.animatedOpacity, {toValue: 0, duration: 200, useNativeDriver: true}).start(
+      () => {
+        this.setState({showLyric, showSlider: true});
+        Animated.timing(this.animatedOpacity, {
+          toValue: 1,
+          duration: 200,
+          useNativeDriver: true,
+        }).start(() => this.setState({showCoverElevation: true}));
+      },
+    );
   };
   showToolBtn = () => {
     LayoutAnimation.configureNext(this.ANIMATION_CONFIG);
-    this.setState(state => ({showTool: !state.showTool}), () => this.savePreference(keys.showToolBtnStatus, this.state.showTool));
+    this.setState(
+      (state) => ({showTool: !state.showTool}),
+      () => this.savePreference(keys.showToolBtnStatus, this.state.showTool),
+    );
   };
-  savePreference = (key, data) => storage.save({key, data}).catch(error => toast('保存播放设置失败：' + error.message));
-  onChangeLyricFontSize = lyricFontSize => {
+  savePreference = (key, data) =>
+    storage.save({key, data}).catch((error) => toast('保存播放设置失败：' + error.message));
+  onChangeLyricFontSize = (lyricFontSize) => {
     this.setState({lyricFontSize});
     this.savePreference(keys.lyricFontSize, lyricFontSize);
   };
   onChangeShowTrans = () => {
-    this.setState(state => ({showTrans: !state.showTrans}), () => this.savePreference(keys.showTrans, this.state.showTrans));
+    this.setState(
+      (state) => ({showTrans: !state.showTrans}),
+      () => this.savePreference(keys.showTrans, this.state.showTrans),
+    );
   };
   onChangePlayStatus = () => {
     const playMode = {circulate: 'list', list: 'random', random: 'circulate'}[this.state.playMode];
-    this.setState({playMode, randomArray: playMode === 'random' ? createPlayOrder(this.props.tracks.length) : this.state.randomArray});
+    this.setState({
+      playMode,
+      randomArray:
+        playMode === 'random' ? createPlayOrder(this.props.tracks.length) : this.state.randomArray,
+    });
     this.savePreference(keys.lastPlayMode, playMode);
   };
-  slidingStart = seconds => { if (!this.state.showTool) this.sliderValue0 = seconds; };
-  onSliderValueChange = currentTime => {
+  slidingStart = (seconds) => {
+    if (!this.state.showTool) this.sliderValue0 = seconds;
+  };
+  onSliderValueChange = (currentTime) => {
     this.sliding = true;
     this.setState({currentTime});
   };
-  slidingEnd = seconds => {
+  slidingEnd = (seconds) => {
     if (!this.state.showTool && Math.abs(seconds - this.sliderValue0) < 5) this.togglePlay();
     else this.seekTo(seconds);
     this.slidingTimeText?.fadeOut(500);
-    this.slidingTimer = timer.setTimeout(() => { this.sliding = false; }, 500);
+    this.slidingTimer = timer.setTimeout(() => {
+      this.sliding = false;
+    }, 500);
   };
   _sliderOnPanResponderMove = (_, gesture) => {
     if (gesture.x0 < 15 || gesture.x0 > DEVICE_WIDTH - 15) return;
-    const delta = Math.floor(gestures.stepMap(gesture.moveY - this.y0) / 200 * this.state.duration);
+    const delta = Math.floor(
+      (gestures.stepMap(gesture.moveY - this.y0) / 200) * this.state.duration,
+    );
     this.y0 = gesture.moveY;
-    this.onSliderValueChange(Math.max(0, Math.min(this.state.duration, this.state.currentTime + delta)));
+    this.onSliderValueChange(
+      Math.max(0, Math.min(this.state.duration, this.state.currentTime + delta)),
+    );
   };
   _sliderOnPanResponderRelease = (_, gesture) => {
-    if (!gestures.isOverEdge({gestureState: gesture, DEVICE_WIDTH})) this.slidingEnd(this.state.currentTime);
+    if (!gestures.isOverEdge({gestureState: gesture, DEVICE_WIDTH}))
+      this.slidingEnd(this.state.currentTime);
     else this.getMusicTimeInfo('currentTime');
     this.y0 = null;
     this.sliding = false;

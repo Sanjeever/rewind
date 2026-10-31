@@ -16,8 +16,14 @@ export default function createEmitter() {
       }
     },
     emit(name, payload) {
-      listeners.get(name)?.slice().forEach(listener => listener(payload));
-      listeners.get('*')?.slice().forEach(listener => listener(name, payload));
+      listeners
+        .get(name)
+        ?.slice()
+        .forEach((listener) => listener(payload));
+      listeners
+        .get('*')
+        ?.slice()
+        .forEach((listener) => listener(name, payload));
     },
     addListener(name, listener) {
       this.on(name, listener);

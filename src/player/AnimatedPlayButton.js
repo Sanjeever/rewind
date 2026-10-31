@@ -1,11 +1,11 @@
-const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
-Object.defineProperty(exports, "__esModule", {
-  value: true
+const _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
+Object.defineProperty(exports, '__esModule', {
+  value: true,
 });
 exports.default = void 0;
-var React = _interopRequireDefault(require("react")),
-  buttons = _interopRequireDefault(require("./buttons")),
-  ControlIcon = _interopRequireDefault(require("./ControlIcon")),
+var React = _interopRequireDefault(require('react')),
+  buttons = _interopRequireDefault(require('./buttons')),
+  ControlIcon = _interopRequireDefault(require('./ControlIcon')),
   d = function (e) {
     var a,
       t = e.playMode,
@@ -17,19 +17,19 @@ var React = _interopRequireDefault(require("react")),
       case 'list':
         a = {
           name: buttons.default.REPEAT.name,
-          type: buttons.default.REPEAT.type
+          type: buttons.default.REPEAT.type,
         };
         break;
       case 'random':
         a = {
           name: buttons.default.RANDOM.name,
-          type: buttons.default.RANDOM.type
+          type: buttons.default.RANDOM.type,
         };
         break;
       case 'circulate':
         a = {
           name: buttons.default.CIRLUATE.name,
-          type: buttons.default.CIRLUATE.type
+          type: buttons.default.CIRLUATE.type,
         };
     }
     return React.default.createElement(ControlIcon.default, {
@@ -38,7 +38,7 @@ var React = _interopRequireDefault(require("react")),
       type: a.type,
       size: d || 28,
       color: r,
-      style: f
+      style: f,
     });
   };
 exports.default = d;

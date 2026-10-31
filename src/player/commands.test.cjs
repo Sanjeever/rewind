@@ -4,9 +4,9 @@ const {playTracks, insertTracks, clearQueue, subscribePlaybackCommands} = requir
 test('播放、插入和清空经过同一命令订阅，解除订阅后不再处理', () => {
   const received = [];
   const dispose = subscribePlaybackCommands({
-    play: command => received.push(['play', command]),
-    insert: command => received.push(['insert', command]),
-    remove: command => received.push(['remove', command]),
+    play: (command) => received.push(['play', command]),
+    insert: (command) => received.push(['insert', command]),
+    remove: (command) => received.push(['remove', command]),
   });
   const song = {id: 1};
   playTracks({song, tracks: [song], index: 0, api: 'netEase'});

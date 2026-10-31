@@ -3,18 +3,27 @@ const assert = require('node:assert/strict');
 function searchWith(services) {
   jest.doMock('./index', () => services);
   let searchSongs;
-  jest.isolateModules(() => { searchSongs = require('./search.js').searchSongs; });
+  jest.isolateModules(() => {
+    searchSongs = require('./search.js').searchSongs;
+  });
   return searchSongs;
 }
 
 test('搜索服务统一两种来源结构，并保留正确分页偏移', async () => {
   const calls = [];
   const search = searchWith({
-    Netease: {cloud_search: async options => {
-      calls.push(options);
-      return {code: 200, result: {songs: [{id: 1, name: '歌曲'}], songCount: 31}};
-    }},
-    QQMusic: {searchSong: async (...args) => { calls.push(args); return [{mid: 'mid', name: '歌曲'}]; }},
+    Netease: {
+      cloud_search: async (options) => {
+        calls.push(options);
+        return {code: 200, result: {songs: [{id: 1, name: '歌曲'}], songCount: 31}};
+      },
+    },
+    QQMusic: {
+      searchSong: async (...args) => {
+        calls.push(args);
+        return [{mid: 'mid', name: '歌曲'}];
+      },
+    },
   });
   const netease = await search({query: '关键词', api: 'netEase', offset: 30});
   assert.equal(netease.tracks[0].key, 'netEase:1');
@@ -29,7 +38,11 @@ test('搜索服务统一两种来源结构，并保留正确分页偏移', async
 test('真正空结果可结束加载，错误状态和畸形响应不会伪装成空列表', async () => {
   let response = {code: 200, result: {songCount: 0}};
   const search = searchWith({Netease: {cloud_search: async () => response}});
-  assert.deepEqual(await search({query: '词', api: 'netEase'}), {tracks: [], offset: 0, hasMore: false});
+  assert.deepEqual(await search({query: '词', api: 'netEase'}), {
+    tracks: [],
+    offset: 0,
+    hasMore: false,
+  });
   response = {code: -460};
   await assert.rejects(search({query: '词', api: 'netEase'}), /-460/);
   response = {code: 200, result: {}};

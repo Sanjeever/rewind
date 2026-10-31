@@ -11,8 +11,11 @@ async function migrateStorage({readLegacy, destination, validatePlaylists}) {
       if (saved[key] !== value) throw new Error(`旧数据迁移读回失败：${key}`);
     }
   }
-  await destination.setItem(marker, JSON.stringify({version: 1, count: Object.keys(entries).length}));
-  if (!await destination.getItem(marker)) throw new Error('旧数据迁移状态写入失败');
+  await destination.setItem(
+    marker,
+    JSON.stringify({version: 1, count: Object.keys(entries).length}),
+  );
+  if (!(await destination.getItem(marker))) throw new Error('旧数据迁移状态写入失败');
 }
 
 module.exports = {migrateStorage, marker};

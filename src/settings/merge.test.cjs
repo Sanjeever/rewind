@@ -5,7 +5,11 @@ test('新增设置时保留旧开关、零值和未知字段，不修改原配�
   const stored = {volume: {on: false, subtitle: 0}, custom: {value: '保留'}};
   const defaults = {volume: {on: true, subtitle: 10, title: '音量'}, added: {on: true}};
   const merged = mergeSettings(stored, defaults);
-  assert.deepEqual(merged, {volume: {on: false, subtitle: 0, title: '音量'}, added: {on: true}, custom: {value: '保留'}});
+  assert.deepEqual(merged, {
+    volume: {on: false, subtitle: 0, title: '音量'},
+    added: {on: true},
+    custom: {value: '保留'},
+  });
   merged.volume.on = true;
   assert.equal(stored.volume.on, false);
   assert.equal(defaults.volume.subtitle, 10);

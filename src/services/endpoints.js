@@ -1,5 +1,5 @@
-Object.defineProperty(exports, "__esModule", {
-  value: true
+Object.defineProperty(exports, '__esModule', {
+  value: true,
 });
 exports.QRCODE_API = exports.UPDATE_CHANGELOG = exports.HOST_PAGE = void 0;
 exports.HOST_PAGE = 'https://rewindapp.vercel.app';

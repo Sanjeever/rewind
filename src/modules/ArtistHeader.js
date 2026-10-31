@@ -1,19 +1,19 @@
-const _default = require("./../components/Text.js").default;
-const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
-Object.defineProperty(exports, "__esModule", {
-  value: true
+const _default = require('./../components/Text.js').default;
+const _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
+Object.defineProperty(exports, '__esModule', {
+  value: true,
 });
 exports.default = void 0;
-var React = _interopRequireDefault(require("react")),
-  ReactNative = require("react-native"),
-  TouchableScale = _interopRequireDefault(require("../components/TouchableScale")),
-  components = require("../components/index"),
-  constants = require("../theme/constants"),
-  icons = _interopRequireDefault(require("../theme/icons")),
-  locales = _interopRequireDefault(require("../locales/index")),
-  events = require("../events/index"),
-  utils = require("../utils/index"),
-  trackInfo = require("../services/trackInfo"),
+var React = _interopRequireDefault(require('react')),
+  ReactNative = require('react-native'),
+  TouchableScale = _interopRequireDefault(require('../components/TouchableScale')),
+  components = require('../components/index'),
+  constants = require('../theme/constants'),
+  icons = _interopRequireDefault(require('../theme/icons')),
+  locales = _interopRequireDefault(require('../locales/index')),
+  events = require('../events/index'),
+  utils = require('../utils/index'),
+  trackInfo = require('../services/trackInfo'),
   g = function (e, t) {
     var a = (0, trackInfo.extractFullInfo)(e);
     return React.default.createElement(components.SongRow, {
@@ -24,7 +24,7 @@ var React = _interopRequireDefault(require("react")),
       album: a.album,
       alias: a.alias,
       containerStyle: {
-        height: 55
+        height: 55,
       },
       onPress: function () {
         return (0, events.toPlayer)({
@@ -32,16 +32,16 @@ var React = _interopRequireDefault(require("react")),
           data: [e],
           index: t,
           api: 'netEase',
-          type: 'insert'
+          type: 'insert',
         });
       },
       detail: function () {
         return (0, events.toDetailModal)({
           item: e,
           index: t,
-          api: 'netEase'
+          api: 'netEase',
         });
-      }
+      },
     });
   },
   p = function (e) {
@@ -52,7 +52,13 @@ var React = _interopRequireDefault(require("react")),
       i = l.reduce(function (e, t) {
         return e + t.dt;
       }, 0),
-      o = utils.timeFormatter.parseTime(i / 1e3) + "  |  " + l.length + " " + locales.default.SONG_COUNT + " ";
+      o =
+        utils.timeFormatter.parseTime(i / 1e3) +
+        '  |  ' +
+        l.length +
+        ' ' +
+        locales.default.SONG_COUNT +
+        ' ';
     return React.default.createElement(y, {
       title: n.resourceName,
       subtitle: o,
@@ -63,9 +69,9 @@ var React = _interopRequireDefault(require("react")),
           data: l,
           index: 0,
           api: 'netEase',
-          type: l.length > 1 ? '' : 'insert'
+          type: l.length > 1 ? '' : 'insert',
         });
-      }
+      },
     });
   },
   y = function (e) {
@@ -73,43 +79,65 @@ var React = _interopRequireDefault(require("react")),
       a = e.subtitle,
       n = e.onPress,
       l = e.onPage;
-    return React.default.createElement(ReactNative.TouchableNativeFeedback, {
-      onPress: n
-    }, React.default.createElement(ReactNative.View, {
-      style: E.albumCon
-    }, React.default.createElement(ReactNative.View, {
-      style: {
-        flex: 1
-      }
-    }, React.default.createElement(_default, {
-      style: {
-        fontSize: 15
+    return React.default.createElement(
+      ReactNative.TouchableNativeFeedback,
+      {
+        onPress: n,
       },
-      numberOfLines: 1
-    }, t), React.default.createElement(_default, {
-      style: {
-        fontSize: 12,
-        opacity: .8
-      },
-      numberOfLines: 1
-    }, a)), React.default.createElement(components.Icon, {
-      containerStyle: {
-        height: 50,
-        width: 50
-      },
-      onPress: l,
-      size: 20,
-      name: icons.default.ALBUM,
-      component: TouchableScale.default
-    })));
+      React.default.createElement(
+        ReactNative.View,
+        {
+          style: E.albumCon,
+        },
+        React.default.createElement(
+          ReactNative.View,
+          {
+            style: {
+              flex: 1,
+            },
+          },
+          React.default.createElement(
+            _default,
+            {
+              style: {
+                fontSize: 15,
+              },
+              numberOfLines: 1,
+            },
+            t,
+          ),
+          React.default.createElement(
+            _default,
+            {
+              style: {
+                fontSize: 12,
+                opacity: 0.8,
+              },
+              numberOfLines: 1,
+            },
+            a,
+          ),
+        ),
+        React.default.createElement(components.Icon, {
+          containerStyle: {
+            height: 50,
+            width: 50,
+          },
+          onPress: l,
+          size: 20,
+          name: icons.default.ALBUM,
+          component: TouchableScale.default,
+        }),
+      ),
+    );
   },
   E = ReactNative.StyleSheet.create({
     container: {
-      paddingBottom: 10
+      paddingBottom: 10,
     },
     avatarCon: {
       flexDirection: 'row',
-      alignItems: 'center'
+      alignItems: 'center',
     },
     avatar: {
       height: 40,
@@ -117,10 +145,10 @@ var React = _interopRequireDefault(require("react")),
       borderRadius: 20,
       marginRight: 10,
       borderWidth: 1,
-      borderColor: constants.COLORS.primary
+      borderColor: constants.COLORS.primary,
     },
     songsCon: {
-      paddingLeft: 45
+      paddingLeft: 45,
     },
     timeline: {
       width: 2,
@@ -129,14 +157,14 @@ var React = _interopRequireDefault(require("react")),
       backgroundColor: constants.COLORS.primary,
       borderRadius: 5,
       top: 0,
-      left: 20
+      left: 20,
     },
     albumCon: {
       height: 50,
       flexDirection: 'row',
       alignItems: 'center',
-      padding: 5
-    }
+      padding: 5,
+    },
   }),
   h = function (e) {
     var t,
@@ -147,33 +175,79 @@ var React = _interopRequireDefault(require("react")),
       d = e.onArtist,
       f = l.blockType,
       c = l.blockTitle;
-    return React.default.createElement(ReactNative.View, null, React.default.createElement(ReactNative.View, {
-      style: E.timeline
-    }), React.default.createElement(ReactNative.View, {
-      style: E.container
-    }, React.default.createElement(ReactNative.View, {
-      style: E.avatarCon
-    }, React.default.createElement(TouchableScale.default, {
-      onPress: d
-    }, React.default.createElement(ReactNative.Image, {
-      style: E.avatar,
-      source: {
-        uri: c.imgUrl + '?param=100y100'
-      }
-    })), React.default.createElement(ReactNative.View, null, React.default.createElement(components.Title, {
-      style: {
-        fontSize: 15
-      }
-    }, c.artistName), React.default.createElement(_default, {
-      style: {
-        opacity: .8,
-        fontSize: 13
-      }
-    }, (n = 'song' === f ? null === (t = locales.default.ARTIST_SONGS) || void 0 === t ? void 0 : t.toLowerCase() : null === (a = locales.default.ARTIST_ALBUM) || void 0 === a ? void 0 : a.toLowerCase(), "" + locales.default.PUBLISHED + n)))), React.default.createElement(ReactNative.View, {
-      style: E.songsCon
-    }, 'song' === f ? l.songLists.map(g) : p({
-      item: l,
-      onAlbum: s
-    }))));
+    return React.default.createElement(
+      ReactNative.View,
+      null,
+      React.default.createElement(ReactNative.View, {
+        style: E.timeline,
+      }),
+      React.default.createElement(
+        ReactNative.View,
+        {
+          style: E.container,
+        },
+        React.default.createElement(
+          ReactNative.View,
+          {
+            style: E.avatarCon,
+          },
+          React.default.createElement(
+            TouchableScale.default,
+            {
+              onPress: d,
+            },
+            React.default.createElement(ReactNative.Image, {
+              style: E.avatar,
+              source: {
+                uri: c.imgUrl + '?param=100y100',
+              },
+            }),
+          ),
+          React.default.createElement(
+            ReactNative.View,
+            null,
+            React.default.createElement(
+              components.Title,
+              {
+                style: {
+                  fontSize: 15,
+                },
+              },
+              c.artistName,
+            ),
+            React.default.createElement(
+              _default,
+              {
+                style: {
+                  opacity: 0.8,
+                  fontSize: 13,
+                },
+              },
+              ((n =
+                'song' === f
+                  ? null === (t = locales.default.ARTIST_SONGS) || void 0 === t
+                    ? void 0
+                    : t.toLowerCase()
+                  : null === (a = locales.default.ARTIST_ALBUM) || void 0 === a
+                    ? void 0
+                    : a.toLowerCase()),
+              '' + locales.default.PUBLISHED + n),
+            ),
+          ),
+        ),
+        React.default.createElement(
+          ReactNative.View,
+          {
+            style: E.songsCon,
+          },
+          'song' === f
+            ? l.songLists.map(g)
+            : p({
+                item: l,
+                onAlbum: s,
+              }),
+        ),
+      ),
+    );
   };
 exports.default = h;

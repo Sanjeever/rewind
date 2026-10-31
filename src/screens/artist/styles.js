@@ -1,39 +1,39 @@
-Object.defineProperty(exports, "__esModule", {
-  value: true
+Object.defineProperty(exports, '__esModule', {
+  value: true,
 });
 exports.default = void 0;
-var ReactNative = require("react-native"),
-  constants = require("../../theme/constants"),
+var ReactNative = require('react-native'),
+  constants = require('../../theme/constants'),
   a = ReactNative.StyleSheet.create({
     container: {
-      flex: 1
+      flex: 1,
     },
     header: {
       position: 'absolute',
       top: 0,
-      paddingRight: 20
+      paddingRight: 20,
     },
     spin: {
-      height: '100%'
+      height: '100%',
     },
     btnCon: {
-      width: 100
+      width: 100,
     },
     strong: {
       opacity: 1,
-      fontWeight: 'bold'
+      fontWeight: 'bold',
     },
     dotContainer: {
       flexDirection: 'row',
       position: 'absolute',
-      bottom: -12
+      bottom: -12,
     },
     dot: {
       width: 6,
       height: 6,
       borderRadius: 3,
       backgroundColor: constants.COLORS.primary,
-      margin: 3
-    }
+      margin: 3,
+    },
   });
 exports.default = a;

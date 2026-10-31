@@ -1,22 +1,22 @@
-const _SafeAreaView = require("react-native-safe-area-context").SafeAreaView;
-const _default = require("./../components/Text.js").default;
-const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
-const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
-const _assertThisInitialized = require("@babel/runtime/helpers/assertThisInitialized");
-const _extends = require("@babel/runtime/helpers/extends");
-Object.defineProperty(exports, "__esModule", {
-  value: true
+const _SafeAreaView = require('react-native-safe-area-context').SafeAreaView;
+const _default = require('./../components/Text.js').default;
+const _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
+const _interopRequireWildcard = require('@babel/runtime/helpers/interopRequireWildcard');
+const _assertThisInitialized = require('@babel/runtime/helpers/assertThisInitialized');
+const _extends = require('@babel/runtime/helpers/extends');
+Object.defineProperty(exports, '__esModule', {
+  value: true,
 });
 exports.default = void 0;
-var slider = _interopRequireDefault(require("@react-native-community/slider")),
-  Runtime927 = _interopRequireDefault(require("lodash/padStart")),
-  React = _interopRequireWildcard(require("react")),
-  ReactNative = require("react-native"),
-  reactNativeTextTicker = _interopRequireDefault(require("react-native-text-ticker")),
-  reactNativeVideo = _interopRequireDefault(require("react-native-video")),
-  constants = require("../theme/constants"),
-  icons = _interopRequireDefault(require("../theme/icons")),
-  components = require("../components/index"),
+var slider = _interopRequireDefault(require('@react-native-community/slider')),
+  Runtime927 = _interopRequireDefault(require('lodash/padStart')),
+  React = _interopRequireWildcard(require('react')),
+  ReactNative = require('react-native'),
+  reactNativeTextTicker = _interopRequireDefault(require('react-native-text-ticker')),
+  reactNativeVideo = _interopRequireDefault(require('react-native-video')),
+  constants = require('../theme/constants'),
+  icons = _interopRequireDefault(require('../theme/icons')),
+  components = require('../components/index'),
   m = class n extends React.Component {
     constructor(e) {
       var t;
@@ -24,19 +24,26 @@ var slider = _interopRequireDefault(require("@react-native-community/slider")),
       t.layoutHeight = 0;
       t.componentDidUpdate = function (e) {
         var n = t.props.isFullscreen;
-        e.isFullscreen !== n && t.setState({
-          isFullscreen: n
-        });
+        e.isFullscreen !== n &&
+          t.setState({
+            isFullscreen: n,
+          });
       };
       t._onPanResponderRelease = function (e, n) {
         var o = n.dy;
-        0 != o ? o < -10 ? t.events.onEnterFullscreen() : o > 10 ? t.events.onExitFullscreen() : t.events.onScreenTouch() : t.events.onScreenTouch();
+        0 != o
+          ? o < -10
+            ? t.events.onEnterFullscreen()
+            : o > 10
+              ? t.events.onExitFullscreen()
+              : t.events.onScreenTouch()
+          : t.events.onScreenTouch();
       };
       t._panResponder = ReactNative.PanResponder.create({
         onStartShouldSetPanResponderCapture: function (e) {
           if (e.nativeEvent.pageY > 80 && e.nativeEvent.pageY < t.layoutHeight - 100) return true;
         },
-        onPanResponderRelease: t._onPanResponderRelease
+        onPanResponderRelease: t._onPanResponderRelease,
       });
       t.state = {
         resizeMode: t.props.resizeMode,
@@ -56,16 +63,17 @@ var slider = _interopRequireDefault(require("@react-native-community/slider")),
         loading: false,
         currentTime: 0,
         error: false,
-        duration: 0
+        duration: 0,
       };
       t.opts = {
         playWhenInactive: t.props.playWhenInactive,
         playInBackground: t.props.playInBackground,
         repeat: t.props.repeat,
-        title: t.props.title
+        title: t.props.title,
       };
       t.events = {
-        onError: t.props.onError || t._onError.bind(_assertThisInitialized(_assertThisInitialized(t))),
+        onError:
+          t.props.onError || t._onError.bind(_assertThisInitialized(_assertThisInitialized(t))),
         onBack: t.props.onBack || t._onBack.bind(_assertThisInitialized(_assertThisInitialized(t))),
         onEnd: t.props.onEnd || t._onEnd.bind(_assertThisInitialized(_assertThisInitialized(t))),
         onScreenTouch: t._onScreenTouch.bind(_assertThisInitialized(_assertThisInitialized(t))),
@@ -78,13 +86,15 @@ var slider = _interopRequireDefault(require("@react-native-community/slider")),
         onSeek: t._onSeek.bind(_assertThisInitialized(_assertThisInitialized(t))),
         onLoad: t._onLoad.bind(_assertThisInitialized(_assertThisInitialized(t))),
         onPause: t.props.onPause,
-        onPlay: t.props.onPlay
+        onPlay: t.props.onPlay,
       };
       t.methods = {
-        toggleFullscreen: t._toggleFullscreen.bind(_assertThisInitialized(_assertThisInitialized(t))),
+        toggleFullscreen: t._toggleFullscreen.bind(
+          _assertThisInitialized(_assertThisInitialized(t)),
+        ),
         togglePlayPause: t._togglePlayPause.bind(_assertThisInitialized(_assertThisInitialized(t))),
         toggleControls: t._toggleControls.bind(_assertThisInitialized(_assertThisInitialized(t))),
-        toggleTimer: t._toggleTimer.bind(_assertThisInitialized(_assertThisInitialized(t)))
+        toggleTimer: t._toggleTimer.bind(_assertThisInitialized(_assertThisInitialized(t))),
       };
       t.player = {
         controlTimeoutDelay: t.props.controlTimeout || 15e3,
@@ -94,140 +104,171 @@ var slider = _interopRequireDefault(require("@react-native-community/slider")),
         seekerWidth: 1,
         ref: reactNativeVideo.default,
         scrubbingTimeStep: t.props.scrubbing || 0,
-        tapAnywhereToPause: t.props.tapAnywhereToPause
+        tapAnywhereToPause: t.props.tapAnywhereToPause,
       };
       var o = t.props.showOnStart ? 1 : 0;
       t.animations = {
         bottomControl: {
           marginBottom: new ReactNative.Animated.Value(0),
-          opacity: new ReactNative.Animated.Value(o)
+          opacity: new ReactNative.Animated.Value(o),
         },
         topControl: {
           marginTop: new ReactNative.Animated.Value(0),
-          opacity: new ReactNative.Animated.Value(o)
+          opacity: new ReactNative.Animated.Value(o),
         },
         video: {
-          opacity: new ReactNative.Animated.Value(1)
+          opacity: new ReactNative.Animated.Value(1),
         },
         loader: {
           rotate: new ReactNative.Animated.Value(0),
-          MAX_VALUE: 360
-        }
+          MAX_VALUE: 360,
+        },
       };
       t.styles = {
         videoStyle: t.props.videoStyle || {},
-        containerStyle: t.props.style || {}
+        containerStyle: t.props.style || {},
       };
       return t;
     }
-    "_onLoadStart"() {
+    _onLoadStart() {
       var e,
         t = this.state;
-      (t.loading = true, this.loadAnimation(), this.setState(t), 'function' == typeof this.props.onLoadStart) && (e = this.props).onLoadStart.apply(e, arguments);
+      ((t.loading = true),
+      this.loadAnimation(),
+      this.setState(t),
+      'function' == typeof this.props.onLoadStart) &&
+        (e = this.props).onLoadStart.apply(e, arguments);
     }
-    "_onLoad"() {
+    _onLoad() {
       var e,
         t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {},
         n = this.state;
-      (n.duration = t.duration, n.loading = false, this.setState(n), n.showControls && this.setControlTimeout(), 'function' == typeof this.props.onLoad) && (e = this.props).onLoad.apply(e, arguments);
+      ((n.duration = t.duration),
+      (n.loading = false),
+      this.setState(n),
+      n.showControls && this.setControlTimeout(),
+      'function' == typeof this.props.onLoad) && (e = this.props).onLoad.apply(e, arguments);
     }
-    "_onProgress"() {
+    _onProgress() {
       var e = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {},
         t = this.state;
       if (!t.scrubbing) {
-        if (t.currentTime = e.currentTime, !t.seeking) {
+        if (((t.currentTime = e.currentTime), !t.seeking)) {
           var n = this.calculateSeekerPosition();
           this.setSeekerPosition(n);
         }
         var o;
-        if ('function' == typeof this.props.onProgress) (o = this.props).onProgress.apply(o, arguments);
+        if ('function' == typeof this.props.onProgress)
+          (o = this.props).onProgress.apply(o, arguments);
         this.setState(t);
       }
     }
-    "_onSeek"() {
+    _onSeek() {
       var e = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {},
         t = this.state;
-      t.scrubbing && (t.scrubbing = false, t.currentTime = e.currentTime, t.seeking || (this.setControlTimeout(), t.paused = t.originallyPaused), this.setState(t));
+      t.scrubbing &&
+        ((t.scrubbing = false),
+        (t.currentTime = e.currentTime),
+        t.seeking || (this.setControlTimeout(), (t.paused = t.originallyPaused)),
+        this.setState(t));
     }
-    "_onEnd"() {}
-    "_onError"(e) {
+    _onEnd() {}
+    _onError(e) {
       var t = this.state;
       t.error = true;
       t.loading = false;
       this.setState(t);
     }
-    "_onScreenTouch"() {
+    _onScreenTouch() {
       var e = this;
-      this.player.tapActionTimeout ? (clearTimeout(this.player.tapActionTimeout), this.methods.togglePlayPause(), this.player.tapActionTimeout = null) : this.player.tapActionTimeout = setTimeout(function () {
-        e.methods.toggleControls();
-        e.player.tapActionTimeout = null;
-      }, this.props.doubleTapTime);
+      this.player.tapActionTimeout
+        ? (clearTimeout(this.player.tapActionTimeout),
+          this.methods.togglePlayPause(),
+          (this.player.tapActionTimeout = null))
+        : (this.player.tapActionTimeout = setTimeout(function () {
+            e.methods.toggleControls();
+            e.player.tapActionTimeout = null;
+          }, this.props.doubleTapTime));
     }
-    "setControlTimeout"() {
+    setControlTimeout() {
       var e = this;
       this.player.controlTimeout = setTimeout(function () {
         e._hideControls();
       }, this.player.controlTimeoutDelay);
     }
-    "clearControlTimeout"() {
+    clearControlTimeout() {
       clearTimeout(this.player.controlTimeout);
     }
-    "resetControlTimeout"() {
+    resetControlTimeout() {
       this.clearControlTimeout();
       this.setControlTimeout();
     }
-    "hideControlAnimation"() {
-      ReactNative.Animated.parallel([ReactNative.Animated.timing(this.animations.topControl.opacity, {
-        toValue: 0,
-        duration: this.props.controlAnimationTiming,
-        useNativeDriver: false
-      }), ReactNative.Animated.timing(this.animations.topControl.marginTop, {
-        toValue: -100,
-        duration: this.props.controlAnimationTiming,
-        useNativeDriver: false
-      }), ReactNative.Animated.timing(this.animations.bottomControl.opacity, {
-        toValue: 0,
-        duration: this.props.controlAnimationTiming,
-        useNativeDriver: false
-      }), ReactNative.Animated.timing(this.animations.bottomControl.marginBottom, {
-        toValue: -100,
-        duration: this.props.controlAnimationTiming,
-        useNativeDriver: false
-      })]).start();
+    hideControlAnimation() {
+      ReactNative.Animated.parallel([
+        ReactNative.Animated.timing(this.animations.topControl.opacity, {
+          toValue: 0,
+          duration: this.props.controlAnimationTiming,
+          useNativeDriver: false,
+        }),
+        ReactNative.Animated.timing(this.animations.topControl.marginTop, {
+          toValue: -100,
+          duration: this.props.controlAnimationTiming,
+          useNativeDriver: false,
+        }),
+        ReactNative.Animated.timing(this.animations.bottomControl.opacity, {
+          toValue: 0,
+          duration: this.props.controlAnimationTiming,
+          useNativeDriver: false,
+        }),
+        ReactNative.Animated.timing(this.animations.bottomControl.marginBottom, {
+          toValue: -100,
+          duration: this.props.controlAnimationTiming,
+          useNativeDriver: false,
+        }),
+      ]).start();
     }
-    "showControlAnimation"() {
-      ReactNative.Animated.parallel([ReactNative.Animated.timing(this.animations.topControl.opacity, {
-        toValue: 1,
-        useNativeDriver: false,
-        duration: this.props.controlAnimationTiming
-      }), ReactNative.Animated.timing(this.animations.topControl.marginTop, {
-        toValue: 0,
-        useNativeDriver: false,
-        duration: this.props.controlAnimationTiming
-      }), ReactNative.Animated.timing(this.animations.bottomControl.opacity, {
-        toValue: 1,
-        useNativeDriver: false,
-        duration: this.props.controlAnimationTiming
-      }), ReactNative.Animated.timing(this.animations.bottomControl.marginBottom, {
-        toValue: 0,
-        useNativeDriver: false,
-        duration: this.props.controlAnimationTiming
-      })]).start();
+    showControlAnimation() {
+      ReactNative.Animated.parallel([
+        ReactNative.Animated.timing(this.animations.topControl.opacity, {
+          toValue: 1,
+          useNativeDriver: false,
+          duration: this.props.controlAnimationTiming,
+        }),
+        ReactNative.Animated.timing(this.animations.topControl.marginTop, {
+          toValue: 0,
+          useNativeDriver: false,
+          duration: this.props.controlAnimationTiming,
+        }),
+        ReactNative.Animated.timing(this.animations.bottomControl.opacity, {
+          toValue: 1,
+          useNativeDriver: false,
+          duration: this.props.controlAnimationTiming,
+        }),
+        ReactNative.Animated.timing(this.animations.bottomControl.marginBottom, {
+          toValue: 0,
+          useNativeDriver: false,
+          duration: this.props.controlAnimationTiming,
+        }),
+      ]).start();
     }
-    "loadAnimation"() {
-      this.state.loading && ReactNative.Animated.sequence([ReactNative.Animated.timing(this.animations.loader.rotate, {
-        toValue: this.animations.loader.MAX_VALUE,
-        duration: 1500,
-        easing: ReactNative.Easing.linear,
-        useNativeDriver: false
-      }), ReactNative.Animated.timing(this.animations.loader.rotate, {
-        toValue: 0,
-        duration: 0,
-        easing: ReactNative.Easing.linear,
-        useNativeDriver: false
-      })]).start(this.loadAnimation.bind(this));
+    loadAnimation() {
+      this.state.loading &&
+        ReactNative.Animated.sequence([
+          ReactNative.Animated.timing(this.animations.loader.rotate, {
+            toValue: this.animations.loader.MAX_VALUE,
+            duration: 1500,
+            easing: ReactNative.Easing.linear,
+            useNativeDriver: false,
+          }),
+          ReactNative.Animated.timing(this.animations.loader.rotate, {
+            toValue: 0,
+            duration: 0,
+            easing: ReactNative.Easing.linear,
+            useNativeDriver: false,
+          }),
+        ]).start(this.loadAnimation.bind(this));
     }
-    "_hideControls"() {
+    _hideControls() {
       if (this.mounted) {
         var e = this.state;
         e.showControls = false;
@@ -236,47 +277,70 @@ var slider = _interopRequireDefault(require("@react-native-community/slider")),
         this.setState(e);
       }
     }
-    "_toggleControls"() {
+    _toggleControls() {
       var e = this.state;
       e.showControls = !e.showControls;
-      e.showControls ? (this.showControlAnimation(), this.setControlTimeout(), 'function' == typeof this.events.onShowControls && this.events.onShowControls()) : (this.hideControlAnimation(), this.clearControlTimeout(), 'function' == typeof this.events.onHideControls && this.events.onHideControls());
+      e.showControls
+        ? (this.showControlAnimation(),
+          this.setControlTimeout(),
+          'function' == typeof this.events.onShowControls && this.events.onShowControls())
+        : (this.hideControlAnimation(),
+          this.clearControlTimeout(),
+          'function' == typeof this.events.onHideControls && this.events.onHideControls());
       this.setState(e);
     }
-    "_toggleFullscreen"() {
+    _toggleFullscreen() {
       var e = this.state;
       e.isFullscreen = !e.isFullscreen;
-      this.props.toggleResizeModeOnFullscreen && (e.resizeMode = true === e.isFullscreen ? 'cover' : 'contain');
-      e.isFullscreen ? 'function' == typeof this.events.onEnterFullscreen && this.events.onEnterFullscreen() : 'function' == typeof this.events.onExitFullscreen && this.events.onExitFullscreen();
+      this.props.toggleResizeModeOnFullscreen &&
+        (e.resizeMode = true === e.isFullscreen ? 'cover' : 'contain');
+      e.isFullscreen
+        ? 'function' == typeof this.events.onEnterFullscreen && this.events.onEnterFullscreen()
+        : 'function' == typeof this.events.onExitFullscreen && this.events.onExitFullscreen();
       this.setState(e);
     }
-    "_togglePlayPause"() {
+    _togglePlayPause() {
       var e = this.state;
       e.paused = !e.paused;
-      e.paused ? 'function' == typeof this.events.onPause && this.events.onPause() : 'function' == typeof this.events.onPlay && this.events.onPlay();
+      e.paused
+        ? 'function' == typeof this.events.onPause && this.events.onPause()
+        : 'function' == typeof this.events.onPlay && this.events.onPlay();
       this.setState(e);
     }
-    "_toggleTimer"() {
+    _toggleTimer() {
       var e = this.state;
       e.showTimeRemaining = !e.showTimeRemaining;
       this.setState(e);
     }
-    "_onBack"() {
+    _onBack() {
       this.props.navigator && this.props.navigator.pop && this.props.navigator.pop();
     }
-    "calculateTime"() {
+    calculateTime() {
       if (this.state.showTimeRemaining) {
         var e = this.state.duration - this.state.currentTime;
-        return "" + this.formatTime(e);
+        return '' + this.formatTime(e);
       }
       return this.formatTime(this.state.currentTime);
     }
-    "formatTime"() {
+    formatTime() {
       var e = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : 0,
         t = this.state.showRemainingTime ? '-' : '';
       e = Math.min(Math.max(e, 0), this.state.duration);
-      return this.state.showHours ? "" + t + (0, Runtime927.default)(Math.floor(e / 3600).toFixed(0), 2, 0) + ":" + (0, Runtime927.default)((Math.floor(e / 60) % 60).toFixed(0), 2, 0) + ":" + (0, Runtime927.default)(Math.floor(e % 60).toFixed(0), 2, 0) : "" + t + (0, Runtime927.default)(Math.floor(e / 60).toFixed(0), 2, 0) + ":" + (0, Runtime927.default)(Math.floor(e % 60).toFixed(0), 2, 0);
+      return this.state.showHours
+        ? '' +
+            t +
+            (0, Runtime927.default)(Math.floor(e / 3600).toFixed(0), 2, 0) +
+            ':' +
+            (0, Runtime927.default)((Math.floor(e / 60) % 60).toFixed(0), 2, 0) +
+            ':' +
+            (0, Runtime927.default)(Math.floor(e % 60).toFixed(0), 2, 0)
+        : '' +
+            t +
+            (0, Runtime927.default)(Math.floor(e / 60).toFixed(0), 2, 0) +
+            ':' +
+            (0, Runtime927.default)(Math.floor(e % 60).toFixed(0), 2, 0);
     }
-    "setSeekerPosition"() {
+    setSeekerPosition() {
       var e = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : 0,
         t = this.state;
       e = this.constrainToSeekerMinMax(e);
@@ -285,208 +349,328 @@ var slider = _interopRequireDefault(require("@react-native-community/slider")),
       t.seeking || (t.seekerOffset = e);
       this.setState(t);
     }
-    "constrainToSeekerMinMax"() {
+    constrainToSeekerMinMax() {
       var e = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : 0;
       return e <= 0 ? 0 : e >= this.player.seekerWidth ? this.player.seekerWidth : e;
     }
-    "calculateSeekerPosition"() {
+    calculateSeekerPosition() {
       var e = this.state.currentTime / this.state.duration;
       return this.player.seekerWidth * e;
     }
-    "calculateTimeFromSeekerPosition"() {
+    calculateTimeFromSeekerPosition() {
       var e = this.state.seekerPosition / this.player.seekerWidth;
       return this.state.duration * e;
     }
-    "seekTo"() {
+    seekTo() {
       var e = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : 0,
         t = this.state;
       t.currentTime = e;
       this.player.ref.seek(e);
       this.setState(t);
     }
-    "UNSAFE_componentWillReceiveProps"(e) {
-      this.state.paused !== e.paused && this.setState({
-        paused: e.paused
-      });
+    UNSAFE_componentWillReceiveProps(e) {
+      this.state.paused !== e.paused &&
+        this.setState({
+          paused: e.paused,
+        });
       this.styles.videoStyle !== e.videoStyle && (this.styles.videoStyle = e.videoStyle);
       this.styles.containerStyle !== e.style && (this.styles.containerStyle = e.style);
     }
-    "componentDidMount"() {
+    componentDidMount() {
       this.mounted = true;
     }
-    "componentWillUnmount"() {
+    componentWillUnmount() {
       this.mounted = false;
       this.clearControlTimeout();
     }
-    "renderControl"(e, t) {
+    renderControl(e, t) {
       var n = this,
         o = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {};
-      return React.default.createElement(ReactNative.TouchableHighlight, {
-        underlayColor: "transparent",
-        activeOpacity: .3,
-        onPress: function () {
-          n.resetControlTimeout();
-          t();
+      return React.default.createElement(
+        ReactNative.TouchableHighlight,
+        {
+          underlayColor: 'transparent',
+          activeOpacity: 0.3,
+          onPress: function () {
+            n.resetControlTimeout();
+            t();
+          },
+          style: [g.controls.control, o],
         },
-        style: [g.controls.control, o]
-      }, e);
+        e,
+      );
     }
-    "renderNullControl"() {
+    renderNullControl() {
       return React.default.createElement(ReactNative.View, {
-        style: [g.controls.control]
+        style: [g.controls.control],
       });
     }
-    "renderTopControls"() {
+    renderTopControls() {
       var e = this.props.disableBack ? this.renderNullControl() : this.renderBack(),
-        n = this.props.TopRight ? this.renderControl(this.props.TopRight, this.methods.toggleTimer) : this.renderNullControl();
-      return React.default.createElement(ReactNative.Animated.View, {
-        style: [g.controls.top, {
-          opacity: this.animations.topControl.opacity,
-          marginTop: this.animations.topControl.marginTop
-        }]
-      }, React.default.createElement(ReactNative.ImageBackground, {
-        source: require("./../../assets/images/top-vignette.png"),
-        style: [g.controls.column],
-        imageStyle: [g.controls.vignette]
-      }, React.default.createElement(_SafeAreaView, {
-        style: g.controls.topControlGroup
-      }, e, this.renderTitle(), n)));
+        n = this.props.TopRight
+          ? this.renderControl(this.props.TopRight, this.methods.toggleTimer)
+          : this.renderNullControl();
+      return React.default.createElement(
+        ReactNative.Animated.View,
+        {
+          style: [
+            g.controls.top,
+            {
+              opacity: this.animations.topControl.opacity,
+              marginTop: this.animations.topControl.marginTop,
+            },
+          ],
+        },
+        React.default.createElement(
+          ReactNative.ImageBackground,
+          {
+            source: require('./../../assets/images/top-vignette.png'),
+            style: [g.controls.column],
+            imageStyle: [g.controls.vignette],
+          },
+          React.default.createElement(
+            _SafeAreaView,
+            {
+              style: g.controls.topControlGroup,
+            },
+            e,
+            this.renderTitle(),
+            n,
+          ),
+        ),
+      );
     }
-    "renderBack"() {
-      return this.renderControl(React.default.createElement(components.Icon, {
-        name: this.state.isFullscreen ? icons.default.CHEVRON_DOWN : icons.default.WINDOW_CLOSE,
-        style: g.controls.back
-      }), this.state.isFullscreen ? this.events.onExitFullscreen : this.events.onBack, g.controls.back);
+    renderBack() {
+      return this.renderControl(
+        React.default.createElement(components.Icon, {
+          name: this.state.isFullscreen ? icons.default.CHEVRON_DOWN : icons.default.WINDOW_CLOSE,
+          style: g.controls.back,
+        }),
+        this.state.isFullscreen ? this.events.onExitFullscreen : this.events.onBack,
+        g.controls.back,
+      );
     }
-    "renderFullscreen"() {
-      var e = true === this.state.isFullscreen ? icons.default.FULLSCREEN_EXIT : icons.default.FULLSCREEN;
-      return this.renderControl(React.default.createElement(components.Icon, {
-        name: e
-      }), this.methods.toggleFullscreen, g.controls.fullscreen);
+    renderFullscreen() {
+      var e =
+        true === this.state.isFullscreen ? icons.default.FULLSCREEN_EXIT : icons.default.FULLSCREEN;
+      return this.renderControl(
+        React.default.createElement(components.Icon, {
+          name: e,
+        }),
+        this.methods.toggleFullscreen,
+        g.controls.fullscreen,
+      );
     }
-    "renderBottomControls"() {
+    renderBottomControls() {
       var e = this.props.disableSeekbar ? this.renderNullControl() : this.renderSeekbar(),
         n = this.props.disablePlayPause ? this.renderNullControl() : this.renderPlayPause(),
         o = this.props.disableFullscreen ? this.renderNullControl() : this.renderFullscreen(),
         r = this.props.disableTimer ? this.renderNullControl() : this.renderTimer();
-      return React.default.createElement(ReactNative.Animated.View, {
-        style: [g.controls.bottom, {
-          opacity: this.animations.bottomControl.opacity,
-          marginBottom: this.animations.bottomControl.marginBottom
-        }]
-      }, React.default.createElement(ReactNative.ImageBackground, {
-        source: require("./../../assets/images/bottom-vignette.png"),
-        style: [g.controls.column],
-        imageStyle: [g.controls.vignette]
-      }, e, React.default.createElement(_SafeAreaView, {
-        style: [g.controls.row, g.controls.bottomControlGroup]
-      }, n, r, o)));
+      return React.default.createElement(
+        ReactNative.Animated.View,
+        {
+          style: [
+            g.controls.bottom,
+            {
+              opacity: this.animations.bottomControl.opacity,
+              marginBottom: this.animations.bottomControl.marginBottom,
+            },
+          ],
+        },
+        React.default.createElement(
+          ReactNative.ImageBackground,
+          {
+            source: require('./../../assets/images/bottom-vignette.png'),
+            style: [g.controls.column],
+            imageStyle: [g.controls.vignette],
+          },
+          e,
+          React.default.createElement(
+            _SafeAreaView,
+            {
+              style: [g.controls.row, g.controls.bottomControlGroup],
+            },
+            n,
+            r,
+            o,
+          ),
+        ),
+      );
     }
-    "renderSeekbar"() {
+    renderSeekbar() {
       var e = this;
-      return React.default.createElement(ReactNative.View, {
-        style: g.seekbar.container,
-        collapsable: false
-      }, React.default.createElement(slider.default, {
-        style: {
-          width: '100%'
+      return React.default.createElement(
+        ReactNative.View,
+        {
+          style: g.seekbar.container,
+          collapsable: false,
         },
-        value: this.state.seekerPosition,
-        minimumValue: 0,
-        maximumValue: 1,
-        minimumTrackTintColor: constants.COLORS.primary,
-        maximumTrackTintColor: constants.COLORS.primaryAlpha50,
-        onSlidingStart: function (t) {
-          var n = e.state;
-          e.clearControlTimeout();
-          e.setSeekerPosition(t);
-          n.seeking = true;
-          n.originallyPaused = n.paused;
-          n.scrubbing = false;
-          e.player.scrubbingTimeStep > 0 && (n.paused = true);
-          e.setState(n);
-        },
-        onValueChange: function (t) {
-          e.setSeekerPosition(t);
-          var n = e.state;
-          if (e.player.scrubbingTimeStep > 0 && !n.loading && !n.scrubbing) {
-            var o = e.calculateTimeFromSeekerPosition(),
-              i = 1e3 * Math.abs(n.currentTime - o);
-            o < n.duration && i >= e.player.scrubbingTimeStep && (n.scrubbing = true, e.setState(n), setTimeout(function () {
-              e.player.ref.seek(o, e.player.scrubbingTimeStep);
-            }, 1));
-          }
-        },
-        onSlidingComplete: function (t) {
-          e.setSeekerPosition(t);
-          var n = e.calculateTimeFromSeekerPosition(),
-            o = e.state;
-          n >= o.duration && !o.loading ? (o.paused = true, e.events.onEnd()) : o.scrubbing ? o.seeking = false : (e.seekTo(n), e.setControlTimeout(), o.paused = o.originallyPaused, o.seeking = false);
-          e.setState(o);
-        }
-      }));
+        React.default.createElement(slider.default, {
+          style: {
+            width: '100%',
+          },
+          value: this.state.seekerPosition,
+          minimumValue: 0,
+          maximumValue: 1,
+          minimumTrackTintColor: constants.COLORS.primary,
+          maximumTrackTintColor: constants.COLORS.primaryAlpha50,
+          onSlidingStart: function (t) {
+            var n = e.state;
+            e.clearControlTimeout();
+            e.setSeekerPosition(t);
+            n.seeking = true;
+            n.originallyPaused = n.paused;
+            n.scrubbing = false;
+            e.player.scrubbingTimeStep > 0 && (n.paused = true);
+            e.setState(n);
+          },
+          onValueChange: function (t) {
+            e.setSeekerPosition(t);
+            var n = e.state;
+            if (e.player.scrubbingTimeStep > 0 && !n.loading && !n.scrubbing) {
+              var o = e.calculateTimeFromSeekerPosition(),
+                i = 1e3 * Math.abs(n.currentTime - o);
+              o < n.duration &&
+                i >= e.player.scrubbingTimeStep &&
+                ((n.scrubbing = true),
+                e.setState(n),
+                setTimeout(function () {
+                  e.player.ref.seek(o, e.player.scrubbingTimeStep);
+                }, 1));
+            }
+          },
+          onSlidingComplete: function (t) {
+            e.setSeekerPosition(t);
+            var n = e.calculateTimeFromSeekerPosition(),
+              o = e.state;
+            n >= o.duration && !o.loading
+              ? ((o.paused = true), e.events.onEnd())
+              : o.scrubbing
+                ? (o.seeking = false)
+                : (e.seekTo(n),
+                  e.setControlTimeout(),
+                  (o.paused = o.originallyPaused),
+                  (o.seeking = false));
+            e.setState(o);
+          },
+        }),
+      );
     }
-    "renderPlayPause"() {
+    renderPlayPause() {
       var e = true === this.state.paused ? icons.default.PLAY : icons.default.PAUSE;
-      return this.renderControl(React.default.createElement(components.Icon, {
-        name: e
-      }), this.methods.togglePlayPause, g.controls.playPause);
+      return this.renderControl(
+        React.default.createElement(components.Icon, {
+          name: e,
+        }),
+        this.methods.togglePlayPause,
+        g.controls.playPause,
+      );
     }
-    "renderTitle"() {
-      return this.props.title ? React.default.createElement(ReactNative.View, {
-        style: [g.controls.title]
-      }, React.default.createElement(reactNativeTextTicker.default, {
-        style: [g.controls.text, g.controls.titleText],
-        disabled: !this.state.showControls
-      }, this.props.title || '')) : null;
+    renderTitle() {
+      return this.props.title
+        ? React.default.createElement(
+            ReactNative.View,
+            {
+              style: [g.controls.title],
+            },
+            React.default.createElement(
+              reactNativeTextTicker.default,
+              {
+                style: [g.controls.text, g.controls.titleText],
+                disabled: !this.state.showControls,
+              },
+              this.props.title || '',
+            ),
+          )
+        : null;
     }
-    "renderTimer"() {
-      return this.renderControl(React.default.createElement(_default, {
-        style: g.controls.timerText
-      }, this.calculateTime()), this.methods.toggleTimer, g.controls.timer);
+    renderTimer() {
+      return this.renderControl(
+        React.default.createElement(
+          _default,
+          {
+            style: g.controls.timerText,
+          },
+          this.calculateTime(),
+        ),
+        this.methods.toggleTimer,
+        g.controls.timer,
+      );
     }
-    "renderLoader"() {
-      return this.state.loading ? React.default.createElement(ReactNative.View, {
-        style: g.loader.container
-      }, React.default.createElement(components.Spinkit, {
-        style: g.loader.icon
-      })) : null;
+    renderLoader() {
+      return this.state.loading
+        ? React.default.createElement(
+            ReactNative.View,
+            {
+              style: g.loader.container,
+            },
+            React.default.createElement(components.Spinkit, {
+              style: g.loader.icon,
+            }),
+          )
+        : null;
     }
-    "renderError"() {
-      return this.state.error ? React.default.createElement(ReactNative.View, {
-        style: g.error.container
-      }, React.default.createElement(ReactNative.Image, {
-        style: g.error.icon
-      }), React.default.createElement(_default, {
-        style: g.error.text
-      }, "Video unavailable")) : null;
+    renderError() {
+      return this.state.error
+        ? React.default.createElement(
+            ReactNative.View,
+            {
+              style: g.error.container,
+            },
+            React.default.createElement(ReactNative.Image, {
+              style: g.error.icon,
+            }),
+            React.default.createElement(
+              _default,
+              {
+                style: g.error.text,
+              },
+              'Video unavailable',
+            ),
+          )
+        : null;
     }
-    "render"() {
+    render() {
       var e = this;
-      return React.default.createElement(ReactNative.View, _extends({
-        style: [g.player.container, this.styles.containerStyle]
-      }, this._panResponder.panHandlers, {
-        onLayout: function (t) {
-          e.layoutHeight = t.nativeEvent.layout.height;
-        }
-      }), React.default.createElement(reactNativeVideo.default, _extends({}, this.props, {
-        ref: function (t) {
-          var n, o;
-          null === (n = (o = e.props).onRef) || void 0 === n || n.call(o, t);
-          e.player.ref = t;
-        },
-        resizeMode: this.state.resizeMode,
-        paused: this.state.paused,
-        rate: this.state.rate,
-        onLoadStart: this.events.onLoadStart,
-        onProgress: this.events.onProgress,
-        onError: this.events.onError,
-        onLoad: this.events.onLoad,
-        onEnd: this.events.onEnd,
-        onSeek: this.events.onSeek,
-        style: [g.player.video, this.styles.videoStyle],
-        source: this.props.source
-      })), this.renderError(), this.renderLoader(), this.renderTopControls(), this.renderBottomControls());
+      return React.default.createElement(
+        ReactNative.View,
+        _extends(
+          {
+            style: [g.player.container, this.styles.containerStyle],
+          },
+          this._panResponder.panHandlers,
+          {
+            onLayout: function (t) {
+              e.layoutHeight = t.nativeEvent.layout.height;
+            },
+          },
+        ),
+        React.default.createElement(
+          reactNativeVideo.default,
+          _extends({}, this.props, {
+            ref: function (t) {
+              var n, o;
+              null === (n = (o = e.props).onRef) || void 0 === n || n.call(o, t);
+              e.player.ref = t;
+            },
+            resizeMode: this.state.resizeMode,
+            paused: this.state.paused,
+            rate: this.state.rate,
+            onLoadStart: this.events.onLoadStart,
+            onProgress: this.events.onProgress,
+            onError: this.events.onError,
+            onLoad: this.events.onLoad,
+            onEnd: this.events.onEnd,
+            onSeek: this.events.onSeek,
+            style: [g.player.video, this.styles.videoStyle],
+            source: this.props.source,
+          }),
+        ),
+        this.renderError(),
+        this.renderLoader(),
+        this.renderTopControls(),
+        this.renderBottomControls(),
+      );
     }
   };
 exports.default = m;
@@ -505,7 +689,7 @@ m.defaultProps = {
   title: '',
   rate: 1,
   showTimeRemaining: true,
-  showHours: false
+  showHours: false,
 };
 var g = {
   player: ReactNative.StyleSheet.create({
@@ -514,7 +698,7 @@ var g = {
       backgroundColor: '#000',
       flex: 1,
       alignSelf: 'stretch',
-      justifyContent: 'space-between'
+      justifyContent: 'space-between',
     },
     video: {
       overflow: 'hidden',
@@ -522,8 +706,8 @@ var g = {
       top: 0,
       right: 0,
       bottom: 0,
-      left: 0
-    }
+      left: 0,
+    },
   }),
   error: ReactNative.StyleSheet.create({
     container: {
@@ -534,15 +718,15 @@ var g = {
       bottom: 0,
       left: 0,
       justifyContent: 'center',
-      alignItems: 'center'
+      alignItems: 'center',
     },
     icon: {
-      marginBottom: 16
+      marginBottom: 16,
     },
     text: {
       backgroundColor: 'transparent',
-      color: '#f27474'
-    }
+      color: '#f27474',
+    },
   }),
   loader: ReactNative.StyleSheet.create({
     container: {
@@ -552,8 +736,8 @@ var g = {
       bottom: 0,
       left: 0,
       alignItems: 'center',
-      justifyContent: 'center'
-    }
+      justifyContent: 'center',
+    },
   }),
   controls: ReactNative.StyleSheet.create({
     row: {
@@ -561,7 +745,7 @@ var g = {
       alignItems: 'center',
       justifyContent: 'space-between',
       height: null,
-      width: null
+      width: null,
     },
     column: {
       flexDirection: 'column',
@@ -569,36 +753,36 @@ var g = {
       justifyContent: 'space-between',
       height: null,
       width: null,
-      paddingBottom: 12
+      paddingBottom: 12,
     },
     vignette: {
-      resizeMode: 'stretch'
+      resizeMode: 'stretch',
     },
     control: {
       padding: 16,
       alignItems: 'center',
-      justifyContent: 'center'
+      justifyContent: 'center',
     },
     text: {
       backgroundColor: 'transparent',
       color: '#FFF',
       fontSize: 14,
-      textAlign: 'center'
+      textAlign: 'center',
     },
     pullRight: {
       flexDirection: 'row',
       alignItems: 'center',
-      justifyContent: 'center'
+      justifyContent: 'center',
     },
     top: {
       flex: 1,
       alignItems: 'stretch',
-      justifyContent: 'flex-start'
+      justifyContent: 'flex-start',
     },
     bottom: {
       alignItems: 'stretch',
       flex: 2,
-      justifyContent: 'flex-end'
+      justifyContent: 'flex-end',
     },
     topControlGroup: {
       alignSelf: 'stretch',
@@ -608,7 +792,7 @@ var g = {
       width: null,
       margin: 12,
       marginHorizontal: 6,
-      marginBottom: 18
+      marginBottom: 18,
     },
     bottomControlGroup: {
       alignSelf: 'stretch',
@@ -616,33 +800,33 @@ var g = {
       justifyContent: 'space-between',
       marginLeft: 12,
       marginRight: 12,
-      marginBottom: 8
+      marginBottom: 8,
     },
     fullscreen: {
-      flexDirection: 'row'
+      flexDirection: 'row',
     },
     playPause: {
       position: 'relative',
-      zIndex: 0
+      zIndex: 0,
     },
     title: {
       alignItems: 'center',
       flex: 1,
       flexDirection: 'column',
-      padding: 0
+      padding: 0,
     },
     titleText: {
       fontSize: 16,
       fontWeight: '600',
-      textAlign: 'center'
+      textAlign: 'center',
     },
     timer: {},
     timerText: {
       backgroundColor: 'transparent',
       color: '#FFF',
       fontSize: 16,
-      textAlign: 'right'
-    }
+      textAlign: 'right',
+    },
   }),
   seekbar: ReactNative.StyleSheet.create({
     container: {
@@ -652,10 +836,10 @@ var g = {
       marginRight: 20,
       marginBottom: -8,
       alignItems: 'center',
-      justifyContent: 'center'
-    }
+      justifyContent: 'center',
+    },
   }),
   text: {
-    fontSize: 16
-  }
+    fontSize: 16,
+  },
 };

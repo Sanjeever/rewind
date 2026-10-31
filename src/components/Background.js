@@ -1,52 +1,66 @@
-const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
-const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
-const _appStorage = require("./../storage/index.js");
-Object.defineProperty(exports, "__esModule", {
-  value: true
+const _interopRequireWildcard = require('@babel/runtime/helpers/interopRequireWildcard');
+const _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
+const _appStorage = require('./../storage/index.js');
+Object.defineProperty(exports, '__esModule', {
+  value: true,
 });
 exports.default = void 0;
-var React = _interopRequireWildcard(require("react")),
-  ReactNative = require("react-native"),
-  constants = require("../theme/constants"),
-  names = _interopRequireDefault(require("../events/names")),
-  keys = _interopRequireDefault(require("../storage/keys")),
-  events = require("../events/index"),
-  backgroundModule = require("../theme/background"),
+var React = _interopRequireWildcard(require('react')),
+  ReactNative = require('react-native'),
+  constants = require('../theme/constants'),
+  names = _interopRequireDefault(require('../events/names')),
+  keys = _interopRequireDefault(require('../storage/keys')),
+  events = require('../events/index'),
+  backgroundModule = require('../theme/background'),
   d = class t extends React.PureComponent {
     constructor() {
       var e, r, a;
       for (var l = arguments.length, n = new Array(l), o = 0; o < l; o++) n[o] = arguments[o];
-      return r = a = super(...n), a.state = {
-        url: null,
-        error: false,
-        blur: false
-      }, a.changeBackgroundEmitter = function (e) {
-        (null === e || void 0 === e ? void 0 : e.path) && (_appStorage.storage.save({
-          key: keys.default.background,
-          data: e
-        }).catch(function (e) {
-          return e;
-        }), a.setState({
-          url: e.path,
-          opacity: e.opacity,
-          blur: e.blur,
-          error: false
-        }), (0, backgroundModule.initBackgroundState)());
-      }, a.loadBackground = async function () {
-        a.setState({
-          ...(await backgroundModule.getBackground())
-        });
-      }, r;
+      return (
+        (r = a = super(...n)),
+        (a.state = {
+          url: null,
+          error: false,
+          blur: false,
+        }),
+        (a.changeBackgroundEmitter = function (e) {
+          (null === e || void 0 === e ? void 0 : e.path) &&
+            (_appStorage.storage
+              .save({
+                key: keys.default.background,
+                data: e,
+              })
+              .catch(function (e) {
+                return e;
+              }),
+            a.setState({
+              url: e.path,
+              opacity: e.opacity,
+              blur: e.blur,
+              error: false,
+            }),
+            (0, backgroundModule.initBackgroundState)());
+        }),
+        (a.loadBackground = async function () {
+          a.setState({
+            ...(await backgroundModule.getBackground()),
+          });
+        }),
+        r
+      );
     }
-    "componentDidMount"() {
+    componentDidMount() {
       this.loadBackground();
-      this.sub = events.emitter.addListener(names.default.ChangeBackground, this.changeBackgroundEmitter);
+      this.sub = events.emitter.addListener(
+        names.default.ChangeBackground,
+        this.changeBackgroundEmitter,
+      );
     }
-    "componentWillUnmount"() {
+    componentWillUnmount() {
       var e, t;
       null === (e = (t = this.sub).remove) || void 0 === e || e.call(t);
     }
-    "render"() {
+    render() {
       var e = this.props,
         t = e.coverUrl,
         r = e.bgStyle,
@@ -59,24 +73,39 @@ var React = _interopRequireWildcard(require("react")),
         b = u.blur,
         d = t || i,
         h = void 0 == this.props.blur ? b : this.props.blur;
-      return React.default.createElement(ReactNative.View, {
-        style: [p.background, r]
-      }, d && (!c || t) && React.default.createElement(ReactNative.Image, {
-        style: [{
-          width: '100%',
-          height: '100%',
-          position: 'absolute',
-          top: 0
-        }, l],
-        source: {
-          uri: d
+      return React.default.createElement(
+        ReactNative.View,
+        {
+          style: [p.background, r],
         },
-        blurRadius: h ? 10 : 0
-      }), d && !a ? React.default.createElement(ReactNative.View, {
-        style: [p.msk, {
-          opacity: t ? .3 : 1 - s
-        }]
-      }) : null);
+        d &&
+          (!c || t) &&
+          React.default.createElement(ReactNative.Image, {
+            style: [
+              {
+                width: '100%',
+                height: '100%',
+                position: 'absolute',
+                top: 0,
+              },
+              l,
+            ],
+            source: {
+              uri: d,
+            },
+            blurRadius: h ? 10 : 0,
+          }),
+        d && !a
+          ? React.default.createElement(ReactNative.View, {
+              style: [
+                p.msk,
+                {
+                  opacity: t ? 0.3 : 1 - s,
+                },
+              ],
+            })
+          : null,
+      );
     }
   },
   p = ReactNative.StyleSheet.create({
@@ -87,14 +116,14 @@ var React = _interopRequireWildcard(require("react")),
       right: 0,
       width: '100%',
       height: constants.DEVICE_HEIGHT,
-      backgroundColor: '#000'
+      backgroundColor: '#000',
     },
     msk: {
       position: 'absolute',
       width: '100%',
       height: constants.DEVICE_HEIGHT,
-      backgroundColor: 'rgba(0,0,0,1)'
-    }
+      backgroundColor: 'rgba(0,0,0,1)',
+    },
   }),
   h = d;
 exports.default = h;

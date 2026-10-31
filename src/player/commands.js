@@ -18,5 +18,5 @@ export function subscribePlaybackCommands({play, insert, remove}) {
     emitter.addListener('InsertToList', insert),
     emitter.addListener('DeleteFromQueue', remove),
   ];
-  return () => subscriptions.forEach(subscription => subscription.remove());
+  return () => subscriptions.forEach((subscription) => subscription.remove());
 }

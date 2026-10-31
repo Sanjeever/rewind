@@ -6,8 +6,9 @@ let writes = Promise.resolve();
 function update(key, empty, transform) {
   const write = async () => {
     let value;
-    try { value = await storage.load({key}); }
-    catch (error) {
+    try {
+      value = await storage.load({key});
+    } catch (error) {
       if (error.name !== 'NotFoundError') throw error;
       value = empty;
     }
@@ -18,18 +19,26 @@ function update(key, empty, transform) {
 }
 
 export function cleanedData(tracks, song, api) {
-  const identity = item => api === providers.qqMusic ? item.songmid || item.mid : api === providers.local ? item.path : item.id;
-  return [song, ...tracks.filter(item => identity(item) !== identity(song))];
+  const identity = (item) =>
+    api === providers.qqMusic
+      ? item.songmid || item.mid
+      : api === providers.local
+        ? item.path
+        : item.id;
+  return [song, ...tracks.filter((item) => identity(item) !== identity(song))];
 }
 
 export function musicHistory(song, api) {
   if (!song) return Promise.resolve();
-  return update(keys.musicHistory, {netEase: [], qqMusic: [], local: []}, previous => ({
+  return update(keys.musicHistory, {netEase: [], qqMusic: [], local: []}, (previous) => ({
     ...previous,
     [api]: cleanedData(previous[api] || [], song, api),
   }));
 }
 
 export function searchHistory(text, api) {
-  return update(keys.searchHistory, [], previous => [{text, api}, ...previous.filter(item => item.text !== text)]);
+  return update(keys.searchHistory, [], (previous) => [
+    {text, api},
+    ...previous.filter((item) => item.text !== text),
+  ]);
 }

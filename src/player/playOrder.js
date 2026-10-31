@@ -1,4 +1,4 @@
-const wrap = (index, length) => length ? (index + length) % length : -1;
+const wrap = (index, length) => (length ? (index + length) % length : -1);
 
 export function getNextPlayIndex({type, tracks, playingIndex}) {
   return wrap(playingIndex + (type === 'next' ? 1 : -1), tracks.length);
@@ -20,14 +20,16 @@ export function createPlayOrder(length, random = Math.random) {
 
 export function reconcilePlayOrder(previousKeys, keys, order, currentKey, nextKeys = []) {
   const indices = new Map(keys.map((key, index) => [key, index]));
-  const next = [...new Set(nextKeys)].filter(key => key !== currentKey && indices.has(key));
+  const next = [...new Set(nextKeys)].filter((key) => key !== currentKey && indices.has(key));
   const nextSet = new Set(next);
-  const retained = order.map(index => previousKeys[index]).filter(key => indices.has(key) && !nextSet.has(key));
+  const retained = order
+    .map((index) => previousKeys[index])
+    .filter((key) => indices.has(key) && !nextSet.has(key));
   const known = new Set([...retained, ...next]);
-  const added = keys.filter(key => !known.has(key));
-  retained.push(...createPlayOrder(added.length).map(index => added[index]));
+  const added = keys.filter((key) => !known.has(key));
+  retained.push(...createPlayOrder(added.length).map((index) => added[index]));
   retained.splice(retained.indexOf(currentKey) + 1, 0, ...next);
-  return retained.map(key => indices.get(key));
+  return retained.map((key) => indices.get(key));
 }
 
 export function getNextPlayIndexByPagerPos({pos, playMode, randomArray, playingIndex, len}) {

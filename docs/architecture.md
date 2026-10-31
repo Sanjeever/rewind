@@ -38,14 +38,14 @@
 
 下表提供阅读入口，不穷举调用链。按本次变更选择相关边界，再沿引用和同目录测试扩展检查。
 
-| 概念 | 实现与可执行定义入口 |
-| --- | --- |
-| 队列归属与提交 | [应用入口](../src/App.js)、[队列提交测试](../src/App.test.cjs)、[队列规则](../src/player/queue.js) |
-| 播放指令、状态与竞态 | [播放控制](../src/player/PlayerController.js)、[播放命令](../src/player/commands.js)、[原生播放器](../android/app/src/main/kotlin/com/kuss/rewind/player/) |
-| 歌曲身份与展示结构 | [身份规则](../src/services/trackFields.js)、[歌曲结构](../src/services/trackInfo.js) |
-| 搜索与请求生命周期 | [搜索页面](../src/screens/SearchPage.js)、[歌曲结果](../src/modules/SongSearchResults.js)、[建议](../src/modules/SearchSuggestions.js)、[搜索服务](../src/services/search.js) |
-| 音源与外部错误 | [音源解析](../src/player/trackUrl.js)、[QQ 请求](../src/services/qqmusic/http.js)、[备用来源](../src/services/provider.js)、[下载](../src/services/download.js) |
-| 迁移与文件写入 | [初始化](../src/storage/index.js)、[迁移](../src/storage/migrate.cjs)、[歌单文件](../src/storage/playlistFiles.js)、[路径](../src/storage/paths.js)、[原生存储](../android/app/src/main/kotlin/com/kuss/rewind/RewindStorageModule.kt) |
-| 设置默认值与合并 | [默认值](../src/settings/defaults.js)、[合并规则](../src/settings/merge.cjs) |
+| 概念                 | 实现与可执行定义入口                                                                                                                                                                                                                   |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 队列归属与提交       | [应用入口](../src/App.js)、[队列提交测试](../src/App.test.cjs)、[队列规则](../src/player/queue.js)                                                                                                                                     |
+| 播放指令、状态与竞态 | [播放控制](../src/player/PlayerController.js)、[播放命令](../src/player/commands.js)、[原生播放器](../android/app/src/main/kotlin/com/kuss/rewind/player/)                                                                             |
+| 歌曲身份与展示结构   | [身份规则](../src/services/trackFields.js)、[歌曲结构](../src/services/trackInfo.js)                                                                                                                                                   |
+| 搜索与请求生命周期   | [搜索页面](../src/screens/SearchPage.js)、[歌曲结果](../src/modules/SongSearchResults.js)、[建议](../src/modules/SearchSuggestions.js)、[搜索服务](../src/services/search.js)                                                          |
+| 音源与外部错误       | [音源解析](../src/player/trackUrl.js)、[QQ 请求](../src/services/qqmusic/http.js)、[备用来源](../src/services/provider.js)、[下载](../src/services/download.js)                                                                        |
+| 迁移与文件写入       | [初始化](../src/storage/index.js)、[迁移](../src/storage/migrate.cjs)、[歌单文件](../src/storage/playlistFiles.js)、[路径](../src/storage/paths.js)、[原生存储](../android/app/src/main/kotlin/com/kuss/rewind/RewindStorageModule.kt) |
+| 设置默认值与合并     | [默认值](../src/settings/defaults.js)、[合并规则](../src/settings/merge.cjs)                                                                                                                                                           |
 
 测试是否覆盖某条约束，需检查其断言和隔离边界；文档中记录的设计意图不能由 mock 测试或历史验收自动证明。当前验收范围见[验证记录](validation.md)。

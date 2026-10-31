@@ -1,17 +1,17 @@
-const _default = require("./../components/Text.js").default;
-const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
-Object.defineProperty(exports, "__esModule", {
-  value: true
+const _default = require('./../components/Text.js').default;
+const _interopRequireWildcard = require('@babel/runtime/helpers/interopRequireWildcard');
+Object.defineProperty(exports, '__esModule', {
+  value: true,
 });
 exports.default = void 0;
-var React = _interopRequireWildcard(require("react")),
-  ReactNative = require("react-native"),
-  components = require("../components/index"),
+var React = _interopRequireWildcard(require('react')),
+  ReactNative = require('react-native'),
+  components = require('../components/index'),
   s = class t extends React.PureComponent {
     constructor() {
       return super(...arguments);
     }
-    "render"() {
+    render() {
       var e = this,
         t = this.props,
         r = t.content,
@@ -21,109 +21,169 @@ var React = _interopRequireWildcard(require("react")),
         u = t.beReplieds,
         d = t.onUserInfo,
         m = t.item;
-      return React.default.createElement(ReactNative.View, {
-        style: c.comment
-      }, React.default.createElement(ReactNative.View, {
-        style: {
-          flexDirection: 'row',
-          alignItems: 'center'
-        }
-      }, React.default.createElement(ReactNative.TouchableOpacity, {
-        onPress: function () {
-          return d(m);
-        }
-      }, React.default.createElement(ReactNative.View, {
-        style: {
-          alignItems: 'center',
-          justifyContent: 'center'
-        }
-      }, React.default.createElement(ReactNative.Image, {
-        source: {
-          uri: s
+      return React.default.createElement(
+        ReactNative.View,
+        {
+          style: c.comment,
         },
-        style: c.userAvatar
-      }))), React.default.createElement(ReactNative.View, {
-        style: c.nickItem
-      }, React.default.createElement(components.Selectable, {
-        onCopy: function () {
-          return e.copy(a);
-        },
-        style: c.nickname
-      }, a), React.default.createElement(_default, {
-        style: c.timestamp
-      }, l))), React.default.createElement(ReactNative.View, {
-        style: c.content
-      }, React.default.createElement(components.Selectable, {
-        style: c.subtitle
-      }, r), u ? u.map(function (e, t) {
-        return React.default.createElement(ReactNative.View, {
-          style: c.replied,
-          key: t
-        }, React.default.createElement(ReactNative.View, {
-          style: c.repliedUser
-        }, React.default.createElement(ReactNative.TouchableOpacity, {
-          onPress: function () {
-            return d(e);
-          }
-        }, React.default.createElement(ReactNative.Image, {
-          source: {
-            uri: e.user.avatarUrl + '?param=100y100'
+        React.default.createElement(
+          ReactNative.View,
+          {
+            style: {
+              flexDirection: 'row',
+              alignItems: 'center',
+            },
           },
-          style: c.repliedAvatar
-        })), React.default.createElement(components.Selectable, null, e.user.nickname)), React.default.createElement(components.Selectable, {
-          style: c.subtitle
-        }, e.content));
-      }) : null));
+          React.default.createElement(
+            ReactNative.TouchableOpacity,
+            {
+              onPress: function () {
+                return d(m);
+              },
+            },
+            React.default.createElement(
+              ReactNative.View,
+              {
+                style: {
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                },
+              },
+              React.default.createElement(ReactNative.Image, {
+                source: {
+                  uri: s,
+                },
+                style: c.userAvatar,
+              }),
+            ),
+          ),
+          React.default.createElement(
+            ReactNative.View,
+            {
+              style: c.nickItem,
+            },
+            React.default.createElement(
+              components.Selectable,
+              {
+                onCopy: function () {
+                  return e.copy(a);
+                },
+                style: c.nickname,
+              },
+              a,
+            ),
+            React.default.createElement(
+              _default,
+              {
+                style: c.timestamp,
+              },
+              l,
+            ),
+          ),
+        ),
+        React.default.createElement(
+          ReactNative.View,
+          {
+            style: c.content,
+          },
+          React.default.createElement(
+            components.Selectable,
+            {
+              style: c.subtitle,
+            },
+            r,
+          ),
+          u
+            ? u.map(function (e, t) {
+                return React.default.createElement(
+                  ReactNative.View,
+                  {
+                    style: c.replied,
+                    key: t,
+                  },
+                  React.default.createElement(
+                    ReactNative.View,
+                    {
+                      style: c.repliedUser,
+                    },
+                    React.default.createElement(
+                      ReactNative.TouchableOpacity,
+                      {
+                        onPress: function () {
+                          return d(e);
+                        },
+                      },
+                      React.default.createElement(ReactNative.Image, {
+                        source: {
+                          uri: e.user.avatarUrl + '?param=100y100',
+                        },
+                        style: c.repliedAvatar,
+                      }),
+                    ),
+                    React.default.createElement(components.Selectable, null, e.user.nickname),
+                  ),
+                  React.default.createElement(
+                    components.Selectable,
+                    {
+                      style: c.subtitle,
+                    },
+                    e.content,
+                  ),
+                );
+              })
+            : null,
+        ),
+      );
     }
   };
 exports.default = s;
 var c = ReactNative.StyleSheet.create({
   comment: {
     paddingHorizontal: 20,
-    marginTop: 15
+    marginTop: 15,
   },
   content: {
     flex: 1,
-    paddingLeft: 45
+    paddingLeft: 45,
   },
   nickItem: {
-    marginLeft: 10
+    marginLeft: 10,
   },
   replied: {
     borderColor: '#eee',
     borderWidth: ReactNative.StyleSheet.hairlineWidth,
     borderRadius: 5,
     padding: 10,
-    marginTop: 10
+    marginTop: 10,
   },
   subtitle: {
-    opacity: .9,
+    opacity: 0.9,
     fontSize: 14,
-    lineHeight: 20
+    lineHeight: 20,
   },
   userAvatar: {
     height: 35,
     width: 35,
-    borderRadius: 17.5
+    borderRadius: 17.5,
   },
   repliedUser: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 5
+    marginBottom: 5,
   },
   repliedAvatar: {
     height: 30,
     width: 30,
     borderRadius: 15,
-    marginRight: 10
+    marginRight: 10,
   },
   timestamp: {
     marginBottom: 5,
     fontSize: 12,
-    opacity: .8
+    opacity: 0.8,
   },
   nickname: {
     fontWeight: 'bold',
-    fontSize: 15
-  }
+    fontSize: 15,
+  },
 });

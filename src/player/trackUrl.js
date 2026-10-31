@@ -2,8 +2,13 @@ import providers from '../services/providers';
 import {Netease, QQMusic, provider} from '../services';
 
 async function neteaseUrl(song, allowPaid) {
-  const response = await (song.fee > 0 && allowPaid === true ? Netease.musicUrl({id: song.id}) : Netease.freeMusicUrl({id: song.id}));
-  if (response?.code !== 200) throw new Error(`网易云音源失败（${response?.code ?? '无状态码'}）：${response?.message || '服务拒绝请求'}`);
+  const response = await (song.fee > 0 && allowPaid === true
+    ? Netease.musicUrl({id: song.id})
+    : Netease.freeMusicUrl({id: song.id}));
+  if (response?.code !== 200)
+    throw new Error(
+      `网易云音源失败（${response?.code ?? '无状态码'}）：${response?.message || '服务拒绝请求'}`,
+    );
   const result = response.data?.[0];
   if (!result) throw new Error('网易云音源响应缺少歌曲');
   if (result.freeTrialInfo && !(result.payed > 0)) throw new Error('网易云歌曲仅提供试听');

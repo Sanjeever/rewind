@@ -1,7 +1,13 @@
-Object.defineProperty(exports, "__esModule", {
-  value: true
+Object.defineProperty(exports, '__esModule', {
+  value: true,
 });
-exports.debounce = exports.isNumber = exports.noop = exports.isArray = exports.isString = exports.isObject = void 0;
+exports.debounce =
+  exports.isNumber =
+  exports.noop =
+  exports.isArray =
+  exports.isString =
+  exports.isObject =
+    void 0;
 exports.isObject = function (n) {
   return n === Object(n);
 };

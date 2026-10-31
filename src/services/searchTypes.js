@@ -1,5 +1,5 @@
-Object.defineProperty(exports, "__esModule", {
-  value: true
+Object.defineProperty(exports, '__esModule', {
+  value: true,
 });
 exports.default = void 0;
 var t = {
@@ -7,6 +7,6 @@ var t = {
   singers: 1,
   albums: 2,
   playlists: 3,
-  mvs: 4
+  mvs: 4,
 };
 exports.default = t;

@@ -1,11 +1,11 @@
-const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
-Object.defineProperty(exports, "__esModule", {
-  value: true
+const _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
+Object.defineProperty(exports, '__esModule', {
+  value: true,
 });
 exports.default = void 0;
-var pinyin = require("pinyin-pro").pinyin,
-  trackInfo = require("../services/trackInfo"),
-  utils = require("./index"),
+var pinyin = require('pinyin-pro').pinyin,
+  trackInfo = require('../services/trackInfo'),
+  utils = require('./index'),
   c = {
     ':1': 1,
     ':11': 1,
@@ -13,7 +13,7 @@ var pinyin = require("pinyin-pro").pinyin,
     ':22': 1,
     ':3': 1,
     ':33': 1,
-    ':4': 1
+    ':4': 1,
   },
   o = {
     bySong: ':1',
@@ -22,7 +22,7 @@ var pinyin = require("pinyin-pro").pinyin,
     byArtistReversed: ':22',
     byAlbum: ':3',
     byAlbumReversed: ':33',
-    byRandom: ':4'
+    byRandom: ':4',
   },
   l = new RegExp(/:\w{1,2}/gi),
   b = function (e) {
@@ -38,13 +38,18 @@ var pinyin = require("pinyin-pro").pinyin,
     var n = r.replace(l, ''),
       t = r.replace(new RegExp(n, 'gi'), ''),
       a = m(e, t);
-    t !== o.bySongReversed && t !== o.byArtistReversed && t !== o.byAlbumReversed || (a = a.reverse());
+    (t !== o.bySongReversed && t !== o.byArtistReversed && t !== o.byAlbumReversed) ||
+      (a = a.reverse());
     return a;
   },
   m = function (e, r) {
-    return r === o.byRandom ? (0, utils.shuffle)(e) : g(r) ? e.sort(function (e, n) {
-      return p(e, n, r);
-    }) : e;
+    return r === o.byRandom
+      ? (0, utils.shuffle)(e)
+      : g(r)
+        ? e.sort(function (e, n) {
+            return p(e, n, r);
+          })
+        : e;
   },
   p = function (e, r, n) {
     var t = (0, trackInfo.extractBasicInfo)(e),
@@ -76,9 +81,13 @@ var pinyin = require("pinyin-pro").pinyin,
     return c;
   },
   y = function (e) {
-    return (null === e || void 0 === e ? void 0 : e.map(function (e) {
-      return e.name;
-    })) || [];
+    return (
+      (null === e || void 0 === e
+        ? void 0
+        : e.map(function (e) {
+            return e.name;
+          })) || []
+    );
   },
   d = function (e) {
     return 'string' == typeof e ? e : y(e).join('');
@@ -122,6 +131,6 @@ var pinyin = require("pinyin-pro").pinyin,
         return e._searchable.match(t);
       });
     },
-    searchTypesMap: o
+    searchTypesMap: o,
   };
 exports.default = R;

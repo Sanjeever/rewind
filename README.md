@@ -27,11 +27,11 @@ pnpm android --no-packager
 
 ## 项目结构
 
-| 代码位置 | 职责 |
-| --- | --- |
-| `src/screens/`、`src/components/`、`src/modules/`、`src/navigation/` | 页面、业务组件与导航 |
-| `src/player/`、`src/services/`、`src/storage/` | 播放业务、音乐服务与持久化 |
-| `src/native/`、`android/app/src/main/kotlin/` | JS 原生接口与 Android 实现 |
+| 代码位置                                                               | 职责                                 |
+| ---------------------------------------------------------------------- | ------------------------------------ |
+| `src/screens/`、`src/components/`、`src/modules/`、`src/navigation/`   | 页面、业务组件与导航                 |
+| `src/player/`、`src/services/`、`src/storage/`                         | 播放业务、音乐服务与持久化           |
+| `src/native/`、`android/app/src/main/kotlin/`                          | JS 原生接口与 Android 实现           |
 | `assets/`、`android/app/src/main/res/`、`android/app/src/main/assets/` | Metro 图片与动画、Android 资源和字体 |
 
 ## 开发文档

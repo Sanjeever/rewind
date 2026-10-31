@@ -1,5 +1,5 @@
-Object.defineProperty(exports, "__esModule", {
-  value: true
+Object.defineProperty(exports, '__esModule', {
+  value: true,
 });
 exports.default = void 0;
 exports.default = {
@@ -25,5 +25,5 @@ exports.default = {
   netEasePlaylistCache: 'netEasePlaylistCache',
   firstTime: 'firstTime',
   lastPlayedTracks: 'lastPlayedTracks',
-  lastPlayedTime: 'lastPlayedTime'
+  lastPlayedTime: 'lastPlayedTime',
 };

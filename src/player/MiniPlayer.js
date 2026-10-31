@@ -1,20 +1,20 @@
-const _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
-const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
-Object.defineProperty(exports, "__esModule", {
-  value: true
+const _interopRequireWildcard = require('@babel/runtime/helpers/interopRequireWildcard');
+const _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
+Object.defineProperty(exports, '__esModule', {
+  value: true,
 });
 exports.default = void 0;
-var React = _interopRequireWildcard(require("react")),
-  ReactNative = require("react-native"),
-  FadingEdge = _interopRequireDefault(require("../components/FadingEdge")),
-  constants = require("../theme/constants"),
-  MiniPlayerContent = _interopRequireDefault(require("./MiniPlayerContent")),
-  PlayButton = _interopRequireDefault(require("./PlayButton")),
+var React = _interopRequireWildcard(require('react')),
+  ReactNative = require('react-native'),
+  FadingEdge = _interopRequireDefault(require('../components/FadingEdge')),
+  constants = require('../theme/constants'),
+  MiniPlayerContent = _interopRequireDefault(require('./MiniPlayerContent')),
+  PlayButton = _interopRequireDefault(require('./PlayButton')),
   p = class t extends React.PureComponent {
     constructor() {
       return super(...arguments);
     }
-    "render"() {
+    render() {
       var e = this.props,
         t = e.playingIndex,
         r = e.tracks,
@@ -31,59 +31,77 @@ var React = _interopRequireWildcard(require("react")),
         C = e.currentMiniLyric,
         H = e.onNowPlaying,
         P = e.randomArray;
-      return React.default.createElement(ReactNative.View, {
-        ref: instance => this.imgCon = instance,
-        style: [{
-          height: '100%',
-          width: '100%',
-          alignItems: 'center',
-          flexDirection: 'row',
-          paddingRight: 5
-        }, h ? {
-          elevation: 5
-        } : {
-          borderTopColor: constants.COLORS.primaryAlpha10,
-          borderTopWidth: ReactNative.StyleSheet.hairlineWidth
-        }]
-      }, React.default.createElement(FadingEdge.default, {
-        left: 20,
-        right: 100
-      }, React.default.createElement(MiniPlayerContent.default, {
-        coverStyle: {
-          alignItems: 'center',
-          justifyContent: 'center'
+      return React.default.createElement(
+        ReactNative.View,
+        {
+          ref: (instance) => (this.imgCon = instance),
+          style: [
+            {
+              height: '100%',
+              width: '100%',
+              alignItems: 'center',
+              flexDirection: 'row',
+              paddingRight: 5,
+            },
+            h
+              ? {
+                  elevation: 5,
+                }
+              : {
+                  borderTopColor: constants.COLORS.primaryAlpha10,
+                  borderTopWidth: ReactNative.StyleSheet.hairlineWidth,
+                },
+          ],
         },
-        index: t,
-        data: r,
-        next: function () {
-          return n('next');
-        },
-        prev: function () {
-          return n('pre');
-        },
-        playerOpen: l,
-        playMode: p,
-        onPress: c,
-        isRound: g,
-        unknown: m,
-        togglePlay: y,
-        currentMiniLyric: C,
-        randomArray: P
-      })), React.default.createElement(ReactNative.View, {
-        style: {
-          width: 60,
-          height: '100%',
-          alignItems: 'center',
-          justifyContent: 'center'
-        }
-      }, React.default.createElement(PlayButton.default, {
-        size: 25,
-        spinSize: 30,
-        playState: f,
-        loaded: b,
-        onPress: y,
-        onLongPress: H
-      })));
+        React.default.createElement(
+          FadingEdge.default,
+          {
+            left: 20,
+            right: 100,
+          },
+          React.default.createElement(MiniPlayerContent.default, {
+            coverStyle: {
+              alignItems: 'center',
+              justifyContent: 'center',
+            },
+            index: t,
+            data: r,
+            next: function () {
+              return n('next');
+            },
+            prev: function () {
+              return n('pre');
+            },
+            playerOpen: l,
+            playMode: p,
+            onPress: c,
+            isRound: g,
+            unknown: m,
+            togglePlay: y,
+            currentMiniLyric: C,
+            randomArray: P,
+          }),
+        ),
+        React.default.createElement(
+          ReactNative.View,
+          {
+            style: {
+              width: 60,
+              height: '100%',
+              alignItems: 'center',
+              justifyContent: 'center',
+            },
+          },
+          React.default.createElement(PlayButton.default, {
+            size: 25,
+            spinSize: 30,
+            playState: f,
+            loaded: b,
+            onPress: y,
+            onLongPress: H,
+          }),
+        ),
+      );
     }
   };
 exports.default = p;

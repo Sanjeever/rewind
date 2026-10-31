@@ -3,9 +3,32 @@ const {normalizeTrack, extractFullInfo, getTrackKey} = require('./trackInfo.js')
 
 test('网易云、QQ 与本地歌曲使用一致的展示结构，保留原始数据供旧接口与存储使用', () => {
   const sources = [
-    {api: 'netEase', id: 1, name: '歌曲', ar: [{name: '歌手'}], al: {name: '专辑', picUrl: 'https://cover'}, dt: 3000},
-    {api: 'qqMusic', mid: 'qq1', name: '歌曲', singer: [{name: '歌手'}], album: {name: '专辑', mid: 'album1'}, interval: 3},
-    {api: 'local', id: 1, title: '歌曲', singer: '歌手', album: '专辑', albumId: 0, path: 'content://media/1', duration: 3000},
+    {
+      api: 'netEase',
+      id: 1,
+      name: '歌曲',
+      ar: [{name: '歌手'}],
+      al: {name: '专辑', picUrl: 'https://cover'},
+      dt: 3000,
+    },
+    {
+      api: 'qqMusic',
+      mid: 'qq1',
+      name: '歌曲',
+      singer: [{name: '歌手'}],
+      album: {name: '专辑', mid: 'album1'},
+      interval: 3,
+    },
+    {
+      api: 'local',
+      id: 1,
+      title: '歌曲',
+      singer: '歌手',
+      album: '专辑',
+      albumId: 0,
+      path: 'content://media/1',
+      duration: 3000,
+    },
   ];
   for (const source of sources) {
     const track = normalizeTrack(source);

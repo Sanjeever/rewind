@@ -13,7 +13,12 @@ export async function initializeStorage() {
     destination: backend,
     validatePlaylists: () => playlistFiles.validate(),
   });
-  storage = new Storage({size: 2048, storageBackend: backend, defaultExpires: null, enableCache: false});
+  storage = new Storage({
+    size: 2048,
+    storageBackend: backend,
+    defaultExpires: null,
+    enableCache: false,
+  });
   await storage._mapPromise;
   let megabytes = 200;
   try {

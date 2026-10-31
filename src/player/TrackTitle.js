@@ -1,34 +1,34 @@
-const _default = require("./../components/Text.js").default;
-const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
-Object.defineProperty(exports, "__esModule", {
-  value: true
+const _default = require('./../components/Text.js').default;
+const _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
+Object.defineProperty(exports, '__esModule', {
+  value: true,
 });
 exports.default = void 0;
-var React = _interopRequireDefault(require("react")),
-  ReactNative = require("react-native"),
-  components = require("../components/index"),
-  constants = require("../theme/constants"),
-  u = .65 * constants.DEVICE_WIDTH,
+var React = _interopRequireDefault(require('react')),
+  ReactNative = require('react-native'),
+  components = require('../components/index'),
+  constants = require('../theme/constants'),
+  u = 0.65 * constants.DEVICE_WIDTH,
   f = ReactNative.StyleSheet.create({
     songTitleCon: {
       flex: 1,
       width: constants.DEVICE_WIDTH,
       justifyContent: 'center',
-      alignItems: 'center'
+      alignItems: 'center',
     },
     songTitle: {
       fontSize: 16,
-      fontWeight: 'bold'
+      fontWeight: 'bold',
     },
     songAuthor: {
-      opacity: .7
+      opacity: 0.7,
     },
     alias: {
       marginLeft: 15,
       fontSize: 13,
       color: 'rgba(255,255,255,0.7)',
-      fontWeight: 'normal'
-    }
+      fontWeight: 'normal',
+    },
   }),
   c = function (e) {
     var t = e.title,
@@ -39,36 +39,70 @@ var React = _interopRequireDefault(require("react")),
       c = e.onPress,
       d = e.alias,
       g = e.numberOfLines;
-    return React.default.createElement(ReactNative.View, {
-      accessible: false,
-      style: [n || f.songTitleCon, c && {
-        justifyContent: 'center',
-        alignItems: 'center'
-      }]
-    }, t ? React.default.createElement(_default, {
-      style: [f.songTitle, ReactNative.StyleSheet.flatten(i)],
-      numberOfLines: g || 1
-    }, t, d && React.default.createElement(_default, {
-      style: f.alias
-    }, " (", d, ")")) : null, (null === l || void 0 === l ? void 0 : l.length) > 0 ? React.default.createElement(_default, {
-      numberOfLines: g || 1,
-      style: [f.songAuthor, ReactNative.StyleSheet.flatten(s)]
-    }, l) : null, Boolean(c) && React.default.createElement(components.TouchableBorderless, {
-      onPress: c,
-      style: {
-        position: 'absolute',
-        padding: 50
+    return React.default.createElement(
+      ReactNative.View,
+      {
+        accessible: false,
+        style: [
+          n || f.songTitleCon,
+          c && {
+            justifyContent: 'center',
+            alignItems: 'center',
+          },
+        ],
       },
-      size: u
-    }, React.default.createElement(ReactNative.View, {
-      style: {
-        height: '100%',
-        width: '100%',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: 'rgba(0,0,0,0)',
-        flex: 1
-      }
-    })));
+      t
+        ? React.default.createElement(
+            _default,
+            {
+              style: [f.songTitle, ReactNative.StyleSheet.flatten(i)],
+              numberOfLines: g || 1,
+            },
+            t,
+            d &&
+              React.default.createElement(
+                _default,
+                {
+                  style: f.alias,
+                },
+                ' (',
+                d,
+                ')',
+              ),
+          )
+        : null,
+      (null === l || void 0 === l ? void 0 : l.length) > 0
+        ? React.default.createElement(
+            _default,
+            {
+              numberOfLines: g || 1,
+              style: [f.songAuthor, ReactNative.StyleSheet.flatten(s)],
+            },
+            l,
+          )
+        : null,
+      Boolean(c) &&
+        React.default.createElement(
+          components.TouchableBorderless,
+          {
+            onPress: c,
+            style: {
+              position: 'absolute',
+              padding: 50,
+            },
+            size: u,
+          },
+          React.default.createElement(ReactNative.View, {
+            style: {
+              height: '100%',
+              width: '100%',
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: 'rgba(0,0,0,0)',
+              flex: 1,
+            },
+          }),
+        ),
+    );
   };
 exports.default = c;

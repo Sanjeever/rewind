@@ -3,8 +3,14 @@ export default {
   get(name) {
     const screen = Dimensions.get('screen');
     const window = Dimensions.get('window');
-    return {REAL_WINDOW_HEIGHT: screen.height, REAL_WINDOW_WIDTH: screen.width,
+    return {
+      REAL_WINDOW_HEIGHT: screen.height,
+      REAL_WINDOW_WIDTH: screen.width,
       STATUS_BAR_HEIGHT: StatusBar.currentHeight ?? 0,
-      SOFT_MENU_BAR_HEIGHT: Math.max(0, screen.height - window.height - (StatusBar.currentHeight ?? 0))}[name];
+      SOFT_MENU_BAR_HEIGHT: Math.max(
+        0,
+        screen.height - window.height - (StatusBar.currentHeight ?? 0),
+      ),
+    }[name];
   },
 };

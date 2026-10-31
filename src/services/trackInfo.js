@@ -1,5 +1,14 @@
 import providers from './providers.js';
-import {getAlbum, getAlias, getApi, getImg, getSinger, getSong, getTrackKey, getUid} from './trackFields.js';
+import {
+  getAlbum,
+  getAlias,
+  getApi,
+  getImg,
+  getSinger,
+  getSong,
+  getTrackKey,
+  getUid,
+} from './trackFields.js';
 
 export {getUid, getTrackKey};
 
@@ -26,10 +35,15 @@ export function normalizeTrack(source, api = getApi(source)) {
     key: getTrackKey(source, api),
     api: source.api || api,
     title: getSong(source),
-    artists: Array.isArray(singers) ? singers.map(artist => artist.name) : singers ? [singers] : [],
+    artists: Array.isArray(singers)
+      ? singers.map((artist) => artist.name)
+      : singers
+        ? [singers]
+        : [],
     album: getAlbum(source),
     artwork: getImg(source, 'small', source.api || api),
-    duration: source.dt ?? source.duration ?? (source.interval == null ? null : source.interval * 1000),
+    duration:
+      source.dt ?? source.duration ?? (source.interval == null ? null : source.interval * 1000),
     source,
   };
 }
@@ -41,7 +55,11 @@ export function extractSingerItem(song, api) {
 }
 
 export function extractSingerName(song, api) {
-  return extractSingerItem(song, api)?.map(artist => artist.name).join('/') || '';
+  return (
+    extractSingerItem(song, api)
+      ?.map((artist) => artist.name)
+      .join('/') || ''
+  );
 }
 
 export function extractAlbumName(song, api) {
@@ -50,6 +68,7 @@ export function extractAlbumName(song, api) {
 
 export function extractAlbumItem(song, api) {
   if (api === providers.netEase) return song.al || song.album;
-  if (api === providers.qqMusic) return song.album || {albummid: song.albummid, albumname: song.albumname};
+  if (api === providers.qqMusic)
+    return song.album || {albummid: song.albummid, albumname: song.albumname};
   return '';
 }

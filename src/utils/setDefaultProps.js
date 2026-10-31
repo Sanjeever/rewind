@@ -1,6 +1,6 @@
-const _objectSpread = require("@babel/runtime/helpers/objectSpread2");
-Object.defineProperty(exports, "__esModule", {
-  value: true
+const _objectSpread = require('@babel/runtime/helpers/objectSpread2');
+Object.defineProperty(exports, '__esModule', {
+  value: true,
 });
 exports.default = void 0;
 exports.default = function (e, r) {
@@ -10,7 +10,7 @@ exports.default = function (e, r) {
   e.render = function (e) {
     var l = e;
     e = _objectSpread({}, e, {
-      style: [r.style, e.style]
+      style: [r.style, e.style],
     });
     try {
       return t.apply(this, arguments);

@@ -1,9 +1,9 @@
-const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
-Object.defineProperty(exports, "__esModule", {
-  value: true
+const _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
+Object.defineProperty(exports, '__esModule', {
+  value: true,
 });
 exports.settingsMap = exports.sectionsMap = exports.defaultSettings = void 0;
-var locales = _interopRequireDefault(require("../locales/index")),
+var locales = _interopRequireDefault(require('../locales/index')),
   n = locales.default.SETTINGS,
   _ = n.NAVBAR_PADDING,
   r = n.DEFAULT_HIGH_QUALITY,
@@ -34,103 +34,128 @@ var locales = _interopRequireDefault(require("../locales/index")),
   b = {
     navbarPadding: {
       title: _,
-      on: false
+      on: false,
     },
     defaultHighQuality: {
       title: r,
       subtitle: d,
-      on: false
+      on: false,
     },
     hideStatusBar: {
       title: T,
-      on: false
+      on: false,
     },
     reverseGestureHands: {
       title: H,
-      on: false
+      on: false,
     },
     isRound: {
       title: E,
-      on: true
+      on: true,
     },
     hideRoundSlider: {
       title: y,
-      on: false
+      on: false,
     },
     hideBottomTip: {
       title: I,
-      on: true
+      on: true,
     },
     hidePlayingTime: {
       title: L,
-      on: true
+      on: true,
     },
     autoErrorNext: {
       title: R,
-      on: true
+      on: true,
     },
     hideFloatLyric: {
       title: u,
-      on: true
+      on: true,
     },
     playWithOthers: {
       title: s,
-      on: false
+      on: false,
     },
     cloneThroughLinking: {
       title: A,
-      on: false
+      on: false,
     },
     recordPlayCount: {
       title: O,
       subtitle: S,
-      on: false
+      on: false,
     },
     bottomPadding: {
       title: P,
       subtitle: 0,
-      on: true
+      on: true,
     },
     bottomBlur: {
       title: N,
-      on: true
+      on: true,
     },
     autoSetPlaylistOrder: {
       title: D,
-      on: true
+      on: true,
     },
     hideMiniPlayerTopBorder: {
       title: h,
-      on: false
+      on: false,
     },
     hideMiniLyric: {
       title: U,
-      on: false
+      on: false,
     },
     autoLoadLastPlayedTracks: {
       title: B,
-      on: false
+      on: false,
     },
     hideMiniLyricTrans: {
       title: M,
-      on: false
+      on: false,
     },
     disabledRouterTransition: {
       title: Y,
-      on: true
-    }
+      on: true,
+    },
   };
 exports.defaultSettings = b;
-exports.settingsMap = ['SECTION_GENERAL', 'autoSetPlaylistOrder', 'navbarPadding', 'bottomPadding', 'bottomBlur', 'hideMiniPlayerTopBorder', 'hideStatusBar', 'disabledRouterTransition', 'SECTION_PLAY', 'autoLoadLastPlayedTracks', 'defaultHighQuality', 'autoErrorNext', 'recordPlayCount', 'playWithOthers', 'cloneThroughLinking', 'SECTION_PLAYER_UI', 'reverseGestureHands', 'isRound', 'hideRoundSlider', 'hideBottomTip', 'hidePlayingTime', 'hideFloatLyric', 'hideMiniLyric', 'hideMiniLyricTrans'];
+exports.settingsMap = [
+  'SECTION_GENERAL',
+  'autoSetPlaylistOrder',
+  'navbarPadding',
+  'bottomPadding',
+  'bottomBlur',
+  'hideMiniPlayerTopBorder',
+  'hideStatusBar',
+  'disabledRouterTransition',
+  'SECTION_PLAY',
+  'autoLoadLastPlayedTracks',
+  'defaultHighQuality',
+  'autoErrorNext',
+  'recordPlayCount',
+  'playWithOthers',
+  'cloneThroughLinking',
+  'SECTION_PLAYER_UI',
+  'reverseGestureHands',
+  'isRound',
+  'hideRoundSlider',
+  'hideBottomTip',
+  'hidePlayingTime',
+  'hideFloatLyric',
+  'hideMiniLyric',
+  'hideMiniLyricTrans',
+];
 var G = {
   SECTION_GENERAL: {
-    title: C
+    title: C,
   },
   SECTION_PLAY: {
-    title: c
+    title: c,
   },
   SECTION_PLAYER_UI: {
-    title: g
-  }
+    title: g,
+  },
 };
 exports.sectionsMap = G;

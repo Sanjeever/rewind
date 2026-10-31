@@ -1,18 +1,18 @@
-const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
-Object.defineProperty(exports, "__esModule", {
-  value: true
+const _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
+Object.defineProperty(exports, '__esModule', {
+  value: true,
 });
 exports.default = void 0;
-var dayjs = _interopRequireDefault(require("dayjs")),
-  languageModule = _interopRequireDefault(require("../native/language")),
-  Runtime572 = require("dayjs/plugin/localizedFormat"),
-  Runtime573 = require("dayjs/locale/en"),
-  Runtime574 = require("dayjs/locale/zh-cn"),
+var dayjs = _interopRequireDefault(require('dayjs')),
+  languageModule = _interopRequireDefault(require('../native/language')),
+  Runtime572 = require('dayjs/plugin/localizedFormat'),
+  Runtime573 = require('dayjs/locale/en'),
+  Runtime574 = require('dayjs/locale/zh-cn'),
   i = {
     zh_CN: Runtime574,
     zh_TW: Runtime574,
     zh_HK: Runtime574,
-    en_US: Runtime573
+    en_US: Runtime573,
   };
 dayjs.default.extend(Runtime572);
 dayjs.default.locale(i[languageModule.default.language]);
@@ -21,7 +21,7 @@ var D = function (e) {
     return {
       year: t.getFullYear(),
       month: t.getMonth() + 1,
-      day: t.getDate()
+      day: t.getDate(),
     };
   },
   g = {
@@ -53,6 +53,6 @@ var D = function (e) {
       var t = 'dddd, MMM D';
       (0, dayjs.default)(e).isSame(Date.now(), 'year') || (t += ', YYYY');
       return (0, dayjs.default)(e).format(t);
-    }
+    },
   };
 exports.default = g;

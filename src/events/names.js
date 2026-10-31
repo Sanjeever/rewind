@@ -1,5 +1,5 @@
-Object.defineProperty(exports, "__esModule", {
-  value: true
+Object.defineProperty(exports, '__esModule', {
+  value: true,
 });
 exports.default = void 0;
 var d = {
@@ -30,6 +30,6 @@ var d = {
   SetHomeState: 'SetHomeState',
   HidePlayer: 'HidePlayer',
   NATIVE_AUDIO_FOCUS: 'AUDIO_FOCUS',
-  NATIVE_NOTIFICATION_ACTION_EVENT: 'NOTIFICATION_ACTION_EVENT'
+  NATIVE_NOTIFICATION_ACTION_EVENT: 'NOTIFICATION_ACTION_EVENT',
 };
 exports.default = d;

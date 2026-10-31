@@ -43,14 +43,17 @@ export default class SongSearchResults extends React.PureComponent {
       const result = await searchSongs({query, api, offset: this.offset});
       if (requestId !== this.requestId) return;
       this.offset = result.offset;
-      this.setState(state => {
-        const knownKeys = new Set(state.tracks.map(track => track.key));
+      this.setState((state) => {
+        const knownKeys = new Set(state.tracks.map((track) => track.key));
         return {
-          tracks: [...state.tracks, ...result.tracks.filter(track => {
-            if (knownKeys.has(track.key)) return false;
-            knownKeys.add(track.key);
-            return true;
-          })],
+          tracks: [
+            ...state.tracks,
+            ...result.tracks.filter((track) => {
+              if (knownKeys.has(track.key)) return false;
+              knownKeys.add(track.key);
+              return true;
+            }),
+          ],
           loading: false,
           error: null,
           hasMore: result.hasMore,
@@ -73,7 +76,7 @@ export default class SongSearchResults extends React.PureComponent {
   play = (track, index) => {
     playTracks({
       song: track.source,
-      tracks: this.state.tracks.map(item => item.source),
+      tracks: this.state.tracks.map((item) => item.source),
       index,
       api: track.api,
       type: 'insert',
@@ -82,28 +85,49 @@ export default class SongSearchResults extends React.PureComponent {
 
   renderSong = ({row}) => {
     const track = this.state.tracks[row];
-    return <SongRow song={track.title} album={track.album === '空' ? '' : track.album}
-      singer={track.artists.join('/')} img={track.artwork} songItem={track.source} round
-      alias={getAlias(track.source)} onPress={() => this.play(track, row)}
-      detail={() => toDetailModal({item: track.source, index: row, api: track.api})}
-      addToQueue={() => insertTracks({tracks: [track.source], api: track.api})} />;
+    return (
+      <SongRow
+        song={track.title}
+        album={track.album === '空' ? '' : track.album}
+        singer={track.artists.join('/')}
+        img={track.artwork}
+        songItem={track.source}
+        round
+        alias={getAlias(track.source)}
+        onPress={() => this.play(track, row)}
+        detail={() => toDetailModal({item: track.source, index: row, api: track.api})}
+        addToQueue={() => insertTracks({tracks: [track.source], api: track.api})}
+      />
+    );
   };
 
   renderStatus = () => {
-    if (this.state.error) return <View style={styles.status}>
-      <Text selectable>{this.state.error.message}</Text>
-      <TextButton text="重试" onPress={() => this.fetchPage()} style={{padding: 12}} />
-    </View>;
+    if (this.state.error)
+      return (
+        <View style={styles.status}>
+          <Text selectable>{this.state.error.message}</Text>
+          <TextButton text="重试" onPress={() => this.fetchPage()} style={{padding: 12}} />
+        </View>
+      );
     if (!this.state.tracks.length) return <Text style={styles.status}>无搜索结果</Text>;
     return null;
   };
 
   render() {
     if (this.state.loading) return <Spinkit />;
-    return <LargeList key={this.props.api + ':' + this.props.search}
-      ref={list => { this.list = list; }} data={[{items: this.state.tracks}]}
-      heightForIndexPath={() => ITEM_HEIGHT} renderIndexPath={this.renderSong}
-      renderFooter={this.renderStatus} onLoading={this.loadMore} />;
+    return (
+      <LargeList
+        key={this.props.api + ':' + this.props.search}
+        ref={(list) => {
+          this.list = list;
+        }}
+        data={[{items: this.state.tracks}]}
+        heightForIndexPath={() => ITEM_HEIGHT}
+        renderIndexPath={this.renderSong}
+        renderFooter={this.renderStatus}
+        onLoading={this.loadMore}
+      />
+    );
   }
 }
 

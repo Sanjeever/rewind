@@ -19,7 +19,12 @@ export default {
   async emit() {
     const queue = await load();
     if (queue?.tracks?.[queue.index] && queue.api) {
-      toPlayer({item: queue.tracks[queue.index], data: queue.tracks, index: queue.index, api: queue.api});
+      toPlayer({
+        item: queue.tracks[queue.index],
+        data: queue.tracks,
+        index: queue.index,
+        api: queue.api,
+      });
     }
   },
 };

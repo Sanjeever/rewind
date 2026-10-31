@@ -1,20 +1,43 @@
 const assert = require('node:assert/strict');
-const asDefault = value => ({__esModule: true, default: value});
+const asDefault = (value) => ({__esModule: true, default: value});
 
-afterEach(() => { delete global.toast; });
+afterEach(() => {
+  delete global.toast;
+});
 
 function controller() {
-  const calls = {prepared: [], play: 0, pause: 0, release: 0, clearedTimers: [], toasts: [], history: []};
+  const calls = {
+    prepared: [],
+    play: 0,
+    pause: 0,
+    release: 0,
+    clearedTimers: [],
+    toasts: [],
+    history: [],
+  };
   const requests = [];
   let timerId = 0;
   const scheduled = new Map();
   class Audio {
-    constructor(source, callback) { calls.prepared.push(source); this.ready = callback; }
-    play() { calls.play++; }
-    pause() { calls.pause++; }
-    release() { calls.release++; }
-    getCurrentTime(callback) { callback(12); }
-    getDuration() { return 180; }
+    constructor(source, callback) {
+      calls.prepared.push(source);
+      this.ready = callback;
+    }
+    play() {
+      calls.play++;
+    }
+    pause() {
+      calls.pause++;
+    }
+    release() {
+      calls.release++;
+    }
+    getCurrentTime(callback) {
+      callback(12);
+    }
+    getDuration() {
+      return 180;
+    }
     static setNowPlaying() {}
     static updatePlayback() {}
   }
@@ -23,31 +46,61 @@ function controller() {
       Animated: {Value: class {}},
       LayoutAnimation: {create() {}, Types: {}, Properties: {}},
     },
-    '../theme/constants': {}, '../events/names': asDefault({}), '../storage/keys': asDefault({}),
-    '../locales': asDefault({}), '../services': {}, '../events': {},
-    '../utils/parseArtist': asDefault(value => value), '../utils/universalNavigator': asDefault({}), '../utils/stopTimer': asDefault({}),
+    '../theme/constants': {},
+    '../events/names': asDefault({}),
+    '../storage/keys': asDefault({}),
+    '../locales': asDefault({}),
+    '../services': {},
+    '../events': {},
+    '../utils/parseArtist': asDefault((value) => value),
+    '../utils/universalNavigator': asDefault({}),
+    '../utils/stopTimer': asDefault({}),
     '../native/audioPlayer': asDefault(Audio),
     '../native/timer': asDefault({
-      setTimeout(callback) { scheduled.set(++timerId, callback); return timerId; },
-      clearTimeout(id) { calls.clearedTimers.push(id); scheduled.delete(id); },
+      setTimeout(callback) {
+        scheduled.set(++timerId, callback);
+        return timerId;
+      },
+      clearTimeout(id) {
+        calls.clearedTimers.push(id);
+        scheduled.delete(id);
+      },
     }),
-    '../native/mediaStore': asDefault({}), '../native/shutdown': asDefault({}), '../native/wakeLock': asDefault({deactivate() {}}),
-    '../storage': {}, '../storage/files': {isUsableFile: async () => true},
-    '../storage/lastSong': asDefault({save: async () => {}}), '../storage/lastTime': asDefault({}),
+    '../native/mediaStore': asDefault({}),
+    '../native/shutdown': asDefault({}),
+    '../native/wakeLock': asDefault({deactivate() {}}),
+    '../storage': {},
+    '../storage/files': {isUsableFile: async () => true},
+    '../storage/lastSong': asDefault({save: async () => {}}),
+    '../storage/lastTime': asDefault({}),
     '../storage/lastQueue': asDefault({save: async () => {}}),
-    '../storage/history': {musicHistory: song => calls.history.push(song)},
-    './cache': asDefault(request => request), './lyricPreferences': asDefault({}),
-    './playMode': asDefault({}), './lyrics': asDefault({}),
-    './trackUrl': asDefault({getUrl: () => new Promise(resolve => requests.push(resolve))}),
-    './notification': asDefault({}), './gestures': asDefault({}),
+    '../storage/history': {musicHistory: (song) => calls.history.push(song)},
+    './cache': asDefault((request) => request),
+    './lyricPreferences': asDefault({}),
+    './playMode': asDefault({}),
+    './lyrics': asDefault({}),
+    './trackUrl': asDefault({getUrl: () => new Promise((resolve) => requests.push(resolve))}),
+    './notification': asDefault({}),
+    './gestures': asDefault({}),
     './commands': {},
   };
   for (const [name, value] of Object.entries(dependencies)) jest.doMock(name, () => value);
   let Controller;
-  jest.isolateModules(() => { Controller = require('./PlayerController.js').default; });
-  const player = new Controller({tracks: [], songItem: null, api: null, settings: {}, setLyric() {}});
+  jest.isolateModules(() => {
+    Controller = require('./PlayerController.js').default;
+  });
+  const player = new Controller({
+    tracks: [],
+    songItem: null,
+    api: null,
+    settings: {},
+    setLyric() {},
+  });
   player.setState = (update, callback) => {
-    player.state = {...player.state, ...(typeof update === 'function' ? update(player.state) : update)};
+    player.state = {
+      ...player.state,
+      ...(typeof update === 'function' ? update(player.state) : update),
+    };
     callback?.();
   };
   player.props.setPlayerData = (update, callback) => {
@@ -57,11 +110,11 @@ function controller() {
   };
   player.getLyric = () => {};
   player.loadLikelist = () => {};
-  global.toast = message => calls.toasts.push(message);
+  global.toast = (message) => calls.toasts.push(message);
   return {player, calls, requests, scheduled};
 }
 
-const tick = () => new Promise(resolve => setImmediate(resolve));
+const tick = () => new Promise((resolve) => setImmediate(resolve));
 function play(player, id, api = 'netEase') {
   const song = {id, name: '歌曲'};
   player.handlePlayCommand({song, data: [song], index: 0, api});
@@ -142,7 +195,10 @@ test('批量插入走统一队列规则，不启动或暂停当前歌曲', async
   requests[0]('https://audio/current');
   await tick();
   player.insertIntoQueue({data: [{id: 2}, {id: 2}, {id: 1}], type: 'array', api: 'netEase'});
-  assert.deepEqual(player.props.tracks.map(song => song.id), [1, 2]);
+  assert.deepEqual(
+    player.props.tracks.map((song) => song.id),
+    [1, 2],
+  );
   assert.equal(player.props.playingIndex, 0);
   assert.equal(calls.prepared.length, 1);
   assert.equal(calls.pause, 0);

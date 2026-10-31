@@ -1,5 +1,5 @@
-Object.defineProperty(exports, "__esModule", {
-  value: true
+Object.defineProperty(exports, '__esModule', {
+  value: true,
 });
 exports.defaultColor = exports.highlightColor = void 0;
 exports.highlightColor = '#fff';

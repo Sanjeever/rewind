@@ -38,9 +38,12 @@ export default class App extends React.PureComponent {
   };
 
   componentDidMount() {
-    this.bottomPaddingSubscription = emitter.addListener(names.BottomPaddingChange, bottomPaddingValue => {
-      this.setState({bottomPaddingValue});
-    });
+    this.bottomPaddingSubscription = emitter.addListener(
+      names.BottomPaddingChange,
+      (bottomPaddingValue) => {
+        this.setState({bottomPaddingValue});
+      },
+    );
     this.settingsSubscription = emitter.addListener(names.SettingsChanged, this.loadSettings);
     installErrorHandler();
     this.initialize();
@@ -64,10 +67,14 @@ export default class App extends React.PureComponent {
   };
 
   setPlayerData = (updateQueue, onCommitted) => {
-    this.setState(state => {
-      const changes = typeof updateQueue === 'function' ? updateQueue(state.playerInfo) : updateQueue;
-      return {playerInfo: {...state.playerInfo, ...changes}};
-    }, () => onCommitted?.(this.state.playerInfo));
+    this.setState(
+      (state) => {
+        const changes =
+          typeof updateQueue === 'function' ? updateQueue(state.playerInfo) : updateQueue;
+        return {playerInfo: {...state.playerInfo, ...changes}};
+      },
+      () => onCommitted?.(this.state.playerInfo),
+    );
   };
 
   loadSettings = async () => {
@@ -83,42 +90,74 @@ export default class App extends React.PureComponent {
       const settings = mergeSettings(saved, defaultSettings);
       const firstLoad = !this.settingsLoaded;
       this.settingsLoaded = true;
-      this.setState({
-        settings: extractKeyValue(settings, 'on'),
-        bottomPaddingValue: settings.bottomPadding.subtitle,
-      }, () => {
-        if (firstLoad && settings.autoLoadLastPlayedTracks.on) {
-          lastQueue.emit().catch(error => toast('恢复播放队列失败：' + error.message));
-        }
-      });
+      this.setState(
+        {
+          settings: extractKeyValue(settings, 'on'),
+          bottomPaddingValue: settings.bottomPadding.subtitle,
+        },
+        () => {
+          if (firstLoad && settings.autoLoadLastPlayedTracks.on) {
+            lastQueue.emit().catch((error) => toast('恢复播放队列失败：' + error.message));
+          }
+        },
+      );
       emitter.emit(names.SetHomeState, {autoSetPlaylistOrder: settings.autoSetPlaylistOrder.on});
     } catch (error) {
       toast('读取设置失败：' + error.message);
     }
   };
 
-  setDisplayNowPlaying = displayNowPlaying => this.setState({displayNowPlaying});
+  setDisplayNowPlaying = (displayNowPlaying) => this.setState({displayNowPlaying});
   setLyric = (lyric, hasTrans) => this.setState({lyric, hasTrans});
 
   render() {
-    const {settings, displayNowPlaying, playerInfo, lyric, hasTrans, checkPermissionDone, bottomPaddingValue} = this.state;
+    const {
+      settings,
+      displayNowPlaying,
+      playerInfo,
+      lyric,
+      hasTrans,
+      checkPermissionDone,
+      bottomPaddingValue,
+    } = this.state;
     if (!checkPermissionDone) return null;
-    return <MenuProvider>
-      <View style={{flex: 1}}>
-        <StatusBar backgroundColor="transparent" translucent hidden={settings.hideStatusBar} />
-        <Navigation animationEnabled={!settings.disabledRouterTransition} statusBarHidden={settings.hideStatusBar} />
-        <Player {...playerInfo} lyric={lyric} hasTrans={hasTrans} settings={settings}
-          bottomPaddingValue={bottomPaddingValue} setPlayerData={this.setPlayerData}
-          setDisplayNowPlaying={this.setDisplayNowPlaying} setLyric={this.setLyric} />
-        <modals.LongPressModal />
-        <modals.DetailModal cloneThroughLinking={settings.cloneThroughLinking} isRound={settings.isRound} />
-        <modals.CollectModal />
-        <modals.NowPlayingModal api={playerInfo.api} data={playerInfo.tracks} songItem={playerInfo.songItem}
-          index={playerInfo.playingIndex} setDisplayNowPlaying={this.setDisplayNowPlaying}
-          show={displayNowPlaying} isRound={settings.isRound} />
-        <modals.SavePicModal />
-        <modals.ChangePlaylistModal songItem={playerInfo.songItem} />
-      </View>
-    </MenuProvider>;
+    return (
+      <MenuProvider>
+        <View style={{flex: 1}}>
+          <StatusBar backgroundColor="transparent" translucent hidden={settings.hideStatusBar} />
+          <Navigation
+            animationEnabled={!settings.disabledRouterTransition}
+            statusBarHidden={settings.hideStatusBar}
+          />
+          <Player
+            {...playerInfo}
+            lyric={lyric}
+            hasTrans={hasTrans}
+            settings={settings}
+            bottomPaddingValue={bottomPaddingValue}
+            setPlayerData={this.setPlayerData}
+            setDisplayNowPlaying={this.setDisplayNowPlaying}
+            setLyric={this.setLyric}
+          />
+          <modals.LongPressModal />
+          <modals.DetailModal
+            cloneThroughLinking={settings.cloneThroughLinking}
+            isRound={settings.isRound}
+          />
+          <modals.CollectModal />
+          <modals.NowPlayingModal
+            api={playerInfo.api}
+            data={playerInfo.tracks}
+            songItem={playerInfo.songItem}
+            index={playerInfo.playingIndex}
+            setDisplayNowPlaying={this.setDisplayNowPlaying}
+            show={displayNowPlaying}
+            isRound={settings.isRound}
+          />
+          <modals.SavePicModal />
+          <modals.ChangePlaylistModal songItem={playerInfo.songItem} />
+        </View>
+      </MenuProvider>
+    );
   }
 }
