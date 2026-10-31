@@ -88,8 +88,16 @@ const s = new (class e {
         method: 'POST',
         body,
       })
-        .then((e) => e.json())
-        .then((e) => e.data.data.body);
+        .then((response) => {
+          if (!response.ok) throw new Error('QQ 音乐搜索 HTTP ' + response.status);
+          return response.json();
+        })
+        .then((response) => {
+          if (response.code !== 0) throw new Error('QQ 音乐搜索失败：业务码 ' + response.code);
+          if (response.data?.code !== 0)
+            throw new Error('QQ 音乐搜索失败：业务码 ' + response.data?.code);
+          return response.data.data.body;
+        });
     }
   }
   search_playlist({keywords, page = 0, limit}) {
@@ -102,8 +110,14 @@ const s = new (class e {
           },
         },
       )
-        .then((e) => e.json())
-        .then((e) => e.data);
+        .then((response) => {
+          if (!response.ok) throw new Error('QQ 音乐歌单搜索 HTTP ' + response.status);
+          return response.json();
+        })
+        .then((response) => {
+          if (response.code !== 0) throw new Error('QQ 音乐歌单搜索失败：业务码 ' + response.code);
+          return response.data;
+        });
     }
   }
   artist_song(singerMid) {
