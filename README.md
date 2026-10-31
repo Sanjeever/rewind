@@ -2,7 +2,7 @@
 
 本项目以倒带 v3.5.0 Android 发布包为基础重建。应用逻辑已整理为 TypeScript/TSX 与 ESM 源码，保留自有 Android 原生能力，供二次开发使用。
 
-应用包含本地音乐播放、队列、歌单、历史、歌词，以及网易云和 QQ 音乐搜索与账号入口。标准 React Native 工程迁移已落地，在线听歌仍未完成可用性验收，已知失败与检查范围见[验证记录](docs/validation.md)。
+应用包含本地音乐播放、队列、歌单、历史、歌词，以及网易云和 QQ 音乐搜索与账号入口。在线播放使用本人账号的平台权限，评论分词在 Android 本地执行。各平台与账号的实际验收范围、已知限制见[验证记录](docs/validation.md)。
 
 上游仓库与源码来源：[KusStar/rewind-apks](https://github.com/KusStar/rewind-apks)
 
