@@ -1,4 +1,4 @@
-import _default from './../components/Text.js';
+import _default from './../components/Text';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
 import * as Index from '../components/index';

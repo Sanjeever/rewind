@@ -1,5 +1,5 @@
 import Pager from './../components/Pager.js';
-import _default2 from './../components/Text.js';
+import _default2 from './../components/Text';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
 import * as reactNativeSpringScrollview from './../components/Scrolling.js';

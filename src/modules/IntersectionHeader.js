@@ -1,4 +1,4 @@
-import Text from './../components/Text.js';
+import Text from './../components/Text';
 import 'react';
 import * as ReactNative from 'react-native';
 import TouchableScale from '../components/TouchableScale';

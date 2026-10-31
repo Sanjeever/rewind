@@ -1,4 +1,4 @@
-import Text from './Text.js';
+import Text from './Text';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
 import * as components from './index';

@@ -1,5 +1,5 @@
 import {SafeAreaView as _SafeAreaView} from 'react-native-safe-area-context';
-import _default from './../components/Text.js';
+import _default from './../components/Text';
 import slider from '@react-native-community/slider';
 import Runtime927 from 'lodash/padStart';
 import * as React from 'react';

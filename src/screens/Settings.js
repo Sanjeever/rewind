@@ -1,5 +1,5 @@
 import {toast} from '../native/toast';
-import Text from './../components/Text.js';
+import Text from './../components/Text';
 import * as _appStorage from './../storage/index.js';
 import {mergeSettings} from '../settings/merge';
 import * as React from 'react';

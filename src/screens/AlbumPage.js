@@ -1,6 +1,6 @@
 import {toast} from '../native/toast';
 import Clipboard from '@react-native-clipboard/clipboard';
-import _default2 from './../components/Text.js';
+import _default2 from './../components/Text';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
 import * as components from '../components/index';

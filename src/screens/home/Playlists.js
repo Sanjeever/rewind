@@ -1,4 +1,4 @@
-import Text from './../../components/Text.js';
+import Text from './../../components/Text';
 import _default2 from './../../components/Pager.js';
 import * as immer from 'immer';
 import * as React from 'react';

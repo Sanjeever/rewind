@@ -1,4 +1,4 @@
-import Text from './Text.js';
+import Text from './Text';
 import 'react';
 import * as ReactNative from 'react-native';
 import * as filterColors from './filterColors';
