@@ -19,6 +19,7 @@ interface Props {
   otherWay?: () => void;
   loginOut?: () => void;
   onUserManager?: () => void;
+  onQrLogin?: () => void;
 }
 const p = 0.05 * constants.DEVICE_HEIGHT;
 class LoginView extends React.PureComponent<Props> {
@@ -124,6 +125,7 @@ class LoginView extends React.PureComponent<Props> {
             opacity: 1,
           }}
         />
+        <components.TextButton onPress={props.onQrLogin} text="扫码登录" style={{marginTop: 20}} />
         <components.TextButton
           onPress={otherWay}
           text={locales.FETCH_PLAYLIST}

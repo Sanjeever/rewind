@@ -41,6 +41,7 @@
     "lrc-kit": "1.2.1",
     "lru-cache": "11.2.2",
     "pinyin-pro": "3.27.0",
+    "qrcode-generator": "2.0.4",
     "react": "19.3.0",
     "react-native": "0.88.1",
     "react-native-animatable": "1.4.0",

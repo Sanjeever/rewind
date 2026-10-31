@@ -26,6 +26,7 @@ import '../utils/types';
 import users from '../storage/users';
 import LoginView from '../features/account/LoginView';
 import NeteaseHelp from '../features/account/NeteaseHelp';
+import NeteaseQrLogin from '../features/account/NeteaseQrLogin';
 const k =
   'https://graph.qq.com/oauth2.0/show?which=Login&display=pc&client_id=100495085&response_type=code&redirect_uri=https://music.163.com/back/qq&forcelogin=true&state=ZwKHpxUoam';
 const y =
@@ -51,6 +52,7 @@ interface State {
   guideModalOpen: boolean;
   showWebView: boolean;
   webViewUrl: string | null;
+  showQrLogin: boolean;
 }
 class NeteaseLogin extends React.PureComponent<ScreenProps<'NeteaseLogin'>, State> {
   state: State = {
@@ -64,6 +66,7 @@ class NeteaseLogin extends React.PureComponent<ScreenProps<'NeteaseLogin'>, Stat
     guideModalOpen: false,
     showWebView: false,
     webViewUrl: '',
+    showQrLogin: false,
   };
   loadInfo = async () => {
     const account = (await users.getUserInfo())?.netEase;
@@ -194,8 +197,11 @@ class NeteaseLogin extends React.PureComponent<ScreenProps<'NeteaseLogin'>, Stat
       nickname: profile.nickname,
     });
     events.emitter.emit(names.UserLogined);
-    await this.netEaselikelist(profile.userId);
-    await services.Netease.login_refresh();
+    try {
+      await this.netEaselikelist(profile.userId);
+    } catch (error) {
+      toast('登录后的账号同步失败：' + errorMessage(error));
+    }
   };
   loadMask = (e: 'loading' | 'loaded') => {
     switch (e) {
@@ -285,6 +291,7 @@ class NeteaseLogin extends React.PureComponent<ScreenProps<'NeteaseLogin'>, Stat
             avatar={avatar}
             nickname={nickname}
             _Login={this._Login}
+            onQrLogin={() => this.setState({showQrLogin: true})}
             otherWay={this.otherWay}
             onChangeText={this.netEaseText}
             loginOut={this.NeteaseLoginOut}
@@ -293,6 +300,15 @@ class NeteaseLogin extends React.PureComponent<ScreenProps<'NeteaseLogin'>, Stat
             api={providers.netEase}
           />
         </reactNativeSpringScrollview.SpringScrollView>
+        {this.state.showQrLogin && (
+          <NeteaseQrLogin
+            onClose={() => this.setState({showQrLogin: false})}
+            onLoggedIn={async (profile) => {
+              this.setState({showQrLogin: false, password: ''});
+              await this.loginDone(profile);
+            }}
+          />
+        )}
         <NeteaseLoginScreen
           onMessage={this.onNeteaseMessage}
           loginOut={this.NeteaseLoginOut}

@@ -23,17 +23,27 @@ export const login_email = function (username: string, password: string) {
   };
   return http.cryptoRequest(responses.login_email, '/weapi/login', credentials);
 };
-export const login_refresh = function () {
-  return http.cryptoRequest(responses.login_refresh, '/weapi/login/token/refresh', {
-    csrf_token: '',
-  });
+export const login_refresh = async function () {
+  const result = await http.eapiRequest(responses.login_refresh, '/api/login/token/refresh', {});
+  if (result.code !== 200)
+    throw new Error(result.message || result.msg || '网易云会话刷新失败（' + result.code + '）');
+  return result;
 };
+export const login_qr_key = () =>
+  http.eapiRequest(responses.login_qr_key, '/api/login/qrcode/unikey', {type: 3});
+export const login_qr_check = (key: string) =>
+  http.eapiRequest(responses.login_qr_check, '/api/login/qrcode/client/login', {key, type: 3});
+export const login_status = () =>
+  http.eapiRequest(responses.login_status, '/api/w/nuser/account/get', {});
 export const daily_signin = function (type = 0) {
-  return http.request(responses.daily_signin, '/api/point/dailyTask', `type=${type}`);
+  return http.eapiRequest(responses.daily_signin, '/api/point/dailyTask', {type});
 };
 export const user_playlist = function (userId: TrackId) {
-  const query = `offset=0&uid=${userId}&limit=1000`;
-  return http.request(responses.user_playlist, '/api/user/playlist', query);
+  return http.eapiRequest(responses.user_playlist, '/api/user/playlist', {
+    offset: 0,
+    uid: userId,
+    limit: 1000,
+  });
 };
 export const user_detail = function (userId: TrackId) {
   return http.request(responses.user_detail, `/api/v1/user/detail/${userId}`, '');
@@ -48,8 +58,7 @@ export const user_followeds = function (userId: TrackId, offset = 0, limit = 30)
   return http.request(responses.user_followeds, '/api/user/getfolloweds', query);
 };
 export const likelist = function (userId?: TrackId) {
-  const query = `uid=${userId}`;
-  return http.request(responses.likelist, '/api/song/like/get', query);
+  return http.eapiRequest(responses.likelist, '/api/song/like/get', {uid: userId});
 };
 export const like = function (options: {id: TrackId; isLike?: boolean}) {
   const requestedLike = options.isLike;
