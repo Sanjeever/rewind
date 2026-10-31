@@ -6,7 +6,7 @@ export interface TrackDetails {
   song: TrackFields;
   api: Provider;
   index?: number;
-  playlistId?: TrackId;
+  playlistId?: TrackId | null;
   isCreatedByMe?: boolean;
 }
 export interface AppEvents {
@@ -19,7 +19,7 @@ export interface AppEvents {
   SavePicModal: {img?: string; song?: string; type?: 'sponsor'};
   PlayerClose: undefined;
   DeleteFromLocal: {deleteIndex: number};
-  DeleteFromPlaylist: {api: Provider; trackid: TrackId};
+  DeleteFromPlaylist: {api: Provider; trackid: TrackId} | undefined;
   ChangePlaylist: undefined;
   FM_MODE: undefined;
   UserLogined: undefined;
@@ -29,7 +29,7 @@ export interface AppEvents {
   ChangeBackground: {path: string; opacity: number; blur: boolean};
   PlayerShow: boolean;
   CloseTimerEvent: number;
-  PlaylistSetOrder: {api: Provider; id: TrackId};
+  PlaylistSetOrder: {api: Provider; index: number};
   SelectedUser: {userId: TrackId; nickname?: string; avatarUrl?: string};
   NowPlayingModal: {forceClose: boolean};
   SetHomeState: {autoSetPlaylistOrder: boolean};

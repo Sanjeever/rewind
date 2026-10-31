@@ -11,38 +11,63 @@ import * as events from '../events/index';
 import * as utils from '../utils/index';
 import * as trackInfo from '../services/trackInfo';
 import playlistFiles from '../storage/playlistFiles';
+import type {ScreenProps, Navigation} from '../navigation/types';
+import type {TrackFields} from '../services/track';
+import type {Provider} from '../services/providers';
+import {errorMessage} from '../utils/types';
 const constants_DEVICE_WIDTH = constants.DEVICE_WIDTH;
-class CustomPlaylist extends React.PureComponent {
+interface State {
+  title: string;
+  playlistIndex: number | null;
+  playlist: TrackFields[];
+  oriList: TrackFields[];
+  loading: boolean;
+  searching: boolean;
+  showList: boolean;
+  showModal: boolean;
+  showRestore: boolean;
+  showHeader: boolean;
+  subscribed: boolean;
+  showMult: boolean;
+  index?: number | null;
+  name?: string;
+}
+class CustomPlaylist extends React.PureComponent<
+  Pick<ScreenProps<'CustomPlaylist'>, 'route'> & {navigation: Navigation},
+  State
+> {
+  _list: reactNativeLargelist.LargeList<TrackFields> | null = null;
   _nativeOffset = {
     x: new ReactNative.Animated.Value(0),
     y: new ReactNative.Animated.Value(0),
   };
-  onDeleteCustom = async (ids) => {
-    const tracks = this.state.oriList.filter((song) => !ids.includes(song.id));
+  onDeleteCustom = async (selected: TrackFields[]) => {
+    const keys = new Set(selected.map((song) => trackInfo.getTrackKey(song)));
+    const tracks = this.state.oriList.filter((song) => !keys.has(trackInfo.getTrackKey(song)));
     await this.updatePlaylist(tracks);
     this.setState({
       playlist: tracks,
       oriList: tracks,
     });
   };
-  updatePlaylist = async (tracks) => {
+  updatePlaylist = async (tracks: TrackFields[]) => {
     const current = await playlistFiles.getPlaylist();
     const playlists = immer.produce(current.playlists, (draft) => {
-      draft[this.state.playlistIndex].tracks = tracks;
+      draft[this.state.playlistIndex!].tracks = tracks;
     });
     await playlistFiles.toPlaylist({
       ...current,
       playlists,
     });
   };
-  _renderIndexPath = ({row}) => {
+  _renderIndexPath = ({row}: {row: number}) => {
     const playlist = this.state.playlist;
     return this._renderItem({
       item: playlist[row],
       index: row,
     });
   };
-  _renderItem = ({item, index}) => {
+  _renderItem = ({item, index}: {item: TrackFields; index: number}) => {
     const l = trackInfo.extractFullInfo(item);
     return (
       <components.SongRow
@@ -72,7 +97,7 @@ class CustomPlaylist extends React.PureComponent {
       />
     );
   };
-  alertDeleteItem = (e) => {
+  alertDeleteItem = (e: number) => {
     ReactNative.Alert.alert(locales.DELETE_THIS_SONG, locales.CAN_NOT_RECOVER, [
       {
         text: locales.CANCEL,
@@ -89,7 +114,7 @@ class CustomPlaylist extends React.PureComponent {
       },
     ]);
   };
-  deleteItem = async (index) => {
+  deleteItem = async (index: number) => {
     const tracks = this.state.playlist.filter((song, i) => i !== index);
     try {
       await this.updatePlaylist(tracks);
@@ -98,10 +123,10 @@ class CustomPlaylist extends React.PureComponent {
         oriList: tracks,
       });
     } catch (error) {
-      toast(`保存歌单失败：${error.message}`);
+      toast(`保存歌单失败：${errorMessage(error)}`);
     }
   };
-  searchSong = (e) => {
+  searchSong = (e: string) => {
     const oriList = this.state.oriList;
     if (oriList) {
       const playlist = utils.filterHelper.quickSearch(oriList, e);
@@ -119,7 +144,7 @@ class CustomPlaylist extends React.PureComponent {
       y: 0,
     });
   };
-  onScroll = (e) => {
+  onScroll = (e: ReactNative.NativeSyntheticEvent<ReactNative.NativeScrollEvent>) => {
     const t = e.nativeEvent.contentOffset.y;
     const n = constants_DEVICE_WIDTH - 100;
     if (t < n) {
@@ -130,11 +155,11 @@ class CustomPlaylist extends React.PureComponent {
     } else if (t > n) {
       this.setState({
         showHeader: true,
-        title: this.state.name,
+        title: this.state.name!,
       });
     }
   };
-  playMusic = (item, t, api) => {
+  playMusic = (item: TrackFields, t: number, api?: Provider) => {
     const a_state = this.state;
     const {searching, playlist} = a_state;
     let index = t;
@@ -158,7 +183,7 @@ class CustomPlaylist extends React.PureComponent {
   goBack = () => {
     this.props.navigation.goBack();
   };
-  state = {
+  state: State = {
     title: locales.MIX,
     playlistIndex: null,
     playlist: [],
@@ -191,7 +216,7 @@ class CustomPlaylist extends React.PureComponent {
         <components.Background />
         <reactNativeLargelist.LargeList
           ref={(t) => {
-            return (this._list = t);
+            this._list = t;
           }}
           data={[
             {
@@ -253,7 +278,7 @@ class CustomPlaylist extends React.PureComponent {
     );
   }
 }
-var x = ReactNative.StyleSheet.create({
+const x = ReactNative.StyleSheet.create({
   container: {
     flex: 1,
   },

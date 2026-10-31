@@ -13,6 +13,9 @@ import locales from '../locales/index';
 import * as services from '../services/index';
 import * as events from '../events/index';
 import * as trackInfo from '../services/trackInfo';
+import type {TrackFields, TrackId} from '../services/track';
+import type {Provider} from '../services/providers';
+import {errorMessage} from '../utils/types';
 const C = [
   {
     name: locales.PLAY,
@@ -26,17 +29,29 @@ const C = [
     name: locales.DELETE_FROM_PLAYLIST,
     key: 'deleteFromPlaylist',
   },
-];
+] as const;
 const y = {
-  encode: function (e) {
+  encode: function (e: number) {
     return String(`k${e}`);
   },
-  decode: function (e) {
+  decode: function (e: string) {
     return Number(e.slice(1));
   },
 };
-class MultiplySelectModal extends React.PureComponent {
-  state = {
+type Props = {
+  visible: boolean;
+  onClose(): void;
+  data: TrackFields[];
+  api: Provider;
+  playlistId?: TrackId | null;
+} & ({isCustom: true; onDeleteCustom(selected: TrackFields[]): Promise<void>} | {isCustom?: false});
+interface State {
+  checked: Record<string, number>;
+  showModal: boolean;
+}
+class MultiplySelectModal extends React.PureComponent<Props, State> {
+  _list: reactNativeLargelist.LargeList<TrackFields> | null = null;
+  state: State = {
     checked: {},
     showModal: false,
   };
@@ -56,13 +71,13 @@ class MultiplySelectModal extends React.PureComponent {
     const checked = this.state.checked;
     return Object.values(checked).filter((e) => e > 0).length === 0;
   };
-  _renderIndexPath = ({row}) => {
+  _renderIndexPath = ({row}: {row: number}) => {
     return this.renderItem({
       item: this.props.data[row],
       index: row,
     });
   };
-  onTask = (e) => {
+  onTask = (e: (typeof C)[number]['key']) => {
     switch (e) {
       case C[0].key:
         this.playChecked();
@@ -74,7 +89,7 @@ class MultiplySelectModal extends React.PureComponent {
         this.deleteFromPlaylist();
     }
   };
-  onDots = (e) => {
+  onDots = (e: number) => {
     if (!(e <= 0)) {
       this.setState({
         showModal: true,
@@ -100,10 +115,14 @@ class MultiplySelectModal extends React.PureComponent {
   };
   deleteFromPlaylist = async () => {
     const {api, playlistId, isCustom} = this.props;
-    const ids = this.getCheckedData().map((song) => song.id);
+    const selected = this.getCheckedData();
     try {
       let deleted = false;
       if (api === providers.netEase && playlistId) {
+        const ids = selected.map((song) => {
+          if (song.id == null) throw new Error('歌曲缺少标识');
+          return song.id;
+        });
         const response = await services.Netease.playlist_tracks({
           op: 'del',
           pid: playlistId,
@@ -114,8 +133,8 @@ class MultiplySelectModal extends React.PureComponent {
         }
         events.emitter.emit(names.DeleteFromPlaylist);
         deleted = true;
-      } else if (isCustom && ids.length) {
-        await this.props.onDeleteCustom(ids);
+      } else if (isCustom && selected.length) {
+        await this.props.onDeleteCustom(selected);
         deleted = true;
       }
       if (deleted) {
@@ -125,7 +144,7 @@ class MultiplySelectModal extends React.PureComponent {
         });
       }
     } catch (error) {
-      toast(`删除失败：${error.message}`);
+      toast(`删除失败：${errorMessage(error)}`);
     }
   };
   onCollectModal = () => {
@@ -138,7 +157,7 @@ class MultiplySelectModal extends React.PureComponent {
   };
   onCheckAll = () => {
     const e = this.getNeedCheckAll();
-    let checked = this.state.checked;
+    let checked: Record<string, number> = {};
     if (e) {
       this.props.data.map((e, a) => {
         const n = y.encode(a);
@@ -150,9 +169,8 @@ class MultiplySelectModal extends React.PureComponent {
     this.setState({
       checked,
     });
-    this.forceUpdate();
   };
-  onCheck = (e) => {
+  onCheck = (e: number) => {
     const checked = {
       ...this.state.checked,
     };
@@ -164,7 +182,7 @@ class MultiplySelectModal extends React.PureComponent {
   getCheckedData = () => {
     const data = this.props.data;
     const checked = this.state.checked;
-    const a = [];
+    const a: TrackFields[] = [];
     Object.keys(checked).forEach((n) => {
       const r = y.decode(n);
       const l = data[r];
@@ -174,11 +192,11 @@ class MultiplySelectModal extends React.PureComponent {
     });
     return a;
   };
-  isChecked = (e) => {
+  isChecked = (e: number) => {
     const t = y.encode(e);
     return !!this.state.checked[t];
   };
-  renderItem = ({item, index}) => {
+  renderItem = ({item, index}: {item: TrackFields; index: number}) => {
     const r = trackInfo.extractFullInfo(item);
     const isChecked = this.isChecked(index);
     return (
@@ -237,7 +255,7 @@ class MultiplySelectModal extends React.PureComponent {
           <FadingEdge top={30}>
             <reactNativeLargelist.LargeList
               ref={(t) => {
-                return (this._list = t);
+                this._list = t;
               }}
               data={[
                 {
@@ -307,7 +325,7 @@ class MultiplySelectModal extends React.PureComponent {
   }
 }
 export default MultiplySelectModal;
-var v = ReactNative.StyleSheet.create({
+const v = ReactNative.StyleSheet.create({
   container: {
     flex: 1,
   },

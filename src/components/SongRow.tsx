@@ -11,6 +11,7 @@ import * as utils from '../utils/index';
 import type {Artist, TrackFields} from '../services/track';
 interface SongRowProps {
   onPress?: () => void;
+  onLongPress?: () => void;
   songItem?: TrackFields;
   img?: string | null;
   index?: number | null;
@@ -40,6 +41,10 @@ class SongRow extends React.PureComponent<SongRowProps> {
     });
   };
   onLongPress = () => {
+    if (this.props.onLongPress) {
+      this.props.onLongPress();
+      return;
+    }
     const songItem = this.props.songItem;
     if (songItem) {
       events.toLongPressModal({
