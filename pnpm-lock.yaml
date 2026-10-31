@@ -159,6 +159,9 @@ importers:
       '@types/base-64':
         specifier: 1.0.2
         version: 1.0.2
+      '@types/highlight-words-core':
+        specifier: 1.2.3
+        version: 1.2.3
       '@types/jest':
         specifier: 29.5.14
         version: 29.5.14
@@ -1030,6 +1033,9 @@ packages:
 
   '@types/graceful-fs@4.1.9':
     resolution: {integrity: sha512-olP3sd1qOEe5dXTSaFvQG+02VdRXcdytWLAZsAq1PecU8uqQAhkrnbli7DagjtXKW/Bl7YJbUsa8MPcuc8LHEQ==}
+
+  '@types/highlight-words-core@1.2.3':
+    resolution: {integrity: sha512-PWNU/NR0CaYEsK38mcCTyDzeS2TlEGK9kRhRMz1i86jVAe836ZlA3gl6QYpu+CG6IpfNKTgWpEnJuRededvC0g==}
 
   '@types/istanbul-lib-coverage@2.0.6':
     resolution: {integrity: sha512-2QF/t/auWm0lsy8XtKVPG19v3sSOQlJe/YHZgfjb/KBBHOGSV+J2q/S671rcq9uTBrLAXmZpqJiaQbMT+zNU1w==}
@@ -4572,6 +4578,8 @@ snapshots:
   '@types/graceful-fs@4.1.9':
     dependencies:
       '@types/node': 26.6.6
+
+  '@types/highlight-words-core@1.2.3': {}
 
   '@types/istanbul-lib-coverage@2.0.6': {}
 

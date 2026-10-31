@@ -76,6 +76,7 @@
     "@react-native/metro-config": "0.88.1",
     "@react-native/typescript-config": "0.88.1",
     "@types/base-64": "1.0.2",
+    "@types/highlight-words-core": "1.2.3",
     "@types/jest": "29.5.14",
     "@types/lodash": "4.17.24",
     "@types/node": "22.19.15",
