@@ -1,7 +1,7 @@
 import {toast} from '../native/toast';
 import _default from '@react-native-clipboard/clipboard';
 import _default2 from './../components/Text';
-import lottieReactNative from 'lottie-react-native';
+import LottieView from 'lottie-react-native';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
 import * as Scrolling from './../components/Scrolling.js';
@@ -167,7 +167,7 @@ class About extends React.PureComponent {
         >
           <ReactNative.View style={styles.lottieContainer}>
             <TouchableScale onPress={this.onSpeedUp}>
-              <lottieReactNative
+              <LottieView
                 source={_loading}
                 loop={true}
                 autoPlay={true}

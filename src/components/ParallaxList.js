@@ -1,4 +1,4 @@
-import lottieReactNative from 'lottie-react-native';
+import LottieView from 'lottie-react-native';
 import React from 'react';
 import * as ReactNative from 'react-native';
 import * as reactNativeSpringScrollview from './Scrolling.js';
@@ -30,7 +30,7 @@ class ParallaxList extends reactNativeSpringScrollview.RefreshHeader {
     });
     return (
       <ReactNative.View style={style}>
-        <lottieReactNative
+        <LottieView
           source={_layout}
           progress={progress}
           style={{

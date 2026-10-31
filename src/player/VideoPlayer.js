@@ -1,14 +1,16 @@
 import {SafeAreaView as _SafeAreaView} from 'react-native-safe-area-context';
 import _default from './../components/Text';
-import slider from '@react-native-community/slider';
+import Slider from '@react-native-community/slider';
 import Runtime927 from 'lodash/padStart';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
-import reactNativeTextTicker from 'react-native-text-ticker';
-import reactNativeVideo from 'react-native-video';
+import TextTicker from 'react-native-text-ticker';
+import VideoComponent from 'react-native-video';
 import * as constants from '../theme/constants';
 import icons from '../theme/icons';
 import * as Index from '../components/index';
+import topVignette from '../../assets/images/top-vignette.png';
+import bottomVignette from '../../assets/images/bottom-vignette.png';
 class VideoPlayer extends React.Component {
   constructor() {
     super(...arguments);
@@ -97,7 +99,7 @@ class VideoPlayer extends React.Component {
       tapActionTimeout: null,
       iconOffset: 0,
       seekerWidth: 1,
-      ref: reactNativeVideo,
+      ref: VideoComponent,
       scrubbingTimeStep: this.props.scrubbing || 0,
       tapAnywhereToPause: this.props.tapAnywhereToPause,
     };
@@ -125,60 +127,37 @@ class VideoPlayer extends React.Component {
     };
   }
   _onLoadStart() {
-    const state = this.state;
-    if (
-      ((state.loading = true),
-      this.loadAnimation(),
-      this.setState(state),
-      typeof this.props.onLoadStart === 'function')
-    ) {
-      this.props.onLoadStart(...arguments);
-    }
+    this.setState({loading: true}, () => this.loadAnimation());
+    this.props.onLoadStart?.(...arguments);
   }
   _onLoad(t = {}) {
-    const state = this.state;
-    if (
-      ((state.duration = t.duration),
-      (state.loading = false),
-      this.setState(state),
-      state.showControls && this.setControlTimeout(),
-      typeof this.props.onLoad === 'function')
-    ) {
-      this.props.onLoad(...arguments);
-    }
+    this.setState({duration: t.duration, loading: false});
+    if (this.state.showControls) this.setControlTimeout();
+    this.props.onLoad?.(...arguments);
   }
   _onProgress(e = {}) {
-    const state = this.state;
-    if (!state.scrubbing) {
-      state.currentTime = e.currentTime;
-      if (!state.seeking) {
-        const n = this.calculateSeekerPosition();
-        this.setSeekerPosition(n);
-      }
-      if (typeof this.props.onProgress === 'function') {
-        this.props.onProgress(...arguments);
-      }
-      this.setState(state);
-    }
+    if (this.state.scrubbing) return;
+    this.setState({currentTime: e.currentTime});
+    if (!this.state.seeking) this.setSeekerPosition(this.calculateSeekerPosition(e.currentTime));
+    this.props.onProgress?.(...arguments);
   }
   _onSeek(e = {}) {
     const state = this.state;
     if (state.scrubbing) {
-      state.scrubbing = false;
-      state.currentTime = e.currentTime;
       if (!state.seeking) {
         this.setControlTimeout();
-        state.paused = state.originallyPaused;
       }
-      this.setState(state);
+      this.setState({
+        scrubbing: false,
+        currentTime: e.currentTime,
+        paused: state.seeking ? state.paused : state.originallyPaused,
+      });
     }
   }
   _onEnd() {}
   _onError(e) {
-    const state = this.state;
-    state.error = true;
-    state.loading = false;
-    this.setState(state);
+    this.setState({error: true, loading: false});
+    this.props.onError?.(e);
   }
   _onScreenTouch() {
     const e = this;
@@ -194,6 +173,7 @@ class VideoPlayer extends React.Component {
     }
   }
   setControlTimeout() {
+    this.clearControlTimeout();
     const e = this;
     this.player.controlTimeout = setTimeout(() => {
       e._hideControls();
@@ -201,6 +181,7 @@ class VideoPlayer extends React.Component {
   }
   clearControlTimeout() {
     clearTimeout(this.player.controlTimeout);
+    this.player.controlTimeout = null;
   }
   resetControlTimeout() {
     this.clearControlTimeout();
@@ -255,8 +236,8 @@ class VideoPlayer extends React.Component {
     ]).start();
   }
   loadAnimation() {
-    if (this.state.loading) {
-      ReactNative.Animated.sequence([
+    if (this.mounted && this.state.loading) {
+      this.loaderAnimation = ReactNative.Animated.sequence([
         ReactNative.Animated.timing(this.animations.loader.rotate, {
           toValue: this.animations.loader.MAX_VALUE,
           duration: 1500,
@@ -269,69 +250,76 @@ class VideoPlayer extends React.Component {
           easing: ReactNative.Easing.linear,
           useNativeDriver: false,
         }),
-      ]).start(this.loadAnimation.bind(this));
+      ]);
+      this.loaderAnimation.start(this.loadAnimation.bind(this));
     }
   }
   _hideControls() {
     if (this.mounted) {
-      const e = this.state;
-      e.showControls = false;
       this.hideControlAnimation();
       if (typeof this.events.onHideControls === 'function') {
         this.events.onHideControls();
       }
-      this.setState(e);
+      this.setState({showControls: false});
     }
   }
   _toggleControls() {
-    const state = this.state;
-    state.showControls = !state.showControls;
-    if (state.showControls) {
-      this.showControlAnimation();
-      this.setControlTimeout();
-      if (typeof this.events.onShowControls === 'function') {
-        this.events.onShowControls();
-      }
-    } else {
-      this.hideControlAnimation();
-      this.clearControlTimeout();
-      if (typeof this.events.onHideControls === 'function') {
-        this.events.onHideControls();
-      }
-    }
-    this.setState(state);
+    this.setState(
+      (state) => ({showControls: !state.showControls}),
+      () => {
+        if (this.state.showControls) {
+          this.showControlAnimation();
+          this.setControlTimeout();
+          if (typeof this.events.onShowControls === 'function') {
+            this.events.onShowControls();
+          }
+        } else {
+          this.hideControlAnimation();
+          this.clearControlTimeout();
+          if (typeof this.events.onHideControls === 'function') {
+            this.events.onHideControls();
+          }
+        }
+      },
+    );
   }
   _toggleFullscreen() {
-    const state = this.state;
-    state.isFullscreen = !state.isFullscreen;
-    if (this.props.toggleResizeModeOnFullscreen) {
-      state.resizeMode = state.isFullscreen === true ? 'cover' : 'contain';
-    }
-    if (state.isFullscreen) {
-      if (typeof this.events.onEnterFullscreen === 'function') {
-        this.events.onEnterFullscreen();
-      }
-    } else if (typeof this.events.onExitFullscreen === 'function') {
-      this.events.onExitFullscreen();
-    }
-    this.setState(state);
+    this.setState(
+      (state) => ({
+        isFullscreen: !state.isFullscreen,
+        resizeMode: this.props.toggleResizeModeOnFullscreen
+          ? !state.isFullscreen
+            ? 'cover'
+            : 'contain'
+          : state.resizeMode,
+      }),
+      () => {
+        if (this.state.isFullscreen) {
+          if (typeof this.events.onEnterFullscreen === 'function') {
+            this.events.onEnterFullscreen();
+          }
+        } else if (typeof this.events.onExitFullscreen === 'function') {
+          this.events.onExitFullscreen();
+        }
+      },
+    );
   }
   _togglePlayPause() {
-    const state = this.state;
-    state.paused = !state.paused;
-    if (state.paused) {
-      if (typeof this.events.onPause === 'function') {
-        this.events.onPause();
-      }
-    } else if (typeof this.events.onPlay === 'function') {
-      this.events.onPlay();
-    }
-    this.setState(state);
+    this.setState(
+      (state) => ({paused: !state.paused}),
+      () => {
+        if (this.state.paused) {
+          if (typeof this.events.onPause === 'function') {
+            this.events.onPause();
+          }
+        } else if (typeof this.events.onPlay === 'function') {
+          this.events.onPlay();
+        }
+      },
+    );
   }
   _toggleTimer() {
-    const state = this.state;
-    state.showTimeRemaining = !state.showTimeRemaining;
-    this.setState(state);
+    this.setState((state) => ({showTimeRemaining: !state.showTimeRemaining}));
   }
   _onBack() {
     if (this.props.navigator && this.props.navigator.pop) {
@@ -354,14 +342,12 @@ class VideoPlayer extends React.Component {
     return `${t}${Runtime927(Math.floor(e / 60).toFixed(0), 2, 0)}:${Runtime927(Math.floor(e % 60).toFixed(0), 2, 0)}`;
   }
   setSeekerPosition(e = 0) {
-    const state = this.state;
-    e = this.constrainToSeekerMinMax(e);
-    state.seekerFillWidth = e;
-    state.seekerPosition = e;
-    if (!state.seeking) {
-      state.seekerOffset = e;
-    }
-    this.setState(state);
+    const position = this.constrainToSeekerMinMax(e);
+    this.setState((state) => ({
+      seekerFillWidth: position,
+      seekerPosition: position,
+      seekerOffset: state.seeking ? state.seekerOffset : position,
+    }));
   }
   constrainToSeekerMinMax(e = 0) {
     if (e <= 0) {
@@ -372,19 +358,17 @@ class VideoPlayer extends React.Component {
     }
     return e;
   }
-  calculateSeekerPosition() {
-    const e = this.state.currentTime / this.state.duration;
+  calculateSeekerPosition(currentTime = this.state.currentTime) {
+    const e = currentTime / this.state.duration;
     return this.player.seekerWidth * e;
   }
-  calculateTimeFromSeekerPosition() {
-    const e = this.state.seekerPosition / this.player.seekerWidth;
+  calculateTimeFromSeekerPosition(position = this.state.seekerPosition) {
+    const e = position / this.player.seekerWidth;
     return this.state.duration * e;
   }
   seekTo(e = 0) {
-    const state = this.state;
-    state.currentTime = e;
     this.player.ref.seek(e);
-    this.setState(state);
+    this.setState({currentTime: e});
   }
   UNSAFE_componentWillReceiveProps(e) {
     if (this.state.paused !== e.paused) {
@@ -405,6 +389,10 @@ class VideoPlayer extends React.Component {
   componentWillUnmount() {
     this.mounted = false;
     this.clearControlTimeout();
+    clearTimeout(this.player.tapActionTimeout);
+    clearTimeout(this.scrubTimeout);
+    this.loaderAnimation?.stop();
+    this.animations.loader.rotate.stopAnimation();
   }
   renderControl(e, t, o = {}) {
     const n = this;
@@ -441,7 +429,7 @@ class VideoPlayer extends React.Component {
         ]}
       >
         <ReactNative.ImageBackground
-          source={require('./../../assets/images/top-vignette.png')}
+          source={topVignette}
           style={[g.controls.column]}
           imageStyle={[g.controls.vignette]}
         >
@@ -492,7 +480,7 @@ class VideoPlayer extends React.Component {
         ]}
       >
         <ReactNative.ImageBackground
-          source={require('./../../assets/images/bottom-vignette.png')}
+          source={bottomVignette}
           style={[g.controls.column]}
           imageStyle={[g.controls.vignette]}
         >
@@ -514,7 +502,7 @@ class VideoPlayer extends React.Component {
     const e = this;
     return (
       <ReactNative.View style={g.seekbar.container} collapsable={false}>
-        <slider
+        <Slider
           style={{
             width: '100%',
           }}
@@ -524,27 +512,24 @@ class VideoPlayer extends React.Component {
           minimumTrackTintColor={constants.COLORS.primary}
           maximumTrackTintColor={constants.COLORS.primaryAlpha50}
           onSlidingStart={function (t) {
-            const e_state = e.state;
             e.clearControlTimeout();
             e.setSeekerPosition(t);
-            e_state.seeking = true;
-            e_state.originallyPaused = e_state.paused;
-            e_state.scrubbing = false;
-            if (e.player.scrubbingTimeStep > 0) {
-              e_state.paused = true;
-            }
-            e.setState(e_state);
+            e.setState((state) => ({
+              seeking: true,
+              originallyPaused: state.paused,
+              scrubbing: false,
+              paused: e.player.scrubbingTimeStep > 0 ? true : state.paused,
+            }));
           }}
           onValueChange={function (t) {
             e.setSeekerPosition(t);
             const e_state = e.state;
             if (e.player.scrubbingTimeStep > 0 && !e_state.loading && !e_state.scrubbing) {
-              const o = e.calculateTimeFromSeekerPosition();
+              const o = e.calculateTimeFromSeekerPosition(t);
               const i = 1000 * Math.abs(e_state.currentTime - o);
               if (o < e_state.duration && i >= e.player.scrubbingTimeStep) {
-                e_state.scrubbing = true;
-                e.setState(e_state);
-                setTimeout(() => {
+                e.setState({scrubbing: true});
+                e.scrubTimeout = setTimeout(() => {
                   e.player.ref.seek(o, e.player.scrubbingTimeStep);
                 }, 1);
               }
@@ -552,20 +537,18 @@ class VideoPlayer extends React.Component {
           }}
           onSlidingComplete={function (t) {
             e.setSeekerPosition(t);
-            const n = e.calculateTimeFromSeekerPosition();
+            const n = e.calculateTimeFromSeekerPosition(t);
             const e_state = e.state;
             if (n >= e_state.duration && !e_state.loading) {
-              e_state.paused = true;
+              e.setState({paused: true});
               e.events.onEnd();
             } else if (e_state.scrubbing) {
-              e_state.seeking = false;
+              e.setState({seeking: false});
             } else {
               e.seekTo(n);
               e.setControlTimeout();
-              e_state.paused = e_state.originallyPaused;
-              e_state.seeking = false;
+              e.setState({paused: e_state.originallyPaused, seeking: false});
             }
-            e.setState(e_state);
           }}
         />
       </ReactNative.View>
@@ -583,12 +566,12 @@ class VideoPlayer extends React.Component {
     if (this.props.title) {
       return (
         <ReactNative.View style={[g.controls.title]}>
-          <reactNativeTextTicker
+          <TextTicker
             style={[g.controls.text, g.controls.titleText]}
             disabled={!this.state.showControls}
           >
             {this.props.title || ''}
-          </reactNativeTextTicker>
+          </TextTicker>
         </ReactNative.View>
       );
     }
@@ -644,7 +627,7 @@ class VideoPlayer extends React.Component {
           e.layoutHeight = t.nativeEvent.layout.height;
         }}
       >
-        <reactNativeVideo
+        <VideoComponent
           {...this.props}
           ref={function (t) {
             e.props.onRef?.(t);
