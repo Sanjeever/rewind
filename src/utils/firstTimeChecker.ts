@@ -1,19 +1,19 @@
-import * as _appStorage from './../storage/index.js';
+import * as _appStorage from './../storage/index';
 import keys from '../storage/keys';
 export const check = async () => {
   try {
-    return await _appStorage.storage.load({
+    return await _appStorage.storage.load<boolean>({
       key: keys.firstTime,
     });
   } catch (error) {
-    if (error.name !== 'NotFoundError') {
+    if (!(error instanceof Error && error.name === 'NotFoundError')) {
       throw error;
     }
     await s();
     return true;
   }
 };
-var s = () =>
+const s = () =>
   _appStorage.storage.save({
     key: keys.firstTime,
     data: false,

@@ -1,11 +1,14 @@
 import BlobUtil from 'react-native-blob-util';
 import {NativeModules} from 'react-native';
 import {audio_cache, files_dir} from './paths';
+import {nativeStorage} from './paths';
+import type {NativeAudioPlayer} from '../native/audioPlayer';
+const audioPlayer = NativeModules.RNAudioPlayer as NativeAudioPlayer;
 
 const fs = BlobUtil.fs;
-export const isUsableFile = (path) => fs.exists(path);
+export const isUsableFile = (path: string) => fs.exists(path);
 
-export function bytesToSize(bytes) {
+export function bytesToSize(bytes: number) {
   if (bytes === 0) return '0 B';
   const unit = Math.floor(Math.log(bytes) / Math.log(1024));
   return (
@@ -15,8 +18,8 @@ export function bytesToSize(bytes) {
   );
 }
 
-export async function getCurrentCache(path = audio_cache) {
-  if (path === audio_cache) return NativeModules.RNAudioPlayer.getCacheSize();
+export async function getCurrentCache(path = audio_cache): Promise<number> {
+  if (path === audio_cache) return audioPlayer.getCacheSize();
   if (!(await fs.exists(path))) return 0;
   let total = 0;
   for (const entry of await fs.lstat(path)) {
@@ -25,13 +28,18 @@ export async function getCurrentCache(path = audio_cache) {
   return total;
 }
 
-export const clearCache = () => NativeModules.RNAudioPlayer.clearCache();
+export const clearCache = () => audioPlayer.clearCache();
 
 export async function moveToFiles({
   from,
   dest,
   fileName = String(Date.now()),
   clearOriginal = false,
+}: {
+  from: string;
+  dest: string;
+  fileName?: string;
+  clearOriginal?: boolean;
 }) {
   const source = from.replace(/^file:\/\//, '');
   const extension = source.match(/\.[^/.]+$/)?.[0] || '';
@@ -39,7 +47,7 @@ export async function moveToFiles({
   const target = directory + '/' + fileName.replace(/[\\/:*?"<>|]/g, '_') + extension;
   if (!(await fs.isDir(directory))) await fs.mkdir(directory);
   await fs.cp(source, target + '.writing');
-  await NativeModules.RewindStorage.replaceFile(target + '.writing', target);
+  await nativeStorage.replaceFile(target + '.writing', target);
   if (clearOriginal) await fs.unlink(source);
   return target;
 }

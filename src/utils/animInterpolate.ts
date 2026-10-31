@@ -1,7 +1,8 @@
 import * as constants from '../theme/constants';
+import type {Animated} from 'react-native';
 const u = constants.STATUS_BAR_HEIGHT + 40;
 const p = {
-  forHeader: function (e) {
+  forHeader: function (e?: Animated.Value | null) {
     if (e) {
       return {
         opacity: e.interpolate({

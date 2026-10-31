@@ -13,7 +13,7 @@ export interface NowPlaying {
   duration?: number;
   elapsedTime?: number;
 }
-interface NativeAudioPlayer {
+export interface NativeAudioPlayer {
   prepare(
     source: string,
     callback: (error: PlayerError | null, info: {duration: number} | null) => void,

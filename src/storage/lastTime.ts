@@ -4,9 +4,9 @@ import keys from './keys';
 export default {
   async get() {
     try {
-      return await storage.load({key: keys.lastPlayedTime});
+      return await storage.load<number>({key: keys.lastPlayedTime});
     } catch (error) {
-      if (error.name === 'NotFoundError') return 0;
+      if (error instanceof Error && error.name === 'NotFoundError') return 0;
       throw error;
     }
   },

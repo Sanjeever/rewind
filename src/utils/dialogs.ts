@@ -1,9 +1,10 @@
 import reactNativeDialogs from '../native/dialogs';
+import type {PickerItem} from '../native/dialogs';
 const showNumberPicker = async (
-  items,
-  title,
-  promptTitle,
-  custom = (item) => item.value === -1,
+  items: PickerItem<number>[],
+  title: string,
+  promptTitle: string,
+  custom = (item: PickerItem<number>) => item.value === -1,
 ) => {
   const {selectedItem} = await reactNativeDialogs.showPicker(title, null, {
     items,

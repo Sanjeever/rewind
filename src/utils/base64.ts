@@ -1,5 +1,5 @@
 const d = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
-const n = (r) => {
+const n = (r: string) => {
   let e;
   let o = '';
   for (let t = 0, a, d; t < r.length;) {
@@ -20,7 +20,7 @@ const n = (r) => {
   return o;
 };
 const f = {
-  decode: function (r) {
+  decode: function (r: string) {
     let e;
     let o;
     let t;

@@ -1,18 +1,19 @@
 import {storage} from './index';
 import keys from './keys';
 import {toPlayer} from '../events';
+import type {SavedQueue} from './models';
 
 async function load() {
   try {
-    return await storage.load({key: keys.lastPlayedTracks});
+    return await storage.load<SavedQueue>({key: keys.lastPlayedTracks});
   } catch (error) {
-    if (error.name === 'NotFoundError') return null;
+    if (error instanceof Error && error.name === 'NotFoundError') return null;
     throw error;
   }
 }
 
 export default {
-  save({tracks, index, api}) {
+  save({tracks, index, api}: SavedQueue) {
     return storage.save({key: keys.lastPlayedTracks, data: {tracks, index, api}});
   },
   load,

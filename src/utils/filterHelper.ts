@@ -1,7 +1,9 @@
 import {pinyin} from 'pinyin-pro';
 import * as trackInfo from '../services/trackInfo';
 import * as utils from './index';
-const c = {
+import type {Artist, TrackFields} from '../services/track';
+type SearchableTrack = TrackFields & {_searchable?: string};
+const c: Record<string, 1 | undefined> = {
   ':1': 1,
   ':11': 1,
   ':2': 1,
@@ -20,16 +22,18 @@ const searchTypesMap = {
   byRandom: ':4',
 };
 const l = new RegExp(/:\w{1,2}/gi);
-const b = (e) => e.replace(/\s/, '');
-const f = (e) =>
-  b(
+const b = (e: string) => e.replace(/\s/, '');
+const f = (e: string | undefined) => {
+  if (e === undefined) throw new TypeError('歌曲名称格式无效');
+  return b(
     pinyin(e, {
       toneType: 'none',
       type: 'array',
     }).join(''),
   );
-const g = (e) => utils.usable(c[e]);
-const v = (e, r) => {
+};
+const g = (e: string) => utils.usable(c[e]);
+const v = <T extends TrackFields>(e: T[], r: string) => {
   const n = r.replace(l, '');
   const t = r.replace(new RegExp(n, 'gi'), '');
   let a = m(e, t);
@@ -42,7 +46,7 @@ const v = (e, r) => {
   }
   return a;
 };
-var m = (e, r) => {
+const m = <T extends TrackFields>(e: T[], r: string) => {
   if (r === searchTypesMap.byRandom) {
     return utils.shuffle(e);
   }
@@ -51,12 +55,12 @@ var m = (e, r) => {
   }
   return e;
 };
-var p = (e, r, n) => {
+const p = (e: TrackFields, r: TrackFields, n: string) => {
   const t = trackInfo.extractBasicInfo(e);
   const a = trackInfo.extractBasicInfo(r);
   let u;
   let s;
-  let c = null;
+  let c = 0;
   switch (n) {
     case searchTypesMap.bySong:
     case searchTypesMap.bySongReversed:
@@ -81,17 +85,17 @@ var p = (e, r, n) => {
   }
   return c;
 };
-const y = (e) =>
+const y = (e: Artist[] | undefined) =>
   e?.map(function (e) {
     return e.name;
   }) || [];
-var d = (singer) => {
+const d = (singer: string | Artist[] | undefined) => {
   if (typeof singer === 'string') {
     return singer;
   }
   return y(singer).join('');
 };
-const h = (singer) => {
+const h = (singer: string | Artist[] | undefined) => {
   if (typeof singer === 'string') {
     return singer;
   }
@@ -99,7 +103,7 @@ const h = (singer) => {
   return f(r.join(''));
 };
 const R = {
-  search: function (e, r) {
+  search: function <T extends TrackFields>(e: T[], r: string) {
     const n = b(r.replace(/\?/gi, '\\?'));
     if (n.length < 1) {
       return e;
@@ -119,7 +123,7 @@ const R = {
     }
     return u;
   },
-  quickSearch: function (e, r) {
+  quickSearch: function <T extends SearchableTrack>(e: T[], r: string) {
     const n = b(r.replace(/\?/gi, '\\?'));
     if (n.length < 1) {
       return e;

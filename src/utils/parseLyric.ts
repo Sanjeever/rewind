@@ -1,5 +1,14 @@
 import {Lrc} from 'lrc-kit';
-export default (function parseLyric(text) {
+export interface LyricLine {
+  min: number;
+  sec: number;
+  ms: number;
+  txt: string;
+  dis: boolean;
+  total: number;
+  trans?: LyricLine;
+}
+export default (function parseLyric(text: string): LyricLine[] {
   return Lrc.parse(text)
     .lyrics.filter((line) => line.content.trim().length > 0)
     .sort((left, right) => left.timestamp - right.timestamp)

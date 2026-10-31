@@ -1,5 +1,5 @@
 const d = {
-  getInt: function (e, t) {
+  getInt: function (e: number, t: number) {
     return Math.floor(Math.random() * (t - e)) + e;
   },
 };

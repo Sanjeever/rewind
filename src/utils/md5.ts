@@ -1,0 +1,13 @@
+import SparkMD5 from 'spark-md5';
+import base64 from 'base-64';
+function binary(value: string) {
+  return value
+    .split('')
+    .map((character) => String.fromCharCode(character.charCodeAt(0) & 255))
+    .join('');
+}
+export default {
+  hex_md5: (value: string) => SparkMD5.hashBinary(binary(value)),
+  b64_md5: (value: string) =>
+    base64.encode(SparkMD5.hashBinary(binary(value), true)).replace(/=+$/, ''),
+};
