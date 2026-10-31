@@ -47,6 +47,8 @@ class CommentPage extends React.PureComponent<
   State
 > {
   _scrollView: reactNativeSpringScrollview.SpringScrollView | null = null;
+  keywordRequest = 0;
+  keywordsPending = false;
   init = () => {
     const params = this.props.route.params;
     if (params) {
@@ -142,41 +144,27 @@ class CommentPage extends React.PureComponent<
     }
   };
   getCommentKeywords = (e: CommentItem[]) => {
-    if (e.length < 1) {
-      this.setState({
-        loadWordsCloudDone: true,
-      });
-    } else {
-      let t = '';
-      e.forEach((e) => {
-        const n = isNeteaseComment(e) ? e.content : e.rootcommentcontent;
-        if (n) {
-          const a = n.replace(/\s/gi, '');
-          t += `${a}`;
-        }
-      });
-      this.getKeyWords(utils.emojiStrip(t));
-    }
+    return this.getKeyWords(
+      e.flatMap((comment) => {
+        const text = isNeteaseComment(comment) ? comment.content : comment.rootcommentcontent;
+        return text ? [utils.emojiStrip(text)] : [];
+      }),
+    );
   };
-  getKeyWords = async (text: string) => {
-    if (!text) {
-      return;
-    }
+  getKeyWords = async (texts: string[]) => {
+    if (this.keywordsPending) return;
+    this.keywordsPending = true;
+    const request = ++this.keywordRequest;
     try {
-      for (let offset = 0; offset < text.length; offset += 500) {
-        const words = await commentSegmentation.nlp(text.slice(offset, offset + 500));
-        if (words?.length) {
-          this.setState((previous) => ({
-            wordscloud: [...previous.wordscloud, ...new Set(words)],
-          }));
-        }
-      }
+      const words = texts.length ? await commentSegmentation.nlp(texts) : [];
+      if (request === this.keywordRequest) this.setState({wordscloud: words});
     } catch (error) {
-      toast(errorMessage(error));
+      if (request === this.keywordRequest) toast(errorMessage(error));
     } finally {
-      this.setState({
-        loadWordsCloudDone: true,
-      });
+      if (request === this.keywordRequest) {
+        this.keywordsPending = false;
+        this.setState({loadWordsCloudDone: true});
+      }
     }
   };
   renderTextInput = () => {
@@ -446,6 +434,9 @@ class CommentPage extends React.PureComponent<
   };
   componentDidMount() {
     this.init();
+  }
+  componentWillUnmount() {
+    this.keywordRequest++;
   }
   render() {
     const state = this.state;

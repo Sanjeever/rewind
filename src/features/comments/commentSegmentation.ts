@@ -1,5 +1,8 @@
+import {NativeModules} from 'react-native';
+const native = NativeModules.RewindSegmentation as {segment(texts: string[]): Promise<string[]>};
+
 export default {
-  nlp: function (_text: string): Promise<string[]> {
-    return Promise.reject(new Error('评论分词服务尚未配置'));
+  nlp(texts: string[]) {
+    return native.segment(texts);
   },
 };
