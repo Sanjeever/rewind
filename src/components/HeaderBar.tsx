@@ -186,6 +186,7 @@ class HeaderBar extends React.PureComponent<
       <ReactNative.Animated.View style={[b.container, b.borderline, headerStyle]}>
         {blur && (
           <ReactNative.Animated.View
+            pointerEvents="none"
             style={[
               {
                 position: 'absolute',
