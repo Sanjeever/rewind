@@ -9,19 +9,29 @@ import locales from '../locales/index';
 import * as services from '../services/index';
 import * as events from '../events/index';
 import * as trackInfo from '../services/trackInfo';
-let l;
+import type {ScreenProps, UserProfile} from '../navigation/types';
+import type {TrackFields, TrackId} from '../services/track';
+import type {PagerViewOnPageSelectedEvent} from 'react-native-pager-view';
 const tabNames = [locales.WEEKLY, locales.ALL];
-l = {};
+const l: Record<string, string> = {};
 l[locales.WEEKLY] = '1';
 l[locales.ALL] = '2';
 const g = l;
-const h = (e) =>
+const h = (e: {song: TrackFields; playCount: number}[]) =>
   e.map((e) => {
     e.song.playCount = e.playCount;
     return e.song;
   });
-class ListenRecord extends React.PureComponent {
-  state = {
+interface State {
+  index: number;
+  weekData: TrackFields[];
+  allData: TrackFields[];
+  profile: Partial<UserProfile>;
+}
+class ListenRecord extends React.PureComponent<ScreenProps<'ListenRecord'>, State> {
+  _weekDataList: reactNativeLargelist.LargeList<TrackFields> | null = null;
+  _allDataList: reactNativeLargelist.LargeList<TrackFields> | null = null;
+  state: State = {
     index: 0,
     weekData: [],
     allData: [],
@@ -40,23 +50,23 @@ class ListenRecord extends React.PureComponent {
       }
     }
   };
-  loadWeekData = async (id) => {
+  loadWeekData = async (id: TrackId) => {
     const response = await services.Netease.listen_record(id, 1);
-    if (response?.code === 200) {
+    if (response?.code === 200 && response.weekData) {
       this.setState({
         weekData: h(response.weekData),
       });
     }
   };
-  loadAllData = async (id) => {
+  loadAllData = async (id: TrackId) => {
     const response = await services.Netease.listen_record(id, 0);
-    if (response?.code === 200) {
+    if (response?.code === 200 && response.allData) {
       this.setState({
         allData: h(response.allData),
       });
     }
   };
-  handlePageSelected = (e) => {
+  handlePageSelected = (e: PagerViewOnPageSelectedEvent) => {
     const position = e.nativeEvent.position;
     this.setState({
       index: position,
@@ -79,7 +89,7 @@ class ListenRecord extends React.PureComponent {
       });
     }
   };
-  renderScenes = (e) => {
+  renderScenes = (e: string) => {
     const n_state = this.state;
     const {weekData, allData} = n_state;
     switch (e) {
@@ -102,7 +112,7 @@ class ListenRecord extends React.PureComponent {
               });
             }}
             ref={(e) => {
-              return (this._weekDataList = e);
+              this._weekDataList = e;
             }}
           />
         );
@@ -125,13 +135,21 @@ class ListenRecord extends React.PureComponent {
               });
             }}
             ref={(e) => {
-              return (this._allDataList = e);
+              this._allDataList = e;
             }}
           />
         );
     }
   };
-  renderItem = ({item, index, dataKey}) => {
+  renderItem = ({
+    item,
+    index,
+    dataKey,
+  }: {
+    item: TrackFields;
+    index: number;
+    dataKey: 'weekData' | 'allData';
+  }) => {
     const l = trackInfo.extractFullInfo(item);
     const {song, singer, alias} = l;
     const album = item.playCount ? `${item.playCount} ${locales.TIMES}` : l.album;
@@ -166,7 +184,15 @@ class ListenRecord extends React.PureComponent {
       />
     );
   };
-  playMusic = ({item, index, dataKey}) => {
+  playMusic = ({
+    item,
+    index,
+    dataKey,
+  }: {
+    item: TrackFields;
+    index: number;
+    dataKey: 'weekData' | 'allData';
+  }) => {
     const l = this.state[dataKey];
     if (l.length > 0) {
       events.toPlayer({
@@ -209,7 +235,7 @@ class ListenRecord extends React.PureComponent {
   }
 }
 export default ListenRecord;
-var D = ReactNative.StyleSheet.create({
+const D = ReactNative.StyleSheet.create({
   container: {
     flex: 1,
   },

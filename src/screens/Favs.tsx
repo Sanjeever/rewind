@@ -4,42 +4,36 @@ import * as components from '../components/index';
 import TabbedViewPager from '../native/TabbedViewPager';
 import * as constants from '../theme/constants';
 import locales from '../locales/index';
-import Subscriptions from './../modules/Subscriptions.js';
-let i;
+import Subscriptions from './../modules/Subscriptions';
+import type {SubscriptionItem} from '../modules/Subscriptions';
+import type {Provider} from '../services/providers';
+import type {ScreenProps} from '../navigation/types';
 const tabNames = [locales.ARTIST, locales.ALBUM];
-i = {};
+const i: Record<string, string> = {};
 i[locales.ARTIST] = '1';
 i[locales.ALBUM] = '2';
 const b = i;
-class Favs extends React.PureComponent {
+class Favs extends React.PureComponent<ScreenProps<'Favs'>, {index: number; searchText: string}> {
+  artistList: Subscriptions | null = null;
+  albumList: Subscriptions | null = null;
   state = {
     index: 0,
     searchText: '',
   };
   onTop = () => {
-    let e;
-    let t;
-    let n;
-    let r;
-    if (this.state.index === 0) {
-      if (!((e = (t = this.artistList).onTop) === null || e === undefined)) {
-        e.call(t);
-      }
-    } else if (!((n = (r = this.albumList).onTop) === null || n === undefined)) {
-      n.call(r);
-    }
+    (this.state.index === 0 ? this.artistList : this.albumList)?.onTop();
   };
-  searchSong = (searchText) => {
+  searchSong = (searchText: string) => {
     this.setState({
       searchText,
     });
   };
-  _handleIndexChange = (index) => {
+  _handleIndexChange = (index: number) => {
     return this.setState({
       index,
     });
   };
-  _renderScene = (e) => {
+  _renderScene = (e: {route: {key: string}}) => {
     switch (e.route.key) {
       case '1':
         return (
@@ -49,8 +43,8 @@ class Favs extends React.PureComponent {
             index={this.state.index}
             navigation={this.props.navigation}
             searchText={this.state.searchText}
-            onRef={(e) => {
-              return (this.artistList = e);
+            ref={(e) => {
+              this.artistList = e;
             }}
           />
         );
@@ -62,8 +56,8 @@ class Favs extends React.PureComponent {
             index={this.state.index}
             navigation={this.props.navigation}
             searchText={this.state.searchText}
-            onRef={(e) => {
-              return (this.albumList = e);
+            ref={(e) => {
+              this.albumList = e;
             }}
           />
         );
@@ -71,24 +65,18 @@ class Favs extends React.PureComponent {
         return null;
     }
   };
-  _renderScenes = (e) => {
+  _renderScenes = (e: string) => {
     switch (e) {
       case '1':
         return (
           <Subscriptions
             type={'artist'}
             onArtist={this.onArtist}
-            scrolling={this.state.scrolling}
             index={this.state.index}
-            scrollEnd={() => {
-              return this.setState({
-                scrolling: false,
-              });
-            }}
             navigation={this.props.navigation}
             searchText={this.state.searchText}
             ref={(e) => {
-              return (this.artistList = e);
+              this.artistList = e;
             }}
           />
         );
@@ -97,17 +85,11 @@ class Favs extends React.PureComponent {
           <Subscriptions
             type={'album'}
             onAlbum={this.onAlbum}
-            scrolling={this.state.scrolling}
             index={this.state.index}
-            scrollEnd={() => {
-              return this.setState({
-                scrolling: false,
-              });
-            }}
             navigation={this.props.navigation}
             searchText={this.state.searchText}
             ref={(e) => {
-              return (this.albumList = e);
+              this.albumList = e;
             }}
           />
         );
@@ -115,13 +97,13 @@ class Favs extends React.PureComponent {
         return null;
     }
   };
-  onArtist = (e, t) => {
+  onArtist = (e: SubscriptionItem, t: Provider) => {
     this.props.navigation.navigate('ArtistPage', {
       item: e,
       api: t,
     });
   };
-  onAlbum = (e, t) => {
+  onAlbum = (e: SubscriptionItem, t: Provider) => {
     this.props.navigation.navigate('AlbumPage', {
       item: e,
       api: t,
@@ -139,8 +121,7 @@ class Favs extends React.PureComponent {
         onChangeText={(t) => {
           return this.searchSong(t);
         }}
-        text={this.state.searchText}
-        disabledTopFadingEdge={true}
+        searchText={this.state.searchText}
       >
         <TabbedViewPager
           tabNames={tabNames}
@@ -170,14 +151,14 @@ class Favs extends React.PureComponent {
     );
   }
 }
-var h = ReactNative.StyleSheet.create({
+const h = ReactNative.StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: 40 + constants.STATUS_BAR_HEIGHT,
   },
   tabBar: {
     marginTop: 0,
-    backgroundColor: 0,
+    backgroundColor: 'transparent',
     elevation: 0,
   },
   tabStyle: {

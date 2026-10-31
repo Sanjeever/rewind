@@ -9,12 +9,18 @@ import providers from '../services/providers';
 import icons from '../theme/icons';
 import locales from '../locales/index';
 import users from '../storage/users';
-class PlaylistComparison extends React.PureComponent {
-  state = {
+import type {Playlist} from '../storage/models';
+import type {Provider} from '../services/providers';
+class PlaylistComparison extends React.PureComponent<
+  {visible: boolean; onRequestClose(): void; onSelect(playlist: Playlist): void},
+  {api: Provider; playlist: Playlist[]}
+> {
+  _scrollView: reactNativeSpringScrollview.SpringScrollView | null = null;
+  state: {api: Provider; playlist: Playlist[]} = {
     api: providers.netEase,
     playlist: [],
   };
-  loadPlaylist = async (api) => {
+  loadPlaylist = async (api: Provider) => {
     const stored = await users.getUserPlayList();
     if (api === providers.netEase) {
       this.setState({
@@ -23,9 +29,9 @@ class PlaylistComparison extends React.PureComponent {
     }
   };
   onTop = () => {
-    this._scrollView.scrollToBegin?.();
+    this._scrollView?.scrollToBegin();
   };
-  _renderItem = ({item}) => {
+  _renderItem = ({item}: {item: Playlist; index?: number}) => {
     const r = this.formatItem(item);
     return React.createElement(PlaylistComparisonScreen, {
       title: r.title,
@@ -36,8 +42,8 @@ class PlaylistComparison extends React.PureComponent {
       trackCount: r.trackCount,
     });
   };
-  formatItem = (e) => {
-    const t = {};
+  formatItem = (e: Playlist) => {
+    const t: {title?: string; img?: string; trackCount?: number} = {};
     if (this.state.api === providers.netEase) {
       t.title = e.name;
       t.img = `${e.coverImgUrl}?param=200y200`;
@@ -66,7 +72,7 @@ class PlaylistComparison extends React.PureComponent {
             }}
             blur={true}
           />
-          <ReactNative.TouchableWithoutFeedback onPress={this.onClosed}>
+          <ReactNative.TouchableWithoutFeedback onPress={onRequestClose}>
             <ReactNative.View style={[ReactNative.StyleSheet.absoluteFill]} />
           </ReactNative.TouchableWithoutFeedback>
           <TouchableScale onPress={this.onTop}>
@@ -75,7 +81,7 @@ class PlaylistComparison extends React.PureComponent {
           <FadingEdge top={30}>
             <reactNativeSpringScrollview.SpringScrollView
               ref={(t) => {
-                return (this._scrollView = t);
+                this._scrollView = t;
               }}
               style={{
                 paddingHorizontal: '20%',
@@ -95,7 +101,12 @@ class PlaylistComparison extends React.PureComponent {
     );
   }
 }
-class PlaylistComparisonScreen extends React.PureComponent {
+class PlaylistComparisonScreen extends React.PureComponent<{
+  onPress(): void;
+  title?: string;
+  img?: string;
+  trackCount?: number;
+}> {
   render() {
     const props = this.props;
     const {onPress, title, img, trackCount} = props;
@@ -159,7 +170,7 @@ class PlaylistComparisonScreen extends React.PureComponent {
     );
   }
 }
-var h = ReactNative.StyleSheet.create({
+const h = ReactNative.StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#000',

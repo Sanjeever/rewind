@@ -3,6 +3,7 @@ import 'react';
 import * as ReactNative from 'react-native';
 import * as components from '../../components/index';
 import * as utils from '../../utils/index';
+import type {MessagePayload} from './payload';
 const d = ReactNative.StyleSheet.create({
   msgItemCon: {
     minHeight: 100,
@@ -42,7 +43,26 @@ const d = ReactNative.StyleSheet.create({
     borderColor: '#eee',
   },
 });
-const GComponent = function ({msg, data, time, onAlbum, onMV, onSong, user, fromUser}) {
+const GComponent = function ({
+  msg,
+  data,
+  time,
+  onAlbum,
+  onMV,
+  onSong,
+  user,
+  fromUser,
+}: {
+  msg?: string | null;
+  data: MessagePayload;
+  time: string;
+  onAlbum(): void;
+  onMV(): void;
+  onSong(): void;
+  user?: string;
+  fromUser?: string;
+  img?: string;
+}) {
   return (
     <ReactNative.View
       style={[
@@ -71,36 +91,33 @@ const GComponent = function ({msg, data, time, onAlbum, onMV, onSong, user, from
         >
           {msg}
         </Text>
-        {data.type === 2 ? (
+        {data.type === 2 && data.album ? (
           <components.SettingItem
             coverImg={`${data.album.picUrl}?param=200y200`}
-            itemHeight={70}
             title={data.album.name}
             subtitle={utils.parseArtist(data.album.artists)}
             containerStyle={d.albumItem}
             onPress={onAlbum}
           />
         ) : null}
-        {data.type === 7 ? (
+        {data.type === 7 && data.mv ? (
           <components.SettingItem
             coverImg={`${data.mv.imgurl}?param=200y200`}
             coverImgStyle={{
               height: '90%',
               width: '50%',
             }}
-            itemHeight={130}
             title={data.mv.name}
             subtitle={data.mv.artistName}
             containerStyle={d.mvItem}
             onPress={onMV}
           />
         ) : null}
-        {data.type === 1 ? (
+        {data.type === 1 && data.song ? (
           <components.SettingItem
-            coverImg={`${data.song.album.picUrl}?param=200y200`}
-            itemHeight={70}
+            coverImg={`${typeof data.song.album === 'object' ? data.song.album?.picUrl : undefined}?param=200y200`}
             title={data.song.name}
-            subtitle={data.song.album.name}
+            subtitle={typeof data.song.album === 'object' ? data.song.album?.name : undefined}
             containerStyle={d.albumItem}
             onPress={onSong}
           />

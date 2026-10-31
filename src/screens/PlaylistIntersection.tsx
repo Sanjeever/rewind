@@ -8,13 +8,28 @@ import * as services from '../services/index';
 import * as events from '../events/index';
 import * as trackInfo from '../services/trackInfo';
 import IntersectionHeader from './../modules/IntersectionHeader';
-import PlaylistComparison from './../modules/PlaylistComparison.js';
+import PlaylistComparison from './../modules/PlaylistComparison';
+import type {ScreenProps} from '../navigation/types';
+import type {TrackFields} from '../services/track';
+import type {Playlist} from '../storage/models';
 const b = {
   intersection: 'intersection',
   difference: 'difference',
-};
-class PlaylistIntersection extends React.PureComponent {
-  state = {
+} as const;
+type Left = Playlist & {playlist: {tracks: TrackFields[]}};
+interface State {
+  item: Playlist | null;
+  left: Left | null;
+  right: Playlist | null;
+  selectorShow: boolean;
+  data: TrackFields[];
+  intersectionData: TrackFields[];
+  differenceData: TrackFields[];
+  type: keyof typeof b;
+}
+class PlaylistIntersection extends React.PureComponent<ScreenProps<'PlaylistIntersection'>, State> {
+  _list: reactNativeLargelist.LargeList<TrackFields> | null = null;
+  state: State = {
     item: null,
     left: null,
     right: null,
@@ -24,25 +39,24 @@ class PlaylistIntersection extends React.PureComponent {
     differenceData: [],
     type: b.intersection,
   };
-  init = async (item) => {
-    const response = await services.Netease.playlist_detail(item.id);
-    if (!response?.playlist) {
+  init = async (item: Playlist) => {
+    const response = await services.Netease.playlist_detail(item.id!);
+    const playlist = response.playlist;
+    if (!playlist?.tracks) {
       throw new Error(response?.message || locales.ERROR);
     }
     this.setState({
       left: {
         ...item,
-        playlist: response.playlist,
+        playlist: {...playlist, tracks: playlist.tracks},
       },
       selectorShow: true,
     });
   };
   onTop = () => {
-    this._list?.scrollToIndexPath({
-      row: 0,
-    });
+    this._list?.scrollToBegin();
   };
-  _renderIndexPath = ({row}) => {
+  _renderIndexPath = ({row}: {row: number}) => {
     const data = this.state.data;
     const a = data[row];
     const index = row;
@@ -76,7 +90,7 @@ class PlaylistIntersection extends React.PureComponent {
     );
   };
   toggleType = () => {
-    let e;
+    let e: keyof typeof b;
     let t;
     const r_state = this.state;
     const {type, intersectionData, differenceData} = r_state;
@@ -92,7 +106,7 @@ class PlaylistIntersection extends React.PureComponent {
       data: t,
     });
   };
-  onSelect = (right) => {
+  onSelect = (right: Playlist) => {
     this.setState(
       {
         right,
@@ -104,17 +118,17 @@ class PlaylistIntersection extends React.PureComponent {
     );
   };
   fetchRightPlaylist = async () => {
-    const response = await services.Netease.playlist_detail(this.state.right.id, true);
-    if (response?.playlist) {
-      this.intersection(response);
+    const response = await services.Netease.playlist_detail(this.state.right!.id!, true);
+    if (response?.playlist?.tracks) {
+      this.intersection(response.playlist.tracks);
     }
   };
-  intersection = (e) => {
+  intersection = (tracks: TrackFields[]) => {
     const left = this.state.left;
-    if (left && e) {
+    if (left) {
       const n = left.playlist.tracks;
-      const a = e.playlist.tracks;
-      const i = [];
+      const a = tracks;
+      const i: TrackFields[] = [];
       n.forEach((e) =>
         a.forEach((t) => {
           if (e.id === t.id) {
@@ -139,19 +153,19 @@ class PlaylistIntersection extends React.PureComponent {
       }
     }
   };
-  difference = (e, t, n) => {
-    const differenceData = [];
-    const i = {};
+  difference = (e: TrackFields[], t: TrackFields[], n: TrackFields[]) => {
+    const differenceData: TrackFields[] = [];
+    const i: Record<string, boolean> = {};
     n.forEach((e) => {
-      i[e.id] = true;
+      i[String(e.id)] = true;
     });
     e.forEach((e) => {
-      if (!i[e.id]) {
+      if (!i[String(e.id)]) {
         differenceData.push(e);
       }
     });
     t.forEach((e) => {
-      if (!i[e.id]) {
+      if (!i[String(e.id)]) {
         differenceData.push(e);
       }
     });
@@ -161,7 +175,7 @@ class PlaylistIntersection extends React.PureComponent {
   };
   componentDidMount() {
     const params = this.props.route.params;
-    if (params) {
+    if (params?.item) {
       const t = params.item;
       this.init(t);
     }
@@ -179,7 +193,7 @@ class PlaylistIntersection extends React.PureComponent {
         >
           <reactNativeLargelist.LargeList
             ref={(t) => {
-              return (this._list = t);
+              this._list = t;
             }}
             data={[
               {

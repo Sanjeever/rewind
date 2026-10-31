@@ -1,4 +1,6 @@
 import {responses} from './responses';
+import type * as z from 'zod/mini';
+import type {TrackFields} from '../track';
 import type {TrackId} from '../track';
 interface SearchRequest {
   keywords: string;
@@ -86,7 +88,9 @@ const m = new (class NeteaseService {
     return http.request(responses.user_followeds, '/api/user/getfolloweds', t);
   };
   playlist_detail = async (id: TrackId, loadAll = false) => {
-    const result = await http.request(
+    const result: z.output<typeof responses.playlist_detail> & {
+      moreFunc?: () => Promise<{songs: TrackFields[]} | undefined>;
+    } = await http.request(
       responses.playlist_detail,
       '/api/v6/playlist/detail',
       `id=${id}&n=1000&limit=1000`,

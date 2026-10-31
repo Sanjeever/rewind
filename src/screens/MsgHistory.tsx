@@ -9,13 +9,24 @@ import * as events from '../events/index';
 import * as utils from '../utils/index';
 import queue from '../events/queue';
 import styles from './messages/styles';
-class MsgHistory extends React.Component {
-  state = {
+import type {ScreenProps} from '../navigation/types';
+import type {TrackFields, TrackId} from '../services/track';
+import type {SearchEntity} from '../services/searchEntities';
+import type {responses} from '../services/netease/responses';
+import type * as z from 'zod/mini';
+import {messagePayload} from './messages/payload';
+type Message = NonNullable<z.output<typeof responses.msg_history>['msgs']>[number];
+class MsgHistory extends React.Component<
+  ScreenProps<'MsgHistory'>,
+  {title?: string; data: Message[]; loaded: boolean}
+> {
+  _scrollView: reactNativeSpringScrollview.SpringScrollView | null = null;
+  state: {title?: string; data: Message[]; loaded: boolean} = {
     title: '……',
     data: [],
     loaded: false,
   };
-  getMsgUser = async (userId) => {
+  getMsgUser = async (userId: TrackId) => {
     const response = await services.Netease.msg_history({
       userId,
     });
@@ -27,13 +38,13 @@ class MsgHistory extends React.Component {
     }
   };
   onTop = () => {
-    this._scrollView.scrollToBegin?.();
+    this._scrollView?.scrollToBegin();
   };
   onClosed = () => {
     this.props.navigation.goBack();
   };
-  formatRow = function (e) {
-    const t = JSON.parse(e.msg);
+  formatRow = function (e: Message) {
+    const t = messagePayload.parse(JSON.parse(e.msg));
     return {
       img: `${e.fromUser.avatarUrl}?param=200y200`,
       title: e.fromUser.nickname,
@@ -42,13 +53,13 @@ class MsgHistory extends React.Component {
       time: utils.timeFormatter.localeString(e.time),
     };
   };
-  Album = (e) => {
+  Album = (e: SearchEntity) => {
     this.props.navigation.navigate('AlbumPage', {
       item: e,
       api: providers.netEase,
     });
   };
-  _renderItem = ({item, index}) => {
+  _renderItem = ({item, index}: {item: Message; index: number}) => {
     const n = this.formatRow(item);
     return React.createElement(styles, {
       key: index,
@@ -59,20 +70,20 @@ class MsgHistory extends React.Component {
       data: n.data,
       time: n.time,
       onAlbum: () => {
-        return this.Album(n.data.album);
+        return this.Album(n.data.album!);
       },
       onMV: () => {
-        return this.MV(n.data.mv);
+        return this.MV(n.data.mv!);
       },
       onSong: () => {
-        return this.Song(n.data.song);
+        return this.Song(n.data.song!);
       },
     });
   };
-  MV = function ({id}) {
-    queue.playMV(id, providers.netEase);
+  MV = function ({id}: {id?: TrackId}) {
+    queue.playMV(id!, providers.netEase);
   };
-  Song = function (e) {
+  Song = function (e: TrackFields) {
     events.toPlayer({
       item: e,
       data: [e],
@@ -119,7 +130,7 @@ class MsgHistory extends React.Component {
         ) : null}
         <reactNativeSpringScrollview.SpringScrollView
           ref={(t) => {
-            return (this._scrollView = t);
+            this._scrollView = t;
           }}
           showsVerticalScrollIndicator={false}
         >

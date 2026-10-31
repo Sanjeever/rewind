@@ -9,14 +9,20 @@ import locales from '../locales/index';
 import * as events from '../events/index';
 import * as utils from '../utils/index';
 import * as trackInfo from '../services/trackInfo';
-const GComponent = function (item, t) {
+import type {responses} from '../services/netease/responses';
+import type * as z from 'zod/mini';
+import type {TrackFields} from '../services/track';
+export type NewWork = NonNullable<
+  z.output<typeof responses.sub_new_songs>['data']
+>['newWorks'][number];
+const GComponent = function (item: TrackFields, t: number) {
   const a = trackInfo.extractFullInfo(item);
   return (
     <components.SongRow
       key={t}
       index={null}
       song={a.song}
-      singer={utils.timeFormatter.parseTime(item.dt / 1000)}
+      singer={utils.timeFormatter.parseTime(item.dt! / 1000)}
       album={a.album}
       alias={a.alias}
       containerStyle={{
@@ -41,9 +47,9 @@ const GComponent = function (item, t) {
     />
   );
 };
-const PComponent = ({item, onAlbum}) => {
+const PComponent = ({item, onAlbum}: {item: NewWork; onAlbum(): void}) => {
   const {blockTitle, songLists} = item;
-  const i = songLists.reduce((acc, songList) => acc + songList.dt, 0);
+  const i = songLists.reduce((acc, songList) => acc + songList.dt!, 0);
   const subtitle = `${utils.timeFormatter.parseTime(i / 1000)}  |  ${songLists.length} ${locales.SONG_COUNT} `;
   return (
     <YComponent
@@ -56,13 +62,23 @@ const PComponent = ({item, onAlbum}) => {
           data: songLists,
           index: 0,
           api: 'netEase',
-          type: songLists.length > 1 ? '' : 'insert',
+          type: songLists.length > 1 ? undefined : 'insert',
         });
       }}
     />
   );
 };
-var YComponent = function ({title, subtitle, onPress, onPage}) {
+const YComponent = function ({
+  title,
+  subtitle,
+  onPress,
+  onPage,
+}: {
+  title: string;
+  subtitle: string;
+  onPress(): void;
+  onPage(): void;
+}) {
   return (
     <ReactNative.TouchableNativeFeedback onPress={onPress}>
       <ReactNative.View style={E.albumCon}>
@@ -103,7 +119,7 @@ var YComponent = function ({title, subtitle, onPress, onPage}) {
     </ReactNative.TouchableNativeFeedback>
   );
 };
-var E = ReactNative.StyleSheet.create({
+const E = ReactNative.StyleSheet.create({
   container: {
     paddingBottom: 10,
   },
@@ -138,7 +154,15 @@ var E = ReactNative.StyleSheet.create({
     padding: 5,
   },
 });
-const HComponent = function ({item, onAlbum, onArtist}) {
+const HComponent = function ({
+  item,
+  onAlbum,
+  onArtist,
+}: {
+  item: NewWork;
+  onAlbum(): void;
+  onArtist(): void;
+}) {
   let n;
   const {blockType, blockTitle} = item;
   return (

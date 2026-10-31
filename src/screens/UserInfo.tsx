@@ -12,14 +12,23 @@ import * as services from '../services/index';
 import * as events from '../events/index';
 import * as types from '../utils/types';
 import styles from './users/styles';
-class UserInfo extends React.PureComponent {
-  state = {
+import type {ScreenProps, UserProfile} from '../navigation/types';
+import type {Playlist} from '../storage/models';
+import type {TrackId} from '../services/track';
+interface State {
+  profile: Partial<UserProfile>;
+  playlist: Playlist[];
+  listenSongs?: number;
+  peopleCanSeeMyPlayRecord?: boolean;
+}
+class UserInfo extends React.PureComponent<ScreenProps<'UserInfo'>, State> {
+  state: State = {
     profile: {},
     playlist: [],
     listenSongs: 0,
     peopleCanSeeMyPlayRecord: false,
   };
-  getInfo = async (id) => {
+  getInfo = async (id: TrackId) => {
     const response = await services.Netease.user_detail(id);
     if (!response) {
       return;
@@ -38,7 +47,7 @@ class UserInfo extends React.PureComponent {
     });
     await this.getPlaylist(id);
   };
-  getPlaylist = async (id) => {
+  getPlaylist = async (id: TrackId) => {
     const response = await services.Netease.user_playlist(id);
     if (response?.playlist) {
       this.setState({
@@ -48,15 +57,17 @@ class UserInfo extends React.PureComponent {
   };
   onFollow = () => {
     const profile = this.state.profile;
+    if (profile.userId == null) return;
     this.props.navigation.navigate('FollowPage', {
-      profile,
+      profile: {...profile, userId: profile.userId},
     });
   };
   onSelectedUser = () => {
     const profile = this.state.profile;
-    events.emitter.emit(names.SelectedUser, profile);
+    if (profile.userId != null)
+      events.emitter.emit(names.SelectedUser, {...profile, userId: profile.userId});
   };
-  renderForeground = (nativeOffset) => {
+  renderForeground = (nativeOffset: {y: ReactNative.Animated.Value}) => {
     const a_state = this.state;
     const {profile, listenSongs} = a_state;
     const {backgroundUrl, avatarUrl, nickname, signature} = profile;
@@ -157,21 +168,21 @@ class UserInfo extends React.PureComponent {
   onListenRecord = () => {
     const a_state = this.state;
     const e_profile = a_state.profile;
-    if (a_state.peopleCanSeeMyPlayRecord) {
+    if (a_state.peopleCanSeeMyPlayRecord && e_profile.userId != null) {
       this.props.navigation.navigate('ListenRecord', {
-        profile: e_profile,
+        profile: {...e_profile, userId: e_profile.userId},
       });
     } else {
       toast(locales.INVISIBLE);
     }
   };
-  onPlaylist = (playlist) => {
+  onPlaylist = (playlist: Playlist) => {
     this.props.navigation.navigate('Playlist', {
       playlist,
       api: providers.netEase,
     });
   };
-  renderItem = ({item, index}) => {
+  renderItem = ({item, index}: {item: Playlist; index: number}) => {
     return (
       <components.ListItem
         key={index}
@@ -191,7 +202,7 @@ class UserInfo extends React.PureComponent {
       />
     );
   };
-  onPlaylistIntersection = (e) => {
+  onPlaylistIntersection = (e: Playlist) => {
     this.props.navigation.navigate('PlaylistIntersection', {
       item: e,
     });
@@ -228,7 +239,7 @@ class UserInfo extends React.PureComponent {
   }
 }
 export default UserInfo;
-var E = ReactNative.StyleSheet.create({
+const E = ReactNative.StyleSheet.create({
   container: {
     flex: 1,
   },

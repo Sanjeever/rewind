@@ -5,8 +5,21 @@ import * as components from '../components/index';
 import locales from '../locales/index';
 import * as services from '../services/index';
 import '../utils/index';
-class Msg extends React.PureComponent {
-  state = {
+import type {ScreenProps} from '../navigation/types';
+import type {responses} from '../services/netease/responses';
+import type * as z from 'zod/mini';
+import {messagePayload} from './messages/payload';
+import {errorMessage} from '../utils/types';
+type Message = NonNullable<z.output<typeof responses.msg>['msgs']>[number];
+interface State {
+  data: Message[];
+  loaded: boolean;
+  msgModalShow: boolean;
+  pickedItem: Message | null;
+}
+class Msg extends React.PureComponent<ScreenProps<'Msg'>, State> {
+  _scrollView: reactNativeSpringScrollview.SpringScrollView | null = null;
+  state: State = {
     data: [],
     loaded: false,
     msgModalShow: false,
@@ -26,7 +39,7 @@ class Msg extends React.PureComponent {
         });
       }
     } catch (error) {
-      toast(error.message);
+      toast(errorMessage(error));
     } finally {
       this.setState({
         loaded: true,
@@ -34,17 +47,17 @@ class Msg extends React.PureComponent {
     }
   };
   onTop = () => {
-    this._scrollView.scrollToBegin?.();
+    this._scrollView?.scrollToBegin();
   };
-  formatRow = function (e) {
-    const msg = JSON.parse(e.lastMsg).msg;
+  formatRow = function (e: Message) {
+    const msg = messagePayload.parse(JSON.parse(e.lastMsg)).msg;
     return {
       img: `${e.fromUser.avatarUrl}?param=200y200`,
       title: e.fromUser.nickname,
       subtitle: msg,
     };
   };
-  onUserInfo = (e) => {
+  onUserInfo = (e: Message) => {
     const userId = e.fromUser.userId;
     if (typeof userId === 'number') {
       this.props.navigation.navigate('UserInfo', {
@@ -52,7 +65,7 @@ class Msg extends React.PureComponent {
       });
     }
   };
-  renderItem = ({item, index}) => {
+  renderItem = ({item, index}: {item: Message; index: number}) => {
     const a = this.formatRow(item);
     return (
       <components.ListItem
@@ -69,7 +82,7 @@ class Msg extends React.PureComponent {
       />
     );
   };
-  onMsg = (e) => {
+  onMsg = (e: Message) => {
     this.props.navigation.navigate('MsgHistory', {
       item: e,
     });
@@ -92,7 +105,7 @@ class Msg extends React.PureComponent {
         ) : (
           <reactNativeSpringScrollview.SpringScrollView
             ref={(t) => {
-              return (this._scrollView = t);
+              this._scrollView = t;
             }}
             showsVerticalScrollIndicator={false}
           >

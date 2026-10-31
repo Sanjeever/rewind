@@ -9,19 +9,33 @@ import * as services from '../services/index';
 import * as utils from '../utils/index';
 import * as trackInfo from '../services/trackInfo';
 import LyricText from './lyrics/LyricText';
-class LyricPage extends React.PureComponent {
-  state = {
+import type {ScreenProps} from '../navigation/types';
+import type {TrackId} from '../services/track';
+import type {Provider} from '../services/providers';
+import type {LyricRow, LyricLine} from '../utils/parseLyric';
+import {toast} from '../native/toast';
+import {errorMessage} from '../utils/types';
+type ExportLine = LyricRow & {hidden?: boolean};
+interface State {
+  img: string | null;
+  songName: string | null;
+  qrcode: string | null;
+  trans: LyricLine[];
+  lyric: ExportLine[];
+}
+class LyricPage extends React.PureComponent<ScreenProps<'LyricPage'>, State> {
+  state: State = {
     img: null,
     songName: null,
     qrcode: null,
     trans: [],
     lyric: [],
   };
-  songName = function (e) {
+  songName = function (e: ReturnType<typeof trackInfo.extractFullInfo>) {
     const t = utils.parseArtist(e.singer);
     return `${e.song} · ${t}`;
   };
-  getQRCode = (e, t) => {
+  getQRCode = (e: TrackId, t: Provider) => {
     let r;
     switch (t) {
       case providers.netEase:
@@ -34,14 +48,15 @@ class LyricPage extends React.PureComponent {
       qrcode: `${endpoints.QRCODE_API}?text=${r}&size=128&margin=0`,
     });
   };
-  getLyric = (e, t) => {
+  getLyric = (e: TrackId, t: Provider) => {
     switch (t) {
       case providers.netEase:
         services.Netease.lyric(e)
           .then((e) => {
-            const lyric = utils.parseLyric(e.lrc.lyric);
-            let trans = [];
-            if (e.tlyric.lyric) {
+            if (!e.lrc) throw new Error('未返回歌词');
+            const lyric: ExportLine[] = utils.parseLyric(e.lrc.lyric);
+            let trans: LyricLine[] = [];
+            if (e.tlyric?.lyric) {
               trans = utils.parseLyric(e.tlyric.lyric);
             }
             if (e.transUser) {
@@ -54,35 +69,38 @@ class LyricPage extends React.PureComponent {
               trans,
             });
           })
-          .catch(() => null);
+          .catch((error) => toast(errorMessage(error)));
         break;
       case providers.qqMusic:
-        services.QQMusic.getLyric(e).then(({lyric, trans}) => {
-          this.setState({
-            lyric,
-            trans,
-          });
-        });
+        services.QQMusic.getLyric(e)
+          .then(({lyric, trans}) => {
+            this.setState({
+              lyric,
+              trans,
+            });
+          })
+          .catch((error) => toast(errorMessage(error)));
     }
   };
   onClose = () => {
     this.props.navigation.goBack();
   };
-  renderTxt = function (e) {
+  renderTxt = function (e: string) {
     return e
       .replace(/&apos;/gm, "'")
       .replace(/\/\//g, '')
       .replace(/&quot;/g, '"')
       .replace(/\[.+\]/gi, '');
   };
-  getTrans = (e) => {
+  getTrans = (e?: number) => {
+    if (e == null) return null;
     const trans = this.state.trans;
     if (trans?.length > 0) {
       return trans.find((t) => e === t.total || Math.abs(e - t.total) < 1);
     }
     return null;
   };
-  renderItem = ({item, index}) => {
+  renderItem = ({item, index}: {item: ExportLine; index: number}) => {
     const a = this.getTrans(item.total);
     const hidden = item.hidden || false;
     return (
@@ -96,9 +114,9 @@ class LyricPage extends React.PureComponent {
       />
     );
   };
-  onPress = (e) => {
+  onPress = (e: number) => {
     const lyric = immer.produce(this.state.lyric, function (t) {
-      t[e].hidden = !t[e].hidden || !t[e].hidden;
+      t[e].hidden = !t[e].hidden;
     });
     this.setState({
       lyric,
@@ -174,7 +192,7 @@ class LyricPage extends React.PureComponent {
     );
   }
 }
-var h = ReactNative.StyleSheet.create({
+const h = ReactNative.StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',

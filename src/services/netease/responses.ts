@@ -46,6 +46,7 @@ const suggestions = response({
 const user = response({
   profile: optional(profile),
   listenSongs: optional(z.number()),
+  peopleCanSeeMyPlayRecord: optional(z.boolean()),
   level: optional(z.number()),
 });
 const comments = response({
@@ -76,16 +77,22 @@ export const responses = {
   artist: response({artist: optional(artist), hotSongs: optional(tracks)}),
   artist_album: response({hotAlbums: optional(z.array(album))}),
   artist_mv: response({mvs: optional(z.array(video))}),
-  album: response({album: optional(album), songs: optional(tracks)}),
+  album: response({
+    album: optional(z.extend(album, {songs: optional(tracks)})),
+    songs: optional(tracks),
+  }),
   musicUrl: sound,
   freeMusicUrl: sound,
   recommend_songs: response({recommend: optional(tracks)}),
-  recommend_dislike: status,
+  recommend_dislike: response({data: optional(track)}),
   recommend_playlists: response({recommend: optional(z.array(playlist))}),
   likelist: response({ids: optional(z.array(id))}),
   like: status,
-  msg: response({msgs: optional(z.array(userMessage))}),
-  msg_history: response({msgs: optional(z.array(userMessage)), more: optional(z.boolean())}),
+  msg: response({msgs: optional(z.array(z.extend(userMessage, {lastMsg: z.string()})))}),
+  msg_history: response({
+    msgs: optional(z.array(z.extend(userMessage, {msg: z.string()}))),
+    more: optional(z.boolean()),
+  }),
   comment: comments,
   comment_radio: comments,
   comment_add: response({comment: optional(comment)}),
@@ -123,7 +130,9 @@ export const responses = {
   radio_sublist: response({djRadios: optional(z.array(radio))}),
   radio_detail: response({programs: optional(z.array(program)), more: optional(z.boolean())}),
   radio_hot: response({djRadios: optional(z.array(radio))}),
-  heart_mode: response({data: optional(z.array(z.looseObject({songInfo: track})))}),
+  heart_mode: response({
+    data: optional(z.array(z.looseObject({id: optional(id), songInfo: track}))),
+  }),
   cloud: response({
     data: optional(
       z.array(
@@ -162,12 +171,25 @@ export const responses = {
               artistId: optional(id),
               resourceId: optional(id),
             }),
-            songLists: tracks,
+            songLists: z.array(z.extend(track, {al: optional(album)})),
             publishTime: optional(z.number()),
           }),
         ),
       }),
     ),
   }),
-  sub_new_mv: response({data: optional(z.looseObject({newWorks: z.array(video)}))}),
+  sub_new_mv: response({
+    data: optional(
+      z.looseObject({
+        newWorks: z.array(
+          z.extend(video, {
+            mvCoverUrl: optional(z.string()),
+            mvName: optional(z.string()),
+            mvId: optional(id),
+            publishTime: optional(z.number()),
+          }),
+        ),
+      }),
+    ),
+  }),
 };

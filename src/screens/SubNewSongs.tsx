@@ -8,8 +8,13 @@ import locales from '../locales/index';
 import * as services from '../services/index';
 import * as utils from '../utils/index';
 import queue from '../events/queue';
-import ArtistHeader from './../modules/ArtistHeader.js';
-const h = (songData) => {
+import ArtistHeader from './../modules/ArtistHeader';
+import type {NewWork} from '../modules/ArtistHeader';
+import type {ScreenProps} from '../navigation/types';
+import type {responses} from '../services/netease/responses';
+import type * as z from 'zod/mini';
+type NewVideo = NonNullable<z.output<typeof responses.sub_new_mv>['data']>['newWorks'][number];
+const h = (songData: {publishTime?: number}[]) => {
   const t = [0];
   songData.forEach((n, r) => {
     if (r !== 0) {
@@ -21,8 +26,15 @@ const h = (songData) => {
   });
   return t;
 };
-class SubNewSongs extends React.PureComponent {
-  state = {
+interface State {
+  songData: NewWork[];
+  mvData: NewVideo[];
+  dateIds: number[];
+  showingMV: boolean;
+}
+class SubNewSongs extends React.PureComponent<ScreenProps<'SubNewSongs'>, State> {
+  scrollView: reactNativeSpringScrollview.SpringScrollView | null = null;
+  state: State = {
     songData: [],
     mvData: [],
     dateIds: [],
@@ -54,7 +66,7 @@ class SubNewSongs extends React.PureComponent {
       showingMV: !this.state.showingMV,
     });
   };
-  renderSection = function ({index, publishTime}) {
+  renderSection = function ({index, publishTime}: {index: number; publishTime?: number}) {
     return (
       <ReactNative.View
         style={[
@@ -95,9 +107,9 @@ class SubNewSongs extends React.PureComponent {
         <components.ListItem
           img={`${e.mvCoverUrl}?param=200y200`}
           title={e.mvName}
-          subtitle={`${utils.timeFormatter.parseTime(e.duration / 1000)}  |  ${e.artistName}`}
+          subtitle={`${utils.timeFormatter.parseTime(e.duration! / 1000)}  |  ${e.artistName}`}
           onPress={function () {
-            return queue.playMV(e.mvId, 'netEase');
+            return queue.playMV(e.mvId!, 'netEase');
           }}
         />
       </React.Fragment>
@@ -125,15 +137,15 @@ class SubNewSongs extends React.PureComponent {
       </React.Fragment>
     ));
   };
-  onAlbum = ({songLists}) => {
+  onAlbum = ({songLists}: NewWork) => {
     this.props.navigation.navigate('AlbumPage', {
-      item: songLists[0].al,
+      item: songLists[0].al!,
       api: 'netEase',
     });
   };
-  onArtist = ({songLists}) => {
+  onArtist = ({songLists}: NewWork) => {
     this.props.navigation.navigate('ArtistPage', {
-      item: songLists[0].ar[0],
+      item: songLists[0].ar![0],
       api: 'netEase',
     });
   };
@@ -165,7 +177,7 @@ class SubNewSongs extends React.PureComponent {
           <reactNativeSpringScrollview.SpringScrollView
             style={v.container}
             ref={(t) => {
-              return (this.scrollView = t);
+              this.scrollView = t;
             }}
           >
             {showingMV ? this.renderMV() : this.renderSongs()}
@@ -177,7 +189,7 @@ class SubNewSongs extends React.PureComponent {
     );
   }
 }
-var v = ReactNative.StyleSheet.create({
+const v = ReactNative.StyleSheet.create({
   container: {
     padding: 20,
   },

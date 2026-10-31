@@ -1,7 +1,8 @@
 import {toast} from '../native/toast';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
-import reactNativeTabView from 'react-native-tab-view';
+import * as reactNativeTabView from 'react-native-tab-view';
+import type {TabBarProps, Route, SceneRendererProps, NavigationState} from 'react-native-tab-view';
 import * as components from '../components/index';
 import ParallaxList from '../components/ParallaxList';
 import * as constants from '../theme/constants';
@@ -11,14 +12,32 @@ import * as services from '../services/index';
 import * as events from '../events/index';
 import * as types from '../utils/types';
 import UserHeader from './../modules/UserHeader';
+import type {ScreenProps, UserProfile} from '../navigation/types';
+import type {TrackId} from '../services/track';
+import type {SpringScrollView} from '../components/Scrolling';
+import {errorMessage} from '../utils/types';
 const tabViewHeight = constants.DEVICE_HEIGHT - constants.DEVICE_WIDTH - constants.ITEM_HEIGHT;
-class FollowPage extends React.PureComponent {
+interface State extends NavigationState<Route> {
+  profile: Partial<UserProfile>;
+  follows: UserProfile[];
+  followeds: UserProfile[];
+  userId: TrackId | null;
+  followed?: boolean;
+  tabViewHeight: number;
+  followsLoaded: boolean;
+  followedsLoaded: boolean;
+}
+class FollowPage extends React.PureComponent<ScreenProps<'FollowPage'>, State> {
+  _list: SpringScrollView | null = null;
+  mounted = false;
   _nativeOffset = {
     x: new ReactNative.Animated.Value(0),
     y: new ReactNative.Animated.Value(0),
   };
   _tabViewHeights = [0, 0];
-  state = {
+  state: State = {
+    followsLoaded: false,
+    followedsLoaded: false,
     profile: {},
     follows: [],
     followeds: [],
@@ -37,27 +56,50 @@ class FollowPage extends React.PureComponent {
       },
     ],
   };
-  getFollows = async (id, offset) => {
-    const response = await services.Netease.user_follows(id, offset);
-    if (response?.code === 200) {
-      this.setState((previous) => ({
-        follows: [...previous.follows, ...response.follow],
-      }));
-      this._list?.endLoading?.();
+  getFollows = async (id: TrackId, offset?: number) => {
+    try {
+      const response = await services.Netease.user_follows(id, offset);
+      if (!this.mounted) return;
+      if (response?.code === 200 && response.follow) {
+        const follow = response.follow;
+        this.setState((previous) => ({
+          follows: [...previous.follows, ...follow],
+        }));
+        this._list?.endLoading?.();
+      }
+    } catch (error) {
+      if (this.mounted) toast(errorMessage(error));
+    } finally {
+      if (this.mounted) {
+        this.setState({followsLoaded: true});
+        this._list?.endLoading();
+      }
     }
   };
-  getFolloweds = async (id, offset) => {
-    const response = await services.Netease.user_followeds(id, offset);
-    if (response?.code === 200) {
-      this.setState((previous) => ({
-        followeds: [...previous.followeds, ...response.followeds],
-      }));
-      this._list?.endLoading?.();
+  getFolloweds = async (id: TrackId, offset?: number) => {
+    try {
+      const response = await services.Netease.user_followeds(id, offset);
+      if (!this.mounted) return;
+      if (response?.code === 200 && response.followeds) {
+        const followeds = response.followeds;
+        this.setState((previous) => ({
+          followeds: [...previous.followeds, ...followeds],
+        }));
+        this._list?.endLoading?.();
+      }
+    } catch (error) {
+      if (this.mounted) toast(errorMessage(error));
+    } finally {
+      if (this.mounted) {
+        this.setState({followedsLoaded: true});
+        this._list?.endLoading();
+      }
     }
   };
   getMore = () => {
     const r_state = this.state;
     const {follows, followeds, userId, index} = r_state;
+    if (userId == null) return;
     if (index === 0) {
       const o = follows.length;
       this.getFollows(userId, o);
@@ -66,36 +108,38 @@ class FollowPage extends React.PureComponent {
       this.getFolloweds(userId, i);
     }
   };
-  _handleIndexChange = (e) => {
+  _handleIndexChange = (e: number) => {
     return this.setState({
       index: e,
       tabViewHeight: this._tabViewHeights[e],
     });
   };
-  _renderHeader = (e) => {
+  _renderHeader = (e: TabBarProps<Route>) => {
     return (
       <reactNativeTabView.TabBar
         pressColor={'rgba(0,0,0,0.3)'}
-        renderText={this._renderText}
         tabStyle={{
           backgroundColor: 'rgba(0,0,0,0)',
         }}
-        labelStyle={{
-          backgroundColor: 'rgba(0,0,0,0)',
-        }}
+        options={Object.fromEntries(
+          this.state.routes.map((route) => [
+            route.key,
+            {labelStyle: {backgroundColor: 'rgba(0,0,0,0)'}},
+          ]),
+        )}
         indicatorStyle={{
           backgroundColor: constants.COLORS.primary,
         }}
         style={{
           marginTop: 0,
-          backgroundColor: 0,
+          backgroundColor: 'transparent',
           elevation: 0,
         }}
         {...e}
       />
     );
   };
-  _renderScene = ({route}) => {
+  _renderScene = ({route}: SceneRendererProps & {route: Route}) => {
     const r_state = this.state;
     const {follows, followeds} = r_state;
     switch (route.key) {
@@ -116,7 +160,7 @@ class FollowPage extends React.PureComponent {
             </ReactNative.View>
           );
         }
-        return <components.Spinkit />;
+        return this.state.followsLoaded ? <ReactNative.View /> : <components.Spinkit />;
       case '2':
         if (followeds?.length > 0) {
           return (
@@ -134,12 +178,12 @@ class FollowPage extends React.PureComponent {
             </ReactNative.View>
           );
         }
-        return <components.Spinkit />;
+        return this.state.followedsLoaded ? <ReactNative.View /> : <components.Spinkit />;
       default:
         return null;
     }
   };
-  onTabViewLayout = (e, t) => {
+  onTabViewLayout = (e: ReactNative.LayoutChangeEvent, t: number) => {
     const height = e.nativeEvent.layout.height;
     if (height) {
       if (t === 0) {
@@ -152,6 +196,7 @@ class FollowPage extends React.PureComponent {
   };
   onHeart = async () => {
     const {followed, userId} = this.state;
+    if (userId == null) return;
     const response = await services.Netease.follow_user({
       uid: userId,
       type: followed ? 0 : 1,
@@ -164,15 +209,15 @@ class FollowPage extends React.PureComponent {
       followed: !followed,
     });
   };
-  onUserInfo = (e) => {
+  onUserInfo = (e: UserProfile) => {
     this.props.navigation.navigate('UserInfo', {
       userId: e.userId,
     });
   };
-  onSelectedUser = function (e) {
+  onSelectedUser = function (e: UserProfile) {
     events.emitter.emit(names.SelectedUser, e);
   };
-  renderItem = ({item}) => {
+  renderItem = ({item}: {item: UserProfile; index?: number}) => {
     return (
       <components.ListItem
         img={`${item.avatarUrl}?param=200y200`}
@@ -189,6 +234,7 @@ class FollowPage extends React.PureComponent {
     );
   };
   componentDidMount() {
+    this.mounted = true;
     const params = this.props.route.params;
     if (types.isObject(params)) {
       const profile = params.profile;
@@ -203,6 +249,9 @@ class FollowPage extends React.PureComponent {
         this.getFolloweds(userId);
       }
     }
+  }
+  componentWillUnmount() {
+    this.mounted = false;
   }
   render() {
     const state = this.state;
@@ -221,7 +270,7 @@ class FollowPage extends React.PureComponent {
           <UserHeader
             nativeOffset={this._nativeOffset}
             profile={profile}
-            followed={followed}
+            followed={!!followed}
             onHeart={this.onHeart}
           />
           <reactNativeTabView.TabView
@@ -239,7 +288,7 @@ class FollowPage extends React.PureComponent {
   }
 }
 export default FollowPage;
-var m = ReactNative.StyleSheet.create({
+const m = ReactNative.StyleSheet.create({
   container: {
     flex: 1,
   },

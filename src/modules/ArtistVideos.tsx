@@ -5,7 +5,7 @@ import * as utils from '../utils/index';
 import queue from '../events/queue';
 import type {SearchEntity} from '../services/searchEntities';
 import type {Provider} from '../services/providers';
-type Video = SearchEntity & {publishTime?: string};
+type Video = SearchEntity;
 class ArtistVideos extends React.PureComponent<{api: Provider; mvs: Video[]}> {
   formatListItem = (e: Video) => {
     const t: {title?: string | null; subtitle?: string | null; img?: string | null} = {};

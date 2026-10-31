@@ -45,7 +45,7 @@ const g = {
   isSameDay: function (e: ConfigType, t: ConfigType) {
     return dayjs(e).isSame(dayjs(t), 'day');
   },
-  localeString: function (e: ConfigType) {
+  localeString: function (e?: ConfigType) {
     let t = 'dddd, MMM D';
     if (!dayjs(e).isSame(Date.now(), 'year')) {
       t += ', YYYY';
