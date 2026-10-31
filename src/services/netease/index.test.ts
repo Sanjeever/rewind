@@ -4,27 +4,30 @@ import type {responses} from './responses';
 
 const request = jest.fn<typeof Http.request>();
 const cryptoRequest = jest.fn<typeof Http.cryptoRequest<typeof responses.song_detail>>();
-jest.unstable_mockModule('./http', () => ({request, cryptoRequest}));
+const eapiRequest = jest.fn<typeof Http.eapiRequest<typeof responses.musicUrl>>();
+jest.unstable_mockModule('./http', () => ({request, cryptoRequest, eapiRequest}));
 const {default: netease} = await import('./index');
 
 beforeEach(() => {
   request.mockReset();
   cryptoRequest.mockReset();
+  eapiRequest.mockReset();
 });
 
-test('两个音源入口共用取消状态，保留各自默认音质', async () => {
+test('两个音源入口共用取消状态，统一使用音源 v1 并按音质选择等级', async () => {
   await netease.musicUrl({id: 1});
-  const first = cryptoRequest.mock.calls[0];
+  const first = eapiRequest.mock.calls[0];
   const firstSignal = first[3]!.signal;
-  expect(first[2]).toEqual({ids: '[1]', br: 999000});
+  expect(first[2]).toEqual({ids: '[1]', level: 'exhigh', encodeType: 'aac'});
   expect(firstSignal.aborted).toBe(false);
   await netease.freeMusicUrl({ids: [2, 3]});
-  const second = request.mock.calls[0];
+  const second = eapiRequest.mock.calls[1];
   expect(firstSignal.aborted).toBe(true);
-  expect(second[2]).toBe('br=320000&ids=[2,3]');
+  expect(second[2]).toEqual({ids: '[2,3]', level: 'exhigh', encodeType: 'aac'});
   expect(second[3]!.signal.aborted).toBe(false);
-  await netease.musicUrl({id: 4});
+  await netease.musicUrl({id: 4, br: 128000});
   expect(second[3]!.signal.aborted).toBe(true);
+  expect(eapiRequest.mock.calls[2][2].level).toBe('standard');
 });
 
 test('歌曲详情按千首分批，完成顺序不同仍保留输入顺序及原始字段', async () => {

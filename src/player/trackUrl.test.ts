@@ -48,7 +48,7 @@ test('主音源与备用均失败时保留真实业务错误，区分 -460 和�
   };
   const urls = await resolver({
     Netease: {
-      freeMusicUrl: async () => response,
+      musicUrl: async () => response,
     },
     provider: {
       getUrlFromOther: async () => {
@@ -85,7 +85,7 @@ test('主音源与备用均失败时保留真实业务错误，区分 -460 和�
 test('空字符串和试听音源均不能作为完整歌曲成功返回', async () => {
   const urls = await resolver({
     Netease: {
-      freeMusicUrl: async () => ({
+      musicUrl: async () => ({
         code: 200,
         data: [
           {

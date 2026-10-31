@@ -4,6 +4,7 @@ import android.util.Base64
 import com.facebook.react.bridge.*
 import java.math.BigInteger
 import java.security.SecureRandom
+import java.security.MessageDigest
 import java.util.concurrent.Executors
 import javax.crypto.Cipher
 import javax.crypto.spec.IvParameterSpec
@@ -32,6 +33,20 @@ class RewindCryptoModule(context: ReactApplicationContext) : ReactContextBaseJav
         val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding")
         cipher.init(Cipher.ENCRYPT_MODE, SecretKeySpec(key.toByteArray(Charsets.UTF_8), "AES"), IvParameterSpec("0102030405060708".toByteArray(Charsets.UTF_8)))
         return Base64.encodeToString(cipher.doFinal(data.toByteArray(Charsets.UTF_8)), Base64.NO_WRAP)
+    }
+
+    @ReactMethod
+    fun eapi(path: String, data: String, promise: Promise) {
+        executor.execute {
+            try {
+                val digest = MessageDigest.getInstance("MD5").digest("nobody${path}use${data}md5forencrypt".toByteArray(Charsets.UTF_8))
+                    .joinToString("") { "%02x".format(it.toInt() and 0xff) }
+                val plaintext = "$path-36cd479b6b5-$data-36cd479b6b5-$digest"
+                val cipher = Cipher.getInstance("AES/ECB/PKCS5Padding")
+                cipher.init(Cipher.ENCRYPT_MODE, SecretKeySpec("e82ckenh8dichen8".toByteArray(Charsets.UTF_8), "AES"))
+                promise.resolve(cipher.doFinal(plaintext.toByteArray(Charsets.UTF_8)).joinToString("") { "%02X".format(it.toInt() and 0xff) })
+            } catch (error: Exception) { promise.reject("E_EAPI", "音源请求加密失败", error) }
+        }
     }
 
     @ReactMethod

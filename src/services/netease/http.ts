@@ -1,7 +1,6 @@
 import axios from 'axios';
 import cookies from '../../native/cookies';
 import crypto from '../../native/crypto';
-import anonymousCookie from './anonymousCookie';
 import type * as z from 'zod/mini';
 import {parseResponse} from '../schemas';
 
@@ -24,7 +23,7 @@ http.interceptors.request.use(async (config) => {
   const header = Object.values(stored)
     .map((cookie) => cookie.name + '=' + cookie.value)
     .join('; ');
-  config.headers.set('Cookie', header || anonymousCookie);
+  if (!config.headers.has('Cookie')) config.headers.set('Cookie', header);
   return config;
 });
 
@@ -46,7 +45,7 @@ export async function cryptoRequest<S extends z.ZodMiniType>(
   data: Record<string, unknown>,
   options?: {signal: AbortSignal},
 ) {
-  const encrypted = await crypto.weapi(data);
+  const encrypted = await crypto.weapi({...data, csrf_token: (await getCsrfToken()) || ''});
   const body =
     'params=' +
     encodeURIComponent(encrypted.params) +
@@ -55,6 +54,34 @@ export async function cryptoRequest<S extends z.ZodMiniType>(
   const response = await http.post<unknown>(path, body, {signal: options?.signal});
   if (response.data === '') throw new Error('网易云服务返回空响应');
   return parseResponse(schema, response.data);
+}
+
+export async function eapiRequest<S extends z.ZodMiniType>(
+  schema: S,
+  path: string,
+  data: Record<string, unknown>,
+  options?: {signal: AbortSignal},
+) {
+  const stored = await cookies.get(origin);
+  const session = Object.fromEntries(
+    Object.values(stored).map((cookie) => [cookie.name, cookie.value]),
+  );
+  const header = {...session, os: 'android', appver: '9.5.61', requestId: String(Date.now())};
+  const params = await crypto.eapi(path, {...data, e_r: false, header: JSON.stringify(header)});
+  const result = await http.post<unknown>(
+    'https://interface3.music.163.com' + path.replace(/^\/api\//, '/eapi/'),
+    new URLSearchParams({params}).toString(),
+    {
+      signal: options?.signal,
+      headers: {
+        Cookie: Object.entries(header)
+          .map(([name, value]) => name + '=' + value)
+          .join('; '),
+        'User-Agent': 'NeteaseMusic/9.5.61',
+      },
+    },
+  );
+  return parseResponse(schema, result.data);
 }
 
 export async function getCsrfToken() {

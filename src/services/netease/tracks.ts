@@ -40,18 +40,17 @@ export const song_detail = async (
     }),
   };
 };
-export const musicUrl = function ({id, ids, br = 999000}: AudioRequest) {
+export const musicUrl = function ({id, ids, br = 320000}: AudioRequest) {
   const request = startAudioRequest();
   const body = {
     ids: `[${ids ? ids.join(',') : id}]`,
-    br: br || 320000,
+    level: br > 320000 ? 'lossless' : br >= 320000 ? 'exhigh' : 'standard',
+    encodeType: 'aac',
   };
-  return http.cryptoRequest(responses.musicUrl, '/weapi/song/enhance/player/url', body, request);
+  return http.eapiRequest(responses.musicUrl, '/api/song/enhance/player/url/v1', body, request);
 };
 export const freeMusicUrl = function ({id, ids, br = 320000}: AudioRequest) {
-  const request = startAudioRequest();
-  const query = `br=${br}&ids=[${ids ? ids.join(',') : id}]`;
-  return http.request(responses.freeMusicUrl, '/api/song/enhance/player/url', query, request);
+  return musicUrl({id, ids, br});
 };
 export const lyric = function (id: TrackId) {
   const query = `?os=osx&id=${id}&lv=-1&kv=-1&tv=-1`;
