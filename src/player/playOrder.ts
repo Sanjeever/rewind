@@ -40,7 +40,7 @@ export function reconcilePlayOrder(
   previousKeys: readonly string[],
   keys: readonly string[],
   order: readonly number[],
-  currentKey: string,
+  currentKey: string | undefined,
   nextKeys: readonly string[] = [],
 ) {
   const indices = new Map(keys.map((key, index) => [key, index]));
@@ -52,7 +52,7 @@ export function reconcilePlayOrder(
   const known = new Set([...retained, ...next]);
   const added = keys.filter((key) => !known.has(key));
   retained.push(...createPlayOrder(added.length).map((index) => added[index]));
-  retained.splice(retained.indexOf(currentKey) + 1, 0, ...next);
+  retained.splice((currentKey === undefined ? -1 : retained.indexOf(currentKey)) + 1, 0, ...next);
   return retained.map((key) => indices.get(key)!);
 }
 

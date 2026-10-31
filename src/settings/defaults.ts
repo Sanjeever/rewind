@@ -115,6 +115,7 @@ export const defaultSettings = {
     on: true,
   },
 };
+export type Settings = {[K in keyof typeof defaultSettings]: boolean};
 export const settingsMap = [
   'SECTION_GENERAL',
   'autoSetPlaylistOrder',

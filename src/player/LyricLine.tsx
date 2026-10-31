@@ -10,7 +10,7 @@ import type {PlayState} from './types';
 export interface LyricLineProps {
   lyric: LyricRow[] | null;
   currentTime: number;
-  getIndex(lines: readonly LyricRow[], seconds: number): number;
+  getIndex(lines: readonly LyricRow[], seconds: number): number | null;
   showTrans: boolean;
   hasTrans: boolean;
   changeShowTrans(): void;

@@ -1,5 +1,6 @@
 import {jest} from '@jest/globals';
 import assert from 'node:assert/strict';
+import type {QueueSnapshot} from './player/types';
 test('连续队列更新基于最新状态计算，提交回调取得最终队列', async () => {
   jest.resetModules();
   const dependencies = Object.fromEntries(
@@ -46,16 +47,17 @@ test('连续队列更新基于最新状态计算，提交回调取得最终队�
       default: value,
       ...value,
     }));
-  let App;
+  let App!: typeof import('./App').default;
   await jest.isolateModulesAsync(async () => {
-    App = (await import('./App.js')).default;
+    App = (await import('./App')).default;
   });
   const app = new App({});
-  const pending = [];
-  const observed = [];
+  type State = typeof app.state;
+  const pending: {update(state: State): Partial<State> | null; callback?: () => void}[] = [];
+  const observed: QueueSnapshot[] = [];
   app.setState = (update, callback) =>
     pending.push({
-      update,
+      update: (state) => (typeof update === 'function' ? update(state, app.props) : update),
       callback,
     });
   app.setPlayerData(
@@ -85,7 +87,7 @@ test('连续队列更新基于最新状态计算，提交回调取得最终队�
       ...app.state,
       ...update(app.state),
     };
-  for (const {callback} of pending) callback();
+  for (const {callback} of pending) callback?.();
   assert.deepEqual(app.state.playerInfo.tracks, [
     {
       id: 1,

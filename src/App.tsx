@@ -18,10 +18,25 @@ import permissions from './native/permissions';
 import lastQueue from './storage/lastQueue';
 import update from './services/update';
 import Navigation from './navigation';
+import type {Settings} from './settings/defaults';
+import type {QueueSnapshot, QueueUpdate, PlayerProps} from './player/types';
+import type {Subscription} from './events/Emitter';
+import {errorMessage} from './utils/types';
+interface State {
+  displayNowPlaying: boolean;
+  playerInfo: QueueSnapshot;
+  lyric: PlayerProps['lyric'];
+  hasTrans: boolean;
+  checkPermissionDone: boolean;
+  settings: Settings;
+  bottomPaddingValue: number;
+}
 
-export default class App extends React.PureComponent {
+export default class App extends React.PureComponent<Record<string, never>, State> {
+  bottomPaddingSubscription!: Subscription;
+  settingsSubscription!: Subscription;
   settingsLoaded = false;
-  state = {
+  state: State = {
     displayNowPlaying: false,
     playerInfo: {
       tracks: [],
@@ -62,11 +77,11 @@ export default class App extends React.PureComponent {
       this.setState({checkPermissionDone: true}, this.loadSettings);
       update.onlyCheck();
     } catch (error) {
-      toast('初始化失败：' + error.message);
+      toast('初始化失败：' + errorMessage(error));
     }
   };
 
-  setPlayerData = (updateQueue, onCommitted) => {
+  setPlayerData = (updateQueue: QueueUpdate, onCommitted?: (queue: QueueSnapshot) => void) => {
     this.setState(
       (state) => {
         const changes =
@@ -83,11 +98,11 @@ export default class App extends React.PureComponent {
       try {
         saved = await storage.load({key: keys.settings});
       } catch (error) {
-        if (error.name !== 'NotFoundError') throw error;
+        if (!(error instanceof Error && error.name === 'NotFoundError')) throw error;
         saved = defaultSettings;
         await storage.save({key: keys.settings, data: saved});
       }
-      const settings = mergeSettings(saved, defaultSettings);
+      const settings: typeof defaultSettings = mergeSettings(saved, defaultSettings);
       const firstLoad = !this.settingsLoaded;
       this.settingsLoaded = true;
       this.setState(
@@ -103,12 +118,12 @@ export default class App extends React.PureComponent {
       );
       emitter.emit(names.SetHomeState, {autoSetPlaylistOrder: settings.autoSetPlaylistOrder.on});
     } catch (error) {
-      toast('读取设置失败：' + error.message);
+      toast('读取设置失败：' + errorMessage(error));
     }
   };
 
-  setDisplayNowPlaying = (displayNowPlaying) => this.setState({displayNowPlaying});
-  setLyric = (lyric, hasTrans) => this.setState({lyric, hasTrans});
+  setDisplayNowPlaying = (displayNowPlaying: boolean) => this.setState({displayNowPlaying});
+  setLyric: PlayerProps['setLyric'] = (lyric, hasTrans) => this.setState({lyric, hasTrans});
 
   render() {
     const {
@@ -124,7 +139,7 @@ export default class App extends React.PureComponent {
     return (
       <MenuProvider>
         <View style={{flex: 1}}>
-          <StatusBar backgroundColor="transparent" translucent hidden={settings.hideStatusBar} />
+          <StatusBar hidden={settings.hideStatusBar} />
           <Navigation
             animationEnabled={!settings.disabledRouterTransition}
             statusBarHidden={settings.hideStatusBar}

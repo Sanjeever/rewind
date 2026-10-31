@@ -6,7 +6,7 @@ import styles from './styles';
 import type {LyricRow} from '../utils/parseLyric';
 interface Props {
   currentTime: number;
-  getLyricIndex(lines: readonly LyricRow[], seconds: number): number;
+  getLyricIndex(lines: readonly LyricRow[], seconds: number): number | null;
   lyric: readonly LyricRow[];
   showTrans: boolean;
   animatedOpacity: ReactNative.Animated.Value;
@@ -21,7 +21,7 @@ const o = (txt: string) =>
     .replace(/&quot;/g, '"')
     .replace(/\[.+\]/gi, '');
 class Toolbar extends React.PureComponent<Props> {
-  miniLyricIndex?: number;
+  miniLyricIndex?: number | null;
   miniLyric!: boolean;
   render() {
     const props = this.props;
@@ -36,7 +36,7 @@ class Toolbar extends React.PureComponent<Props> {
       isRound,
     } = props;
     const m = getLyricIndex(lyric, currentTime + 0.3);
-    if (this.miniLyricIndex !== undefined && m > this.miniLyricIndex) {
+    if (this.miniLyricIndex != null && m != null && m > this.miniLyricIndex) {
       this.miniLyric = false;
     } else {
       this.miniLyric = true;

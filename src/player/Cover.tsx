@@ -9,8 +9,38 @@ import * as utils from '../utils/index';
 import * as trackInfo from '../services/trackInfo';
 import * as playOrder from './playOrder';
 import TrackTitle from './TrackTitle';
-class Cover extends React.Component {
-  _onPanResponderRelease = (e, t) => {
+import type {TrackFields} from '../services/track';
+import type {PlayMode, PlayState} from './types';
+import type {PagerViewOnPageSelectedEvent} from 'react-native-pager-view';
+interface Props {
+  onTap(): void;
+  playerClose(): void;
+  showToolBtn(): void;
+  onDetail(): void;
+  onNowPlaying(): void;
+  reverseGestureHands: boolean;
+  isRound: boolean;
+  url: string;
+  showElevation: boolean;
+  showTool: boolean;
+  onPrev(): void;
+  onNext(): void;
+  index: number;
+  data: readonly TrackFields[];
+  unknown: boolean;
+  playMode: PlayMode;
+  playState: PlayState;
+  randomArray: readonly number[];
+  onPlay?: (() => void) | null;
+  song?: string | null;
+  containerStyle?: ReactNative.StyleProp<ReactNative.ViewStyle>;
+}
+class Cover extends React.Component<Props> {
+  pager: React.ComponentRef<typeof Pager> | null = null;
+  _onPanResponderRelease = (
+    _e: ReactNative.GestureResponderEvent,
+    t: ReactNative.PanResponderGestureState,
+  ) => {
     const r_props = this.props;
     const {onTap, playerClose, showToolBtn, onDetail, onNowPlaying, reverseGestureHands} = r_props;
     if (!(t.y0 < 50)) {
@@ -91,7 +121,7 @@ class Cover extends React.Component {
           m.coverCon,
           {
             flex: 1,
-            backgroundColor: 0,
+            backgroundColor: 'transparent',
           },
         ]}
       >
@@ -121,7 +151,7 @@ class Cover extends React.Component {
       </ReactNative.View>
     );
   };
-  onPageSelected = (e) => {
+  onPageSelected = (e: PagerViewOnPageSelectedEvent) => {
     const position = e.nativeEvent.position;
     if (position !== 1) {
       const n = this.props;
@@ -131,10 +161,10 @@ class Cover extends React.Component {
       } else {
         onNext();
       }
-      this.pager.setPageWithoutAnimation(1);
+      this.pager!.setPageWithoutAnimation(1);
     }
   };
-  renderItem = (e) => {
+  renderItem = (e: number) => {
     const r_props = this.props;
     const {index, data, unknown, playMode, playState, randomArray} = r_props;
     const g = playOrder.getNextPlayIndexByPagerPos({
@@ -144,7 +174,7 @@ class Cover extends React.Component {
       randomArray,
       len: data.length,
     });
-    const y =
+    const y: Partial<ReturnType<typeof trackInfo.extractFullInfo>> =
       unknown && e === 2
         ? {
             song: '? ? ?',
@@ -185,13 +215,13 @@ class Cover extends React.Component {
       </ReactNative.View>
     );
   };
-  savePic = function (img, song) {
+  savePic = function (img: string, song: string) {
     events.emitter.emit(names.SavePicModal, {
       img,
       song,
     });
   };
-  shouldComponentUpdate(e) {
+  shouldComponentUpdate(e: Props) {
     const props = this.props;
     const {song, showTool, url, playState} = props;
     return song !== e.song || showTool !== e.showTool || url !== e.url || playState !== e.playState;
@@ -201,16 +231,12 @@ class Cover extends React.Component {
     const {url, containerStyle} = props;
     return (
       <ReactNative.View style={[m.container, containerStyle]}>
-        <ReactNative.View
-          onLongPress={this.props.onTap}
-          style={m.coverCon}
-          {...this._panResponder.panHandlers}
-        >
+        <ReactNative.View style={m.coverCon} {...this._panResponder.panHandlers}>
           {url !== '' ? this.renderCoverImage() : null}
         </ReactNative.View>
         <Pager
           ref={(t) => {
-            return (this.pager = t);
+            this.pager = t;
           }}
           onPageSelected={this.onPageSelected}
           initialPage={1}
@@ -228,7 +254,7 @@ class Cover extends React.Component {
     );
   }
 }
-var m = ReactNative.StyleSheet.create({
+const m = ReactNative.StyleSheet.create({
   container: {
     height: '100%',
     width: '100%',

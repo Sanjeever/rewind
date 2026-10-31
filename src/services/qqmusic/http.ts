@@ -12,13 +12,14 @@ async function request<S extends z.ZodMiniType>(
   stage: string,
   schema: S,
 ): Promise<z.output<S>> {
-  const controller = new AbortController();
+  const controller = new globalThis.AbortController();
   const timeout = setTimeout(() => controller.abort(), 15000);
   try {
     const response = await fetch(url, {
       ...options,
       credentials: 'include',
-      signal: controller.signal,
+      // RN 与 WebView 引入的 DOM 声明对 onabort 可空性不同，共用标准 AbortSignal 实例。
+      signal: controller.signal as RequestInit['signal'],
     });
     if (!response.ok) throw new Error('HTTP ' + response.status);
     const value: unknown = await response.json();

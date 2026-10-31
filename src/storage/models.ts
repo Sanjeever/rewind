@@ -49,7 +49,7 @@ export interface PlaylistDocument {
   playlists: CustomPlaylist[];
 }
 export interface SavedQueue {
-  tracks: TrackFields[];
+  tracks: readonly TrackFields[];
   index: number;
   api: Provider;
 }

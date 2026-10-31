@@ -4,6 +4,7 @@ import {Background} from '../components';
 import PlayerView, {MiniPlayerView} from './PlayerView';
 import PlayerController from './PlayerController';
 import styles, {BOTTOM_BAR_HEIGHT, SOFT_MENU_HEIGHT} from './styles';
+import {isActiveQueue} from './types';
 
 export default class Player extends PlayerController {
   actions = {
@@ -33,7 +34,7 @@ export default class Player extends PlayerController {
 
   render() {
     const {expanded, url, playerStyle, hidePlayer} = this.state;
-    if (hidePlayer || !url) return null;
+    if (hidePlayer || !url || !isActiveQueue(this.props)) return null;
     const {
       settings,
       bottomPaddingValue = 0,
@@ -42,7 +43,7 @@ export default class Player extends PlayerController {
       playingIndex,
       lyric,
       hasTrans,
-    } = this.props;
+    } = this.activeQueue;
     const queue = {tracks, songItemInfo, playingIndex};
     if (expanded)
       return (

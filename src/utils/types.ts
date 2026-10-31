@@ -6,6 +6,10 @@ export const isString = function (n: unknown): n is string {
 };
 export const isArray = Array.isArray;
 export const noop = function () {};
+export const errorMessage = (error: unknown) =>
+  error instanceof Error ? error.message : String(error);
+export const hasErrorCode = (error: unknown, code: string) =>
+  error instanceof Error && 'code' in error && error.code === code;
 export const isNumber = function (n: unknown): n is number {
   return typeof n === 'number' && n == n;
 };

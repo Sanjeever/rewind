@@ -21,8 +21,31 @@ import QueuePosition from './QueuePosition';
 import SeekBar from './SeekBar';
 import LyricTime from './LyricTime';
 import ExtraPlaybackControls from './ExtraPlaybackControls';
+import type {PlayerState, QueueSnapshot, PlayerProps} from './types';
+import type {PanResponderInstance} from 'react-native';
+import type Player from './index';
+export interface PlayerViewProps {
+  playback: PlayerState;
+  queue: Pick<QueueSnapshot, 'tracks' | 'songItemInfo'> & {playingIndex: number};
+  settings: PlayerProps['settings'];
+  actions: Player['actions'];
+  gesture: {
+    slider?: PanResponderInstance;
+    volume?: PanResponderInstance;
+    y0: number | null;
+    sliding: boolean;
+  };
+  animatedOpacity: Animated.Value;
+  lyric: PlayerProps['lyric'];
+  hasTrans: boolean;
+}
 
-export function MiniPlayerView({playback, queue, settings, actions}) {
+export function MiniPlayerView({
+  playback,
+  queue,
+  settings,
+  actions,
+}: Pick<PlayerViewProps, 'playback' | 'queue' | 'settings' | 'actions'>) {
   return (
     <MiniPlayer
       playingIndex={queue.playingIndex}
@@ -31,14 +54,10 @@ export function MiniPlayerView({playback, queue, settings, actions}) {
       playerOpen={actions.open}
       playMode={playback.playMode}
       randomArray={playback.randomArray}
-      onDetail={actions.detail}
       playState={playback.playState}
       togglePlay={actions.togglePlay}
       loaded={playback.loaded}
       onNowPlaying={actions.showQueue}
-      onChangePlayStatus={actions.changePlayMode}
-      showLyric={playback.showLyric}
-      color={playback.color}
       hideTopBorder={settings.hideMiniPlayerTopBorder}
       isRound={settings.isRound}
       unknown={playback.isFM}
@@ -58,7 +77,7 @@ export default function PlayerView({
   animatedOpacity,
   lyric,
   hasTrans,
-}) {
+}: PlayerViewProps) {
   const {
     url,
     playState,
@@ -231,7 +250,6 @@ export default function PlayerView({
         <View style={[styles.topBtn, {left: 10, right: null}]}>
           <ControlIcon
             name={buttons.CLOSE.name}
-            type={buttons.CLOSE.type}
             onPress={() => actions.close()}
             color={showLyric ? '#fff' : color}
             size={23}
@@ -242,7 +260,6 @@ export default function PlayerView({
         <View style={[styles.topBtn, {right: 10, left: null}]}>
           <ControlIcon
             name={buttons.CIRCLE.name}
-            type={buttons.CIRCLE.type}
             color={color}
             size={23}
             onPress={actions.toggleTools}

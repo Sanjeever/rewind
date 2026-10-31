@@ -262,7 +262,7 @@ const m = new (class NeteaseService {
   charts = function () {
     return http.request(responses.charts, '/api/toplist', '');
   };
-  play_count = function (id: TrackId, sourceId: TrackId, time: number) {
+  play_count = function (id: TrackId, sourceId: TrackId | undefined, time: number) {
     const n = JSON.stringify([
       {
         action: 'play',
