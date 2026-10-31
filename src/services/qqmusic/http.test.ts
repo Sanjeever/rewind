@@ -2,7 +2,7 @@ import {jest} from '@jest/globals';
 import assert from 'node:assert/strict';
 import {getMusicUrl, searchSongs} from './http.js';
 afterEach(() => jest.useRealTimers());
-function respond(data, status = 200) {
+function respond(data: unknown, status = 200) {
   return jest.spyOn(global, 'fetch').mockImplementation(
     async () =>
       new Response(JSON.stringify(data), {
@@ -27,8 +27,12 @@ test('QQ 音源使用服务返回的有效 CDN，即使只有一个地址也能�
     },
   });
   assert.equal(await getMusicUrl('mid'), 'https://audio.example/song.m4a?vkey=test');
-  const url = new URL(fetch.mock.calls[0][0]);
-  assert.deepEqual(JSON.parse(url.searchParams.get('data')).req_0.param.songmid, ['mid']);
+  const input = fetch.mock.calls[0][0];
+  assert.ok(typeof input === 'string');
+  const url = new URL(input);
+  const data = url.searchParams.get('data');
+  assert.ok(data);
+  assert.deepEqual(JSON.parse(data).req_0.param.songmid, ['mid']);
 });
 test('QQ 授权拒绝、空授权与损坏响应均保留明确错误', async () => {
   const fetch = respond({
@@ -92,12 +96,13 @@ test('QQ HTTP 和网络错误不会被转换成 undefined 音源', async () => {
 });
 test('QQ 请求超过十五秒终止网络并暴露超时', async () => {
   jest.useFakeTimers();
-  jest.spyOn(global, 'fetch').mockImplementation(
-    (_, {signal}) =>
-      new Promise((resolve, reject) => {
-        signal.addEventListener('abort', () => reject(new Error('aborted')));
-      }),
-  );
+  jest.spyOn(global, 'fetch').mockImplementation((_, options) => {
+    const signal = options?.signal;
+    assert.ok(signal);
+    return new Promise((_resolve, reject) => {
+      signal.addEventListener('abort', () => reject(new Error('aborted')));
+    });
+  });
   const pending = getMusicUrl('mid');
   jest.advanceTimersByTime(15000);
   await assert.rejects(pending, /请求超时/);
@@ -118,6 +123,7 @@ test('QQ 搜索检查两层业务码，区分空结果和无效响应，并正�
   });
   await expect(searchSongs('词', 2)).resolves.toStrictEqual([]);
   const options = fetch.mock.calls[0][1];
+  assert.ok(typeof options?.body === 'string');
   assert.equal(JSON.parse(options.body).data.param.page_num, 2);
   fetch.mockImplementation(
     async () =>

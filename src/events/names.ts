@@ -27,5 +27,5 @@ const d = {
   HidePlayer: 'HidePlayer',
   NATIVE_AUDIO_FOCUS: 'AUDIO_FOCUS',
   NATIVE_NOTIFICATION_ACTION_EVENT: 'NOTIFICATION_ACTION_EVENT',
-};
+} as const;
 export default d;

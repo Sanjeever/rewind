@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
+import type {Track} from './track';
 import {normalizeTrack, extractFullInfo, getTrackKey} from './trackInfo';
 test('网易云、QQ 与本地歌曲使用一致的展示结构，保留原始数据供旧接口与存储使用', () => {
-  const sources = [
+  const sources: Track[] = [
     {
       api: 'netEase',
       id: 1,

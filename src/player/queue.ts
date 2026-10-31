@@ -1,21 +1,29 @@
 import {getTrackKey} from '../services/trackFields';
+import type {TrackFields} from '../services/track';
+import type {Provider} from '../services/providers';
+import type {ActiveQueue, QueueSelection, QueueState, PlayMode} from './types';
 
-function tagTrack(song, api) {
+function tagTrack(song: TrackFields, api: Provider) {
   return {...song, api: song.api || api};
 }
 
-export function selectQueue(current, command, playMode) {
+export function selectQueue(
+  current: Pick<QueueState, 'tracks' | 'api'>,
+  command: QueueSelection,
+  playMode: PlayMode,
+): ActiveQueue {
   let tracks = command.data.map((song) => tagTrack(song, command.api));
   let index = command.type === 'ChangePlaylist' && playMode !== 'random' ? 0 : command.index;
   let song =
     index === 0 && command.type === 'ChangePlaylist'
       ? tracks[0]
       : tagTrack(command.song, command.api);
-  if (song.mainTrackId > 0) song = {...song, rid: song.rid ?? song.id, id: song.mainTrackId};
+  if (song.mainTrackId != null && song.mainTrackId > 0)
+    song = {...song, rid: song.rid ?? song.id, id: song.mainTrackId};
   if (command.type === 'insert' && current.tracks.length) {
     const key = getTrackKey(song);
     tracks = current.tracks
-      .map((track) => tagTrack(track, current.api))
+      .map((track) => tagTrack(track, current.api ?? command.api))
       .filter((track) => getTrackKey(track) !== key);
     tracks.unshift(song);
     index = 0;
@@ -25,7 +33,7 @@ export function selectQueue(current, command, playMode) {
   return {tracks, songItem: song, playingIndex: index, api: song.api};
 }
 
-export function insertNext(current, songs, api) {
+export function insertNext(current: ActiveQueue, songs: readonly TrackFields[], api: Provider) {
   const additions = songs.map((song) => tagTrack(song, api));
   const currentKey = getTrackKey(current.songItem, current.api);
   const keys = new Set(additions.map((song) => getTrackKey(song)));
@@ -40,7 +48,11 @@ export function insertNext(current, songs, api) {
   return {...current, tracks, playingIndex};
 }
 
-export function removeFromQueue(current, song, api = current.api) {
+export function removeFromQueue(
+  current: ActiveQueue,
+  song: TrackFields,
+  api: Provider = current.api,
+) {
   const key = getTrackKey(song, api);
   const currentKey = getTrackKey(current.songItem, current.api);
   const tracks = current.tracks.filter((track) => getTrackKey(track, current.api) !== key);

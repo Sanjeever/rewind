@@ -1,14 +1,17 @@
 import assert from 'node:assert/strict';
-import {selectQueue, insertNext, removeFromQueue} from './queue.js';
+import type {TrackFields} from '../services/track';
+import type {Provider} from '../services/providers';
+import type {QueueSelection} from './types';
+import {selectQueue, insertNext, removeFromQueue} from './queue';
 import {
   createPlayOrder,
   reconcilePlayOrder,
   getNextPlayIndex,
   getRandomIndex,
   getNextPlayIndexByPagerPos,
-} from './playOrder.js';
+} from './playOrder';
 import {getTrackKey} from '../services/trackFields';
-function queue(tracks, index = 0, api = 'netEase') {
+function queue(tracks: readonly TrackFields[], index = 0, api: Provider = 'netEase') {
   return {
     tracks,
     songItem: tracks[index],
@@ -26,7 +29,7 @@ test('搜索插播按来源和 ID 去重，保留同名歌曲且不修改原始�
     name: '同名',
   });
   const current = queue(Object.freeze([first, second]));
-  const source = Object.freeze({
+  const source: Readonly<TrackFields> = Object.freeze({
     id: 1,
     name: '同名',
   });
@@ -62,7 +65,7 @@ test('搜索插播按来源和 ID 去重，保留同名歌曲且不修改原始�
   assert.equal(repeated.tracks.length, 3);
 });
 test('切换歌单从首曲开始，随机模式保留选择位置，恢复队列保留混合来源', () => {
-  const tracks = [
+  const tracks: TrackFields[] = [
     {
       id: 1,
     },
@@ -71,7 +74,7 @@ test('切换歌单从首曲开始，随机模式保留选择位置，恢复队�
       api: 'qqMusic',
     },
   ];
-  const command = {
+  const command: QueueSelection = {
     song: tracks[1],
     data: tracks,
     index: 1,
@@ -244,6 +247,6 @@ test('列表和随机顺序在首尾正确循环，空队列无可播放索引',
     }),
     2,
   );
-  assert.deepEqual(createPlayOrder(5, () => 0).toSorted(), [0, 1, 2, 3, 4]);
+  assert.deepEqual(createPlayOrder(5, () => 0).sort(), [0, 1, 2, 3, 4]);
   assert.deepEqual(createPlayOrder(0), []);
 });

@@ -1,7 +1,7 @@
 import type {Provider} from './providers';
 
 export type TrackId = number | string;
-export type ArtworkSize = 'small' | 'large';
+export type ArtworkSize = 'small' | 'big';
 export interface Artist {
   id?: TrackId;
   mid?: string;

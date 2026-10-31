@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
-import {playTracks, insertTracks, clearQueue, subscribePlaybackCommands} from './commands.js';
+import {playTracks, insertTracks, clearQueue, subscribePlaybackCommands} from './commands';
 test('播放、插入和清空经过同一命令订阅，解除订阅后不再处理', () => {
-  const received = [];
+  const received: unknown[] = [];
   const dispose = subscribePlaybackCommands({
     play: (command) => received.push(['play', command]),
     insert: (command) => received.push(['insert', command]),

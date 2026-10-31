@@ -1,6 +1,9 @@
 import assert from 'node:assert/strict';
 import {migrateStorage, marker} from './migrate';
-function database(initial = {}) {
+import type {MigrationBackend} from './migrate';
+function database(
+  initial: Record<string, string> = {},
+): MigrationBackend & {values: Record<string, string>} {
   const values = {
     ...initial,
   };
@@ -17,7 +20,7 @@ function database(initial = {}) {
   };
 }
 test('保留业务包装、索引、账号、队列与未知键，重复启动不覆盖新数据', async () => {
-  const legacy = {
+  const legacy: Record<string, string> = {
     settings: JSON.stringify({
       rawData: {
         hideStatusBar: {
