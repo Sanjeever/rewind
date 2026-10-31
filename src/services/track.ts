@@ -57,6 +57,7 @@ export interface TrackFields {
   mvid?: TrackId;
   isFM?: boolean;
   lastRank?: number;
+  playCount?: number;
 }
 
 export interface NeteaseTrack extends TrackFields {

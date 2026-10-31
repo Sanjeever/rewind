@@ -16,7 +16,9 @@ export interface IconProps extends Omit<TouchableOpacityProps, 'style'> {
   size?: number;
   color?: ColorValue;
   iconStyle?: StyleProp<TextStyle>;
-  component?: React.ComponentType<TouchableOpacityProps>;
+  component?: React.ComponentType<
+    Omit<TouchableOpacityProps, 'style'> & {style?: StyleProp<ViewStyle>}
+  >;
   underlayColor?: ColorValue;
   reverse?: boolean;
   raised?: boolean;

@@ -19,11 +19,12 @@ export interface HeaderBarProps {
   searchText?: string;
   forceShowTextInput?: boolean;
   rightIcon?: HeaderIcon | HeaderIcon[] | (() => React.ReactNode);
-  opacity?: number | ReactNative.Animated.Value;
+  opacity?:
+    number | ReactNative.Animated.Value | ReactNative.Animated.AnimatedInterpolation<number>;
   goBack?: () => void;
   blur?: boolean;
   headerBlur?: boolean;
-  headerStyle?: ReactNative.StyleProp<ReactNative.ViewStyle>;
+  headerStyle?: React.ComponentProps<typeof ReactNative.Animated.View>['style'];
   toolStyle?: ReactNative.StyleProp<ReactNative.ViewStyle>;
   textInput?: boolean;
   backIcon?: Pick<IconProps, 'name'>;
@@ -182,9 +183,7 @@ class HeaderBar extends React.PureComponent<
       disabledTextInputBtn,
     } = props;
     return (
-      <ReactNative.Animated.View
-        style={[b.container, b.borderline, ReactNative.StyleSheet.flatten(headerStyle)]}
-      >
+      <ReactNative.Animated.View style={[b.container, b.borderline, headerStyle]}>
         {blur && (
           <ReactNative.Animated.View
             style={[

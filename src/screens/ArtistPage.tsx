@@ -1,3 +1,9 @@
+import type {ScreenProps, Navigation} from '../navigation/types';
+import type {TrackFields, TrackId} from '../services/track';
+import type {SearchEntity} from '../services/searchEntities';
+import type {OnlineProvider} from '../services/providers';
+import type {SpringScrollView} from '../components/Scrolling';
+import {errorMessage} from '../utils/types';
 import {toast} from '../native/toast';
 import Clipboard from '@react-native-clipboard/clipboard';
 import * as React from 'react';
@@ -10,7 +16,6 @@ import icons from '../theme/icons';
 import locales from '../locales/index';
 import * as services from '../services/index';
 import * as utils from '../utils/index';
-import * as types from '../utils/types';
 import * as sharedUrlsModule from '../services/sharedUrls';
 import users from '../storage/users';
 import ArtistAlbums from './../modules/ArtistAlbums';
@@ -23,18 +28,38 @@ export const RELEASE_MODE = {
   all: 'all',
   albums: 'albums',
   singlesAndEps: 'singlesAndEps',
-};
+} as const;
+type ReleaseMode = keyof typeof RELEASE_MODE;
 const x = {
   all: '作品',
   albums: '专辑',
   singlesAndEps: '单曲 & EPs',
 };
-class ArtistPage extends React.PureComponent {
+interface State {
+  artistName?: string;
+  artistImg: string;
+  subtitle: string;
+  index: number;
+  api: OnlineProvider;
+  id: TrackId | null;
+  hotSongs: TrackFields[];
+  albums: SearchEntity[];
+  mvs: SearchEntity[];
+  followed: boolean | null;
+  releaseMode: ReleaseMode;
+  albumsGroup: SearchEntity[];
+  singlesAndEpsGroup: SearchEntity[];
+}
+class ArtistPage extends React.PureComponent<
+  Pick<ScreenProps<'ArtistPage'>, 'route'> & {navigation: Navigation},
+  State
+> {
+  _list: SpringScrollView | null = null;
   _nativeOffset = {
     x: new ReactNative.Animated.Value(0),
     y: new ReactNative.Animated.Value(0),
   };
-  state = {
+  state: State = {
     artistName: '',
     artistImg: '',
     subtitle: '',
@@ -49,21 +74,23 @@ class ArtistPage extends React.PureComponent {
     albumsGroup: [],
     singlesAndEpsGroup: [],
   };
-  getNeteaseArtistSongs = async (id) => {
+  getNeteaseArtistSongs = async (id: TrackId) => {
     const response = await services.Netease.artist(id);
     if (!response?.artist) {
       return;
     }
     const artist = response.artist;
     this.setState({
-      hotSongs: response.hotSongs,
+      hotSongs: response.hotSongs!,
       followed: artist.followed || false,
       subtitle: artistAliases(artist),
     });
     this.setImgUrl(artist.img1v1Url ? `${artist.img1v1Url}?param=500y500` : null);
   };
-  getQQmusicArtistSongs = (e) => {
-    services.QQMusic.artist_song(e)
+  getQQmusicArtistSongs = (e: string) => {
+    const request = services.QQMusic.artist_song(e);
+    if (!request) throw new Error('歌手缺少来源内标识');
+    request
       .then((e) => {
         if (e?.length > 0) {
           this.setState({
@@ -71,19 +98,19 @@ class ArtistPage extends React.PureComponent {
           });
         }
       })
-      .catch(() => null);
+      .catch((error) => toast(errorMessage(error)));
   };
-  getArtistInfo = (e, t) => {
+  getArtistInfo = (e: SearchEntity, t: OnlineProvider) => {
     if (e) {
       switch (t) {
         case providers.netEase:
           this.setState({
             artistName: e.name,
-            id: e.id,
+            id: e.id!,
           });
-          this.getNeteaseArtistSongs(e.id);
-          this.getAlbums(e.id, t);
-          this.getMVs(e.id, t);
+          this.getNeteaseArtistSongs(e.id!).catch((error) => toast(errorMessage(error)));
+          this.getAlbums(e.id!, t).catch((error) => toast(errorMessage(error)));
+          this.getMVs(e.id!, t).catch((error) => toast(errorMessage(error)));
           break;
         case providers.qqMusic: {
           const id = e.singerMID || e.mid;
@@ -91,26 +118,27 @@ class ArtistPage extends React.PureComponent {
           const artistName = e.singerName || e.name;
           this.setState({
             artistName,
-            id,
+            id: id!,
           });
           this.setImgUrl(r);
-          this.getQQmusicArtistSongs(id);
-          this.getAlbums(id, t);
-          this.getMVs(id, t);
+          this.getQQmusicArtistSongs(id!);
+          this.getAlbums(id!, t).catch((error) => toast(errorMessage(error)));
+          this.getMVs(id!, t).catch((error) => toast(errorMessage(error)));
         }
       }
     }
   };
-  getAlbums = async (id, api) => {
-    const albums = await albumPagination.albums({
+  getAlbums = async (id: TrackId, api: OnlineProvider) => {
+    const albums: SearchEntity[] | undefined = await albumPagination.albums({
       id,
       api,
     });
-    const albumsGroup = [];
-    const singlesAndEpsGroup = [];
+    if (!albums) throw new Error('歌手专辑响应缺少列表');
+    const albumsGroup: SearchEntity[] = [];
+    const singlesAndEpsGroup: SearchEntity[] = [];
     for (const album of albums) {
       const full =
-        api === providers.qqMusic ? album.albumtype.includes('专辑') : album.type === '专辑';
+        api === providers.qqMusic ? album.albumtype!.includes('专辑') : album.type === '专辑';
       (full ? albumsGroup : singlesAndEpsGroup).push(album);
     }
     this.setState({
@@ -119,15 +147,15 @@ class ArtistPage extends React.PureComponent {
       singlesAndEpsGroup,
     });
   };
-  getMVs = async (id, api) => {
+  getMVs = async (id: TrackId, api: OnlineProvider) => {
     this.setState({
-      mvs: await albumPagination.mvs({
+      mvs: (await albumPagination.mvs({
         id,
         api,
-      }),
+      }))!,
     });
   };
-  setImgUrl = (artistImg) => {
+  setImgUrl = (artistImg?: string | null) => {
     if (artistImg) {
       this.setState({
         artistImg,
@@ -139,10 +167,10 @@ class ArtistPage extends React.PureComponent {
     const {api, followed, id} = a_state;
     switch (api) {
       case providers.netEase:
-        this.netEaseLikeArtist(id, !followed);
+        this.netEaseLikeArtist(id!, !followed);
         break;
       case providers.qqMusic:
-        this.qqMusicLikeArtist(id, !followed);
+        this.qqMusicLikeArtist(String(id), !followed);
     }
     this.setState({
       followed: !followed,
@@ -153,7 +181,7 @@ class ArtistPage extends React.PureComponent {
     const a_state = this.state;
     const e_followed = a_state.followed;
     if (e_followed) {
-      ReactNative.Alert.alert(null, '取消收藏？', [
+      ReactNative.Alert.alert('', '取消收藏？', [
         {
           text: locales.CANCEL,
           onPress: function () {
@@ -172,18 +200,18 @@ class ArtistPage extends React.PureComponent {
       this.onLikeArtistImpl();
     }
   };
-  qqMusicLikeArtist = async (mid, isLike) => {
+  qqMusicLikeArtist = async (mid: string, isLike: boolean) => {
     const account = (await users.getUserInfo())?.qqMusic;
     if (account) {
       await services.QQMusic.like_artist({
         mid,
-        cookies: account.cookies,
-        userId: account.userId,
+        cookies: account.cookies!,
+        userId: account.userId!,
         isLike,
       });
     }
   };
-  netEaseLikeArtist = async (id, like) => {
+  netEaseLikeArtist = async (id: TrackId, like: boolean) => {
     const response = await services.Netease.sublist_artist_add({
       id,
       op: like === true ? 'sub' : 'unsub',
@@ -193,10 +221,10 @@ class ArtistPage extends React.PureComponent {
     }
   };
   onTop = () => {
-    this._list.scrollToBegin?.();
+    this._list?.scrollToBegin();
   };
   onReleaseTab = () => {
-    let releaseMode_1;
+    let releaseMode_1: ReleaseMode = RELEASE_MODE.all;
     const a_state = this.state;
     const {index, releaseMode} = a_state;
     if (index !== 1) {
@@ -218,7 +246,7 @@ class ArtistPage extends React.PureComponent {
   };
   onCopy = () => {
     const artistName = this.state.artistName;
-    Clipboard.setString(artistName);
+    Clipboard.setString(artistName!);
     toast(`${locales.COPIED} ${artistName}`);
   };
   onWebview = () => {
@@ -242,7 +270,7 @@ class ArtistPage extends React.PureComponent {
     const {api, id} = a_state;
     return sharedUrlsModule.sharedUrls[api].artist + id;
   };
-  getAlbumData = (e, t, n) => {
+  getAlbumData = (e: SearchEntity[], _api: OnlineProvider, n: ReleaseMode) => {
     const a_state = this.state;
     const {albumsGroup, singlesAndEpsGroup} = a_state;
     if (n === RELEASE_MODE.all) {
@@ -260,7 +288,7 @@ class ArtistPage extends React.PureComponent {
     switch (index) {
       case 0:
         if (hotSongs.length > 0) {
-          return <ArtistSongs hotSongs={hotSongs} api={api} navigation={navigation} />;
+          return <ArtistSongs hotSongs={hotSongs} api={api} />;
         }
         return null;
       case 1:
@@ -270,14 +298,13 @@ class ArtistPage extends React.PureComponent {
               albums={this.getAlbumData(albums, api, releaseMode)}
               api={api}
               navigation={navigation}
-              releaseMode={releaseMode}
             />
           );
         }
         return null;
       case 2:
         if (mvs.length > 0) {
-          return <ArtistVideos api={api} mvs={mvs} navigation={navigation} />;
+          return <ArtistVideos api={api} mvs={mvs} />;
         }
         return null;
     }
@@ -289,7 +316,7 @@ class ArtistPage extends React.PureComponent {
     const params = this.props.route.params;
     if (params) {
       const {item, api} = params;
-      if (api) {
+      if (api && api !== 'local') {
         this.getArtistInfo(item, api);
         this.setState({
           api,
@@ -316,8 +343,8 @@ class ArtistPage extends React.PureComponent {
             title={artistName}
             alias={subtitle}
             subtitle={[
-              types.isArray(albums) && `${albums.length} ${locales.ALBUM_COUNT}`,
-              types.isArray(mvs) && `${mvs.length} ${locales.MV_COUNT}`,
+              `${albums.length} ${locales.ALBUM_COUNT}`,
+              `${mvs.length} ${locales.MV_COUNT}`,
             ]}
             animOffsetY={this._nativeOffset.y}
           />
@@ -401,7 +428,7 @@ class ArtistPage extends React.PureComponent {
           rightIcon={() => {
             return (
               <OverflowMenu
-                followed={followed}
+                followed={!!followed}
                 onLike={this.onLikeArtist}
                 onWebview={this.onWebview}
                 onCopy={this.onCopy}

@@ -1,3 +1,10 @@
+import type {ScreenProps, PlaylistParams} from '../navigation/types';
+import type {TrackFields, TrackId} from '../services/track';
+import type {Provider} from '../services/providers';
+import type {Playlist as PlaylistModel, PlaylistCache} from '../storage/models';
+import type {PlaylistActionContext, PlaylistData} from './playlist/actions';
+import type {Subscription} from '../events/Emitter';
+import {errorMessage} from '../utils/types';
 import {toast} from '../native/toast';
 import Clipboard from '@react-native-clipboard/clipboard';
 import * as _appStorage from './../storage/index';
@@ -18,12 +25,38 @@ import mediaStore from '../native/mediaStore';
 import lastSong from '../storage/lastSong';
 import * as sortModes from './playlist/sortModes';
 import actions from './playlist/actions';
-class Playlist extends React.PureComponent {
+type PlaylistBase = PlaylistActionContext['state'];
+interface State extends PlaylistBase {
+  title?: string;
+  loading: boolean;
+  index: number | null;
+  showList: boolean;
+  showMult: boolean;
+  subscribed: boolean;
+  userId?: TrackId;
+  searchText: string | null;
+  trackCount?: number;
+  orderText?: string;
+  sortMode: keyof typeof sortModes.sortModeMap;
+  lastPlayedSong: TrackFields | null;
+  playingIndex: number;
+  isCreatedByMe: boolean;
+  isTopList: boolean;
+  playlistIndex?: number;
+  coverImgUrl?: string;
+  name?: string;
+  id?: TrackId;
+  creator?: PlaylistModel['creator'];
+}
+class Playlist extends React.PureComponent<ScreenProps<'Playlist'>, State> {
+  _list: reactNativeLargelist.LargeList<TrackFields> | null = null;
+  deleteSub!: Subscription;
+  playerSub!: Subscription;
   _nativeOffset = {
     x: new ReactNative.Animated.Value(0),
     y: new ReactNative.Animated.Value(0),
   };
-  state = {
+  state: State = {
     title: '',
     playlist: [],
     playlistId: null,
@@ -37,7 +70,7 @@ class Playlist extends React.PureComponent {
     subscribed: true,
     userId: 0,
     searchText: '',
-    api: '',
+    api: this.props.route.params.api,
     trackCount: 0,
     orderText: '',
     heartMode: true,
@@ -47,7 +80,7 @@ class Playlist extends React.PureComponent {
     isCreatedByMe: true,
     isTopList: false,
   };
-  loadLastPlayedSong = async (api, tracks) => {
+  loadLastPlayedSong = async (api: Provider, tracks: TrackFields[]) => {
     const song = await lastSong.get(api);
     if (song && tracks.some((item) => item.id === song.id)) {
       this.setState({
@@ -65,7 +98,7 @@ class Playlist extends React.PureComponent {
       });
     }
   };
-  switchPlaylist = (e) => {
+  switchPlaylist = (e: PlaylistParams) => {
     let trackCount;
     let coverImgUrl;
     let s;
@@ -104,7 +137,7 @@ class Playlist extends React.PureComponent {
         this.switchQQMusic(e);
     }
   };
-  switchNetease = async ({playlist, userId}) => {
+  switchNetease = async ({playlist, userId}: PlaylistParams) => {
     if (!playlist.id) {
       return;
     }
@@ -120,17 +153,18 @@ class Playlist extends React.PureComponent {
       });
       await this.loadMoreThanThousands(data.moreFunc);
     } catch (error) {
-      toast(error.message);
+      toast(errorMessage(error));
     }
   };
-  loadMoreThanThousands = async (more) => {
+  loadMoreThanThousands = async (more: PlaylistData['moreFunc']) => {
     if (!more) {
       return;
     }
     const response = await more();
     if (response?.songs?.length) {
+      const songs = response.songs;
       this.setState((previous) => {
-        const tracks = [...previous.oriList, ...response.songs];
+        const tracks = [...previous.oriList, ...songs];
         return {
           oriList: tracks,
           playlist: tracks,
@@ -138,17 +172,17 @@ class Playlist extends React.PureComponent {
       });
     }
   };
-  getIsTopList = function (e) {
+  getIsTopList = function (e?: PlaylistModel) {
     if (!e) {
       return false;
     }
     const {name, title, dissname} = e;
-    return (name || title || dissname).includes('榜');
+    return (name || title || dissname)!.includes('榜');
   };
-  getIsCreatedByMe = function (e, t) {
-    return !!e && e === t.creator.userId;
+  getIsCreatedByMe = function (e: TrackId | undefined, t: PlaylistModel) {
+    return !!e && e === t.creator!.userId;
   };
-  switchQQMusic = async ({playlist}) => {
+  switchQQMusic = async ({playlist}: PlaylistParams) => {
     const id = playlist.id || playlist.dissid;
     if (!id) {
       return;
@@ -162,10 +196,10 @@ class Playlist extends React.PureComponent {
         });
       }
     } catch (error) {
-      toast(error.message);
+      toast(errorMessage(error));
     }
   };
-  setData = ({name, id, tracks, trackCount = 0}) => {
+  setData = ({name, id, tracks, trackCount = 0}: PlaylistData) => {
     this.setState(
       {
         playlist: tracks,
@@ -177,20 +211,21 @@ class Playlist extends React.PureComponent {
         trackCount,
       },
       () => {
-        this._list.endRefresh?.();
+        this._list?.endRefresh();
         this.attachLocalPath(tracks);
-        this.loadLastPlayedSong(id, tracks);
+        this.loadLastPlayedSong(this.state.api, tracks);
       },
     );
   };
-  netEaseStorageList = (e) => {
+  netEaseStorageList = (e?: TrackId) => {
     if (e) {
       _appStorage.storage
-        .load({
+        .load<PlaylistCache[]>({
           key: keys.netEasePlaylistCache,
         })
         .then((t) => {
           const a = t.find((t) => t.id === e);
+          if (!a) return;
           const {tracks, name} = a;
           if (tracks.length > 0) {
             this.setData({
@@ -199,10 +234,14 @@ class Playlist extends React.PureComponent {
               tracks,
             });
           }
+        })
+        .catch((error) => {
+          if (!(error instanceof Error && error.name === 'NotFoundError'))
+            toast('读取歌单缓存失败：' + errorMessage(error));
         });
     }
   };
-  attachLocalPath = (e) => {
+  attachLocalPath = (e: TrackFields[]) => {
     if (!(e.length < 1)) {
       mediaStore.attachLocalPath(e).then((e) => {
         this.setState({
@@ -212,7 +251,7 @@ class Playlist extends React.PureComponent {
       });
     }
   };
-  searchSong = (e, a = true, n = true) => {
+  searchSong = (e: string, a = true, n = true) => {
     let t;
     const r_state = this.state;
     const {playlist, oriList, searchText} = r_state;
@@ -235,7 +274,7 @@ class Playlist extends React.PureComponent {
       });
     }
   };
-  syncPlayingIndex = (e, t) => {
+  syncPlayingIndex = (e: TrackFields[], t: TrackFields[]) => {
     const playingIndex = this.state.playingIndex;
     if (playingIndex !== -1) {
       const n = e[playingIndex];
@@ -258,7 +297,7 @@ class Playlist extends React.PureComponent {
   onRefresh = () => {
     const params = this.props.route.params;
     if (params) {
-      this.switchPlaylist(params, true);
+      this.switchPlaylist(params);
     }
   };
   onSort = () => {
@@ -310,7 +349,7 @@ class Playlist extends React.PureComponent {
     const r_state = this.state;
     const {api, creator} = r_state;
     if (api === providers.netEase) {
-      const userId = creator.userId;
+      const userId = creator?.userId;
       if (userId) {
         this.props.navigation.navigate('UserInfo', {
           userId,
@@ -318,13 +357,13 @@ class Playlist extends React.PureComponent {
       }
     }
   };
-  _renderIndexPath = ({row}) => {
+  _renderIndexPath = ({row}: {row: number}) => {
     return this._renderItem({
       item: this.state.playlist[row],
       index: row,
     });
   };
-  onSubscribe = async (e) => {
+  onSubscribe = async (e: TrackId) => {
     const r_state = this.state;
     const {api, subscribed} = r_state;
     const s = subscribed ? 'unsubscribe' : 'subscribe';
@@ -334,10 +373,10 @@ class Playlist extends React.PureComponent {
         subscribed: !subscribed,
       });
     } catch (error) {
-      toast(error.message);
+      toast(errorMessage(error));
     }
   };
-  onScroll = (e) => {
+  onScroll = (e: ReactNative.NativeSyntheticEvent<ReactNative.NativeScrollEvent>) => {
     const t = e.nativeEvent.contentOffset.y;
     const a = sortModes.FOREGROUND_HEIGHT - 100;
     if (t < a) {
@@ -371,7 +410,7 @@ class Playlist extends React.PureComponent {
       }
     }
   };
-  _renderItem = ({item, index}) => {
+  _renderItem = ({item, index}: {item: TrackFields; index: number}) => {
     const r_state = this.state;
     const {api, playingIndex, isTopList} = r_state;
     const d = actions.formatItemData(item, api);
@@ -394,7 +433,7 @@ class Playlist extends React.PureComponent {
         addToQueue={function () {
           return actions.addToQueue(item, api);
         }}
-        isExist={item.localPath}
+        isExist={!!item.localPath}
         onMV={function () {
           return actions.onMV(item, api);
         }}
@@ -429,6 +468,9 @@ class Playlist extends React.PureComponent {
         break;
       case providers.qqMusic:
         e = `https://y.qq.com/n/yqq/playlist/${playlistId}.html`;
+        break;
+      default:
+        throw new Error('不支持的歌单来源');
     }
     return e;
   };
@@ -456,45 +498,48 @@ class Playlist extends React.PureComponent {
   componentDidMount() {
     const params = this.props.route.params;
     this.switchPlaylist(params);
-    this.deleteSub = events.emitter.addListener(
-      names.DeleteFromPlaylist,
-      async ({api, trackid} = {}) => {
-        const playlistId = this.state.playlistId;
-        if (api) {
-          let i;
-          if (api === providers.netEase) {
-            try {
-              await actions.deleteFromNetease({
-                playlistId,
-                trackid,
-              });
-            } catch (error) {
-              toast(error.message);
-              return;
-            }
-            i = this.state.playlist.filter((e) => e.id !== trackid);
-          } else if (api === providers.qqMusic) {
-            const l = params.playlist;
-            try {
-              await actions.deleteFromQQMusic(trackid, l.dirid);
-            } catch (error) {
-              toast(error.message);
-              return;
-            }
-            i = this.state.playlist.filter((e) => e.songid !== trackid);
+    this.deleteSub = events.emitter.addListener(names.DeleteFromPlaylist, async (event) => {
+      if (!event) {
+        this.onRefresh();
+        return;
+      }
+      const {api, trackid} = event;
+      const playlistId = this.state.playlistId;
+      if (api && api !== 'local' && playlistId != null) {
+        let i;
+        if (api === providers.netEase) {
+          try {
+            await actions.deleteFromNetease({
+              playlistId,
+              trackid,
+            });
+          } catch (error) {
+            toast(errorMessage(error));
+            return;
           }
+          i = this.state.playlist.filter((e) => e.id !== trackid);
+        } else if (api === providers.qqMusic) {
+          const l = params.playlist;
+          try {
+            await actions.deleteFromQQMusic(trackid, l.dirid);
+          } catch (error) {
+            toast(errorMessage(error));
+            return;
+          }
+          i = this.state.playlist.filter((e) => e.songid !== trackid);
+        }
+        if (i)
           this.setState({
             playlist: i,
           });
-          toast(locales.DELETE_SUCCESS);
-        } else {
-          this.onRefresh();
-        }
-      },
-    );
+        toast(locales.DELETE_SUCCESS);
+      } else {
+        this.onRefresh();
+      }
+    });
     this.playerSub = events.emitter.addListener(names.Player, (t) => {
-      const {song, api} = t;
       if (t.type !== 'clearPlayingList') {
+        const {song, api} = t;
         const n = this.state.playlist;
         if (song && api === providers.netEase) {
           const playingIndex = n.findIndex((e) => e.id === song.id);
@@ -523,7 +568,7 @@ class Playlist extends React.PureComponent {
         <components.Background />
         <reactNativeLargelist.LargeList
           ref={(t) => {
-            return (this._list = t);
+            this._list = t;
           }}
           data={[
             {
@@ -553,7 +598,7 @@ class Playlist extends React.PureComponent {
                   showRestore={this.state.showRestore}
                   subscribed={this.state.subscribed}
                   onSubscribe={() => {
-                    return this.onSubscribe(id);
+                    return this.onSubscribe(id!);
                   }}
                   savePic={() => {
                     return actions.savePic(coverImgUrl, this.state.name);
@@ -561,7 +606,7 @@ class Playlist extends React.PureComponent {
                   onSort={this.onSort}
                   orderText={this.state.orderText}
                   onSortText={() => {
-                    return this.onSortText(this.state.sortMode);
+                    return this.onSortText();
                   }}
                   onHeartMode={() => {
                     return actions.onHeartMode(this);
@@ -601,7 +646,7 @@ class Playlist extends React.PureComponent {
           onChangeText={(t) => {
             return this.searchSong(t);
           }}
-          searchText={this.state.searchText}
+          searchText={this.state.searchText ?? undefined}
           blur={true}
           bold={true}
         />
@@ -620,7 +665,7 @@ class Playlist extends React.PureComponent {
     );
   }
 }
-var I = ReactNative.StyleSheet.create({
+const I = ReactNative.StyleSheet.create({
   container: {
     flex: 1,
   },

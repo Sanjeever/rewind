@@ -8,9 +8,9 @@ class Description extends React.PureComponent<{
   showModal: boolean;
   albumImg?: string;
   onClose(): void;
-  company?: string;
-  publishTime?: string;
-  description?: string;
+  company?: string | null;
+  publishTime?: string | null;
+  description?: string | null;
 }> {
   render() {
     const props = this.props;

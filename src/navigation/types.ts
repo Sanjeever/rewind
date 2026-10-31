@@ -1,7 +1,4 @@
-import type {
-  NativeStackScreenProps,
-  NativeStackNavigationProp,
-} from '@react-navigation/native-stack';
+import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import type {Provider} from '../services/providers';
 import type {TrackFields, TrackId} from '../services/track';
 import type {SearchEntity} from '../services/searchEntities';
@@ -20,6 +17,7 @@ export interface UserProfile extends NeteaseAccount {
   playlistCount?: number;
   eventCount?: number;
   description?: string;
+  userType?: number;
 }
 export interface PlaylistParams {
   playlist: Playlist;
@@ -28,6 +26,7 @@ export interface PlaylistParams {
   subscribed?: boolean;
   isTopList?: boolean;
   isCreatedByMe?: boolean;
+  userId?: TrackId;
 }
 export type AppRoutes = {
   Home: undefined;
@@ -65,14 +64,17 @@ export type AppRoutes = {
   MusicNotificationPage: undefined;
   CommentPage: {song: TrackFields; api: Provider};
   ListenRecord: {profile: UserProfile};
-  PlaylistIntersection: undefined;
-  LyricPage: {lyric: unknown; song?: TrackFields};
+  PlaylistIntersection: {item?: Playlist} | undefined;
+  LyricPage: {id: TrackId; api: Provider; item: TrackFields};
   HappyBirthday: {profile: UserProfile & {birthday: number}};
   SubNewSongs: undefined;
   Video: {mvid: TrackId; api: Provider};
 };
 export type ScreenProps<K extends keyof AppRoutes> = NativeStackScreenProps<AppRoutes, K>;
-export type Navigation = NativeStackNavigationProp<AppRoutes>;
+export interface Navigation {
+  goBack(): void;
+  navigate(...args: NavigateArgs): void;
+}
 export type SimpleRoute = {
   [K in keyof AppRoutes]: undefined extends AppRoutes[K] ? K : never;
 }[keyof AppRoutes];

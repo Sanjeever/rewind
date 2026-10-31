@@ -25,6 +25,10 @@ export interface Accounts {
   qqMusic?: QQAccount;
 }
 export interface Playlist extends SearchEntity {
+  copywriter?: string;
+  creator?: {name?: string; nickname?: string; userId?: TrackId; avatarUrl?: string};
+  subtitle?: string;
+  playCount?: number;
   api?: Provider;
   dissid?: TrackId;
   dirid?: TrackId;

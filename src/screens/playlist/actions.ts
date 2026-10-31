@@ -1,3 +1,24 @@
+import type {TrackFields, TrackId, Artist} from '../../services/track';
+import type {Provider} from '../../services/providers';
+export interface PlaylistActionContext {
+  state: {
+    playlistId: TrackId | null;
+    api: Provider;
+    searching: boolean;
+    oriList: TrackFields[];
+    playlist: TrackFields[];
+    showRestore: boolean;
+    heartMode: boolean;
+  };
+  collectPlaylistOrder(): void;
+}
+export interface PlaylistData {
+  id: TrackId;
+  name?: string;
+  tracks: TrackFields[];
+  trackCount?: number;
+  moreFunc?: () => Promise<{songs: TrackFields[]} | undefined>;
+}
 import {toast} from '../../native/toast';
 import providers from '../../services/providers';
 import names from '../../events/names';
@@ -7,7 +28,12 @@ import * as events from '../../events/index';
 import * as utils from '../../utils/index';
 import queue from '../../events/queue';
 import users from '../../storage/users';
-const p = (tracks, trackIds) => {
+const p = (
+  tracks: TrackFields[],
+  trackIds: {
+    lr?: number;
+  }[],
+) => {
   for (let a = 0; a < tracks.length; a++) {
     const r = trackIds[a];
     if (r && Object.prototype.hasOwnProperty.call(r, 'lr')) {
@@ -15,14 +41,14 @@ const p = (tracks, trackIds) => {
     }
   }
 };
-const m = (e) => {
+const m = (e: 'subscribe' | 'unsubscribe') => {
   if (e === 'subscribe') {
     toast(locales.COLLECT_SUCCESS);
   } else if (e === 'unsubscribe') {
     toast(locales.DELETE_SUCCESS);
   }
 };
-const b = async (id, op) => {
+const b = async (id: TrackId, op: 'subscribe' | 'unsubscribe') => {
   const response = await services.Netease.subscribe_playlist({
     id,
     op,
@@ -32,7 +58,7 @@ const b = async (id, op) => {
   }
   m(op);
 };
-const v = async (id, op) => {
+const v = async (id: TrackId, op: 'subscribe' | 'unsubscribe') => {
   const response = await services.QQMusic.subscribe_playlist({
     id,
     op,
@@ -43,7 +69,13 @@ const v = async (id, op) => {
   m(op);
 };
 const g = {
-  deleteFromNetease: async function ({playlistId, trackid}) {
+  deleteFromNetease: async function ({
+    playlistId,
+    trackid,
+  }: {
+    playlistId: TrackId;
+    trackid: TrackId;
+  }) {
     const response = await services.Netease.playlist_tracks({
       op: 'del',
       pid: playlistId,
@@ -53,7 +85,7 @@ const g = {
       throw new Error(response?.message || locales.ERROR);
     }
   },
-  deleteFromQQMusic: async function (id, dirid) {
+  deleteFromQQMusic: async function (id: TrackId, dirid?: TrackId) {
     if (!id || !dirid) {
       throw new Error(locales.ERROR);
     }
@@ -64,14 +96,14 @@ const g = {
     const response = await services.QQMusic.dislike({
       id,
       dirid,
-      qq: account.userId,
+      qq: account.userId!,
       cookies: account.cookies,
     });
     if (response?.code !== 0) {
       throw new Error(locales.ERROR);
     }
   },
-  getFromNetease: async function (id) {
+  getFromNetease: async function (id: TrackId) {
     if (!id) {
       return;
     }
@@ -80,6 +112,7 @@ const g = {
       throw new Error(response?.message || locales.ERROR);
     }
     const {tracks, name, trackIds} = response.playlist;
+    if (!tracks || !trackIds || name == null) throw new Error('歌单响应缺少歌曲或名称');
     if (name.includes('榜')) {
       p(tracks, trackIds);
     }
@@ -92,7 +125,7 @@ const g = {
       moreFunc: response.moreFunc,
     };
   },
-  getFromQQMusic: async function (id) {
+  getFromQQMusic: async function (id: TrackId) {
     if (!id) {
       return;
     }
@@ -103,6 +136,7 @@ const g = {
       throw new Error(locales.ERROR);
     }
     const {songlist, dissname} = response[0];
+    if (!songlist) throw new Error('歌单响应缺少歌曲列表');
     return {
       id,
       name: dissname,
@@ -110,42 +144,54 @@ const g = {
       trackCount: songlist.length,
     };
   },
-  formatItemData: function (e, t) {
+  formatItemData: function (e: TrackFields, t: Provider) {
     if (e) {
-      const a = {};
+      const a: {
+        song?: string;
+        artist?: string | Artist[];
+        album?: string;
+        showMV?: boolean;
+        alias?: string;
+      } = {};
       if (t === providers.netEase) {
         a.song = e.name;
         a.artist = e.ar ? e.ar : e.artists;
-        a.album = e.al ? e.al.name : e.album.name;
-        a.showMV = e.mvid || e.mv;
-        a.alias = utils.delve(e, 'tns.0');
+        a.album = e.al
+          ? !Array.isArray(e.al)
+            ? e.al.name
+            : undefined
+          : typeof e.album === 'object'
+            ? e.album?.name
+            : undefined;
+        a.showMV = !!(e.mvid || e.mv);
+        a.alias = e.tns?.[0];
       } else if (t === providers.qqMusic) {
         a.song = e.songname;
         a.artist = e.singer;
         a.album = e.albumname;
-        let n = e.mv?.vid || e.vid;
-        n = typeof n === 'string' && n.length > 0;
-        a.showMV = n;
+        const n = (typeof e.mv === 'object' ? e.mv?.vid : undefined) || e.vid;
+        a.showMV = typeof n === 'string' && n.length > 0;
       }
       return a;
     }
+    throw new Error('歌曲数据为空');
   },
-  onMV: function (e, t) {
+  onMV: function (e: TrackFields, t: Provider) {
     let a;
     if (t === providers.netEase) {
-      a = e.mv || e.mvid;
+      a = (typeof e.mv === 'number' ? e.mv : undefined) || e.mvid;
     } else if (t === providers.qqMusic) {
-      a = e.mv?.vid || e.vid;
+      a = (typeof e.mv === 'object' ? e.mv?.vid : undefined) || e.vid;
     }
-    queue.playMV(a, t);
+    queue.playMV(a!, t);
   },
-  addToQueue: function (data, api) {
+  addToQueue: function (data: TrackFields, api: Provider) {
     events.toInsertToList({
       data,
       api,
     });
   },
-  onDetail: function (item, index, {state}) {
+  onDetail: function (item: TrackFields, index: number, {state}: PlaylistActionContext) {
     const {playlistId, api} = state;
     events.toDetailModal({
       item,
@@ -154,7 +200,7 @@ const g = {
       playlistId,
     });
   },
-  playMusic: function (item, t, a) {
+  playMusic: function (item: TrackFields, t: number, a: PlaylistActionContext) {
     const a_state = a.state;
     const {searching, api, oriList, playlist, showRestore, playlistId} = a_state;
     const d = showRestore === false ? playlist : oriList;
@@ -171,26 +217,25 @@ const g = {
       data: d,
       index,
       api,
-      localPath: item.localPath,
-      pid: playlistId,
+      pid: playlistId ?? undefined,
     });
     a.collectPlaylistOrder();
   },
-  savePic: function (img, song) {
+  savePic: function (img?: string, song?: string) {
     events.emitter.emit(names.SavePicModal, {
       img,
       song,
     });
   },
-  onHeartMode: async function (page) {
+  onHeartMode: async function (page: PlaylistActionContext) {
     const {heartMode, playlist, playlistId, api} = page.state;
     if (heartMode !== true || !playlist.length) {
       return;
     }
     const song = playlist[utils.random.getInt(0, playlist.length)];
     const response = await services.Netease.heart_mode({
-      songId: song.id,
-      playlistId,
+      songId: song.id!,
+      playlistId: playlistId!,
     });
     if (String(response?.code) === '500') {
       toast(locales.NETEASE_NOT_LOGIN);
@@ -209,7 +254,7 @@ const g = {
       });
     }
   },
-  onSubscribe: function (e, t, a) {
+  onSubscribe: function (e: TrackId, t: 'subscribe' | 'unsubscribe', a: Provider) {
     if (a === providers.netEase) {
       return b(e, t);
     }

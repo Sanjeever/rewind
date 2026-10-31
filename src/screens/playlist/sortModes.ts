@@ -7,7 +7,7 @@ export const sortModeMap = {
   song: 'singer',
   singer: 'album',
   album: 'time',
-};
+} as const;
 export const orderTexts = {
   random: locales.RANDOM_ORDER,
   song: locales.SONG_ORDER,

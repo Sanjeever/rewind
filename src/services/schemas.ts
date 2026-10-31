@@ -20,6 +20,8 @@ export const artist = z.looseObject({
   is_follow: number,
 });
 export const album = z.looseObject({
+  type: string,
+  size: number,
   id: z.optional(id),
   mid: string,
   name: string,
@@ -47,7 +49,7 @@ export const track = z.looseObject({
   artists: z.optional(z.array(artist)),
   ar: z.optional(z.array(artist)),
   album: z.optional(z.union([z.string(), album])),
-  al: z.optional(album),
+  al: z.optional(z.union([album, z.array(album)])),
   albumname: string,
   albummid: string,
   albumId: z.optional(id),
@@ -80,6 +82,7 @@ export const profile = z.looseObject({
   city: number,
   province: number,
   playlistCount: number,
+  userType: number,
   eventCount: number,
 });
 export const playlist = z.looseObject({

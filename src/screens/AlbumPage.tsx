@@ -1,3 +1,9 @@
+import type {ScreenProps, Navigation} from '../navigation/types';
+import type {TrackFields, TrackId, Artist} from '../services/track';
+import type {SearchEntity} from '../services/searchEntities';
+import type {OnlineProvider} from '../services/providers';
+import type {SpringScrollView} from '../components/Scrolling';
+import {errorMessage} from '../utils/types';
 import {toast} from '../native/toast';
 import Clipboard from '@react-native-clipboard/clipboard';
 import _default2 from './../components/Text';
@@ -16,21 +22,40 @@ import queue from '../events/queue';
 import * as sharedUrlsModule from '../services/sharedUrls';
 import Description from './album/Description';
 const constants_DEVICE_WIDTH = constants.DEVICE_WIDTH;
-class AlbumPage extends React.PureComponent {
+interface State {
+  albumImg: string;
+  api: OnlineProvider;
+  id: TrackId | null;
+  data: TrackFields[];
+  loaded: boolean;
+  followed: boolean | null;
+  title?: string;
+  publishTime?: string | null;
+  company?: string | null;
+  description?: string | null;
+  showModal: boolean;
+  showElevation: boolean;
+  duration?: number;
+}
+class AlbumPage extends React.PureComponent<
+  Pick<ScreenProps<'AlbumPage'>, 'route'> & {navigation: Navigation},
+  State
+> {
+  _list: SpringScrollView | null = null;
   _nativeOffset = {
     x: new ReactNative.Animated.Value(0),
     y: new ReactNative.Animated.Value(0),
   };
-  getDurationSum = (e) => {
+  getDurationSum = (e: TrackFields[]) => {
     const api = this.state.api;
     if (api == providers.netEase) {
-      return e.reduce((acc, item) => acc + item.duration, 0) / 1000;
+      return e.reduce((acc, item) => acc + item.duration!, 0) / 1000;
     }
-    if (api === providers.duration) {
-      return e.reduce((acc, item) => acc + item.interval, 0);
+    if (api === providers.qqMusic) {
+      return e.reduce((acc, item) => acc + item.interval!, 0);
     }
   };
-  netEaseAlbum = async (id) => {
+  netEaseAlbum = async (id: TrackId) => {
     const response = await services.Netease.album(id);
     if (!utils.usable(response)) {
       return;
@@ -40,6 +65,7 @@ class AlbumPage extends React.PureComponent {
       return;
     }
     const album = response.album;
+    if (!album) throw new Error('专辑响应缺少专辑信息');
     const songs = response.songs || album.songs;
     if (songs) {
       this.setState({
@@ -54,22 +80,23 @@ class AlbumPage extends React.PureComponent {
       await this.netEaseIsLikedAlbum();
     }
   };
-  qqMusicAlbum = (id) => {
-    services.QQMusic.album_song(id).then(({aDate, company, desc, list}) => {
-      if (list) {
-        this.setState({
-          data: list,
-          loaded: true,
-          id,
-          publishTime: aDate,
-          company,
-          description: desc,
-          duration: this.getDurationSum(list),
-        });
-      }
-    });
+  qqMusicAlbum = async (id: TrackId) => {
+    const response = await services.QQMusic.album_song(id);
+    if (!response) throw new Error('专辑响应缺少专辑信息');
+    const {aDate, company, desc, list} = response;
+    if (list) {
+      this.setState({
+        data: list,
+        loaded: true,
+        id,
+        publishTime: aDate,
+        company,
+        description: desc,
+        duration: this.getDurationSum(list),
+      });
+    }
   };
-  getAlbum = (e, t) => {
+  getAlbum = (e: SearchEntity, t: OnlineProvider) => {
     if (e) {
       switch (t) {
         case providers.netEase: {
@@ -78,7 +105,7 @@ class AlbumPage extends React.PureComponent {
             title: e.name,
             albumImg: n,
           });
-          this.netEaseAlbum(e.id);
+          this.netEaseAlbum(e.id!).catch((error) => toast(errorMessage(error)));
           break;
         }
         case providers.qqMusic: {
@@ -89,7 +116,7 @@ class AlbumPage extends React.PureComponent {
             title,
             albumImg: l,
           });
-          this.qqMusicAlbum(i);
+          this.qqMusicAlbum(i!).catch((error) => toast(errorMessage(error)));
         }
       }
     }
@@ -130,7 +157,7 @@ class AlbumPage extends React.PureComponent {
   };
   onCopy = () => {
     const title = this.state.title;
-    Clipboard.setString(title);
+    Clipboard.setString(title!);
     toast(`${locales.COPIED} ${title}`);
   };
   onOpenUrl = () => {
@@ -156,13 +183,13 @@ class AlbumPage extends React.PureComponent {
         this.setState({
           followed: !followed,
         });
-        this.netEaseLikeAlbum(id, !followed);
+        this.netEaseLikeAlbum(id!, !followed);
     }
     toast(!followed == true ? '已收藏。' : '取消收藏。');
   };
   onLikeAlbum = () => {
     if (this.state.followed) {
-      ReactNative.Alert.alert(null, '取消收藏？', [
+      ReactNative.Alert.alert('', '取消收藏？', [
         {
           text: locales.CANCEL,
           onPress: function () {
@@ -191,7 +218,7 @@ class AlbumPage extends React.PureComponent {
       });
     }
   };
-  netEaseLikeAlbum = async (id, like) => {
+  netEaseLikeAlbum = async (id: TrackId, like: boolean) => {
     const response = await services.Netease.sublist_album_add({
       id,
       op: like === true ? 'sub' : 'unsub',
@@ -206,43 +233,46 @@ class AlbumPage extends React.PureComponent {
       y: 0,
     });
   };
-  formatListItem = (e) => {
-    const t = {};
+  formatListItem = (e: TrackFields) => {
+    const t: {
+      song?: string;
+      singer?: string | Artist[];
+      duration?: string;
+      alias?: string;
+      showMV?: boolean;
+    } = {};
     const api = this.state.api;
     if (api === providers.netEase) {
       t.song = e.name;
       t.singer = e.artists;
-      t.duration = utils.timeFormatter.parseTime(e.duration / 1000);
-      t.alias = utils.delve(e, 'transNames.0');
-      t.showMV = e.mvid || e.mv;
+      t.duration = utils.timeFormatter.parseTime(e.duration! / 1000);
+      t.alias = e.transNames?.[0];
+      t.showMV = !!(e.mvid || e.mv);
     } else if (api === providers.qqMusic) {
       t.song = e.songname;
       t.singer = e.singer;
       t.duration = utils.timeFormatter.parseTime(e.interval);
-      let o = e.mv?.vid || e.vid;
-      o = typeof o === 'string' && o.length > 0;
-      t.showMV = o;
+      const o = (typeof e.mv === 'object' ? e.mv?.vid : undefined) || e.vid;
+      t.showMV = typeof o === 'string' && o.length > 0;
     }
     return t;
   };
-  onMV = (e) => {
+  onMV = (e: TrackFields) => {
     let t;
     const api = this.state.api;
     if (api === providers.netEase) {
-      t = e.mv || e.mvid;
+      t = (typeof e.mv === 'number' ? e.mv : undefined) || e.mvid;
     } else if (api === providers.qqMusic) {
-      t = e.mv?.vid || e.vid;
+      t = (typeof e.mv === 'object' ? e.mv?.vid : undefined) || e.vid;
     }
-    queue.playMV(t, api);
+    queue.playMV(t!, api);
   };
-  _renderItem = ({item, index}) => {
+  _renderItem = ({item, index}: {item: TrackFields; index: number}) => {
     const a_state = this.state;
     const {api, data} = a_state;
     const s = this.formatListItem(item);
     return (
       <components.SongRow
-        textStyle={E.songRow}
-        curIndex={null}
         index={index}
         song={s.song}
         album={s.duration}
@@ -277,7 +307,7 @@ class AlbumPage extends React.PureComponent {
       />
     );
   };
-  state = {
+  state: State = {
     albumImg: '',
     api: providers.netEase,
     id: null,
@@ -296,7 +326,7 @@ class AlbumPage extends React.PureComponent {
     const params = this.props.route.params;
     if (params) {
       const {item, api} = params;
-      if (api) {
+      if (api && api !== 'local') {
         this.setState({
           api,
         });
@@ -409,13 +439,7 @@ class AlbumPage extends React.PureComponent {
               }}
               onPress={this.addToPlaylist}
             >
-              <components.Icon
-                name={icons.PLUS}
-                color={'#000'}
-                style={{
-                  fontWeight: 'bold',
-                }}
-              />
+              <components.Icon name={icons.PLUS} color={'#000'} />
             </ReactNative.TouchableOpacity>
           </ReactNative.View>
         </ReactNative.View>
@@ -427,7 +451,7 @@ class AlbumPage extends React.PureComponent {
           rightIcon={() => {
             return (
               <OverflowMenu
-                followed={followed}
+                followed={!!followed}
                 onLike={this.onLikeAlbum}
                 onWebview={this.onWebview}
                 onCopy={this.onCopy}
@@ -446,7 +470,7 @@ class AlbumPage extends React.PureComponent {
     );
   }
 }
-var E = ReactNative.StyleSheet.create({
+const E = ReactNative.StyleSheet.create({
   container: {
     flex: 1,
   },

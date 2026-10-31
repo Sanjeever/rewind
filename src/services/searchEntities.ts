@@ -3,6 +3,11 @@ import type {OnlineProvider} from './providers';
 
 export type EntityKind = 'playlists' | 'albums' | 'singers' | 'mvs';
 export interface SearchEntity {
+  albumtype?: string;
+  type?: string | number;
+  albumname?: string;
+  albummid?: string;
+  singerMID?: string;
   size?: number;
   pubTime?: string;
   albumMID?: string;
@@ -23,7 +28,7 @@ export interface SearchEntity {
   albumNum?: number;
   artist?: {name: string};
   picUrl?: string;
-  publishTime?: number;
+  publishTime?: number | string;
   transNames?: string[];
   albumName?: string;
   albumPic?: string;
