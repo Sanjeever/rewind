@@ -1,6 +1,6 @@
 import {toast} from '../native/toast';
 import Text from './../components/Text';
-import * as _appStorage from './../storage/index.js';
+import * as _appStorage from './../storage/index';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
 import reactNativeImageCropPicker from 'react-native-image-crop-picker';

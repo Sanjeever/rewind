@@ -1,7 +1,7 @@
 import Text from './../components/Text';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
-import * as LyricList from './LyricList.js';
+import * as LyricList from './LyricList';
 import * as constants from '../theme/constants';
 import locales from '../locales/index';
 const lyric_1 = 'Nothing is true';

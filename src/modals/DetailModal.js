@@ -5,7 +5,7 @@ import * as Scrolling from './../components/Scrolling.js';
 import * as Index from '../components/index';
 import providers from '../services/providers';
 import * as constants from '../theme/constants';
-import TrackActions from './../modules/TrackActions.js';
+import TrackActions from './../modules/TrackActions';
 import names from '../events/names';
 import icons from '../theme/icons';
 import locales from '../locales/index';

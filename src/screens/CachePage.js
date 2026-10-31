@@ -1,5 +1,5 @@
 import {toast} from '../native/toast';
-import * as _appStorage from './../storage/index.js';
+import * as _appStorage from './../storage/index';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
 import * as reactNativeSpringScrollview from './../components/Scrolling.js';

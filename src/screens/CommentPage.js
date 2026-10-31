@@ -10,7 +10,7 @@ import locales from '../locales/index';
 import * as services from '../services/index';
 import * as utils from '../utils/index';
 import * as trackInfo from '../services/trackInfo';
-import commentSegmentation from './../modules/commentSegmentation.js';
+import commentSegmentation from './../modules/commentSegmentation';
 import CommentCard from './../modules/CommentCard.js';
 import * as formatItem from './comments/formatItem';
 import CommentAnalysis from './../modules/CommentAnalysis.js';

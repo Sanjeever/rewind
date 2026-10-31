@@ -1,4 +1,4 @@
-import * as _appStorage from './../storage/index.js';
+import * as _appStorage from './../storage/index';
 import keys from '../storage/keys';
 import * as files from '../storage/files';
 let o = {};
