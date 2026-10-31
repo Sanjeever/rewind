@@ -6,7 +6,8 @@ import * as utils from '../utils/index';
 import updateModule from '../services/update';
 import ProfileHeader from './ProfileHeader';
 import DrawerActions from './DrawerActions';
-class Drawer extends React.PureComponent {
+import type {Navigation} from '../navigation/types';
+class Drawer extends React.PureComponent<{navigation: Navigation}> {
   _nativeOffset = {
     x: new ReactNative.Animated.Value(0),
     y: new ReactNative.Animated.Value(0),
@@ -52,7 +53,6 @@ class Drawer extends React.PureComponent {
             feature={function () {
               return navigation.navigate('FeaturePage');
             }}
-            navigation={navigation}
           />
         </reactNativeSpringScrollview.SpringScrollView>
       </ReactNative.View>

@@ -3,7 +3,6 @@ import locales from '../../locales';
 import {toast} from '../../native/toast';
 import _default from './../../components/Pager';
 import * as _appStorage from './../../storage/index';
-import * as immer from 'immer';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
 import FadingEdge from '../../components/FadingEdge';
@@ -18,16 +17,36 @@ import * as endpoints from '../../services/endpoints';
 import * as services from '../../services/index';
 import * as events from '../../events/index';
 import * as utils from '../../utils/index';
-import * as types from '../../utils/types';
 import playlists from '../../storage/playlists';
 import users from '../../storage/users';
 import Playlists from './Playlists';
 import PlaylistHeader from './PlaylistHeader';
 import _netinfo from '@react-native-community/netinfo';
-class Home extends React.PureComponent {
-  showNetease = true;
-  showQQMusic = true;
-  state = {
+import type {Navigation} from '../../navigation/types';
+import type {Provider, OnlineProvider} from '../../services/providers';
+import type {TrackId} from '../../services/track';
+import type {Accounts, Playlist} from '../../storage/models';
+import type {Subscription} from '../../events/Emitter';
+import type {OpenPlaylist} from './Playlists';
+import type {LargeList} from '../../components/Scrolling';
+import {errorMessage} from '../../utils/types';
+interface State {
+  netEase: Playlist[];
+  qqMusic: Playlist[];
+  showList: boolean;
+  isConnected: boolean | null;
+  userId: TrackId;
+  autoSetPlaylistOrder: boolean;
+  pagesOrder: typeof pagesModule.pages;
+  apisOrder: typeof pagesModule.apis;
+}
+class Home extends React.PureComponent<{navigation: Navigation}, State> {
+  active = false;
+  loginTimer?: ReturnType<typeof setTimeout>;
+  loginedListener?: Subscription;
+  playlistSetOrderListener?: Subscription;
+  setStateListener?: Subscription;
+  state: State = {
     netEase: [],
     qqMusic: [],
     showList: true,
@@ -41,7 +60,7 @@ class Home extends React.PureComponent {
     try {
       return await services.Netease.daily_signin();
     } catch (error) {
-      log('签到失败', error.message);
+      log('签到失败', errorMessage(error));
     }
   };
   happyBirthday = async () => {
@@ -50,37 +69,46 @@ class Home extends React.PureComponent {
       return;
     }
     const response = await services.Netease.profile(id);
-    if (response?.code === 200 && utils.timeFormatter.isToday(response.profile.birthday)) {
+    if (
+      this.active &&
+      response?.code === 200 &&
+      response.profile?.birthday != null &&
+      utils.timeFormatter.isToday(response.profile.birthday)
+    ) {
       this.props.navigation.navigate('HappyBirthday', {
-        profile: response.profile,
+        profile: {...response.profile, birthday: response.profile.birthday},
       });
     }
   };
   loadOrder = () => {
     _appStorage.storage
-      .load({
+      .load<State['pagesOrder']>({
         key: keysModule.pagesOrder,
       })
       .then((pagesOrder) => {
-        if (pagesOrder) {
+        if (this.active && pagesOrder) {
           this.setState({
             pagesOrder,
           });
         }
       })
-      .catch(() => null);
+      .catch(this.onOrderError);
     _appStorage.storage
-      .load({
+      .load<State['apisOrder']>({
         key: keysModule.apisOrder,
       })
       .then((apisOrder) => {
-        if (apisOrder) {
+        if (this.active && apisOrder) {
           this.setState({
             apisOrder,
           });
         }
       })
-      .catch(() => null);
+      .catch(this.onOrderError);
+  };
+  onOrderError = (error: unknown) => {
+    if (this.active && !(error instanceof Error && error.name === 'NotFoundError'))
+      toast('读取排序失败：' + errorMessage(error));
   };
   alertOpenTip = () => {
     ReactNative.Alert.alert('首次启动', '需要查看操作指南吗？', [
@@ -105,27 +133,29 @@ class Home extends React.PureComponent {
       },
     ]);
   };
-  isValid = function (e, t) {
-    return e && e[t] && types.isObject(e[t]);
-  };
   loadStorage = async () => {
-    const stored = await users.getUserPlayList();
-    if (stored) {
-      if (this.isValid(stored, providers.netEase)) {
-        this.setState({
-          netEase: stored.netEase,
-        });
+    try {
+      const stored = await users.getUserPlayList();
+      if (!this.active) return;
+      if (stored) {
+        if (stored.netEase) {
+          this.setState({
+            netEase: stored.netEase,
+          });
+        }
+        if (stored.qqMusic) {
+          this.setState({
+            qqMusic: stored.qqMusic,
+          });
+        }
+      } else {
+        await this.loadPlaylistById();
       }
-      if (this.isValid(stored, providers.qqMusic)) {
-        this.setState({
-          qqMusic: stored.qqMusic,
-        });
-      }
-    } else {
-      await this.loadPlaylistById();
+    } catch (error) {
+      if (this.active) toast('读取歌单失败：' + errorMessage(error));
     }
   };
-  loadPlaylistById = async (api, list) => {
+  loadPlaylistById = async (api?: OnlineProvider, list?: LargeList<Playlist>) => {
     try {
       if (this.state.isConnected !== true) {
         return;
@@ -135,18 +165,18 @@ class Home extends React.PureComponent {
         return;
       }
       if (api) {
-        await this[`loadPlaylist_${api}`](accounts);
+        await (api === 'netEase' ? this.loadPlaylist_netEase : this.loadPlaylist_qqMusic)(accounts);
       } else {
         await this.loadPlaylist_netEase(accounts);
         await this.loadPlaylist_qqMusic(accounts);
       }
     } catch (error) {
-      toast(`歌单加载失败：${error.message}`);
+      if (this.active) toast(`歌单加载失败：${errorMessage(error)}`);
     } finally {
       list?.endRefresh?.();
     }
   };
-  loadPlaylist_netEase = async (accounts) => {
+  loadPlaylist_netEase = async (accounts: Accounts) => {
     const userId = accounts?.netEase?.userId;
     if (!userId) {
       return;
@@ -157,7 +187,7 @@ class Home extends React.PureComponent {
     await this.getNeteasePlaylist(userId);
     await this.netEaselikelist(userId);
   };
-  loadPlaylist_qqMusic = async (accounts) => {
+  loadPlaylist_qqMusic = async (accounts: Accounts) => {
     const id = accounts?.qqMusic?.userId;
     if (!id) {
       return;
@@ -179,16 +209,16 @@ class Home extends React.PureComponent {
       try {
         return await services.Netease.login_refresh();
       } catch (error) {
-        log('刷新登录失败', error.message);
+        log('刷新登录失败', errorMessage(error));
       }
     }
   };
-  netEaselikelist = async (id) => {
+  netEaselikelist = async (id: TrackId) => {
     if (!id) {
       return;
     }
     const response = await services.Netease.likelist(id);
-    if (response?.code === 200) {
+    if (response?.code === 200 && response.ids) {
       await users.saveUserLikeList(response.ids, providers.netEase);
     }
   };
@@ -199,13 +229,17 @@ class Home extends React.PureComponent {
     const playlists = await services.QQMusic.disslist({
       id,
     });
-    if (playlists.length)
+    if (playlists?.[0]?.songlist)
       await users.saveUserLikeList(
-        playlists[0].songlist.map((song) => song.songmid),
+        playlists[0].songlist.map((song) => {
+          const id = song.songmid || song.mid;
+          if (!id) throw new Error('QQ 喜欢列表缺少歌曲标识');
+          return id;
+        }),
         providers.qqMusic,
       );
   };
-  getQQMusicPlaylist = async (id) => {
+  getQQMusicPlaylist = async (id: TrackId) => {
     if (!id) {
       return;
     }
@@ -216,6 +250,7 @@ class Home extends React.PureComponent {
     }
     const created = await services.QQMusic.user_created_list(id);
     const liked = profile.mymusic.find((item) => item.title === '喜欢' || item.title === '我喜欢');
+    if (!profile.mydiss?.list || !created) throw new Error(locales.PLAYLIST_FETCH_FAILED);
     const items = [...(liked ? [liked] : []), ...profile.mydiss.list, ...created];
     const ordered = await playlists.newOrder({
       api: providers.qqMusic,
@@ -223,11 +258,9 @@ class Home extends React.PureComponent {
       on: this.state.autoSetPlaylistOrder,
     });
     await users.saveUserPlayList(ordered, providers.qqMusic);
-    this.setState({
-      qqMusic: ordered,
-    });
+    if (this.active) this.setState({qqMusic: ordered});
   };
-  getNeteasePlaylist = async (id) => {
+  getNeteasePlaylist = async (id: TrackId) => {
     if (!id) {
       return;
     }
@@ -241,11 +274,10 @@ class Home extends React.PureComponent {
       on: this.state.autoSetPlaylistOrder,
     });
     await users.saveUserPlayList(ordered, providers.netEase);
-    this.setState({
-      netEase: ordered,
-    });
+    if (this.active) this.setState({netEase: ordered});
   };
-  Playlist = (playlist, t, index) => {
+  Playlist: OpenPlaylist = (...args) => {
+    const [playlist, t, index] = args;
     const userId = this.state.userId;
     switch (t) {
       case providers.netEase:
@@ -272,7 +304,7 @@ class Home extends React.PureComponent {
         });
     }
   };
-  collectPlaylistOrder = async ({api, index}) => {
+  collectPlaylistOrder = async ({api, index}: {api: Provider; index: number}) => {
     try {
       const result = await playlists.collect({
         playlist: {
@@ -284,11 +316,12 @@ class Home extends React.PureComponent {
       });
       if (result) {
         this.setState({
+          ...this.state,
           [api]: result,
         });
       }
     } catch (error) {
-      toast(`保存歌单顺序失败：${error.message}`);
+      toast(`保存歌单顺序失败：${errorMessage(error)}`);
     }
   };
   renderPager = () => {
@@ -320,7 +353,7 @@ class Home extends React.PureComponent {
       this.renderPager(),
     );
   };
-  goToPage = (e) => {
+  goToPage = (e: string) => {
     switch (e) {
       case 'localMusic':
         this.props.navigation.navigate('LocalMusic');
@@ -350,15 +383,18 @@ class Home extends React.PureComponent {
         this.props.navigation.navigate('SubNewSongs');
     }
   };
-  UNSAFE_componentWillMount() {
-    utils.firstTimeChecker.check().then((t) => {
-      if (t === true) {
-        this.alertOpenTip();
-      }
-    });
-  }
   componentDidMount() {
+    this.active = true;
+    utils.firstTimeChecker
+      .check()
+      .then((first) => {
+        if (this.active && first) this.alertOpenTip();
+      })
+      .catch((error) => {
+        if (this.active) toast(errorMessage(error));
+      });
     _netinfo.fetch().then(({isConnected}) => {
+      if (!this.active) return;
       this.setState(
         {
           isConnected,
@@ -371,7 +407,8 @@ class Home extends React.PureComponent {
       );
     });
     this.loginedListener = events.emitter.addListener(names.UserLogined, () => {
-      setTimeout(() => {
+      clearTimeout(this.loginTimer);
+      this.loginTimer = setTimeout(() => {
         this.loadStorage();
         this.loadPlaylistById();
       }, 500);
@@ -388,22 +425,18 @@ class Home extends React.PureComponent {
       },
     );
     this.setStateListener = events.emitter.addListener(names.SetHomeState, (t) => {
-      this.setState(
-        immer.produce(function (e) {
-          Object.keys(t).forEach((a) => {
-            e[a] = t[a];
-          });
-        }),
-      );
+      this.setState(t);
     });
     this.loadOrder();
-    this.happyBirthday();
+    this.happyBirthday().catch((error) => log('生日检查失败', errorMessage(error)));
     this.netEaseRefreshLogin();
   }
   componentWillUnmount() {
-    this.loginedListener.remove();
-    this.playlistSetOrderListener.remove();
-    this.setStateListener.remove();
+    this.active = false;
+    clearTimeout(this.loginTimer);
+    this.loginedListener?.remove();
+    this.playlistSetOrderListener?.remove();
+    this.setStateListener?.remove();
   }
   render() {
     const state = this.state;
@@ -427,7 +460,7 @@ class Home extends React.PureComponent {
   }
 }
 export default Home;
-var M = ReactNative.StyleSheet.create({
+const M = ReactNative.StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: constants.STATUS_BAR_HEIGHT + 40,

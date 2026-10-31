@@ -6,15 +6,16 @@ import icons from '../theme/icons';
 import devMenu from '../native/devMenu';
 import {isDebug} from '../native/info';
 import Drawer from '../components/Drawer';
-import HomeContent from './home';
+import HomeContent from './home/index';
+import type {ScreenProps, Navigation, NavigateArgs} from '../navigation/types';
 
-export default function Home({navigation}) {
-  const drawer = useRef(null);
-  const drawerNavigation = {
+export default function Home({navigation}: ScreenProps<'Home'>) {
+  const drawer = useRef<React.ComponentRef<typeof DrawerLayoutAndroid>>(null);
+  const drawerNavigation: Navigation = {
     ...navigation,
-    navigate(name, params) {
-      drawer.current.closeDrawer();
-      navigation.navigate(name, params);
+    navigate(...args: NavigateArgs) {
+      drawer.current!.closeDrawer();
+      navigation.navigate(...args);
     },
   };
   return (
@@ -22,6 +23,7 @@ export default function Home({navigation}) {
       ref={drawer}
       style={{flex: 1}}
       drawerWidth={DEVICE_WIDTH * 0.7}
+      drawerPosition="left"
       drawerLockMode="locked-closed"
       renderNavigationView={() => <Drawer navigation={drawerNavigation} />}
     >
@@ -29,7 +31,7 @@ export default function Home({navigation}) {
         <HomeContent navigation={navigation} />
         <TouchableBorderless
           accessibilityLabel="菜单"
-          onPress={() => drawer.current.openDrawer()}
+          onPress={() => drawer.current!.openDrawer()}
           onLongPress={() => {
             if (isDebug) devMenu.show();
           }}

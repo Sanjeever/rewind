@@ -8,20 +8,34 @@ import names from '../events/names';
 import locales from '../locales/index';
 import * as services from '../services/index';
 import * as events from '../events/index';
-class DrawerActions extends React.PureComponent {
+import type {Subscription} from '../events/Emitter';
+import {errorMessage} from '../utils/types';
+interface Props {
+  envelop(): void;
+  about(): void;
+  settings(): void;
+  update(): void;
+  timer(): void;
+  cloud(): void;
+  feature(): void;
+}
+class DrawerActions extends React.PureComponent<Props, {netEaseLogined: boolean}> {
+  sub!: Subscription;
+  mounted = false;
+  refreshTimer?: ReturnType<typeof setTimeout>;
   state = {
     netEaseLogined: true,
   };
   checkNetEaseLogined = async () => {
     try {
       const result = await services.Netease.cloud(1);
-      if (result) {
+      if (result && this.mounted) {
         this.setState({
           netEaseLogined: result.code !== 301,
         });
       }
     } catch (error) {
-      toast(error.message);
+      if (this.mounted) toast(errorMessage(error));
     }
   };
   sponsor = function () {
@@ -30,7 +44,7 @@ class DrawerActions extends React.PureComponent {
       song: 'sponsor',
     });
   };
-  onPress = (e) => {
+  onPress = (e: (typeof actions)[number]) => {
     const a_props = this.props;
     const {envelop, about, settings, update, timer, cloud, feature} = a_props;
     switch (e.name) {
@@ -60,14 +74,18 @@ class DrawerActions extends React.PureComponent {
     }
   };
   componentDidMount() {
+    this.mounted = true;
     this.checkNetEaseLogined();
     this.sub = events.emitter.addListener(names.UserLogined, () => {
-      setTimeout(() => {
+      clearTimeout(this.refreshTimer);
+      this.refreshTimer = setTimeout(() => {
         this.checkNetEaseLogined();
       }, 500);
     });
   }
   componentWillUnmount() {
+    this.mounted = false;
+    clearTimeout(this.refreshTimer);
     this.sub.remove();
   }
   render() {
@@ -104,7 +122,7 @@ class DrawerActions extends React.PureComponent {
     );
   }
 }
-var b = ReactNative.StyleSheet.create({
+const b = ReactNative.StyleSheet.create({
   container: {
     width: '100%',
     alignSelf: 'flex-start',

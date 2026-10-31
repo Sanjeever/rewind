@@ -1,5 +1,6 @@
 import tabIcons from '../theme/tabIcons';
 import locales from '../locales/index';
+import type {OnlineProvider} from '../services/providers';
 const f = {
   pages: [
     {
@@ -48,6 +49,6 @@ const f = {
       icon: tabIcons.SUB_NEW_SONGS,
     },
   ],
-  apis: ['custom', 'netEase', 'qqMusic'],
+  apis: ['custom', 'netEase', 'qqMusic'] as Array<'custom' | OnlineProvider>,
 };
 export default f;
