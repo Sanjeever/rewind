@@ -59,7 +59,10 @@ export default {
       if (url) return url;
       throw new Error('未找到匹配歌曲');
     } catch (error) {
-      if (qqError) throw new Error(qqError.message + '；' + error.message, {cause: qqError});
+      if (qqError)
+        throw new AggregateError([qqError, error], qqError.message + '；' + error.message, {
+          cause: error,
+        });
       throw error;
     }
   },

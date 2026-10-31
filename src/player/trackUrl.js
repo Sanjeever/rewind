@@ -34,7 +34,11 @@ export default {
       if (typeof url !== 'string' || !url) throw new Error('未找到可播放的匹配歌曲');
       return url;
     } catch (error) {
-      throw new Error(primaryError.message + '；备用音源：' + error.message, {cause: primaryError});
+      throw new AggregateError(
+        [primaryError, error],
+        primaryError.message + '；备用音源：' + error.message,
+        {cause: error},
+      );
     }
   },
 };

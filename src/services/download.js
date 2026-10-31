@@ -130,8 +130,10 @@ const v = async (name, id, api, obj, external) => {
         throw new Error('歌曲当前不可下载');
       }
     } catch (error) {
-      throw new Error(
+      throw new AggregateError(
+        primaryError ? [primaryError, error] : [error],
         primaryError ? `${primaryError.message}；备用音源：${error.message}` : error.message,
+        {cause: error},
       );
     }
   }
