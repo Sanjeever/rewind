@@ -55,3 +55,18 @@ test('保留平台返回的空消息与歌单摘要中的空 tracks，业务拒�
   const response = {code: 200, playlist: [{id: 1, name: '歌单', tracks: null}]};
   expect(responses.user_playlist.parse(response)).toEqual(response);
 });
+test('歌单中的缺失歌手和专辑名不阻止其余歌曲显示，原始字段保留', () => {
+  const value = {
+    code: 200,
+    playlist: {
+      id: 1,
+      subscribed: null,
+      tracks: [
+        {id: 1, name: '正常歌曲', ar: [{name: '歌手'}]},
+        {id: 2, name: '元数据不完整', ar: [{id: 0, name: null}], al: {id: 0, name: null}},
+      ],
+      trackIds: [{id: 1}, {id: 2}],
+    },
+  };
+  expect(responses.playlist_detail.parse(value)).toEqual(value);
+});

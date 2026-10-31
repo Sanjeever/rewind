@@ -5,13 +5,13 @@ export type ArtworkSize = 'small' | 'big';
 export interface Artist {
   id?: TrackId;
   mid?: string;
-  name: string;
+  name?: string | null;
   alias?: string[];
 }
 export interface Album {
   id?: TrackId;
   mid?: string;
-  name?: string;
+  name?: string | null;
   picUrl?: string;
 }
 
@@ -31,7 +31,7 @@ export interface TrackFields {
   artists?: Artist[];
   ar?: Artist[];
   album?: Album | string;
-  al?: Album | Album[];
+  al?: Album | Album[] | null;
   albumname?: string;
   albummid?: string;
   qqAlbumId?: string;

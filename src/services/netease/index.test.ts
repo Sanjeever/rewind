@@ -55,7 +55,7 @@ test('歌曲详情按千首分批，完成顺序不同仍保留输入顺序及�
 
 test.each([false, true])('歌单详情保留延迟补全和立即补全行为，loadAll=%s', async (loadAll) => {
   const trackIds = Array.from({length: 1001}, (_, id) => ({id}));
-  request.mockResolvedValueOnce({code: 200, playlist: {tracks: [{id: 0}], trackIds}});
+  eapiRequest.mockResolvedValueOnce({code: 200, playlist: {tracks: [{id: 0}], trackIds}});
   cryptoRequest.mockResolvedValueOnce({code: 200, songs: [{id: 1000, extra: true}]});
   const result = await netease.playlist_detail(42, loadAll);
   if (loadAll) {

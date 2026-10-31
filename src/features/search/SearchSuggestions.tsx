@@ -144,7 +144,11 @@ export default class SearchSuggestions extends React.PureComponent<SuggestionPro
     if ('text' in item) return {name: item.text};
     if (this.props.api === providers.qqMusic) return {name: item.name};
     if (section === SECTION_KEYS.songs)
-      return {name: item.name, subName: item.artists?.[0]?.name, transName: item.transNames?.[0]};
+      return {
+        name: item.name,
+        subName: item.artists?.[0]?.name ?? undefined,
+        transName: item.transNames?.[0],
+      };
     if (section === SECTION_KEYS.albums) return {name: item.name, subName: item.artist?.name};
     return {name: item.name, subName: item.alias?.[0]};
   }

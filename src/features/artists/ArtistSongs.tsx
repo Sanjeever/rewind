@@ -21,14 +21,14 @@ class ArtistSongs extends React.PureComponent<{api: Provider; hotSongs: TrackFie
       case providers.netEase:
         n.song = e.name;
         n.singer = e.artists;
-        n.album = album!.name;
+        n.album = album!.name ?? undefined;
         n.img = `${album!.picUrl}?param=200y200`;
         n.trans = e.transNames?.[0];
         break;
       case providers.qqMusic:
         n.song = e.name;
         n.singer = e.singer;
-        n.album = album!.name;
+        n.album = album!.name ?? undefined;
         n.img = `http://y.gtimg.cn/music/photo_new/T002R150x150M000${album!.mid}.jpg`;
     }
     n.mvid = (typeof e.mv === 'object' ? e.mv?.vid : undefined) || e.vid || e.mvid;

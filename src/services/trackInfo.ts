@@ -41,7 +41,7 @@ export function normalizeTrack<T extends TrackFields>(
     api: source.api || api,
     title: getSong(source),
     artists: Array.isArray(singers)
-      ? singers.map((artist) => artist.name)
+      ? singers.flatMap((artist) => (typeof artist.name === 'string' ? [artist.name] : []))
       : singers
         ? [singers]
         : [],

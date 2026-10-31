@@ -144,8 +144,10 @@ class SubNewSongs extends React.PureComponent<ScreenProps<'SubNewSongs'>, State>
     });
   };
   onArtist = ({songLists}: NewWork) => {
+    const item = songLists[0].ar![0];
+    if (!item.name) return;
     this.props.navigation.navigate('ArtistPage', {
-      item: songLists[0].ar![0],
+      item: {...item, name: item.name},
       api: 'netEase',
     });
   };

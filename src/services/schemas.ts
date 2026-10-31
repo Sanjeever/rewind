@@ -19,6 +19,7 @@ export const artist = z.looseObject({
   followed: boolean,
   is_follow: number,
 });
+const trackArtist = z.extend(artist, {name: z.nullable(z.string())});
 export const album = z.looseObject({
   type: string,
   size: number,
@@ -34,6 +35,7 @@ export const album = z.looseObject({
   alias: z.optional(z.array(z.string())),
   transNames: z.optional(z.array(z.string())),
 });
+const trackAlbum = z.extend(album, {name: z.optional(z.nullable(z.string()))});
 export const track = z.looseObject({
   api: z.optional(z.enum(['netEase', 'qqMusic', 'local'])),
   id: z.optional(id),
@@ -45,11 +47,11 @@ export const track = z.looseObject({
   song: string,
   title: string,
   filename: string,
-  singer: z.optional(z.union([z.string(), z.array(artist)])),
-  artists: z.optional(z.array(artist)),
-  ar: z.optional(z.array(artist)),
-  album: z.optional(z.union([z.string(), album])),
-  al: z.optional(z.union([album, z.array(album)])),
+  singer: z.optional(z.union([z.string(), z.array(trackArtist)])),
+  artists: z.optional(z.array(trackArtist)),
+  ar: z.optional(z.array(trackArtist)),
+  album: z.optional(z.union([z.string(), trackAlbum])),
+  al: z.optional(z.nullable(z.union([trackAlbum, z.array(trackAlbum)]))),
   albumname: string,
   albummid: string,
   albumId: z.optional(id),
@@ -96,7 +98,7 @@ export const playlist = z.looseObject({
   creator: z.optional(profile),
   tracks: z.optional(z.nullable(z.array(track))),
   trackIds: z.optional(z.array(z.looseObject({id, lr: number}))),
-  subscribed: boolean,
+  subscribed: z.optional(z.nullable(z.boolean())),
   description: z.optional(z.nullable(z.string())),
   playCount: number,
   updateTime: number,

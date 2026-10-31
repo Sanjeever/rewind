@@ -7,11 +7,11 @@ import {song_detail} from './tracks';
 export const playlist_detail = async (id: TrackId, loadAll = false) => {
   const result: z.output<typeof responses.playlist_detail> & {
     moreFunc?: () => Promise<{songs: TrackFields[]} | undefined>;
-  } = await http.request(
-    responses.playlist_detail,
-    '/api/v6/playlist/detail',
-    `id=${id}&n=1000&limit=1000`,
-  );
+  } = await http.eapiRequest(responses.playlist_detail, '/api/v6/playlist/detail', {
+    id,
+    n: 1000,
+    limit: 1000,
+  });
   const playlist = result?.playlist;
   if (!playlist) {
     return result;

@@ -158,10 +158,10 @@ const g = {
         a.artist = e.ar ? e.ar : e.artists;
         a.album = e.al
           ? !Array.isArray(e.al)
-            ? e.al.name
+            ? (e.al.name ?? undefined)
             : undefined
           : typeof e.album === 'object'
-            ? e.album?.name
+            ? (e.album?.name ?? undefined)
             : undefined;
         a.showMV = !!(e.mvid || e.mv);
         a.alias = e.tns?.[0];

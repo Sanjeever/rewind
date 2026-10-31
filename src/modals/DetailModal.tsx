@@ -288,10 +288,10 @@ class DetailModal extends React.PureComponent<
     }
   };
   onSingleArtist = (item: Artist) => {
-    if (item && this.state.api) {
+    if (item?.name && this.state.api) {
       const api = this.state.api;
       this.navigateTo('ArtistPage', {
-        item,
+        item: {...item, name: item.name},
         api,
       });
     }
@@ -303,7 +303,7 @@ class DetailModal extends React.PureComponent<
     const item = trackInfo.extractAlbumItem(songItem, api);
     if (!item || typeof item !== 'object' || Array.isArray(item)) return;
     this.navigateTo('AlbumPage', {
-      item,
+      item: {...item, name: 'name' in item ? (item.name ?? undefined) : undefined},
       api,
     });
   };
