@@ -1,0 +1,54 @@
+import type {ReactVideoProps, VideoRef} from 'react-native-video';
+import type {ReactNode} from 'react';
+import type {StyleProp, ViewStyle} from 'react-native';
+export interface VideoPlayerProps extends ReactVideoProps {
+  toggleResizeModeOnFullscreen?: boolean;
+  controlAnimationTiming?: number;
+  doubleTapTime?: number;
+  isFullscreen?: boolean;
+  isFullScreen?: boolean;
+  showOnStart?: boolean;
+  showTimeRemaining?: boolean;
+  showHours?: boolean;
+  title?: string;
+  onRef?: (video: VideoRef | null) => void;
+  onBack?: () => void;
+  onEnterFullscreen?: () => void;
+  onExitFullscreen?: () => void;
+  onShowControls?: () => void;
+  onHideControls?: () => void;
+  onPause?: () => void;
+  onPlay?: () => void;
+  controlTimeout?: number;
+  scrubbing?: number;
+  tapAnywhereToPause?: boolean;
+  videoStyle?: StyleProp<ViewStyle>;
+  TopRight?: ReactNode;
+  disableBack?: boolean;
+  disableFullscreen?: boolean;
+  disableVolume?: boolean;
+  disableSeekbar?: boolean;
+  disablePlayPause?: boolean;
+  disableTimer?: boolean;
+  navigator?: {pop(): void};
+}
+export interface VideoPlayerState {
+  resizeMode: NonNullable<ReactVideoProps['resizeMode']>;
+  paused: boolean;
+  muted: boolean;
+  rate: number;
+  isFullscreen: boolean;
+  showTimeRemaining: boolean;
+  showHours: boolean;
+  seekerFillWidth: number;
+  showControls: boolean;
+  seekerPosition: number;
+  seekerOffset: number;
+  seeking: boolean;
+  originallyPaused: boolean;
+  scrubbing: boolean;
+  loading: boolean;
+  currentTime: number;
+  error: boolean;
+  duration: number;
+}

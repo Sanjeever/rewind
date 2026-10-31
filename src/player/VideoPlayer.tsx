@@ -1,6 +1,15 @@
+import type {VideoPlayerProps, VideoPlayerState} from './VideoPlayer.types';
+import type {
+  VideoRef,
+  OnLoadStartData,
+  OnLoadData,
+  OnProgressData,
+  OnSeekData,
+  OnVideoErrorData,
+} from 'react-native-video';
 import {SafeAreaView as _SafeAreaView} from 'react-native-safe-area-context';
 import _default from './../components/Text';
-import Slider from '@react-native-community/slider';
+import Slider from '../components/Slider';
 import Runtime927 from 'lodash/padStart';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
@@ -11,147 +20,180 @@ import icons from '../theme/icons';
 import * as Index from '../components/index';
 import topVignette from '../../assets/images/top-vignette.png';
 import bottomVignette from '../../assets/images/bottom-vignette.png';
-class VideoPlayer extends React.Component {
-  constructor() {
-    super(...arguments);
-    this.lastTouch = Date.now();
-    this.layoutHeight = 0;
-    this.componentDidUpdate = (e) => {
-      const isFullscreen = this.props.isFullscreen;
-      if (e.isFullscreen !== isFullscreen) {
-        this.setState({
-          isFullscreen,
-        });
-      }
-    };
-    this._onPanResponderRelease = (e, {dy}) => {
-      if (dy != 0) {
-        if (dy < -10) {
-          this.events.onEnterFullscreen();
-        } else if (dy > 10) {
-          this.events.onExitFullscreen();
-        } else {
-          this.events.onScreenTouch();
-        }
+const defaults = {
+  toggleResizeModeOnFullscreen: true,
+  controlAnimationTiming: 500,
+  doubleTapTime: 130,
+  playInBackground: false,
+  playWhenInactive: false,
+  resizeMode: 'contain',
+  isFullscreen: false,
+  showOnStart: true,
+  paused: false,
+  repeat: false,
+  muted: false,
+  title: '',
+  rate: 1,
+  showTimeRemaining: true,
+  showHours: false,
+} satisfies VideoPlayerProps;
+type Props = VideoPlayerProps & Required<Pick<VideoPlayerProps, keyof typeof defaults>>;
+interface Internals {
+  controlTimeoutDelay: number;
+  controlTimeout: ReturnType<typeof setTimeout> | null;
+  tapActionTimeout: ReturnType<typeof setTimeout> | null;
+  iconOffset: number;
+  seekerWidth: number;
+  ref: VideoRef | null;
+  scrubbingTimeStep: number;
+  tapAnywhereToPause?: boolean;
+}
+class VideoPlayer extends React.Component<Props, VideoPlayerState> {
+  mounted = false;
+  loaderAnimation?: ReactNative.Animated.CompositeAnimation;
+  scrubTimeout?: ReturnType<typeof setTimeout>;
+  static defaultProps = defaults;
+  lastTouch = Date.now();
+  layoutHeight = 0;
+  componentDidUpdate = (previous: Props) => {
+    const isFullscreen = this.props.isFullscreen;
+    if (previous.isFullscreen !== isFullscreen) {
+      this.setState({
+        isFullscreen,
+      });
+    }
+  };
+  _onPanResponderRelease = (
+    _event: ReactNative.GestureResponderEvent,
+    {dy}: ReactNative.PanResponderGestureState,
+  ) => {
+    if (dy != 0) {
+      if (dy < -10) {
+        this.events.onEnterFullscreen?.();
+      } else if (dy > 10) {
+        this.events.onExitFullscreen?.();
       } else {
         this.events.onScreenTouch();
       }
-    };
-    this._panResponder = ReactNative.PanResponder.create({
-      onStartShouldSetPanResponderCapture: (e) => {
-        if (e.nativeEvent.pageY > 80 && e.nativeEvent.pageY < this.layoutHeight - 100) {
-          return true;
-        }
-      },
-      onPanResponderRelease: this._onPanResponderRelease,
-    });
-    this.state = {
-      resizeMode: this.props.resizeMode,
-      paused: this.props.paused,
-      muted: this.props.muted,
-      rate: this.props.rate,
-      isFullscreen: this.props.isFullScreen || this.props.resizeMode === 'cover' || false,
-      showTimeRemaining: this.props.showTimeRemaining,
-      showHours: this.props.showHours,
-      seekerFillWidth: 0,
-      showControls: this.props.showOnStart,
-      seekerPosition: 0,
-      seekerOffset: 0,
-      seeking: false,
-      originallyPaused: false,
-      scrubbing: false,
-      loading: false,
-      currentTime: 0,
-      error: false,
-      duration: 0,
-    };
-    this.opts = {
-      playWhenInactive: this.props.playWhenInactive,
-      playInBackground: this.props.playInBackground,
-      repeat: this.props.repeat,
-      title: this.props.title,
-    };
-    this.events = {
-      onError: this.props.onError || this._onError.bind(this),
-      onBack: this.props.onBack || this._onBack.bind(this),
-      onEnd: this.props.onEnd || this._onEnd.bind(this),
-      onScreenTouch: this._onScreenTouch.bind(this),
-      onEnterFullscreen: this.props.onEnterFullscreen,
-      onExitFullscreen: this.props.onExitFullscreen,
-      onShowControls: this.props.onShowControls,
-      onHideControls: this.props.onHideControls,
-      onLoadStart: this._onLoadStart.bind(this),
-      onProgress: this._onProgress.bind(this),
-      onSeek: this._onSeek.bind(this),
-      onLoad: this._onLoad.bind(this),
-      onPause: this.props.onPause,
-      onPlay: this.props.onPlay,
-    };
-    this.methods = {
-      toggleFullscreen: this._toggleFullscreen.bind(this),
-      togglePlayPause: this._togglePlayPause.bind(this),
-      toggleControls: this._toggleControls.bind(this),
-      toggleTimer: this._toggleTimer.bind(this),
-    };
-    this.player = {
-      controlTimeoutDelay: this.props.controlTimeout || 15000,
-      controlTimeout: null,
-      tapActionTimeout: null,
-      iconOffset: 0,
-      seekerWidth: 1,
-      ref: VideoComponent,
-      scrubbingTimeStep: this.props.scrubbing || 0,
-      tapAnywhereToPause: this.props.tapAnywhereToPause,
-    };
-    var o = this.props.showOnStart ? 1 : 0;
-    this.animations = {
-      bottomControl: {
-        marginBottom: new ReactNative.Animated.Value(0),
-        opacity: new ReactNative.Animated.Value(o),
-      },
-      topControl: {
-        marginTop: new ReactNative.Animated.Value(0),
-        opacity: new ReactNative.Animated.Value(o),
-      },
-      video: {
-        opacity: new ReactNative.Animated.Value(1),
-      },
-      loader: {
-        rotate: new ReactNative.Animated.Value(0),
-        MAX_VALUE: 360,
-      },
-    };
-    this.styles = {
-      videoStyle: this.props.videoStyle || {},
-      containerStyle: this.props.style || {},
-    };
-  }
-  _onLoadStart() {
+    } else {
+      this.events.onScreenTouch();
+    }
+  };
+  _panResponder = ReactNative.PanResponder.create({
+    onStartShouldSetPanResponderCapture: (e) => {
+      if (e.nativeEvent.pageY > 80 && e.nativeEvent.pageY < this.layoutHeight - 100) {
+        return true;
+      }
+      return false;
+    },
+    onPanResponderRelease: this._onPanResponderRelease,
+  });
+  state: VideoPlayerState = {
+    resizeMode: this.props.resizeMode,
+    paused: this.props.paused,
+    muted: this.props.muted,
+    rate: this.props.rate,
+    isFullscreen: this.props.isFullScreen || this.props.resizeMode === 'cover' || false,
+    showTimeRemaining: this.props.showTimeRemaining,
+    showHours: this.props.showHours,
+    seekerFillWidth: 0,
+    showControls: this.props.showOnStart,
+    seekerPosition: 0,
+    seekerOffset: 0,
+    seeking: false,
+    originallyPaused: false,
+    scrubbing: false,
+    loading: false,
+    currentTime: 0,
+    error: false,
+    duration: 0,
+  };
+  opts = {
+    playWhenInactive: this.props.playWhenInactive,
+    playInBackground: this.props.playInBackground,
+    repeat: this.props.repeat,
+    title: this.props.title,
+  };
+  events = {
+    onError: this.props.onError || this._onError.bind(this),
+    onBack: this.props.onBack || this._onBack.bind(this),
+    onEnd: this.props.onEnd || this._onEnd.bind(this),
+    onScreenTouch: this._onScreenTouch.bind(this),
+    onEnterFullscreen: this.props.onEnterFullscreen,
+    onExitFullscreen: this.props.onExitFullscreen,
+    onShowControls: this.props.onShowControls,
+    onHideControls: this.props.onHideControls,
+    onLoadStart: this._onLoadStart.bind(this),
+    onProgress: this._onProgress.bind(this),
+    onSeek: this._onSeek.bind(this),
+    onLoad: this._onLoad.bind(this),
+    onPause: this.props.onPause,
+    onPlay: this.props.onPlay,
+  };
+  methods = {
+    toggleFullscreen: this._toggleFullscreen.bind(this),
+    togglePlayPause: this._togglePlayPause.bind(this),
+    toggleControls: this._toggleControls.bind(this),
+    toggleTimer: this._toggleTimer.bind(this),
+  };
+  player: Internals = {
+    controlTimeoutDelay: this.props.controlTimeout || 15000,
+    controlTimeout: null,
+    tapActionTimeout: null,
+    iconOffset: 0,
+    seekerWidth: 1,
+    ref: null,
+    scrubbingTimeStep: this.props.scrubbing || 0,
+    tapAnywhereToPause: this.props.tapAnywhereToPause,
+  };
+  animations = {
+    bottomControl: {
+      marginBottom: new ReactNative.Animated.Value(0),
+      opacity: new ReactNative.Animated.Value(this.props.showOnStart ? 1 : 0),
+    },
+    topControl: {
+      marginTop: new ReactNative.Animated.Value(0),
+      opacity: new ReactNative.Animated.Value(this.props.showOnStart ? 1 : 0),
+    },
+    video: {
+      opacity: new ReactNative.Animated.Value(1),
+    },
+    loader: {
+      rotate: new ReactNative.Animated.Value(0),
+      MAX_VALUE: 360,
+    },
+  };
+  styles: {videoStyle: Props['videoStyle']; containerStyle: Props['style']} = {
+    videoStyle: this.props.videoStyle || {},
+    containerStyle: this.props.style || {},
+  };
+  _onLoadStart(event?: OnLoadStartData) {
     this.setState(
       {
         loading: true,
       },
       () => this.loadAnimation(),
     );
-    this.props.onLoadStart?.(...arguments);
+    if (event) this.props.onLoadStart?.(event);
   }
-  _onLoad(t = {}) {
+  _onLoad(event: OnLoadData) {
     this.setState({
-      duration: t.duration,
+      duration: event.duration,
       loading: false,
     });
     if (this.state.showControls) this.setControlTimeout();
-    this.props.onLoad?.(...arguments);
+    this.props.onLoad?.(event);
   }
-  _onProgress(e = {}) {
+  _onProgress(event: OnProgressData) {
     if (this.state.scrubbing) return;
     this.setState({
-      currentTime: e.currentTime,
+      currentTime: event.currentTime,
     });
-    if (!this.state.seeking) this.setSeekerPosition(this.calculateSeekerPosition(e.currentTime));
-    this.props.onProgress?.(...arguments);
+    if (!this.state.seeking)
+      this.setSeekerPosition(this.calculateSeekerPosition(event.currentTime));
+    this.props.onProgress?.(event);
   }
-  _onSeek(e = {}) {
+  _onSeek(event: OnSeekData) {
     const state = this.state;
     if (state.scrubbing) {
       if (!state.seeking) {
@@ -159,18 +201,18 @@ class VideoPlayer extends React.Component {
       }
       this.setState({
         scrubbing: false,
-        currentTime: e.currentTime,
+        currentTime: event.currentTime,
         paused: state.seeking ? state.paused : state.originallyPaused,
       });
     }
   }
   _onEnd() {}
-  _onError(e) {
+  _onError(event: OnVideoErrorData) {
     this.setState({
       error: true,
       loading: false,
     });
-    this.props.onError?.(e);
+    this.props.onError?.(event);
   }
   _onScreenTouch() {
     if (this.player.tapActionTimeout) {
@@ -352,30 +394,30 @@ class VideoPlayer extends React.Component {
     }
     return this.formatTime(this.state.currentTime);
   }
-  formatTime(e = 0) {
-    const t = this.state.showRemainingTime ? '-' : '';
-    e = Math.min(Math.max(e, 0), this.state.duration);
+  formatTime(seconds = 0) {
+    const t = '';
+    seconds = Math.min(Math.max(seconds, 0), this.state.duration);
     if (this.state.showHours) {
-      return `${t}${Runtime927(Math.floor(e / 3600).toFixed(0), 2, 0)}:${Runtime927((Math.floor(e / 60) % 60).toFixed(0), 2, 0)}:${Runtime927(Math.floor(e % 60).toFixed(0), 2, 0)}`;
+      return `${t}${Runtime927(Math.floor(seconds / 3600).toFixed(0), 2, '0')}:${Runtime927((Math.floor(seconds / 60) % 60).toFixed(0), 2, '0')}:${Runtime927(Math.floor(seconds % 60).toFixed(0), 2, '0')}`;
     }
-    return `${t}${Runtime927(Math.floor(e / 60).toFixed(0), 2, 0)}:${Runtime927(Math.floor(e % 60).toFixed(0), 2, 0)}`;
+    return `${t}${Runtime927(Math.floor(seconds / 60).toFixed(0), 2, '0')}:${Runtime927(Math.floor(seconds % 60).toFixed(0), 2, '0')}`;
   }
-  setSeekerPosition(e = 0) {
-    const position = this.constrainToSeekerMinMax(e);
+  setSeekerPosition(inputPosition = 0) {
+    const position = this.constrainToSeekerMinMax(inputPosition);
     this.setState((state) => ({
       seekerFillWidth: position,
       seekerPosition: position,
       seekerOffset: state.seeking ? state.seekerOffset : position,
     }));
   }
-  constrainToSeekerMinMax(e = 0) {
-    if (e <= 0) {
+  constrainToSeekerMinMax(position = 0) {
+    if (position <= 0) {
       return 0;
     }
-    if (e >= this.player.seekerWidth) {
+    if (position >= this.player.seekerWidth) {
       return this.player.seekerWidth;
     }
-    return e;
+    return position;
   }
   calculateSeekerPosition(currentTime = this.state.currentTime) {
     const e = currentTime / this.state.duration;
@@ -385,23 +427,23 @@ class VideoPlayer extends React.Component {
     const e = position / this.player.seekerWidth;
     return this.state.duration * e;
   }
-  seekTo(e = 0) {
-    this.player.ref.seek(e);
+  seekTo(seconds = 0) {
+    this.player.ref!.seek(seconds);
     this.setState({
-      currentTime: e,
+      currentTime: seconds,
     });
   }
-  UNSAFE_componentWillReceiveProps(e) {
-    if (this.state.paused !== e.paused) {
+  UNSAFE_componentWillReceiveProps(next: Props) {
+    if (this.state.paused !== next.paused) {
       this.setState({
-        paused: e.paused,
+        paused: next.paused,
       });
     }
-    if (this.styles.videoStyle !== e.videoStyle) {
-      this.styles.videoStyle = e.videoStyle;
+    if (this.styles.videoStyle !== next.videoStyle) {
+      this.styles.videoStyle = next.videoStyle;
     }
-    if (this.styles.containerStyle !== e.style) {
-      this.styles.containerStyle = e.style;
+    if (this.styles.containerStyle !== next.style) {
+      this.styles.containerStyle = next.style;
     }
   }
   componentDidMount() {
@@ -415,18 +457,22 @@ class VideoPlayer extends React.Component {
     this.loaderAnimation?.stop();
     this.animations.loader.rotate.stopAnimation();
   }
-  renderControl(e, t, o = {}) {
+  renderControl(
+    content: React.ReactNode,
+    action: (() => void) | undefined,
+    style: ReactNative.StyleProp<ReactNative.ViewStyle> = {},
+  ) {
     return (
       <ReactNative.TouchableHighlight
         underlayColor={'transparent'}
         activeOpacity={0.3}
         onPress={() => {
           this.resetControlTimeout();
-          t();
+          action?.();
         }}
-        style={[g.controls.control, o]}
+        style={[g.controls.control, style]}
       >
-        {e}
+        {content}
       </ReactNative.TouchableHighlight>
     );
   }
@@ -468,12 +514,8 @@ class VideoPlayer extends React.Component {
   }
   renderBack() {
     return this.renderControl(
-      <Index.Icon
-        name={this.state.isFullscreen ? icons.CHEVRON_DOWN : icons.WINDOW_CLOSE}
-        style={g.controls.back}
-      />,
+      <Index.Icon name={this.state.isFullscreen ? icons.CHEVRON_DOWN : icons.WINDOW_CLOSE} />,
       this.state.isFullscreen ? this.events.onExitFullscreen : this.events.onBack,
-      g.controls.back,
     );
   }
   renderFullscreen() {
@@ -551,7 +593,7 @@ class VideoPlayer extends React.Component {
                   scrubbing: true,
                 });
                 this.scrubTimeout = setTimeout(() => {
-                  this.player.ref.seek(o, this.player.scrubbingTimeStep);
+                  this.player.ref!.seek(o, this.player.scrubbingTimeStep);
                 }, 1);
               }
             }
@@ -622,7 +664,7 @@ class VideoPlayer extends React.Component {
     if (this.state.loading) {
       return (
         <ReactNative.View style={g.loader.container}>
-          <Index.Spinkit style={g.loader.icon} />
+          <Index.Spinkit />
         </ReactNative.View>
       );
     }
@@ -681,24 +723,7 @@ class VideoPlayer extends React.Component {
   }
 }
 export default VideoPlayer;
-VideoPlayer.defaultProps = {
-  toggleResizeModeOnFullscreen: true,
-  controlAnimationTiming: 500,
-  doubleTapTime: 130,
-  playInBackground: false,
-  playWhenInactive: false,
-  resizeMode: 'contain',
-  isFullscreen: false,
-  showOnStart: true,
-  paused: false,
-  repeat: false,
-  muted: false,
-  title: '',
-  rate: 1,
-  showTimeRemaining: true,
-  showHours: false,
-};
-var g = {
+const g = {
   player: ReactNative.StyleSheet.create({
     container: {
       overflow: 'hidden',

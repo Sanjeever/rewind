@@ -61,9 +61,20 @@ test('视频加载、进度、播放、全屏和拖动使用新状态，保留�
   expect(beforeLoad.loading).toBe(false);
   expect(player.state.loading).toBe(true);
   Object.freeze(player.state);
-  await act(async () => player._onLoad({duration: 120}));
+  await act(async () =>
+    player._onLoad({
+      duration: 120,
+      currentTime: 0,
+      naturalSize: {width: 640, height: 360, orientation: 'landscape'},
+      audioTracks: [],
+      textTracks: [],
+      videoTracks: [],
+    }),
+  );
   Object.freeze(player.state);
-  await act(async () => player._onProgress({currentTime: 30}));
+  await act(async () =>
+    player._onProgress({currentTime: 30, playableDuration: 120, seekableDuration: 120}),
+  );
   expect(player.state.currentTime).toBe(30);
   expect(player.state.seekerPosition).toBe(0.25);
   Object.freeze(player.state);
