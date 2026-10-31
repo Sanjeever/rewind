@@ -138,12 +138,12 @@ class ProfileHeader extends React.PureComponent<
     const data = this.state.data;
     return (
       <ReactNative.Animated.View style={m.container}>
-        {data.length > 0 ? (
-          this.renderAvatars()
-        ) : (
+        {this.renderAvatars()}
+        {data.length < 2 && (
           <ReactNative.View style={m.con}>
             <components.Icon
-              name={icons.ACCOUNT}
+              name={data.length ? icons.ACCOUNT_PLUS : icons.ACCOUNT}
+              accessibilityLabel="登录音乐平台"
               size={40}
               onPress={function () {
                 return onNavigate('InitialLogin');

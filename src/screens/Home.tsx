@@ -1,5 +1,5 @@
-import React, {useRef} from 'react';
-import {DrawerLayoutAndroid, View} from 'react-native';
+import React, {useState} from 'react';
+import {Modal, Pressable, View} from 'react-native';
 import {TouchableBorderless, Icon} from '../components';
 import {STATUS_BAR_HEIGHT, DEVICE_WIDTH} from '../theme/constants';
 import icons from '../theme/icons';
@@ -10,28 +10,21 @@ import HomeContent from '../features/home/HomeContent';
 import type {ScreenProps, Navigation, NavigateArgs} from '../navigation/types';
 
 export default function Home({navigation}: ScreenProps<'Home'>) {
-  const drawer = useRef<React.ComponentRef<typeof DrawerLayoutAndroid>>(null);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const drawerNavigation: Navigation = {
     ...navigation,
     navigate(...args: NavigateArgs) {
-      drawer.current!.closeDrawer();
+      setDrawerOpen(false);
       navigation.navigate(...args);
     },
   };
   return (
-    <DrawerLayoutAndroid
-      ref={drawer}
-      style={{flex: 1}}
-      drawerWidth={DEVICE_WIDTH * 0.7}
-      drawerPosition="left"
-      drawerLockMode="locked-closed"
-      renderNavigationView={() => <Drawer navigation={drawerNavigation} />}
-    >
+    <>
       <View style={{flex: 1, backgroundColor: '#000'}}>
         <HomeContent navigation={navigation} />
         <TouchableBorderless
           accessibilityLabel="菜单"
-          onPress={() => drawer.current!.openDrawer()}
+          onPress={() => setDrawerOpen(true)}
           onLongPress={() => {
             if (isDebug) devMenu.show();
           }}
@@ -47,6 +40,23 @@ export default function Home({navigation}: ScreenProps<'Home'>) {
           <Icon name={icons.MAGNIFY} color="#fff" />
         </TouchableBorderless>
       </View>
-    </DrawerLayoutAndroid>
+      <Modal
+        visible={drawerOpen}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setDrawerOpen(false)}
+      >
+        <View style={{flex: 1, flexDirection: 'row', backgroundColor: 'rgba(0,0,0,0.6)'}}>
+          <View style={{width: DEVICE_WIDTH * 0.7}}>
+            <Drawer navigation={drawerNavigation} />
+          </View>
+          <Pressable
+            accessibilityLabel="关闭菜单"
+            style={{flex: 1}}
+            onPress={() => setDrawerOpen(false)}
+          />
+        </View>
+      </Modal>
+    </>
   );
 }
