@@ -12,13 +12,39 @@ import {storage} from '../storage';
 import keys from '../storage/keys';
 import {Netease, QQMusic} from '../services';
 import {SECTIONS, SECTION_KEYS, SECTION_NAMES} from '../screens/search/sections';
+import type {SectionKey} from '../screens/search/sections';
+import type {Artist} from '../services/track';
+import type {SearchEntity} from '../services/searchEntities';
+import type {OnlineProvider} from '../services/providers';
+import type {SearchHistoryEntry} from '../storage/models';
+export interface Suggestion extends SearchEntity {
+  artists?: Artist[];
+  name?: string;
+}
+export type SuggestionItem = Suggestion | SearchHistoryEntry;
+export interface SuggestionProps {
+  query: string;
+  api: OnlineProvider;
+  focusing: boolean;
+  historyVersion?: number;
+  onSuggest(item: SuggestionItem, section: SectionKey): void;
+}
+interface State {
+  songs: Suggestion[];
+  albums: Suggestion[];
+  artists: Suggestion[];
+  history: SearchHistoryEntry[];
+  error: Error | null;
+}
 
-export default class SearchSuggestions extends React.PureComponent {
-  state = {songs: [], albums: [], artists: [], history: [], error: null};
+export default class SearchSuggestions extends React.PureComponent<SuggestionProps, State> {
+  mounted = false;
+  state: State = {songs: [], albums: [], artists: [], history: [], error: null};
   requestId = 0;
   historyRequest = 0;
   fetchSuggestions = debounce(
-    (query, api, request) => this.loadSuggestions(query, api, request),
+    (query: string, api: OnlineProvider, request: number) =>
+      this.loadSuggestions(query, api, request),
     100,
   );
 
@@ -28,7 +54,7 @@ export default class SearchSuggestions extends React.PureComponent {
     this.updateQuery();
   }
 
-  componentDidUpdate(previous) {
+  componentDidUpdate(previous: SuggestionProps) {
     if (
       previous.query !== this.props.query ||
       previous.api !== this.props.api ||
@@ -56,43 +82,47 @@ export default class SearchSuggestions extends React.PureComponent {
     if (this.props.focusing && query) this.fetchSuggestions(query, this.props.api, request);
   };
 
-  loadSuggestions = async (query, api, request) => {
+  loadSuggestions = async (query: string, api: OnlineProvider, request: number) => {
     try {
-      const response = await (api === providers.netEase
-        ? Netease.search_suggest(query)
-        : QQMusic.search_suggest(query));
-      if (request !== this.requestId) return;
-      const expected = api === providers.netEase ? 200 : 0;
-      if (response?.code !== expected) throw new Error('搜索建议失败（' + response?.code + '）');
-      const data = api === providers.netEase ? response.result : response.data;
-      if (!data) throw new Error('搜索建议响应缺少结果');
-      this.setState(
-        api === providers.netEase
-          ? {
-              songs: data.songs || [],
-              albums: data.albums || [],
-              artists: data.artists || [],
-              error: null,
-            }
-          : {
-              songs: data.song?.itemlist || [],
-              albums: data.album?.itemlist || [],
-              artists: data.singer?.itemlist || [],
-              error: null,
-            },
-      );
+      if (api === providers.netEase) {
+        const response = await Netease.search_suggest(query);
+        if (request !== this.requestId) return;
+        if (response.code !== 200) throw new Error('搜索建议失败（' + response.code + '）');
+        const data = response.result;
+        if (!data) throw new Error('搜索建议响应缺少结果');
+        this.setState({
+          songs: data.songs || [],
+          albums: data.albums || [],
+          artists: data.artists || [],
+          error: null,
+        });
+      } else {
+        const response = await QQMusic.search_suggest(query);
+        if (request !== this.requestId) return;
+        if (response?.code !== 0) throw new Error('搜索建议失败（' + response?.code + '）');
+        const data = response.data;
+        if (!data) throw new Error('搜索建议响应缺少结果');
+        this.setState({
+          songs: data.song?.itemlist || [],
+          albums: data.album?.itemlist || [],
+          artists: data.singer?.itemlist || [],
+          error: null,
+        });
+      }
     } catch (error) {
-      if (request === this.requestId) this.setState({error});
+      if (request === this.requestId)
+        this.setState({error: error instanceof Error ? error : new Error(String(error))});
     }
   };
 
   loadHistory = async () => {
     const request = ++this.historyRequest;
     try {
-      const history = await storage.load({key: keys.searchHistory});
+      const history = await storage.load<SearchHistoryEntry[]>({key: keys.searchHistory});
       if (this.mounted && request === this.historyRequest) this.setState({history});
     } catch (error) {
-      if (this.mounted && error.name !== 'NotFoundError') this.setState({error});
+      if (this.mounted && !(error instanceof Error && error.name === 'NotFoundError'))
+        this.setState({error: error instanceof Error ? error : new Error(String(error))});
     }
   };
 
@@ -102,12 +132,16 @@ export default class SearchSuggestions extends React.PureComponent {
       await storage.remove({key: keys.searchHistory});
       if (this.mounted && request === this.historyRequest) this.setState({history: []});
     } catch (error) {
-      if (this.mounted) this.setState({error});
+      if (this.mounted)
+        this.setState({error: error instanceof Error ? error : new Error(String(error))});
     }
   };
 
-  formatSuggestion(item, section) {
-    if (section === SECTION_KEYS.history) return {name: item.text};
+  formatSuggestion(
+    item: SuggestionItem,
+    section: SectionKey,
+  ): {name?: string; subName?: string; transName?: string} {
+    if ('text' in item) return {name: item.text};
     if (this.props.api === providers.qqMusic) return {name: item.name};
     if (section === SECTION_KEYS.songs)
       return {name: item.name, subName: item.artists?.[0]?.name, transName: item.transNames?.[0]};
@@ -115,7 +149,7 @@ export default class SearchSuggestions extends React.PureComponent {
     return {name: item.name, subName: item.alias?.[0]};
   }
 
-  renderSection = (section) => {
+  renderSection = (section: SectionKey) => {
     const items = this.state[section];
     if (!items.length) return null;
     const isHistory = section === SECTION_KEYS.history;

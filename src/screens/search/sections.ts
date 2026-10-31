@@ -10,5 +10,6 @@ export const SECTION_KEYS = {
   albums: 'albums',
   artists: 'artists',
   history: 'history',
-};
-export const SECTIONS = Object.keys(SECTION_NAMES);
+} as const;
+export type SectionKey = keyof typeof SECTION_NAMES;
+export const SECTIONS = Object.keys(SECTION_NAMES) as SectionKey[];

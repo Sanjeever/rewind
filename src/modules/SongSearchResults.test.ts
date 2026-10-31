@@ -1,12 +1,31 @@
 import {jest} from '@jest/globals';
 import assert from 'node:assert/strict';
-async function screen(searchSongs) {
+import type {SearchOptions, SearchPage} from '../services/search';
+import type {PlayTracks} from '../player/commands';
+import type {DisplayTrack} from '../services/track';
+const fixture = (key: string): DisplayTrack => ({
+  key,
+  api: 'netEase',
+  title: '歌曲',
+  artists: [],
+  album: '',
+  artwork: 'https://cover',
+  duration: null,
+  source: {id: key},
+});
+async function screen(
+  searchSongs: (options: SearchOptions) => Promise<SearchPage> = async () => ({
+    tracks: [],
+    offset: 0,
+    hasMore: false,
+  }),
+) {
   jest.resetModules();
-  const commands = [];
+  const commands: PlayTracks[] = [];
   const dependencies = {
     'react-native': {
       StyleSheet: {
-        create: (value) => value,
+        create: <T>(value: T) => value,
       },
       View: undefined,
     },
@@ -32,7 +51,7 @@ async function screen(searchSongs) {
       toDetailModal: undefined,
     },
     '../player/commands': {
-      playTracks: (value) => commands.push(value),
+      playTracks: (value: PlayTracks) => commands.push(value),
       insertTracks: undefined,
     },
   };
@@ -41,7 +60,7 @@ async function screen(searchSongs) {
       default: value,
       ...value,
     }));
-  let Results;
+  let Results!: typeof import('./SongSearchResults').default;
   await jest.isolateModulesAsync(async () => {
     Results = (await import('./SongSearchResults')).default;
   });
@@ -52,7 +71,7 @@ async function screen(searchSongs) {
   instance.setState = (update, callback) => {
     instance.state = {
       ...instance.state,
-      ...(typeof update === 'function' ? update(instance.state) : update),
+      ...(typeof update === 'function' ? update(instance.state, instance.props) : update),
     };
     callback?.();
   };
@@ -62,10 +81,10 @@ async function screen(searchSongs) {
   };
 }
 test('同词切换来源发起新搜索，旧请求晚到不会覆盖结果', async () => {
-  const requests = [];
+  const requests: {options: SearchOptions; resolve(value: SearchPage): void}[] = [];
   const {instance} = await screen(
     (options) =>
-      new Promise((resolve) =>
+      new Promise<SearchPage>((resolve) =>
         requests.push({
           options,
           resolve,
@@ -74,61 +93,48 @@ test('同词切换来源发起新搜索，旧请求晚到不会覆盖结果', as
   );
   const first = instance.search();
   const previous = instance.props;
-  instance.props = {
-    ...previous,
-    api: 'qqMusic',
-  };
+  Object.assign(instance, {
+    props: {
+      ...previous,
+      api: 'qqMusic',
+    },
+  });
   instance.componentDidUpdate(previous);
   assert.equal(requests.length, 2);
   requests[1].resolve({
-    tracks: [
-      {
-        key: 'qq:2',
-      },
-    ],
+    tracks: [fixture('qq:2')],
     offset: 1,
     hasMore: false,
   });
   await new Promise((resolve) => setImmediate(resolve));
   requests[0].resolve({
-    tracks: [
-      {
-        key: 'netease:1',
-      },
-    ],
+    tracks: [fixture('netease:1')],
     offset: 1,
     hasMore: false,
   });
   await first;
-  assert.deepEqual(instance.state.tracks, [
-    {
-      key: 'qq:2',
-    },
-  ]);
+  assert.deepEqual(instance.state.tracks, [fixture('qq:2')]);
   assert.equal(instance.state.loading, false);
 });
 test('请求失败可重试，分页期间重复触底不并发请求，卸载丢弃响应', async () => {
   let count = 0;
-  let complete;
+  let complete!: (value: SearchPage) => void;
   const {instance} = await screen(async () => {
     count++;
     if (count === 1) throw new Error('网络失败');
-    return new Promise((resolve) => {
+    return new Promise<SearchPage>((resolve) => {
       complete = resolve;
     });
   });
   await instance.search();
+  assert.ok(instance.state.error);
   assert.match(instance.state.error.message, /网络失败/);
   const retry = instance.fetchPage();
   await instance.fetchPage();
   assert.equal(count, 2);
   instance.componentWillUnmount();
   complete({
-    tracks: [
-      {
-        key: 'ignored',
-      },
-    ],
+    tracks: [fixture('ignored')],
     offset: 1,
     hasMore: false,
   });
@@ -140,7 +146,8 @@ test('搜索结果发出显式播放命令，传递原始歌曲而不把展示�
   const source = {
     id: 7,
   };
-  const track = {
+  const track: DisplayTrack = {
+    ...fixture('netEase:7'),
     key: 'netEase:7',
     api: 'netEase',
     source,

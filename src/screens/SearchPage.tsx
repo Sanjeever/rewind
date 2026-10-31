@@ -4,6 +4,7 @@ import {toast} from '../native/toast';
 import React from 'react';
 import {Image, Keyboard, StyleSheet, View} from 'react-native';
 import {TabBar, TabView} from 'react-native-tab-view';
+import type {SceneRendererProps, NavigationState, Route, TabBarProps} from 'react-native-tab-view';
 import {Background, Icon, Input, TouchableBorderless} from '../components';
 import providers from '../services/providers';
 import {STATUS_BAR_HEIGHT, COLORS} from '../theme/constants';
@@ -17,19 +18,33 @@ import ArtistSearchResults from '../modules/ArtistSearchResults';
 import SongSearchResults from '../modules/SongSearchResults';
 import SearchSuggestions from '../modules/SearchSuggestions';
 import {searchHistory} from '../storage/history';
+import type {ScreenProps} from '../navigation/types';
+import type {OnlineProvider} from '../services/providers';
+import type {SuggestionItem} from '../modules/SearchSuggestions';
+import type {SectionKey} from './search/sections';
+import type {EntitySearchProps} from '../modules/EntitySearchResults';
+interface State extends NavigationState<Route> {
+  api: OnlineProvider;
+  text: string;
+  query: string;
+  focusing: boolean;
+  show: boolean;
+  historyVersion: number;
+}
 const providerImages = {
   netEase: _neteaseImage,
   qqMusic: _qqmusicImage,
 };
-const resultComponents = [
-  SongSearchResults,
+const resultComponents: React.ComponentType<EntitySearchProps>[] = [
+  ({search, api}) => <SongSearchResults search={search} api={api} />,
   ArtistSearchResults,
   AlbumSearchResults,
   PlaylistSearchResults,
   VideoSearchResults,
 ];
-export default class SearchPage extends React.PureComponent {
-  state = {
+export default class SearchPage extends React.PureComponent<ScreenProps<'SearchPage'>, State> {
+  mounted = false;
+  state: State = {
     api: providers.netEase,
     index: 0,
     text: this.props.route.params?.text || '',
@@ -96,13 +111,14 @@ export default class SearchPage extends React.PureComponent {
       this.submit,
     );
   };
-  changeText = (text) => {
+  changeText = (text: string) => {
     this.setState({
       text,
     });
   };
-  selectSuggestion = (item, section) => {
-    if (section === SECTION_KEYS.history) {
+  selectSuggestion = (item: SuggestionItem, section: SectionKey) => {
+    if ('text' in item) {
+      if (item.api === 'local') return;
       this.setState(
         {
           text: item.text,
@@ -113,7 +129,7 @@ export default class SearchPage extends React.PureComponent {
     } else if (section === SECTION_KEYS.songs) {
       this.setState(
         {
-          text: item.name,
+          text: item.name!,
         },
         this.submit,
       );
@@ -125,7 +141,7 @@ export default class SearchPage extends React.PureComponent {
       });
     }
   };
-  renderScene = ({route}) => {
+  renderScene = ({route}: SceneRendererProps & {route: Route}) => {
     const Result = resultComponents[Number(route.key)];
     return (
       <Result
@@ -136,12 +152,14 @@ export default class SearchPage extends React.PureComponent {
       />
     );
   };
-  renderTabBar = (props) => (
+  renderTabBar = (props: TabBarProps<Route>) => (
     <TabBar
       {...props}
       pressColor="rgba(0,0,0,0.3)"
       tabStyle={styles.tab}
-      labelStyle={styles.label}
+      options={Object.fromEntries(
+        this.state.routes.map((route) => [route.key, {labelStyle: styles.label}]),
+      )}
       indicatorStyle={styles.indicator}
       style={styles.tabBar}
     />
