@@ -59,9 +59,6 @@ importers:
       pinyin-pro:
         specifier: 3.27.0
         version: 3.27.0
-      prop-types:
-        specifier: 15.8.1
-        version: 15.8.1
       react:
         specifier: 19.3.0
         version: 19.3.0
@@ -92,9 +89,6 @@ importers:
       react-native-screens:
         specifier: 4.30.1
         version: 4.30.1(react-native@0.88.1(@babel/core@7.26.10)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.88.1(@babel/core@7.26.10))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
-      react-native-segmented-control-tab:
-        specifier: 4.0.0
-        version: 4.0.0
       react-native-storage:
         specifier: 1.0.1
         version: 1.0.1
@@ -2806,9 +2800,6 @@ packages:
     peerDependencies:
       react: '*'
       react-native: '*'
-
-  react-native-segmented-control-tab@4.0.0:
-    resolution: {integrity: sha512-Iyxabn5T7HGFGjLAvOWUL6K/o0r+UglAUDDQzMgqlHcz3tCnK9C6QUgZaAkzMTSgB/2JO9yLgk3XROPmb8064A==}
 
   react-native-storage@1.0.1:
     resolution: {integrity: sha512-fXT2+zhkfHj3E1/ekbymO8JwcDGgnxeWBiNIa7Al14qB4i3MSOF88nyjIRuTyBsEwZl/f6JG7l+zwd/20+bmlA==}
@@ -6665,8 +6656,6 @@ snapshots:
       react-freeze: 1.0.4(react@19.3.0)
       react-native: 0.88.1(@babel/core@7.26.10)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.88.1(@babel/core@7.26.10))(@types/react@19.3.0)(react@19.3.0)
       warn-once: 0.1.1
-
-  react-native-segmented-control-tab@4.0.0: {}
 
   react-native-storage@1.0.1:
     dependencies:

@@ -7,7 +7,7 @@ export default tseslint.config(
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
-    files: ['**/*.{js,mjs,cjs,ts,tsx}'],
+    files: ['**/*.{js,mjs,ts,tsx}'],
     rules: {
       '@typescript-eslint/no-unused-vars': [
         'error',
@@ -17,12 +17,19 @@ export default tseslint.config(
     languageOptions: {
       parserOptions: {ecmaFeatures: {jsx: true}},
       globals: {
-        ...globals.node,
-        ...globals.jest,
+        ...globals['shared-node-browser'],
         __DEV__: 'readonly',
         requestAnimationFrame: 'readonly',
         cancelAnimationFrame: 'readonly',
       },
     },
+  },
+  {
+    files: ['*.config.js', 'scripts/*.mjs'],
+    languageOptions: {globals: globals.node},
+  },
+  {
+    files: ['src/**/*.test.{ts,tsx}'],
+    languageOptions: {globals: {...globals.node, ...globals.jest}},
   },
 );

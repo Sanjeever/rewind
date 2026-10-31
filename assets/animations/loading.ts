@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   v: "5.7.1",
   fr: 29.9700012207031,
   ip: 0,

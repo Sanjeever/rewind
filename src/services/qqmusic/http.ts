@@ -12,7 +12,7 @@ async function request<S extends z.ZodMiniType>(
   stage: string,
   schema: S,
 ): Promise<z.output<S>> {
-  const controller = new globalThis.AbortController();
+  const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 15000);
   try {
     const response = await fetch(url, {

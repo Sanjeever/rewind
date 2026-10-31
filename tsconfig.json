@@ -3,10 +3,10 @@
   "compilerOptions": {
     "strict": true,
     "noEmit": true,
-    "allowJs": true,
-    "checkJs": false,
-    "types": ["react", "jest", "node"]
+    "allowJs": false,
+    "forceConsistentCasingInFileNames": true,
+    "types": ["react"]
   },
-  "include": ["src/**/*", "index.js"],
-  "exclude": ["node_modules", ".cache", "android"]
+  "include": ["src/**/*.ts", "src/**/*.tsx"],
+  "exclude": ["node_modules", ".cache", "android", "src/**/*.test.ts", "src/**/*.test.tsx"]
 }
