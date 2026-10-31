@@ -4,11 +4,11 @@
 
 ## 工程边界
 
-工程面向 Android，保留已有页面、业务语义与用户数据。框架迁移不包含 iOS 适配、产品重设计或新增音乐来源。沿用现有 JavaScript 与类组件，避免为统一写法而扩大行为变化。
+工程面向 Android，保留已有页面、业务语义与用户数据。框架迁移不包含 iOS 适配、产品重设计或新增音乐来源。应用和测试采用严格 TypeScript/TSX，保留类组件，不为统一组件写法扩大行为变化。应用、配置与工具脚本统一使用 ESM，标准 JS 注册入口保持最小引导职责。
 
 旧兼容包把第三方实现固定在包内，安装 npm 依赖无法替换实际运行代码。因此使用标准 Metro、React Native Gradle 插件和自动链接，让声明依赖与实际产物对应。保持新架构与 Hermes，自有原生能力通过互操作保留 JS 接口，降低同时重写业务与原生能力的风险。框架升级需核对对应官方模板与实际依赖兼容性。
 
-不重新引入兼容 ZIP、旧 Java/JNI 实现、自定义模块映射、专用 JS 打包或运行库注入。图片使用普通 `require('...png')`。新写和修改的业务逻辑使用明确导入、普通类与 async/await，不恢复全局 Babel 辅助函数或异步状态机。
+不重新引入兼容 ZIP、旧 Java/JNI 实现、自定义模块映射、专用 JS 打包或运行库注入。图片使用 Metro 支持的静态资源导入。业务逻辑使用明确导入、普通类与 async/await，不恢复全局 Babel 辅助函数或异步状态机。启动先完成存储校验与迁移，再动态导入应用，防止业务模块提前读取未初始化数据。
 
 ## 播放归属与生命周期
 
@@ -22,9 +22,9 @@
 
 歌曲身份包含来源及来源内标识，本地歌曲优先使用媒体路径。同名歌曲或不同来源的相同 ID 不能当成同一首。展示用歌曲结构保留原始来源数据，旧接口与持久化继续使用原始歌曲，避免展示层转换破坏兼容格式。字段与时间单位查歌曲结构定义和测试，不在文档复制字段表。
 
-搜索输入与已提交关键词分开。歌曲结果与建议按当前关键词、来源及生命周期接收响应，迟到响应不能覆盖新状态；清空历史后，旧读取不能恢复已删除记录。歌曲搜索区分加载、空结果和请求失败，服务错误不能显示为空列表。搜索播放与旧页面共用播放命令入口。
+搜索输入与已提交关键词分开。歌曲、歌单、专辑、歌手、视频结果及建议按当前关键词、来源与生命周期接收响应，迟到响应不能覆盖新状态；清空历史后，旧读取不能恢复已删除记录。搜索区分加载、空结果和请求失败，服务错误不能显示为空列表。分页合并只接受当前请求，避免重复加载。搜索播放与旧页面共用播放命令入口。
 
-第三方响应属于外部边界。音源与搜索错误保留服务拒绝原因，备用来源失败保留主来源错误，不能用空 catch 或假成功隐藏失败。维护相关路径时遵守此契约；部分旧路径仍有空 catch，不能据此认定错误处理已全部完成。客户端不得内置云凭据；评论分词恢复需要另行接入服务。
+第三方响应属于外部边界，接收 unknown 后按实际接口校验。宽松对象校验保留未知字段，原始歌曲不因展示类型转换丢失字段。音源与搜索错误保留服务拒绝原因，备用来源失败保留主来源错误，不能用空 catch 或假成功隐藏失败。QQ 账号接口使用当前账号会话，不能内置固定 Cookie 或身份。客户端不得内置云凭据；评论分词恢复需要另行接入服务。
 
 ## 数据保护与升级
 
@@ -38,14 +38,16 @@
 
 下表提供阅读入口，不穷举调用链。按本次变更选择相关边界，再沿引用和同目录测试扩展检查。
 
-| 概念                 | 实现与可执行定义入口                                                                                                                                                                                                                   |
-| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 队列归属与提交       | [应用入口](../src/App.js)、[队列提交测试](../src/App.test.cjs)、[队列规则](../src/player/queue.js)                                                                                                                                     |
-| 播放指令、状态与竞态 | [播放控制](../src/player/PlayerController.js)、[播放命令](../src/player/commands.js)、[原生播放器](../android/app/src/main/kotlin/com/kuss/rewind/player/)                                                                             |
-| 歌曲身份与展示结构   | [身份规则](../src/services/trackFields.js)、[歌曲结构](../src/services/trackInfo.js)                                                                                                                                                   |
-| 搜索与请求生命周期   | [搜索页面](../src/screens/SearchPage.js)、[歌曲结果](../src/modules/SongSearchResults.js)、[建议](../src/modules/SearchSuggestions.js)、[搜索服务](../src/services/search.js)                                                          |
-| 音源与外部错误       | [音源解析](../src/player/trackUrl.js)、[QQ 请求](../src/services/qqmusic/http.js)、[备用来源](../src/services/provider.js)、[下载](../src/services/download.js)                                                                        |
-| 迁移与文件写入       | [初始化](../src/storage/index.js)、[迁移](../src/storage/migrate.cjs)、[歌单文件](../src/storage/playlistFiles.js)、[路径](../src/storage/paths.js)、[原生存储](../android/app/src/main/kotlin/com/kuss/rewind/RewindStorageModule.kt) |
-| 设置默认值与合并     | [默认值](../src/settings/defaults.js)、[合并规则](../src/settings/merge.cjs)                                                                                                                                                           |
+| 概念                 | 实现与可执行定义入口                                                                                                                                                                                                                  |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 队列归属与提交       | [应用入口](../src/App.tsx)、[队列提交测试](../src/App.test.ts)、[队列规则](../src/player/queue.ts)、[队列与命令类型](../src/player/types.ts)                                                                                          |
+| 播放指令、状态与竞态 | [播放控制](../src/player/PlayerController.ts)、[播放命令](../src/player/commands.ts)、[事件契约](../src/events/types.ts)、[原生播放器](../android/app/src/main/kotlin/com/kuss/rewind/player/)                                        |
+| 歌曲身份与展示结构   | [身份规则](../src/services/trackFields.ts)、[原始与展示类型](../src/services/track.ts)、[歌曲转换](../src/services/trackInfo.ts)                                                                                                      |
+| 搜索与请求生命周期   | [搜索页面](../src/screens/SearchPage.tsx)、[歌曲结果](../src/modules/SongSearchResults.tsx)、[其它结果](../src/modules/EntitySearchResults.tsx)、[建议](../src/modules/SearchSuggestions.tsx)、[搜索服务](../src/services/search.ts)  |
+| 音源与外部错误       | [音源解析](../src/player/trackUrl.ts)、[QQ 请求](../src/services/qqmusic/http.ts)、[备用来源](../src/services/provider.ts)、[下载](../src/services/download.ts)、[响应校验](../src/services/schemas.ts)                               |
+| 迁移与文件写入       | [初始化](../src/storage/index.ts)、[迁移](../src/storage/migrate.ts)、[歌单文件](../src/storage/playlistFiles.ts)、[路径](../src/storage/paths.ts)、[原生存储](../android/app/src/main/kotlin/com/kuss/rewind/RewindStorageModule.kt) |
+| 设置默认值与合并     | [默认值](../src/settings/defaults.ts)、[合并规则](../src/settings/merge.ts)、[排序操作](../src/screens/OrderPage.tsx)                                                                                                                 |
+| 导航与原生边界       | [路由参数](../src/navigation/types.ts)、[路由注册](../src/navigation/index.tsx)、[原生接口](../src/native/)                                                                                                                           |
+| 视频状态与资源清理   | [视频播放器](../src/player/VideoPlayer.tsx)、[渲染回归](../src/player/VideoPlayer.test.tsx)、[视频页面](../src/screens/Video.tsx)                                                                                                     |
 
 测试是否覆盖某条约束，需检查其断言和隔离边界；文档中记录的设计意图不能由 mock 测试或历史验收自动证明。当前验收范围见[验证记录](validation.md)。
