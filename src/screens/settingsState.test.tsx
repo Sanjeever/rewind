@@ -26,7 +26,7 @@ jest.unstable_mockModule('../components/index', () => ({
   Background: Host,
 }));
 jest.unstable_mockModule('../components/Scrolling', () => ({SpringScrollView: Host}));
-jest.unstable_mockModule('../modules/NotificationOption', () => ({default: Host}));
+jest.unstable_mockModule('../features/settings/NotificationOption', () => ({default: Host}));
 jest.unstable_mockModule('react-native', () => ({
   StyleSheet: {create: <T,>(value: T) => value},
   View: Host,

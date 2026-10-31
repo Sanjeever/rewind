@@ -1,10 +1,10 @@
 import type {ScreenProps, UserProfile} from '../navigation/types';
 import type {TrackId} from '../services/track';
 import type {WebViewMessageEvent, WebViewNavigation} from 'react-native-webview';
-import type {LoginProvider} from '../components/LoginView';
+import type {LoginProvider} from '../features/account/LoginView';
 import {errorMessage} from '../utils/types';
-import {neteaseMessage} from './login/messages';
-import type {NeteaseMessage} from './login/messages';
+import {neteaseMessage} from '../features/account/loginMessages';
+import type {NeteaseMessage} from '../features/account/loginMessages';
 import {toast} from '../native/toast';
 import {WebView} from 'react-native-webview';
 import * as appStorage from './../storage/index';
@@ -24,8 +24,8 @@ import * as events from '../events/index';
 import '../utils/index';
 import '../utils/types';
 import users from '../storage/users';
-import LoginView from '../components/LoginView';
-import NeteaseHelp from './login/NeteaseHelp';
+import LoginView from '../features/account/LoginView';
+import NeteaseHelp from '../features/account/NeteaseHelp';
 const k =
   'https://graph.qq.com/oauth2.0/show?which=Login&display=pc&client_id=100495085&response_type=code&redirect_uri=https://music.163.com/back/qq&forcelogin=true&state=ZwKHpxUoam';
 const y =

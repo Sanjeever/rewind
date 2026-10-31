@@ -11,6 +11,7 @@ import * as events from '../events/index';
 import * as utils from '../utils/index';
 import * as trackInfo from '../services/trackInfo';
 import playlistFiles from '../storage/playlistFiles';
+import PlaylistForeground from '../features/playlists/PlaylistForeground';
 import type {ScreenProps, Navigation} from '../navigation/types';
 import type {TrackFields} from '../services/track';
 import type {Provider} from '../services/providers';
@@ -230,7 +231,7 @@ class CustomPlaylist extends React.PureComponent<
           renderHeader={() => {
             return (
               <ReactNative.View>
-                <components.PlaylistForeground
+                <PlaylistForeground
                   coverImgUrl={img}
                   onMult={() => {
                     return this.setState({

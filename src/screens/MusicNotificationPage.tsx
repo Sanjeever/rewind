@@ -9,7 +9,7 @@ import icons from '../theme/icons';
 import keys from '../storage/keys';
 import locales from '../locales/index';
 import restartModule from '../native/restart';
-import NotificationOption from './../modules/NotificationOption';
+import NotificationOption from '../features/settings/NotificationOption';
 import {toast} from '../native/toast';
 import {errorMessage} from '../utils/types';
 import type {Navigation} from '../navigation/types';

@@ -34,7 +34,7 @@ jest.unstable_mockModule('react-native', () => ({
   StyleSheet: {create: <T>(value: T) => value},
 }));
 const {default: History} = await import('./MusicHistory');
-const {default: Selection} = await import('../modules/HistorySelection');
+const {default: Selection} = await import('../features/library/HistorySelection');
 function createPage() {
   const page = new History({navigation: {goBack() {}}});
   page.setState = (update, callback) => {

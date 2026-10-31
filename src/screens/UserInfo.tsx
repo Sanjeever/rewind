@@ -11,7 +11,7 @@ import locales from '../locales/index';
 import * as services from '../services/index';
 import * as events from '../events/index';
 import * as types from '../utils/types';
-import styles from './users/styles';
+import styles from '../features/account/styles';
 import type {ScreenProps, UserProfile} from '../navigation/types';
 import type {Playlist} from '../storage/models';
 import type {TrackId} from '../services/track';

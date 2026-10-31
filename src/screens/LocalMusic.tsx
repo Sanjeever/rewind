@@ -8,7 +8,7 @@ import locales from '../locales/index';
 import * as events from '../events/index';
 import * as utils from '../utils/index';
 import mediaStore from '../native/mediaStore';
-import LocalMusicList from './../modules/LocalMusicList';
+import LocalMusicList from '../features/library/LocalMusicList';
 import type {ScreenProps} from '../navigation/types';
 import type {MediaTrack} from '../native/mediaStore';
 import type {Subscription} from '../events/Emitter';

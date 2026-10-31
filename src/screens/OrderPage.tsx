@@ -4,7 +4,7 @@ import type {NativeEventSubscription} from 'react-native';
 import {PageContainer, Icon} from '../components';
 import {SpringScrollView} from '../components/Scrolling';
 import TabbedViewPager from '../native/TabbedViewPager';
-import ProviderSelector from '../modules/ProviderSelector';
+import ProviderSelector from '../features/settings/ProviderSelector';
 import pagesModule from '../settings/pages';
 import {storage} from '../storage';
 import keys from '../storage/keys';

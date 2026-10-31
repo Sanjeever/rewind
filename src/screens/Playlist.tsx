@@ -2,7 +2,7 @@ import type {ScreenProps, PlaylistParams} from '../navigation/types';
 import type {TrackFields, TrackId} from '../services/track';
 import type {Provider} from '../services/providers';
 import type {Playlist as PlaylistModel, PlaylistCache} from '../storage/models';
-import type {PlaylistActionContext, PlaylistData} from './playlist/actions';
+import type {PlaylistActionContext, PlaylistData} from '../features/playlists/actions';
 import type {Subscription} from '../events/Emitter';
 import {errorMessage} from '../utils/types';
 import {toast} from '../native/toast';
@@ -13,7 +13,8 @@ import * as ReactNative from 'react-native';
 import * as reactNativeLargelist from './../components/Scrolling';
 import * as components from '../components/index';
 import * as modals from '../modals/index';
-import PlaylistTabs from '../components/PlaylistTabs';
+import PlaylistTabs from '../features/playlists/PlaylistTabs';
+import PlaylistForeground from '../features/playlists/PlaylistForeground';
 import providers from '../services/providers';
 import * as constants from '../theme/constants';
 import names from '../events/names';
@@ -23,8 +24,8 @@ import * as events from '../events/index';
 import * as utils from '../utils/index';
 import mediaStore from '../native/mediaStore';
 import lastSong from '../storage/lastSong';
-import * as sortModes from './playlist/sortModes';
-import actions from './playlist/actions';
+import * as sortModes from '../features/playlists/sortModes';
+import actions from '../features/playlists/actions';
 type PlaylistBase = PlaylistActionContext['state'];
 interface State extends PlaylistBase {
   title?: string;
@@ -589,7 +590,7 @@ class Playlist extends React.PureComponent<ScreenProps<'Playlist'>, State> {
           renderHeader={() => {
             return (
               <ReactNative.View>
-                <components.PlaylistForeground
+                <PlaylistForeground
                   coverImgUrl={`${coverImgUrl}?param=800y800`}
                   name={name}
                   api={api}

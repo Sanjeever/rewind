@@ -1,10 +1,10 @@
 import type {ScreenProps} from '../navigation/types';
 import type {TrackId} from '../services/track';
 import type {WebViewMessageEvent, WebViewNavigation} from 'react-native-webview';
-import type {LoginProvider} from '../components/LoginView';
+import type {LoginProvider} from '../features/account/LoginView';
 import {errorMessage} from '../utils/types';
-import {qqMessage} from './login/messages';
-import type {QQMessage} from './login/messages';
+import {qqMessage} from '../features/account/loginMessages';
+import type {QQMessage} from '../features/account/loginMessages';
 import {toast} from '../native/toast';
 import {WebView} from 'react-native-webview';
 import cookiesModule from '../native/cookies';
@@ -20,8 +20,8 @@ import * as services from '../services/index';
 import * as events from '../events/index';
 import '../utils/types';
 import users from '../storage/users';
-import LoginView from '../components/LoginView';
-import QQMusicHelp from './login/QQMusicHelp';
+import LoginView from '../features/account/LoginView';
+import QQMusicHelp from '../features/account/QQMusicHelp';
 const _ =
   'http://ui.ptlogin2.qq.com/cgi-bin/login?pt_no_auth=1&pt_wxtest=1&pt_no_onekey=1&daid=384&style=9&hln_css=https%3A%2F%2Fy.gtimg.cn%2Fmusic%2Fcommon%2Fupload%2Ft_cm3_photo_publish%2F1117688.png%3Fmax_age%3D2592000&appid=83886593&s_url=https%3A%2F%2Fy.qq.com%2Fm%2Flogin%2Fredirect.html%3Flogin_type%3D1%26surl%3Dhttp://y.qq.com/portal/profile.html';
 const y =

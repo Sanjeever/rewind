@@ -44,8 +44,8 @@ jest.unstable_mockModule('../components/Scrolling', () => ({
   LargeList: List,
   SpringScrollView: Host,
 }));
-jest.unstable_mockModule('../modules/CustomPlaylistHeader', () => ({default: Host}));
-jest.unstable_mockModule('../modules/PlaylistChoice', () => ({default: Host}));
+jest.unstable_mockModule('../features/playlists/CustomPlaylistHeader', () => ({default: Host}));
+jest.unstable_mockModule('../features/playlists/PlaylistChoice', () => ({default: Host}));
 jest.unstable_mockModule('../theme/constants', () => ({ITEM_HEIGHT: 70}));
 jest.unstable_mockModule('../locales/index', () => ({default: {}}));
 jest.unstable_mockModule('../native/toast', () => ({toast}));

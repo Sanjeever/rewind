@@ -7,7 +7,7 @@ import * as constants from '../theme/constants';
 import icons from '../theme/icons';
 import PlaylistSearchResults from '../features/search/PlaylistSearchResults';
 import * as services from '../services/index';
-import PlaylistFilters from './../modules/PlaylistFilters';
+import PlaylistFilters from '../features/playlists/PlaylistFilters';
 import type {Playlist} from '../storage/models';
 import type {ScreenProps} from '../navigation/types';
 import {toast} from '../native/toast';

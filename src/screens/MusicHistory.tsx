@@ -1,7 +1,7 @@
 import type {Navigation} from '../navigation/types';
 import type {TrackFields} from '../services/track';
 import type {Provider} from '../services/providers';
-import type {ProviderTracks, SelectedIndices} from '../modules/HistorySelection';
+import type {ProviderTracks, SelectedIndices} from '../features/library/HistorySelection';
 import {toast} from '../native/toast';
 import {errorMessage} from '../utils/types';
 import * as z from 'zod/mini';
@@ -20,8 +20,8 @@ import * as events from '../events/index';
 import * as trackInfo from '../services/trackInfo';
 import mediaStore from '../native/mediaStore';
 import * as history from '../storage/history';
-import * as sectionsModule from './history/sections';
-import HistorySelection from './../modules/HistorySelection';
+import * as sectionsModule from '../features/library/sections';
+import HistorySelection from '../features/library/HistorySelection';
 const historySchema = z.looseObject({
   netEase: z.optional(z.array(track)),
   qqMusic: z.optional(z.array(track)),

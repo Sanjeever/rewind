@@ -11,7 +11,7 @@ import locales from '../locales/index';
 import * as services from '../services/index';
 import * as events from '../events/index';
 import * as types from '../utils/types';
-import UserHeader from './../modules/UserHeader';
+import UserHeader from '../features/account/UserHeader';
 import type {ScreenProps, UserProfile} from '../navigation/types';
 import type {TrackId} from '../services/track';
 import type {SpringScrollView} from '../components/Scrolling';

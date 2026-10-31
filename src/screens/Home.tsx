@@ -5,8 +5,8 @@ import {STATUS_BAR_HEIGHT, DEVICE_WIDTH} from '../theme/constants';
 import icons from '../theme/icons';
 import devMenu from '../native/devMenu';
 import {isDebug} from '../native/info';
-import Drawer from '../components/Drawer';
-import HomeContent from './home/index';
+import Drawer from '../features/home/Drawer';
+import HomeContent from '../features/home/HomeContent';
 import type {ScreenProps, Navigation, NavigateArgs} from '../navigation/types';
 
 export default function Home({navigation}: ScreenProps<'Home'>) {

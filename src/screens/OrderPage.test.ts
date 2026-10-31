@@ -13,7 +13,7 @@ jest.unstable_mockModule('react-native', () => ({
 jest.unstable_mockModule('../components', () => ({PageContainer: undefined, Icon: undefined}));
 jest.unstable_mockModule('../components/Scrolling', () => ({SpringScrollView: undefined}));
 jest.unstable_mockModule('../native/TabbedViewPager', () => ({default: undefined}));
-jest.unstable_mockModule('../modules/ProviderSelector', () => ({default: undefined}));
+jest.unstable_mockModule('../features/settings/ProviderSelector', () => ({default: undefined}));
 jest.unstable_mockModule('../settings/pages', () => ({
   default: {
     pages: [
