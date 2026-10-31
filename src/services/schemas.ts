@@ -27,7 +27,7 @@ export const album = z.looseObject({
   name: string,
   picUrl: string,
   publishTime: number,
-  company: string,
+  company: z.optional(z.nullable(z.string())),
   description: string,
   artist: z.optional(artist),
   artists: z.optional(z.array(artist)),
@@ -159,5 +159,7 @@ export function response<T extends z.core.$ZodLooseShape>(shape: T) {
 }
 export const status = response({});
 export function parseResponse<S extends z.ZodMiniType>(schema: S, value: unknown): z.output<S> {
-  return schema.parse(value);
+  const result = z.safeParse(schema, value);
+  if (!result.success) throw new Error('服务响应格式无效', {cause: result.error});
+  return result.data;
 }
