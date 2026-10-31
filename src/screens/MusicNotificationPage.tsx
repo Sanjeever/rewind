@@ -10,8 +10,16 @@ import keys from '../storage/keys';
 import locales from '../locales/index';
 import restartModule from '../native/restart';
 import NotificationOption from './../modules/NotificationOption';
+import {toast} from '../native/toast';
+import {errorMessage} from '../utils/types';
+import type {ScreenProps} from '../navigation/types';
+type Config = typeof notification.configObject;
 const {configObject, configKeys} = notification;
-class MusicNotificationPage extends React.PureComponent {
+class MusicNotificationPage extends React.PureComponent<
+  {navigation: Pick<ScreenProps<'MusicNotificationPage'>['navigation'], 'goBack'>},
+  {config: Config; changed: boolean}
+> {
+  backSubscription?: ReactNative.NativeEventSubscription;
   state = {
     config: configObject,
     changed: false,
@@ -19,15 +27,12 @@ class MusicNotificationPage extends React.PureComponent {
   onBackPress = () => {
     return !!this.state.changed && (this.alertChange(), true);
   };
-  confirmChange = () => {
-    this.saveConfig();
-    setTimeout(() => {
-      restartModule.restart();
-    }, 99);
+  confirmChange = async () => {
+    if (await this.saveConfig()) restartModule.restart();
   };
   loadConfig = () => {
     _appStorage.storage
-      .load({
+      .load<Config>({
         key: keys.musicNotification,
       })
       .then((config) => {
@@ -38,21 +43,29 @@ class MusicNotificationPage extends React.PureComponent {
         }
       });
   };
-  saveConfig = () => {
-    _appStorage.storage.save({
-      key: keys.musicNotification,
-      data: this.state.config,
-    });
+  saveConfig = async () => {
+    try {
+      await _appStorage.storage.save({
+        key: keys.musicNotification,
+        data: this.state.config,
+      });
+      return true;
+    } catch (error) {
+      toast('保存通知设置失败：' + errorMessage(error));
+      return false;
+    }
   };
-  onSwitch = (e) => {
+  onSwitch = (e: keyof Config) => {
     const config = immer.produce(this.state.config, function (t) {
       t[e].on = !t[e].on;
     });
-    this.setState({
-      config,
-      changed: true,
-    });
-    this.saveConfig();
+    this.setState(
+      {
+        config,
+        changed: true,
+      },
+      this.saveConfig,
+    );
   };
   removeStorage = () => {
     _appStorage.storage.remove({

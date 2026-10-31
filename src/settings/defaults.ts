@@ -116,7 +116,7 @@ export const defaultSettings = {
   },
 };
 export type Settings = {[K in keyof typeof defaultSettings]: boolean};
-export const settingsMap = [
+export const settingsMap: (keyof typeof defaultSettings | keyof typeof sectionsMap)[] = [
   'SECTION_GENERAL',
   'autoSetPlaylistOrder',
   'navbarPadding',

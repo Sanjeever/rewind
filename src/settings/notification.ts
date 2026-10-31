@@ -22,6 +22,6 @@ const f = {
       on: true,
     },
   },
-  configKeys: ['prev', 'play', 'next', 'stop', 'seekbar'],
+  configKeys: ['prev', 'play', 'next', 'stop', 'seekbar'] as const,
 };
 export default f;

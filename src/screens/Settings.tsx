@@ -4,7 +4,7 @@ import * as _appStorage from './../storage/index';
 import {mergeSettings} from '../settings/merge';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
-import reactNativeSlider from '@react-native-community/slider';
+import reactNativeSlider from '../components/Slider';
 import * as reactNativeSpringScrollview from './../components/Scrolling';
 import * as components from '../components/index';
 import * as defaults from '../settings/defaults';
@@ -15,7 +15,14 @@ import keysModule from '../storage/keys';
 import locales from '../locales/index';
 import * as events from '../events/index';
 import restartModule from '../native/restart';
-class Settings extends React.Component {
+import type {ScreenProps} from '../navigation/types';
+import {errorMessage} from '../utils/types';
+type SettingValues = typeof defaults.defaultSettings;
+class Settings extends React.Component<
+  {navigation: Pick<ScreenProps<'Settings'>['navigation'], 'goBack'>},
+  {settings: SettingValues; modified: boolean; modal: boolean}
+> {
+  scrollView: reactNativeSpringScrollview.SpringScrollView | null = null;
   state = {
     settings: defaults.defaultSettings,
     modified: false,
@@ -62,41 +69,39 @@ class Settings extends React.Component {
       });
       events.emitter.emit(names.SettingsChanged);
     } catch (error) {
-      toast(`设置保存失败：${error.message}`);
+      toast(`设置保存失败：${errorMessage(error)}`);
     }
   };
-  onValueChange = (e) => {
-    const settings = this.state.settings;
-    settings.bottomPadding.subtitle = e;
-    this.setState({
-      settings,
+  onValueChange = (e: number) => {
+    this.setState((state) => ({
+      settings: {...state.settings, bottomPadding: {...state.settings.bottomPadding, subtitle: e}},
       modified: true,
-    });
+    }));
   };
-  onSlidingComplete = function (e) {
+  onSlidingComplete = function (e: number) {
     events.emitter.emit(names.BottomPaddingChange, e);
   };
   onTop = () => {
-    return this.scrollView.scrollToBegin?.();
+    return this.scrollView?.scrollToBegin();
   };
   renderSettingItems = () => {
     const settings = this.state.settings;
     return defaults.settingsMap.map((t, key) => {
-      const i = settings[t];
-      const o = defaults.defaultSettings[t];
-      if (t.includes('SECTION')) {
+      if (t === 'SECTION_GENERAL' || t === 'SECTION_PLAY' || t === 'SECTION_PLAYER_UI') {
         return (
           <components.Title key={t} style={C.sectionText}>
             {defaults.sectionsMap[t].title}
           </components.Title>
         );
       }
+      const i = settings[t];
+      const o = defaults.defaultSettings[t];
       if (t === 'bottomPadding') {
         return (
           <components.SettingItem
             key={key}
             title={o.title}
-            subtitle={o.subtitle || null}
+            subtitle={defaults.defaultSettings.bottomPadding.subtitle || null}
             onPress={this.onShowBottomPaddingModal}
             showChevron={true}
           />
@@ -112,7 +117,7 @@ class Settings extends React.Component {
           <components.SettingItem
             key={key}
             title={o.title}
-            subtitle={o.subtitle || null}
+            subtitle={'subtitle' in o ? o.subtitle || null : null}
             switchButton={true}
             switched={i.on}
             onSwitch={() => {
@@ -142,7 +147,7 @@ class Settings extends React.Component {
       modal: true,
     });
   };
-  switchOptions = async (key) => {
+  switchOptions = async (key: keyof SettingValues) => {
     const settings = {
       ...this.state.settings,
       [key]: {
@@ -168,7 +173,7 @@ class Settings extends React.Component {
       this.setState({
         settings: previous,
       });
-      toast(`设置保存失败：${error.message}`);
+      toast(`设置保存失败：${errorMessage(error)}`);
     }
   };
   async componentDidMount() {
@@ -197,7 +202,9 @@ class Settings extends React.Component {
         onTop={this.onTop}
       >
         <reactNativeSpringScrollview.SpringScrollView
-          ref={(instance) => (this.scrollView = instance)}
+          ref={(instance) => {
+            this.scrollView = instance;
+          }}
           style={{
             padding: 10,
             paddingHorizontal: 15,
@@ -266,7 +273,7 @@ class Settings extends React.Component {
     );
   }
 }
-var C = ReactNative.StyleSheet.create({
+const C = ReactNative.StyleSheet.create({
   modal: {
     height: '50%',
     width: '100%',
