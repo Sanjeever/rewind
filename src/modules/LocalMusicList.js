@@ -28,17 +28,16 @@ class LocalMusicList extends React.Component {
     );
   };
   render() {
-    const e = this;
     const data = this.props.data;
     if (data) {
       return (
         <reactNativeSpringScrollview.SpringScrollView
-          ref={function (r) {
-            return (e._scrollView = r);
+          ref={(r) => {
+            return (this._scrollView = r);
           }}
         >
           {data.map((item, index) =>
-            e._renderItem({
+            this._renderItem({
               item,
               index,
             }),

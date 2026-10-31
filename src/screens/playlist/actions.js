@@ -10,7 +10,7 @@ import users from '../../storage/users';
 const p = (tracks, trackIds) => {
   for (let a = 0; a < tracks.length; a++) {
     const r = trackIds[a];
-    if (r?.hasOwnProperty('lr')) {
+    if (r && Object.prototype.hasOwnProperty.call(r, 'lr')) {
       tracks[a].lastRank = r.lr;
     }
   }

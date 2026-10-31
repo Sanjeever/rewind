@@ -1,4 +1,3 @@
-import * as _appStorage from './../storage/index.js';
 import {toast} from '../native/toast';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
@@ -7,7 +6,6 @@ import * as reactNativeSpringScrollview from './../components/Scrolling.js';
 import * as components from '../components/index';
 import providers from '../services/providers';
 import names from '../events/names';
-import keys from '../storage/keys';
 import locales from '../locales/index';
 import * as services from '../services/index';
 import * as events from '../events/index';
@@ -108,19 +106,24 @@ class ChangePlaylistModal extends React.PureComponent {
   };
   onChangePlaylist = (e) => {
     switch (e.api) {
-      case providers.netEase:
+      case providers.netEase: {
         const t = e.id;
         this.getNeteasePlayListDetail(t);
         break;
-      case providers.qqMusic:
+      }
+      case providers.qqMusic: {
         const l = e.id || e.dissid;
         this.getQQMusicPlayListDetail(l);
+      }
     }
   };
   getQQMusicPlayListDetail = async (id) => {
     try {
       const account = (await users.getUserInfo())?.qqMusic;
-      const playlists = await services.QQMusic.disslist({id, qq: account?.userId});
+      const playlists = await services.QQMusic.disslist({
+        id,
+        qq: account?.userId,
+      });
       if (!playlists[0]) throw new Error(locales.PLAYLIST_FETCH_FAILED);
       this.qqMusicPlaylistPlay(playlists[0].songlist);
     } catch (error) {
@@ -157,19 +160,17 @@ class ChangePlaylistModal extends React.PureComponent {
     });
   };
   componentDidMount() {
-    const e = this;
-    this.sub = events.emitter.addListener(names.ChangePlaylist, function () {
-      e.setState({
+    this.sub = events.emitter.addListener(names.ChangePlaylist, () => {
+      this.setState({
         modalVisible: true,
       });
-      e.getPlaylist();
+      this.getPlaylist();
     });
   }
   componentWillUnmount() {
     this.sub.remove?.();
   }
   render() {
-    const e = this;
     const songItem = this.props.songItem;
     const state = this.state;
     const {playlist, modalVisible} = state;
@@ -193,13 +194,13 @@ class ChangePlaylistModal extends React.PureComponent {
           <PlaylistChoice onPress={this.onTop} content={locales.TOGGLE_MIX} />
           <FadingEdge top={30}>
             <reactNativeSpringScrollview.SpringScrollView
-              ref={function (t) {
-                return (e._scrollView = t);
+              ref={(t) => {
+                return (this._scrollView = t);
               }}
             >
               {playlist?.length > 0 ? (
                 playlist.map((item, index) =>
-                  e._renderItem({
+                  this._renderItem({
                     item,
                     index,
                   }),

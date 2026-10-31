@@ -105,7 +105,6 @@ class RadioDetail extends React.PureComponent {
     }
   }
   render() {
-    const e = this;
     const state = this.state;
     const {loaded, data, title, asc} = state;
     return (
@@ -113,14 +112,14 @@ class RadioDetail extends React.PureComponent {
         <components.Background />
         {loaded === false ? <components.Spinkit style={m.loading} /> : null}
         <reactNativeSpringScrollview.SpringScrollView
-          ref={function (t) {
-            return (e._scrollView = t);
+          ref={(t) => {
+            return (this._scrollView = t);
           }}
           onLoading={this.getMore}
           loadingFooter={ParallaxList}
         >
           {data.map((item, a) =>
-            e._renderItem({
+            this._renderItem({
               item,
               index: a,
             }),
@@ -129,8 +128,8 @@ class RadioDetail extends React.PureComponent {
         <components.HeaderBar
           headerStyle={m.header}
           title={title}
-          goBack={function () {
-            return e.props.navigation.goBack();
+          goBack={() => {
+            return this.props.navigation.goBack();
           }}
           onTop={this.onTop}
           rightIcon={{

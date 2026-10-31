@@ -161,7 +161,6 @@ class QQMusicLogin extends React.PureComponent {
     this.loadInfo();
   }
   render() {
-    const e = this;
     const state = this.state;
     const {avatar, nickname, showWebView, webViewUrl} = state;
     return (
@@ -171,16 +170,16 @@ class QQMusicLogin extends React.PureComponent {
           alignItems: 'center',
         }}
         title={locales.QQ_MUSIC}
-        goBack={function () {
-          return e.props.navigation.goBack();
+        goBack={() => {
+          return this.props.navigation.goBack();
         }}
         headerStyle={{
           marginBottom: 30,
         }}
         rightIcon={{
           name: icons.HELP_CIRCLE_OUTLINE,
-          onPress: function () {
-            return e.setState({
+          onPress: () => {
+            return this.setState({
               tipModalOpen: true,
             });
           },
@@ -230,8 +229,8 @@ class QQMusicLogin extends React.PureComponent {
         ) : null}
         <QQMusicHelp
           isOpen={this.state.tipModalOpen}
-          onRequestClose={function () {
-            return e.setState({
+          onRequestClose={() => {
+            return this.setState({
               tipModalOpen: false,
             });
           }}

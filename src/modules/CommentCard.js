@@ -4,7 +4,6 @@ import * as ReactNative from 'react-native';
 import * as components from '../components/index';
 class CommentCard extends React.PureComponent {
   render() {
-    const e = this;
     const props = this.props;
     const {content, time, userName, userAvatar, beReplieds, onUserInfo, item} = props;
     return (
@@ -36,8 +35,8 @@ class CommentCard extends React.PureComponent {
           </ReactNative.TouchableOpacity>
           <ReactNative.View style={c.nickItem}>
             <components.Selectable
-              onCopy={function () {
-                return e.copy(userName);
+              onCopy={() => {
+                return this.copy(userName);
               }}
               style={c.nickname}
             >

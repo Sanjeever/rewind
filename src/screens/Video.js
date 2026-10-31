@@ -83,7 +83,6 @@ class Video extends React.Component {
     });
   }
   render() {
-    const e = this;
     const state = this.state;
     const {url, title, isFullscreen, hideStatus} = state;
     return (
@@ -103,13 +102,13 @@ class Video extends React.Component {
           onBack={this.props.navigation.goBack}
           onEnterFullscreen={this.fullscreen}
           onExitFullscreen={this.exitFullscreen}
-          onShowControls={function () {
-            e.setState({
+          onShowControls={() => {
+            this.setState({
               hideStatus: false,
             });
           }}
-          onHideControls={function () {
-            e.setState({
+          onHideControls={() => {
+            this.setState({
               hideStatus: true,
             });
           }}

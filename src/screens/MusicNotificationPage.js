@@ -73,12 +73,11 @@ class MusicNotificationPage extends React.PureComponent {
     this.backSubscription?.remove();
   }
   alertChange() {
-    const e = this;
     ReactNative.Alert.alert(locales.WARN, locales.NEED_RELOAD_APP, [
       {
         text: locales.CANCEL,
-        onPress: function () {
-          e.props.navigation.goBack();
+        onPress: () => {
+          this.props.navigation.goBack();
         },
         style: 'cancel',
       },
@@ -89,7 +88,6 @@ class MusicNotificationPage extends React.PureComponent {
     ]);
   }
   render() {
-    const e = this;
     const config = this.state.config;
     return (
       <components.PageContainer
@@ -98,8 +96,8 @@ class MusicNotificationPage extends React.PureComponent {
         rightIcon={[
           {
             name: icons.BACKUP_RESTORE,
-            onPress: function () {
-              return e.removeStorage();
+            onPress: () => {
+              return this.removeStorage();
             },
           },
         ]}
@@ -116,8 +114,8 @@ class MusicNotificationPage extends React.PureComponent {
                 key={key}
                 name={r.title}
                 switched={r.on}
-                onSwitch={function () {
-                  return e.onSwitch(n);
+                onSwitch={() => {
+                  return this.onSwitch(n);
                 }}
               />
             );

@@ -1,3 +1,5 @@
+import _neteaseImage from '../../assets/images/netease.png';
+import _qqmusicImage from '../../assets/images/qqmusic.png';
 import _default from './../components/Text';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
@@ -9,10 +11,10 @@ class ProviderSelector extends React.PureComponent {
     let source;
     switch (e) {
       case providers.netEase:
-        source = require('../../assets/images/netease.png');
+        source = _neteaseImage;
         break;
       case providers.qqMusic:
-        source = require('../../assets/images/qqmusic.png');
+        source = _qqmusicImage;
     }
     return (
       <ReactNative.View

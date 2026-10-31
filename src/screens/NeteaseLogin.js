@@ -244,19 +244,18 @@ class NeteaseLogin extends React.PureComponent {
     this.loadInfo();
   }
   render() {
-    const e = this;
     const state = this.state;
     const {avatar, nickname, showWebView, webViewUrl} = state;
     return (
       <components.PageContainer
         title={locales.NETEASE_MUSIC}
-        goBack={function () {
-          return e.props.navigation.goBack();
+        goBack={() => {
+          return this.props.navigation.goBack();
         }}
         rightIcon={{
           name: icons.HELP_CIRCLE_OUTLINE,
-          onPress: function () {
-            return e.setState({
+          onPress: () => {
+            return this.setState({
               guideModalOpen: true,
             });
           },
@@ -310,8 +309,8 @@ class NeteaseLogin extends React.PureComponent {
         ) : null}
         <modals.SearchUser
           isOpen={this.state.modalOpen}
-          onModalClose={function () {
-            return e.setState({
+          onModalClose={() => {
+            return this.setState({
               modalOpen: false,
             });
           }}
@@ -319,8 +318,8 @@ class NeteaseLogin extends React.PureComponent {
         />
         <NeteaseHelp
           isOpen={this.state.guideModalOpen}
-          onRequestClose={function () {
-            return e.setState({
+          onRequestClose={() => {
+            return this.setState({
               guideModalOpen: false,
             });
           }}
@@ -346,7 +345,7 @@ class NeteaseLoginScreen extends React.PureComponent {
         return a;
       }
       return null;
-    } catch (e) {
+    } catch {
       return null;
     }
   };

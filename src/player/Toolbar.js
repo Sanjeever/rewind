@@ -29,7 +29,6 @@ class Toolbar extends React.PureComponent {
       this.miniLyric = true;
     }
     this.miniLyricIndex = m;
-    var y = m + 1 >= lyric.length ? m : y;
     if (!m) {
       return null;
     }

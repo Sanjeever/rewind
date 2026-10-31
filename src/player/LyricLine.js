@@ -185,7 +185,6 @@ class LyricLine extends React.PureComponent {
     }
   }
   render() {
-    const e = this;
     const lyric = this.props.lyric;
     const dataSource = new LyricList.DataSource(lyric, function (e, t) {
       return String(t);
@@ -205,8 +204,8 @@ class LyricLine extends React.PureComponent {
             }}
             dataSource={dataSource}
             renderItem={this._renderItem}
-            ref={function (t) {
-              return (e._list = t);
+            ref={(t) => {
+              return (this._list = t);
             }}
             showVerticalScrollBar={false}
             isScrollOverMode={false}
@@ -219,8 +218,8 @@ class LyricLine extends React.PureComponent {
         ) : (
           <ReactNative.View
             style={h.empty}
-            onTouchStart={function () {
-              return e.props.onTap();
+            onTouchStart={() => {
+              return this.props.onTap();
             }}
           >
             {React.createElement(LyricLineScreen, {

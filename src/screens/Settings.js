@@ -183,13 +183,12 @@ class Settings extends React.Component {
     this.save().catch((error) => toast(`设置保存失败：${error.message}`));
   }
   render() {
-    const e = this;
     const settings = this.state.settings;
     return (
       <components.PageContainer
         title={locales.SETTING}
-        goBack={function () {
-          return e.props.navigation.goBack();
+        goBack={() => {
+          return this.props.navigation.goBack();
         }}
         rightIcon={{
           name: icons.BACKUP_RESTORE,

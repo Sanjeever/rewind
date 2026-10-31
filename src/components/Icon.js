@@ -10,7 +10,7 @@ export default function Icon({
   color = '#fff',
   iconStyle,
   component,
-  underlayColor,
+  underlayColor: _underlayColor,
   reverse = false,
   raised = false,
   containerStyle,

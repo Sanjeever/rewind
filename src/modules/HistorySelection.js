@@ -216,7 +216,6 @@ class HistorySelection extends React.Component {
     this.loadSetting();
   }
   render() {
-    const e = this;
     const props = this.props;
     const {isOpen, onClosed} = props;
     const state = this.state;
@@ -230,8 +229,8 @@ class HistorySelection extends React.Component {
         }}
         animationType={'fade'}
         visible={isOpen}
-        onRequestClose={function () {
-          e.clean();
+        onRequestClose={() => {
+          this.clean();
           onClosed();
         }}
       >
@@ -255,8 +254,8 @@ class HistorySelection extends React.Component {
           />
           <FadingEdge top={30} bottom={30}>
             <reactNativeLargelist.LargeList
-              ref={function (t) {
-                return (e._list = t);
+              ref={(t) => {
+                return (this._list = t);
               }}
               data={data}
               heightForIndexPath={this._heightForIndexPath}

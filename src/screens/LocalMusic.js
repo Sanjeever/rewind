@@ -83,34 +83,29 @@ class LocalMusic extends React.Component {
     this.listParent.onTop?.();
   };
   componentDidMount() {
-    const e = this;
-    this.deleteReciver = events.emitter.addListener(
-      names.DeleteFromLocal,
-      function ({deleteIndex}) {
-        const playList = e.state.playList;
-        if (playList) {
-          const n = playList.filter((e, t) => deleteIndex !== t);
-          e.setState({
-            playList: n,
-          });
-        }
-      },
-    );
+    this.deleteReciver = events.emitter.addListener(names.DeleteFromLocal, ({deleteIndex}) => {
+      const playList = this.state.playList;
+      if (playList) {
+        const n = playList.filter((e, t) => deleteIndex !== t);
+        this.setState({
+          playList: n,
+        });
+      }
+    });
     this.loadPlayList();
   }
   componentWillUnmount() {
     this.deleteReciver.remove();
   }
   render() {
-    const e = this;
     return (
       <components.PageContainer
         title={locales.LOCAL_MUSIC}
         goBack={this.goBack}
         opacity={this.opacity}
         onTop={this.onTop}
-        onChangeText={function (t) {
-          return e.searchSong(t);
+        onChangeText={(t) => {
+          return this.searchSong(t);
         }}
         rightIcon={[
           {
@@ -124,8 +119,8 @@ class LocalMusic extends React.Component {
       >
         <LocalMusicList
           data={this.state.playList}
-          playMusic={function (t, a) {
-            return e.playMusic(t, a);
+          playMusic={(t, a) => {
+            return this.playMusic(t, a);
           }}
           onDetail={function (item, t) {
             return events.toDetailModal({

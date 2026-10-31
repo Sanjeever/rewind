@@ -196,7 +196,9 @@ class Home extends React.PureComponent {
     const saved = await users.getUserPlayList();
     const id = saved?.qqMusic?.[0]?.id;
     if (!id) return;
-    const playlists = await services.QQMusic.disslist({id});
+    const playlists = await services.QQMusic.disslist({
+      id,
+    });
     if (playlists.length)
       await users.saveUserLikeList(
         playlists[0].songlist.map((song) => song.songmid),
@@ -349,46 +351,44 @@ class Home extends React.PureComponent {
     }
   };
   UNSAFE_componentWillMount() {
-    const e = this;
     utils.firstTimeChecker.check().then((t) => {
       if (t === true) {
-        e.alertOpenTip();
+        this.alertOpenTip();
       }
     });
   }
   componentDidMount() {
-    const e = this;
     _netinfo.fetch().then(({isConnected}) => {
-      e.setState(
+      this.setState(
         {
           isConnected,
         },
-        function () {
-          e.loadStorage();
-          e.loadPlaylistById();
-          e.dailySignin();
+        () => {
+          this.loadStorage();
+          this.loadPlaylistById();
+          this.dailySignin();
         },
       );
     });
-    this.loginedListener = events.emitter.addListener(names.UserLogined, function () {
+    this.loginedListener = events.emitter.addListener(names.UserLogined, () => {
       setTimeout(() => {
-        e.loadStorage();
-        e.loadPlaylistById();
+        this.loadStorage();
+        this.loadPlaylistById();
       }, 500);
     });
     this.playlistSetOrderListener = events.emitter.addListener(
       names.PlaylistSetOrder,
-      function ({index, api}) {
-        if (e.state.autoSetPlaylistOrder === true) {
-          e.collectPlaylistOrder({
+      ({index, api}) => {
+        if (this.state.autoSetPlaylistOrder === true) {
+          this.collectPlaylistOrder({
             index,
             api,
           });
         }
       },
     );
-    this.setStateListener = events.emitter.addListener(names.SetHomeState, function (t) {
-      e.setState(
+    this.setStateListener = events.emitter.addListener(names.SetHomeState, (t) => {
+      this.setState(
         immer.produce(function (e) {
           Object.keys(t).forEach((a) => {
             e[a] = t[a];

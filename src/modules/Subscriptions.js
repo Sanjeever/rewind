@@ -204,9 +204,8 @@ class Subscriptions extends React.PureComponent {
     }
   }
   componentDidMount() {
-    const e = this;
-    this.sub = ReactNative.DeviceEventEmitter.addListener(names.UserLogined, function () {
-      e.loadData();
+    this.sub = ReactNative.DeviceEventEmitter.addListener(names.UserLogined, () => {
+      this.loadData();
     });
     this.loadData();
   }
@@ -214,7 +213,6 @@ class Subscriptions extends React.PureComponent {
     this.sub.remove?.();
   }
   render() {
-    const e = this;
     const data = this.state.data;
     if (!data || data.length < 1) {
       return <components.Spinkit />;
@@ -222,8 +220,8 @@ class Subscriptions extends React.PureComponent {
     if (data) {
       return (
         <reactNativeLargelist.LargeList
-          ref={function (t) {
-            return (e[`_${e.props.type}List`] = t);
+          ref={(t) => {
+            return (this[`_${this.props.type}List`] = t);
           }}
           data={[
             {

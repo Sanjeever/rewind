@@ -54,8 +54,8 @@ var m = (e, r) => {
 var p = (e, r, n) => {
   const t = trackInfo.extractBasicInfo(e);
   const a = trackInfo.extractBasicInfo(r);
-  let u = null;
-  let s = null;
+  let u;
+  let s;
   let c = null;
   switch (n) {
     case searchTypesMap.bySong:
@@ -65,13 +65,14 @@ var p = (e, r, n) => {
       c = u.localeCompare(s);
       break;
     case searchTypesMap.byArtist:
-    case searchTypesMap.byArtistReversed:
+    case searchTypesMap.byArtistReversed: {
       const l = d(t.singer);
       const b = d(a.singer);
       u = f(l);
       s = f(b);
       c = u.localeCompare(s);
       break;
+    }
     case searchTypesMap.byAlbum:
     case searchTypesMap.byAlbumReversed:
       u = f(t.album);

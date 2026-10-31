@@ -78,9 +78,8 @@ class SavePicModal extends React.PureComponent {
     ReactNative.Linking.openURL(m);
   };
   componentDidMount() {
-    const e = this;
-    this.sub = events.emitter.addListener(names.SavePicModal, function (t) {
-      e.setState({
+    this.sub = events.emitter.addListener(names.SavePicModal, (t) => {
+      this.setState({
         img: t.img,
         song: t.song,
         type: t.type || '',

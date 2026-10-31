@@ -122,7 +122,6 @@ class LyricPage extends React.PureComponent {
     ReactNative.StatusBar.setHidden(false);
   }
   render() {
-    const e = this;
     const state = this.state;
     const {lyric, img, songName, qrcode} = state;
     return (
@@ -153,7 +152,7 @@ class LyricPage extends React.PureComponent {
               ) : null}
             </ReactNative.View>
             {lyric.map((item, index) =>
-              e.renderItem({
+              this.renderItem({
                 item,
                 index,
               }),

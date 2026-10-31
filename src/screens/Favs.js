@@ -128,17 +128,16 @@ class Favs extends React.PureComponent {
     });
   };
   render() {
-    const e = this;
     return (
       <components.PageContainer
         title={locales.FAVS}
-        goBack={function () {
-          return e.props.navigation.goBack();
+        goBack={() => {
+          return this.props.navigation.goBack();
         }}
         onTop={this.onTop}
         textInput={true}
-        onChangeText={function (t) {
-          return e.searchSong(t);
+        onChangeText={(t) => {
+          return this.searchSong(t);
         }}
         text={this.state.searchText}
         disabledTopFadingEdge={true}
@@ -151,8 +150,8 @@ class Favs extends React.PureComponent {
               padding: 5,
             },
           ]}
-          onPageSelected={function (t) {
-            return e._handleIndexChange(t.nativeEvent.position);
+          onPageSelected={(t) => {
+            return this._handleIndexChange(t.nativeEvent.position);
           }}
         >
           {tabNames.map((t, key) => (
@@ -163,7 +162,7 @@ class Favs extends React.PureComponent {
                 paddingBottom: 45,
               }}
             >
-              {e._renderScenes(b[t])}
+              {this._renderScenes(b[t])}
             </ReactNative.View>
           ))}
         </TabbedViewPager>

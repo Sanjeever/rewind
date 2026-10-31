@@ -217,19 +217,18 @@ class MusicRecommend extends React.Component {
     this.backSubscription?.remove();
   }
   render() {
-    const e = this;
     const dislikeMode = this.state.dislikeMode;
     return (
       <components.PageContainer
         title={utils.timeFormatter.localeString()}
-        goBack={function () {
-          return e.props.navigation.goBack();
+        goBack={() => {
+          return this.props.navigation.goBack();
         }}
         onTop={this.onTop}
         rightIcon={{
           name: dislikeMode ? icons.DELETE_OUTLINE : icons.DELETE,
-          onPress: function () {
-            return e.setState({
+          onPress: () => {
+            return this.setState({
               dislikeMode: !dislikeMode,
             });
           },
@@ -245,7 +244,7 @@ class MusicRecommend extends React.Component {
                 paddingBottom: 50,
               }}
             >
-              {e._renderScenes(k[t])}
+              {this._renderScenes(k[t])}
             </ReactNative.View>
           ))}
         </TabbedViewPager>

@@ -101,7 +101,6 @@ class PlaylistForeground extends React.PureComponent {
       orderText,
       onSortText,
     } = props;
-    props.heartMode;
     const {
       onHeartMode,
       onSort,

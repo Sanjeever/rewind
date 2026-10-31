@@ -195,7 +195,6 @@ class MultiplySelectModal extends React.PureComponent {
     );
   };
   render() {
-    const e = this;
     const props = this.props;
     const {visible, data} = props;
     if (!visible) {
@@ -212,8 +211,8 @@ class MultiplySelectModal extends React.PureComponent {
       },
       {
         name: icons.DOTS_VERTICAL,
-        onPress: function () {
-          return e.onDots(length);
+        onPress: () => {
+          return this.onDots(length);
         },
       },
     ];
@@ -237,8 +236,8 @@ class MultiplySelectModal extends React.PureComponent {
           />
           <FadingEdge top={30}>
             <reactNativeLargelist.LargeList
-              ref={function (t) {
-                return (e._list = t);
+              ref={(t) => {
+                return (this._list = t);
               }}
               data={[
                 {
@@ -254,8 +253,8 @@ class MultiplySelectModal extends React.PureComponent {
           <ReactNative.Modal
             animationType={'fade'}
             transparent={true}
-            onRequestClose={function () {
-              return e.setState({
+            onRequestClose={() => {
+              return this.setState({
                 showModal: false,
               });
             }}
@@ -270,8 +269,8 @@ class MultiplySelectModal extends React.PureComponent {
               }}
             >
               <ReactNative.TouchableWithoutFeedback
-                onPress={function () {
-                  return e.setState({
+                onPress={() => {
+                  return this.setState({
                     showModal: false,
                   });
                 }}
@@ -281,8 +280,8 @@ class MultiplySelectModal extends React.PureComponent {
               {C.map((t, key) => (
                 <ReactNative.TouchableNativeFeedback
                   key={key}
-                  onPress={function () {
-                    return e.onTask(t.key);
+                  onPress={() => {
+                    return this.onTask(t.key);
                   }}
                 >
                   <ReactNative.View

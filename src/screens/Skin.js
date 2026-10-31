@@ -104,14 +104,13 @@ class Skin extends React.Component {
     });
   };
   componentDidMount() {
-    const e = this;
     _appStorage.storage
       .load({
         key: keys.background,
       })
       .then((t) => {
         if (t) {
-          e.setState({
+          this.setState({
             img: t.path,
             value: t.opacity,
             blur: t.blur,
@@ -119,13 +118,12 @@ class Skin extends React.Component {
         }
       })
       .catch(() => {
-        e.setState({
+        this.setState({
           img: null,
         });
       });
   }
   render() {
-    const e = this;
     const state = this.state;
     const {img, value, blur} = state;
     return (
@@ -189,13 +187,13 @@ class Skin extends React.Component {
                 width: 200,
               },
               value,
-              onValueChange: function (value_1) {
-                return e.setState({
+              onValueChange: (value_1) => {
+                return this.setState({
                   value: value_1,
                 });
               },
-              onSlidingComplete: function () {
-                return e.setState({
+              onSlidingComplete: () => {
+                return this.setState({
                   value,
                 });
               },

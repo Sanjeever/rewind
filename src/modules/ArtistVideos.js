@@ -7,12 +7,13 @@ class ArtistVideos extends React.PureComponent {
   formatListItem = (e) => {
     const t = {};
     switch (this.props.api) {
-      case providers.netEase:
+      case providers.netEase: {
         const r = utils.timeFormatter.parseTime(e.duration / 1000);
         t.title = e.name;
         t.subtitle = `${r} | ${e.publishTime}`;
         t.img = `${e.imgurl}?param=500y500`;
         break;
+      }
       case providers.qqMusic:
         t.title = e.title;
         t.subtitle = e.date;
@@ -45,9 +46,8 @@ class ArtistVideos extends React.PureComponent {
     queue.playMV(r, t);
   };
   render() {
-    const e = this;
     return this.props.mvs.map((item, index) =>
-      e._renderItem({
+      this._renderItem({
         item,
         index,
       }),

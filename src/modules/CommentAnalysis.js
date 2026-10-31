@@ -146,7 +146,6 @@ class CommentAnalysis extends React.Component {
     this.titlePager?.setPageWithoutAnimation(1);
   };
   render() {
-    const e = this;
     const props = this.props;
     const {wordscloud, loadWordsCloudDone, song} = props;
     if (loadWordsCloudDone) {
@@ -203,8 +202,8 @@ class CommentAnalysis extends React.Component {
                 padding: 20,
               }}
             >
-              {wordscloud?.map(function (t, n) {
-                const l = e.useRandomValues(n);
+              {wordscloud?.map((t, n) => {
+                const l = this.useRandomValues(n);
                 const {textOpacity, randomSize} = l;
                 return (
                   <ReactNative.View
@@ -217,8 +216,8 @@ class CommentAnalysis extends React.Component {
                     ]}
                   >
                     <ReactNative.TouchableOpacity
-                      onPress={function () {
-                        return e.showHotComment(t, n);
+                      onPress={() => {
+                        return this.showHotComment(t, n);
                       }}
                     >
                       {React.createElement(

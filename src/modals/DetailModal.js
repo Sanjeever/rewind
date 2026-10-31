@@ -2,7 +2,6 @@ import {toast} from '../native/toast';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
 import * as Scrolling from './../components/Scrolling.js';
-import rnFetchBlob from 'react-native-blob-util';
 import * as Index from '../components/index';
 import providers from '../services/providers';
 import * as constants from '../theme/constants';
@@ -83,7 +82,7 @@ class DetailModal extends React.PureComponent {
   };
   renderTools = (e) => {
     return e.map((e, t) => {
-      if (e.needCheck && !Boolean(e.value)) {
+      if (e.needCheck && !e.value) {
         return null;
       }
       return (
@@ -116,7 +115,6 @@ class DetailModal extends React.PureComponent {
   deleteFromLocal = async () => {
     const l_state = this.state;
     const {songItem, index} = l_state;
-    const songItem_path = songItem.path;
     try {
       const removed = await _mediaStore.deleteAudio(songItem.id);
       if (removed) {
@@ -302,19 +300,17 @@ class DetailModal extends React.PureComponent {
     return `${t[0].name} - ${e}`.replace(/\//gi, 'x');
   };
   componentDidMount() {
-    const e = this;
-    this.sub = events.emitter.addListener(names.DetailModal, function (t) {
-      e.setState({
+    this.sub = events.emitter.addListener(names.DetailModal, (t) => {
+      this.setState({
         mainModalShow: true,
       });
-      e.getData(t);
+      this.getData(t);
     });
   }
   componentWillUnmount() {
     this.sub.remove?.();
   }
   render() {
-    const e = this;
     const state = this.state;
     const {song, playlistId, mvid, mainModalShow, sonModalShow, tools, artists} = state;
     const isRound = this.props.isRound;
@@ -412,8 +408,8 @@ class DetailModal extends React.PureComponent {
           <ReactNative.Modal
             animationType={'fade'}
             transparent={true}
-            onRequestClose={function () {
-              return e.setState({
+            onRequestClose={() => {
+              return this.setState({
                 sonModalShow: false,
               });
             }}
@@ -428,22 +424,22 @@ class DetailModal extends React.PureComponent {
               ]}
             >
               <ReactNative.TouchableWithoutFeedback
-                onPress={function () {
-                  return e.setState({
+                onPress={() => {
+                  return this.setState({
                     sonModalShow: false,
                   });
                 }}
               >
                 <ReactNative.View style={[ReactNative.StyleSheet.absoluteFill]} />
               </ReactNative.TouchableWithoutFeedback>
-              {artists?.map(function (t, a) {
+              {artists?.map((t, a) => {
                 return (
                   <ActionRow
                     key={a}
                     value={t.name}
                     title={a + 1}
-                    onPress={function () {
-                      return e.onSingleArtist(t);
+                    onPress={() => {
+                      return this.onSingleArtist(t);
                     }}
                   />
                 );

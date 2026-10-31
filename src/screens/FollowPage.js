@@ -205,15 +205,14 @@ class FollowPage extends React.PureComponent {
     }
   }
   render() {
-    const e = this;
     const state = this.state;
     const {profile, followed, tabViewHeight} = state;
     return (
       <ReactNative.View style={m.container}>
         <components.Background />
         <components.ParallaxScrollView
-          onRef={function (t) {
-            return (e._list = t);
+          onRef={(t) => {
+            return (this._list = t);
           }}
           onLoading={this.getMore}
           onNativeContentOffsetExtract={this._nativeOffset}

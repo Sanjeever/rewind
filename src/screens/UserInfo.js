@@ -206,7 +206,6 @@ class UserInfo extends React.PureComponent {
     }
   }
   render() {
-    const e = this;
     const playlist = this.state.playlist;
     return (
       <ReactNative.View style={E.container}>
@@ -214,7 +213,7 @@ class UserInfo extends React.PureComponent {
         <components.ParallaxScrollView renderForeground={this.renderForeground}>
           {playlist?.length > 0 ? (
             playlist.map((t, index) =>
-              e.renderItem({
+              this.renderItem({
                 item: t,
                 index,
               }),

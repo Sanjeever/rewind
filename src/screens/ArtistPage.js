@@ -85,7 +85,7 @@ class ArtistPage extends React.PureComponent {
           this.getAlbums(e.id, t);
           this.getMVs(e.id, t);
           break;
-        case providers.qqMusic:
+        case providers.qqMusic: {
           const id = e.singerMID || e.mid;
           const r = `http://y.gtimg.cn/music/photo_new/T001R500x500M000${id}.jpg`;
           const artistName = e.singerName || e.name;
@@ -97,6 +97,7 @@ class ArtistPage extends React.PureComponent {
           this.getQQmusicArtistSongs(id);
           this.getAlbums(id, t);
           this.getMVs(id, t);
+        }
       }
     }
   };
@@ -150,9 +151,7 @@ class ArtistPage extends React.PureComponent {
   };
   onLikeArtist = () => {
     const a_state = this.state;
-    a_state.api;
     const e_followed = a_state.followed;
-    a_state.id;
     if (e_followed) {
       ReactNative.Alert.alert(null, '取消收藏？', [
         {
@@ -300,7 +299,6 @@ class ArtistPage extends React.PureComponent {
     }
   }
   render() {
-    const e = this;
     const state = this.state;
     const {index, hotSongs, followed, artistImg, artistName, subtitle, albums, mvs, releaseMode} =
       state;
@@ -309,8 +307,8 @@ class ArtistPage extends React.PureComponent {
         <components.Background />
         <components.ParallaxScrollView
           onNativeContentOffsetExtract={this._nativeOffset}
-          onRef={function (t) {
-            return (e._list = t);
+          onRef={(t) => {
+            return (this._list = t);
           }}
         >
           <components.ParallaxForeground
@@ -335,8 +333,8 @@ class ArtistPage extends React.PureComponent {
               text={locales.ARTIST_SONGS}
               style={styles.btnCon}
               textStyle={index === 0 && styles.strong}
-              onPress={function () {
-                return e.setState({
+              onPress={() => {
+                return this.setState({
                   index: 0,
                 });
               }}
@@ -372,8 +370,8 @@ class ArtistPage extends React.PureComponent {
               text={locales.ARTIST_MV}
               style={styles.btnCon}
               textStyle={index === 2 && styles.strong}
-              onPress={function () {
-                return e.setState({
+              onPress={() => {
+                return this.setState({
                   index: 2,
                 });
               }}
@@ -400,15 +398,15 @@ class ArtistPage extends React.PureComponent {
           onTop={this.onTop}
           iconColor={'#eee'}
           fontColor={'#fff'}
-          rightIcon={function () {
+          rightIcon={() => {
             return (
               <OverflowMenu
                 followed={followed}
-                onLike={e.onLikeArtist}
-                onWebview={e.onWebview}
-                onCopy={e.onCopy}
-                onOpenUrl={e.onOpenUrl}
-                onShare={e.onShare}
+                onLike={this.onLikeArtist}
+                onWebview={this.onWebview}
+                onCopy={this.onCopy}
+                onOpenUrl={this.onOpenUrl}
+                onShare={this.onShare}
               />
             );
           }}

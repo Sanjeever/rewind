@@ -346,7 +346,6 @@ class Playlists extends React.PureComponent {
     this.loadLocalPlaylist();
   }
   render() {
-    const e = this;
     return (
       <ReactNative.View
         style={{
@@ -366,8 +365,8 @@ class Playlists extends React.PureComponent {
         )}
         <CreatePlaylist
           showModal={this.state.showModal}
-          closeModal={function () {
-            return e.setState({
+          closeModal={() => {
+            return this.setState({
               showModal: false,
             });
           }}

@@ -66,13 +66,12 @@ class Charts extends React.PureComponent {
     this.getCharts();
   }
   render() {
-    const e = this;
     const state = this.state;
     const {loading, data} = state;
     return (
       <components.PageContainer
-        goBack={function () {
-          return e.props.navigation.goBack();
+        goBack={() => {
+          return this.props.navigation.goBack();
         }}
         onTop={this.onTop}
         title={locales.CHARTS}
@@ -89,12 +88,12 @@ class Charts extends React.PureComponent {
           />
         )}
         <reactNativeSpringScrollview.SpringScrollView
-          ref={function (t) {
-            return (e._scrollView = t);
+          ref={(t) => {
+            return (this._scrollView = t);
           }}
         >
           {data.map((item, r) =>
-            e._renderItem({
+            this._renderItem({
               item,
               index: r,
             }),

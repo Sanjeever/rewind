@@ -96,7 +96,6 @@ class MsgHistory extends React.Component {
     }
   }
   render() {
-    const e = this;
     const data = this.state.data;
     return (
       <components.PageContainer
@@ -119,8 +118,8 @@ class MsgHistory extends React.Component {
           />
         ) : null}
         <reactNativeSpringScrollview.SpringScrollView
-          ref={function (t) {
-            return (e._scrollView = t);
+          ref={(t) => {
+            return (this._scrollView = t);
           }}
           showsVerticalScrollIndicator={false}
         >
@@ -130,7 +129,7 @@ class MsgHistory extends React.Component {
             }}
           />
           {data.map((t, index) =>
-            e._renderItem({
+            this._renderItem({
               item: t,
               index,
             }),

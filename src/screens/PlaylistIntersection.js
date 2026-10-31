@@ -167,7 +167,6 @@ class PlaylistIntersection extends React.PureComponent {
     }
   }
   render() {
-    const e = this;
     const state = this.state;
     const {left, right, selectorShow, data, type} = state;
     const title = type === b.intersection ? locales.INTERSECTION : locales.DIFFERENCE;
@@ -179,8 +178,8 @@ class PlaylistIntersection extends React.PureComponent {
           onTop={this.onTop}
         >
           <reactNativeLargelist.LargeList
-            ref={function (t) {
-              return (e._list = t);
+            ref={(t) => {
+              return (this._list = t);
             }}
             data={[
               {
@@ -191,7 +190,7 @@ class PlaylistIntersection extends React.PureComponent {
               return constants.ITEM_HEIGHT;
             }}
             renderIndexPath={this._renderIndexPath}
-            renderHeader={function () {
+            renderHeader={() => {
               return (
                 <ReactNative.View
                   style={{
@@ -201,14 +200,14 @@ class PlaylistIntersection extends React.PureComponent {
                   <IntersectionHeader
                     left={left}
                     right={right}
-                    onChangePlaylist={function () {
-                      return e.setState({
+                    onChangePlaylist={() => {
+                      return this.setState({
                         selectorShow: true,
                       });
                     }}
                     iLength={data ? data.length : 0}
                     type={type}
-                    toggleType={e.toggleType}
+                    toggleType={this.toggleType}
                   />
                 </ReactNative.View>
               );
@@ -218,8 +217,8 @@ class PlaylistIntersection extends React.PureComponent {
         <PlaylistComparison
           visible={selectorShow}
           onSelect={this.onSelect}
-          onRequestClose={function () {
-            return e.setState({
+          onRequestClose={() => {
+            return this.setState({
               selectorShow: false,
             });
           }}

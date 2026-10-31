@@ -1,3 +1,5 @@
+import _neteaseImage from '../../assets/images/netease.png';
+import _qqmusicImage from '../../assets/images/qqmusic.png';
 import * as constants from '../theme/constants';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
@@ -16,12 +18,11 @@ class InitialLogin extends React.Component {
     this.props.navigation.navigate(t);
   };
   render() {
-    const e = this;
     return (
       <Index.PageContainer
         title={locales.LOG_IN}
-        goBack={function () {
-          return e.props.navigation.goBack();
+        goBack={() => {
+          return this.props.navigation.goBack();
         }}
         headerStyle={{
           marginBottom: 30,
@@ -30,15 +31,15 @@ class InitialLogin extends React.Component {
         <Scrolling.SpringScrollView>
           <ReactNative.View style={b.con}>
             {React.createElement(p, {
-              source: require('../../assets/images/netease.png'),
-              onPress: function () {
-                return e.goTo(providers.netEase);
+              source: _neteaseImage,
+              onPress: () => {
+                return this.goTo(providers.netEase);
               },
             })}
             {React.createElement(p, {
-              source: require('../../assets/images/qqmusic.png'),
-              onPress: function () {
-                return e.goTo(providers.qqMusic);
+              source: _qqmusicImage,
+              onPress: () => {
+                return this.goTo(providers.qqMusic);
               },
             })}
           </ReactNative.View>

@@ -36,7 +36,6 @@ class CreatePlaylist extends React.PureComponent {
       .catch((e) => e);
   };
   render() {
-    const e = this;
     const props = this.props;
     const {showModal, closeModal, createPL} = props;
     return (
@@ -66,8 +65,8 @@ class CreatePlaylist extends React.PureComponent {
             <components.Input
               style={m.textInput}
               placeholder={locales.DEFAULT_MIX_TITLE}
-              onChangeText={function (coverTitle) {
-                return e.setState({
+              onChangeText={(coverTitle) => {
+                return this.setState({
                   coverTitle,
                 });
               }}
@@ -92,10 +91,10 @@ class CreatePlaylist extends React.PureComponent {
               </ReactNative.View>
             </ReactNative.TouchableNativeFeedback>
             <ReactNative.TouchableNativeFeedback
-              onPress={function () {
+              onPress={() => {
                 return createPL({
-                  title: e.state.coverTitle,
-                  img: e.state.coverImg,
+                  title: this.state.coverTitle,
+                  img: this.state.coverImg,
                 });
               }}
             >

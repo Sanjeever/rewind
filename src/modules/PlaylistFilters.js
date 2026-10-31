@@ -23,7 +23,6 @@ class PlaylistFilters extends React.PureComponent {
     });
   };
   render() {
-    const e = this;
     const props = this.props;
     const {visible, onClose, onSearch, currentType} = props;
     return (
@@ -54,7 +53,7 @@ class PlaylistFilters extends React.PureComponent {
               onPress={onClose}
             />
             {services.Netease.playlist_category_names.map((item, index) =>
-              e.renderCategoryItem({
+              this.renderCategoryItem({
                 item,
                 index,
               }),

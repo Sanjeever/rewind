@@ -280,10 +280,9 @@ class NowPlayingModal extends React.PureComponent {
     });
   };
   componentDidMount() {
-    const e = this;
-    this.sub = events.emitter.addListener(names.NowPlayingModal, function (t) {
+    this.sub = events.emitter.addListener(names.NowPlayingModal, (t) => {
       if (t.forceClose === true) {
-        e.forceClose();
+        this.forceClose();
       }
     });
   }
@@ -291,7 +290,6 @@ class NowPlayingModal extends React.PureComponent {
     this.sub.remove?.();
   }
   render() {
-    const e = this;
     const props = this.props;
     const {show, songItem, data, isRound} = props;
     const state = this.state;
@@ -349,8 +347,8 @@ class NowPlayingModal extends React.PureComponent {
                 />
               </ReactNative.TouchableOpacity>
               <ReactNative.TouchableOpacity
-                onPress={function () {
-                  return e.scrollTo();
+                onPress={() => {
+                  return this.scrollTo();
                 }}
                 style={{
                   alignItems: 'center',
@@ -387,8 +385,8 @@ class NowPlayingModal extends React.PureComponent {
           <ReactNative.View style={E.btnsBar}>{this.renderTools()}</ReactNative.View>
           <FadingEdge top={30}>
             <reactNativeLargelist.LargeList
-              ref={function (t) {
-                return (e._list = t);
+              ref={(t) => {
+                return (this._list = t);
               }}
               data={[
                 {

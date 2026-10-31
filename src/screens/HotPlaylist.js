@@ -90,7 +90,9 @@ class HotPlaylist extends React.PureComponent {
   onSubmitEditing = () => {
     const search = this.state.search;
     if (search?.length > 0) {
-      this.setState({submittedSearch: search});
+      this.setState({
+        submittedSearch: search,
+      });
     }
   };
   onSearch = () => {
@@ -133,20 +135,19 @@ class HotPlaylist extends React.PureComponent {
     this.getPlaylists();
   }
   render() {
-    const e = this;
     const state = this.state;
     const {loading, type, data, mainModalShow, search} = state;
     return (
       <components.PageContainer
-        goBack={function () {
-          return e.props.navigation.goBack();
+        goBack={() => {
+          return this.props.navigation.goBack();
         }}
         onTop={this.onTop}
         title={type}
         rightIcon={{
           name: icons.TAG_OUTLINE,
-          onPress: function () {
-            return e.setState({
+          onPress: () => {
+            return this.setState({
               mainModalShow: !mainModalShow,
             });
           },
@@ -179,8 +180,8 @@ class HotPlaylist extends React.PureComponent {
           />
         ) : (
           <reactNativeLargelist.LargeList
-            ref={function (t) {
-              return (e._list = t);
+            ref={(t) => {
+              return (this._list = t);
             }}
             data={[
               {
@@ -197,8 +198,8 @@ class HotPlaylist extends React.PureComponent {
         )}
         <PlaylistFilters
           visible={mainModalShow}
-          onClose={function () {
-            return e.setState({
+          onClose={() => {
+            return this.setState({
               mainModalShow: false,
             });
           }}

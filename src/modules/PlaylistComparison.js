@@ -49,7 +49,6 @@ class PlaylistComparison extends React.PureComponent {
     this.loadPlaylist(this.state.api);
   }
   render() {
-    const e = this;
     const props = this.props;
     const {visible, onRequestClose} = props;
     const playlist = this.state.playlist;
@@ -75,15 +74,15 @@ class PlaylistComparison extends React.PureComponent {
           </TouchableScale>
           <FadingEdge top={30}>
             <reactNativeSpringScrollview.SpringScrollView
-              ref={function (t) {
-                return (e._scrollView = t);
+              ref={(t) => {
+                return (this._scrollView = t);
               }}
               style={{
                 paddingHorizontal: '20%',
               }}
             >
               {playlist.map((item, index) =>
-                e._renderItem({
+                this._renderItem({
                   item,
                   index,
                 }),

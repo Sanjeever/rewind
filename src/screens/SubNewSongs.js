@@ -142,7 +142,6 @@ class SubNewSongs extends React.PureComponent {
     this.loadMV();
   }
   render() {
-    const e = this;
     const state = this.state;
     const {songData, showingMV} = state;
     return (
@@ -165,8 +164,8 @@ class SubNewSongs extends React.PureComponent {
         {songData?.length > 0 ? (
           <reactNativeSpringScrollview.SpringScrollView
             style={v.container}
-            ref={function (t) {
-              return (e.scrollView = t);
+            ref={(t) => {
+              return (this.scrollView = t);
             }}
           >
             {showingMV ? this.renderMV() : this.renderSongs()}

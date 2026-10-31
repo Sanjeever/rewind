@@ -143,7 +143,6 @@ class About extends React.PureComponent {
     });
   };
   render() {
-    const e = this;
     const state = this.state;
     const {ended, speed} = state;
     return (
@@ -158,8 +157,8 @@ class About extends React.PureComponent {
         blur={true}
       >
         <Scrolling.SpringScrollView
-          ref={function (t) {
-            return (e._scrollView = t);
+          ref={(t) => {
+            return (this._scrollView = t);
           }}
           style={{
             padding: 15,

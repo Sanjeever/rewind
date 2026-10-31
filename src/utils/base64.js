@@ -2,7 +2,7 @@ const d = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
 const n = (r) => {
   let e;
   let o = '';
-  for (let t = 0, a = 0, d = 0; t < r.length;) {
+  for (let t = 0, a, d; t < r.length;) {
     if ((a = r.charCodeAt(t)) < 128) {
       o += String.fromCharCode(a);
       t++;
@@ -40,7 +40,7 @@ const f = {
         C += String.fromCharCode(t);
       }
     }
-    return (C = n(C));
+    return n(C);
   },
 };
 export default f;

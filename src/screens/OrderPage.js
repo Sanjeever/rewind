@@ -112,12 +112,11 @@ class OrderPage extends React.PureComponent {
     this.backSubscription?.remove();
   }
   alertChange() {
-    const e = this;
     ReactNative.Alert.alert(locales.WARN, locales.NEED_RELOAD_APP, [
       {
         text: locales.CANCEL,
-        onPress: function () {
-          e.props.navigation.goBack();
+        onPress: () => {
+          this.props.navigation.goBack();
         },
         style: 'cancel',
       },
@@ -128,7 +127,6 @@ class OrderPage extends React.PureComponent {
     ]);
   }
   render() {
-    const e = this;
     const state = this.state;
     const {pages, apis} = state;
     return (
@@ -138,14 +136,14 @@ class OrderPage extends React.PureComponent {
         rightIcon={[
           {
             name: icons.CHECK,
-            onPress: function () {
-              return e.alertChange();
+            onPress: () => {
+              return this.alertChange();
             },
           },
           {
             name: icons.WINDOW_CLOSE,
-            onPress: function () {
-              return e.removeStorage();
+            onPress: () => {
+              return this.removeStorage();
             },
           },
         ]}
@@ -159,8 +157,8 @@ class OrderPage extends React.PureComponent {
             }}
             data={pages}
             renderRow={this.renderPageRow}
-            onReleaseRow={function (a, t) {
-              return e.onReleaseRow(a, t, 'pages');
+            onReleaseRow={(a, t) => {
+              return this.onReleaseRow(a, t, 'pages');
             }}
           />
           <SegmentedControl
@@ -170,8 +168,8 @@ class OrderPage extends React.PureComponent {
             }}
             data={apis}
             renderRow={this.renderApiRow}
-            onReleaseRow={function (a, t) {
-              return e.onReleaseRow(a, t, 'apis');
+            onReleaseRow={(a, t) => {
+              return this.onReleaseRow(a, t, 'apis');
             }}
           />
         </TabbedViewPager>

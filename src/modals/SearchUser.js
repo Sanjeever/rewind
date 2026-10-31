@@ -43,7 +43,6 @@ class SearchUser extends React.PureComponent {
     this.props.onSelected(e);
   };
   render() {
-    const e = this;
     const props = this.props;
     const {isOpen, onModalClose} = props;
     const search = this.state.search;
@@ -52,13 +51,13 @@ class SearchUser extends React.PureComponent {
         <components.PageContainer
           goBack={onModalClose}
           searchText={search}
-          onChangeText={function (search_1) {
-            return e.setState({
+          onChangeText={(search_1) => {
+            return this.setState({
               search: search_1,
             });
           }}
-          onSubmitEditing={function () {
-            return e.searchUser(search);
+          onSubmitEditing={() => {
+            return this.searchUser(search);
           }}
           backIcon={{
             name: icons.WINDOW_CLOSE,
@@ -69,7 +68,7 @@ class SearchUser extends React.PureComponent {
         >
           <reactNativeSpringScrollview.SpringScrollView>
             {this.state.data.map((item, index) =>
-              e._renderItem({
+              this._renderItem({
                 item,
                 index,
               }),

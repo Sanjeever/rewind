@@ -106,11 +106,10 @@ class ProfileHeader extends React.PureComponent {
     });
   };
   componentDidMount() {
-    const e = this;
     this.getUserInfo();
-    this.sub = events.emitter.addListener(names.UserLogined, function () {
+    this.sub = events.emitter.addListener(names.UserLogined, () => {
       setTimeout(() => {
-        e.getUserInfo();
+        this.getUserInfo();
       }, 500);
     });
   }

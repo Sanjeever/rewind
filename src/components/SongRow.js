@@ -137,7 +137,7 @@ var h = function ({style, onPress, name, size}) {
 const y = ({showRank, lastRank, index}) => {
   if (showRank) {
     let l = '';
-    let s = '';
+    let s;
     if (lastRank || lastRank === 0) {
       const o = lastRank - index;
       if (o === 0) {

@@ -40,7 +40,7 @@ class HeaderBar extends React.PureComponent {
       );
     }
     return (
-      <ReactNative.TouchableOpacity disabled={!Boolean(onTop)} onPress={this._onTop}>
+      <ReactNative.TouchableOpacity disabled={!onTop} onPress={this._onTop}>
         <ReactNative.View
           style={{
             flex: 1,

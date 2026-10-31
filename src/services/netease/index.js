@@ -21,7 +21,6 @@ const c = (tracks) => {
 };
 const m = new (class NeteaseService {
   constructor() {
-    var t = this;
     this.login_out = function () {
       return http.cryptoRequest('/weapi/logout', {
         csrf_token: '',
@@ -75,7 +74,7 @@ const m = new (class NeteaseService {
       }
       const remaining = playlist.trackIds.slice(1000);
       if (playlist.tracks.length < playlist.trackIds.length && remaining.length) {
-        const more = () => t.song_detail(remaining);
+        const more = () => this.song_detail(remaining);
         if (loadAll) {
           const response = await more();
           if (response.songs?.length) {

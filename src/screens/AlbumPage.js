@@ -72,7 +72,7 @@ class AlbumPage extends React.PureComponent {
   getAlbum = (e, t) => {
     if (e) {
       switch (t) {
-        case providers.netEase:
+        case providers.netEase: {
           const n = `${e.picUrl}?param=500y500`;
           this.setState({
             title: e.name,
@@ -80,7 +80,8 @@ class AlbumPage extends React.PureComponent {
           });
           this.netEaseAlbum(e.id);
           break;
-        case providers.qqMusic:
+        }
+        case providers.qqMusic: {
           const i = e.albumMID || e.mid || e.albummid;
           const title = e.albumName || e.name || e.albumname;
           const l = `http://y.gtimg.cn/music/photo_new/T002R500x500M000${i}.jpg`;
@@ -89,6 +90,7 @@ class AlbumPage extends React.PureComponent {
             albumImg: l,
           });
           this.qqMusicAlbum(i);
+        }
       }
     }
   };
@@ -308,7 +310,6 @@ class AlbumPage extends React.PureComponent {
     });
   }
   render() {
-    const e = this;
     const state = this.state;
     const {
       followed,
@@ -339,8 +340,8 @@ class AlbumPage extends React.PureComponent {
         )}
         <components.ParallaxScrollView
           onNativeContentOffsetExtract={this._nativeOffset}
-          onRef={function (t) {
-            return (e._list = t);
+          onRef={(t) => {
+            return (this._list = t);
           }}
         >
           <components.ParallaxForeground
@@ -355,7 +356,7 @@ class AlbumPage extends React.PureComponent {
           />
           {data.map((item, index) =>
             React.cloneElement(
-              e._renderItem({
+              this._renderItem({
                 item,
                 index,
               }),
@@ -370,8 +371,8 @@ class AlbumPage extends React.PureComponent {
           <Description
             showModal={showModal}
             albumImg={albumImg}
-            onClose={function () {
-              return e.setState({
+            onClose={() => {
+              return this.setState({
                 showModal: false,
               });
             }}
@@ -423,15 +424,15 @@ class AlbumPage extends React.PureComponent {
           title={title}
           goBack={this.goBack}
           onTop={this.onTop}
-          rightIcon={function () {
+          rightIcon={() => {
             return (
               <OverflowMenu
                 followed={followed}
-                onLike={e.onLikeAlbum}
-                onWebview={e.onWebview}
-                onCopy={e.onCopy}
-                onOpenUrl={e.onOpenUrl}
-                onShare={e.onShare}
+                onLike={this.onLikeAlbum}
+                onWebview={this.onWebview}
+                onCopy={this.onCopy}
+                onOpenUrl={this.onOpenUrl}
+                onShare={this.onShare}
               />
             );
           }}

@@ -78,13 +78,12 @@ class Msg extends React.PureComponent {
     this.getMsg();
   }
   render() {
-    const e = this;
     const data = this.state.data;
     return (
       <components.PageContainer
         title={locales.INBOX}
-        goBack={function () {
-          return e.props.navigation.goBack();
+        goBack={() => {
+          return this.props.navigation.goBack();
         }}
         onTop={this.onTop}
       >
@@ -92,13 +91,13 @@ class Msg extends React.PureComponent {
           <components.Spinkit />
         ) : (
           <reactNativeSpringScrollview.SpringScrollView
-            ref={function (t) {
-              return (e._scrollView = t);
+            ref={(t) => {
+              return (this._scrollView = t);
             }}
             showsVerticalScrollIndicator={false}
           >
             {data.map((t, index) =>
-              e.renderItem({
+              this.renderItem({
                 item: t,
                 index,
               }),

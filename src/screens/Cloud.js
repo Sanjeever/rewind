@@ -91,23 +91,22 @@ class Cloud extends React.Component {
     this.getList();
   }
   render() {
-    const e = this;
     const data = this.state.data;
     return (
       <components.PageContainer
-        goBack={function () {
-          return e.props.navigation.goBack();
+        goBack={() => {
+          return this.props.navigation.goBack();
         }}
         onTop={this.onTop}
         title={locales.CLOUD_DRIVE}
       >
         <reactNativeSpringScrollview.SpringScrollView
-          ref={function (t) {
-            return (e._scrollView = t);
+          ref={(t) => {
+            return (this._scrollView = t);
           }}
         >
           {data.map((t, n) =>
-            e._renderItem({
+            this._renderItem({
               item: t,
               index: n,
             }),

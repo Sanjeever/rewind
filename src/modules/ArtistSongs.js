@@ -71,9 +71,8 @@ class ArtistSongs extends React.PureComponent {
     );
   };
   render() {
-    const e = this;
     return this.props.hotSongs.map((item, index) =>
-      e._renderItem({
+      this._renderItem({
         item,
         index,
       }),

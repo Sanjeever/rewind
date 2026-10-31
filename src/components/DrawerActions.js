@@ -60,11 +60,10 @@ class DrawerActions extends React.PureComponent {
     }
   };
   componentDidMount() {
-    const e = this;
     this.checkNetEaseLogined();
-    this.sub = events.emitter.addListener(names.UserLogined, function () {
+    this.sub = events.emitter.addListener(names.UserLogined, () => {
       setTimeout(() => {
-        e.checkNetEaseLogined();
+        this.checkNetEaseLogined();
       }, 500);
     });
   }
@@ -72,19 +71,18 @@ class DrawerActions extends React.PureComponent {
     this.sub.remove();
   }
   render() {
-    const e = this;
     return (
       <ReactNative.View style={b.container}>
         {actions.map((t, n) => {
-          if (n < 2 && !e.state.netEaseLogined) {
+          if (n < 2 && !this.state.netEaseLogined) {
             return null;
           }
           return (
             <ReactNative.TouchableNativeFeedback
               key={n}
-              onPress={function () {
+              onPress={() => {
                 requestAnimationFrame(() => {
-                  e.onPress(t);
+                  this.onPress(t);
                 });
               }}
             >

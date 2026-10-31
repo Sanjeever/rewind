@@ -25,8 +25,8 @@ const g = {
       return '0:00';
     }
     const t = Math.floor(e / 60);
-    let a = Math.floor(e - 60 * t);
-    return `${t}:${(a = a < 10 ? `0${a}` : a)}`;
+    const a = Math.floor(e - 60 * t);
+    return `${t}:${a < 10 ? `0${a}` : a}`;
   },
   isToday: function (e) {
     const t = useDate(e);

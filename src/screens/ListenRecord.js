@@ -181,7 +181,6 @@ class ListenRecord extends React.PureComponent {
     this.init();
   }
   render() {
-    const e = this;
     return (
       <ReactNative.View style={D.container}>
         <components.Background />
@@ -200,7 +199,7 @@ class ListenRecord extends React.PureComponent {
                   paddingBottom: 50,
                 }}
               >
-                {e.renderScenes(g[t])}
+                {this.renderScenes(g[t])}
               </ReactNative.View>
             ))}
           </TabbedViewPager>

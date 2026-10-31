@@ -54,28 +54,26 @@ class LanguagePage extends React.PureComponent {
     this.backSubscription?.remove();
   }
   alertChange() {
-    const e = this;
     const language = this.state.language;
     if (languageModule.language !== language) {
       ReactNative.Alert.alert(locales.CONFIRM_CHANGE_LANGUAGE, locales.NEED_RELOAD_APP, [
         {
           text: locales.CANCEL,
-          onPress: function () {
-            e.props.navigation.goBack();
+          onPress: () => {
+            this.props.navigation.goBack();
           },
           style: 'cancel',
         },
         {
           text: locales.CONFIRM,
-          onPress: function () {
-            return e.confirmChange(language);
+          onPress: () => {
+            return this.confirmChange(language);
           },
         },
       ]);
     }
   }
   render() {
-    const e = this;
     const language = this.state.language;
     return (
       <components.PageContainer
@@ -83,8 +81,8 @@ class LanguagePage extends React.PureComponent {
         goBack={this.props.navigation.goBack}
         rightIcon={{
           name: icons.CHECK,
-          onPress: function () {
-            return e.alertChange();
+          onPress: () => {
+            return this.alertChange();
           },
         }}
       >
@@ -100,8 +98,8 @@ class LanguagePage extends React.PureComponent {
               singer={n.code}
               index={t}
               isChecked={n.code === language}
-              onPress={function () {
-                return e.changeLanguage(n.code);
+              onPress={() => {
+                return this.changeLanguage(n.code);
               }}
             />
           ))}

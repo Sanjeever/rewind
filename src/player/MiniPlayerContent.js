@@ -146,11 +146,10 @@ class MiniPlayerContent extends React.PureComponent {
     );
   };
   render() {
-    const e = this;
     return (
       <Pager
-        ref={function (t) {
-          return (e.pager = t);
+        ref={(t) => {
+          return (this.pager = t);
         }}
         onPageSelected={this.onPageSelected}
         initialPage={1}

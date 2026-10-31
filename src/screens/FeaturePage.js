@@ -9,7 +9,6 @@ class FeaturePage extends React.PureComponent {
     this.props.navigation.navigate(e);
   };
   render() {
-    const e = this;
     const t = [
       {
         title: locales.LANGUAGE,
@@ -47,8 +46,8 @@ class FeaturePage extends React.PureComponent {
     return (
       <components.PageContainer
         title={locales.FEATURE}
-        goBack={function () {
-          return e.props.navigation.goBack();
+        goBack={() => {
+          return this.props.navigation.goBack();
         }}
       >
         <reactNativeSpringScrollview.SpringScrollView
@@ -65,8 +64,8 @@ class FeaturePage extends React.PureComponent {
               onPress={
                 t.onPress
                   ? t.onPress
-                  : function () {
-                      return e.onPage(t.page);
+                  : () => {
+                      return this.onPage(t.page);
                     }
               }
             />

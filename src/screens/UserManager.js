@@ -130,10 +130,9 @@ class UserManager extends React.PureComponent {
     );
   };
   componentDidMount() {
-    const e = this;
     this.getInfo();
-    this.onSelectedUser = events.emitter.addListener(names.SelectedUser, function (t) {
-      e.onSelected(t);
+    this.onSelectedUser = events.emitter.addListener(names.SelectedUser, (t) => {
+      this.onSelected(t);
     });
     this.backSubscription = ReactNative.BackHandler.addEventListener(
       'hardwareBackPress',
@@ -146,7 +145,6 @@ class UserManager extends React.PureComponent {
     this.backSubscription?.remove();
   }
   render() {
-    const e = this;
     const state = this.state;
     const {users, showSearchUser, deleting} = state;
     return (
@@ -170,7 +168,7 @@ class UserManager extends React.PureComponent {
       >
         <reactNativeSpringScrollview.SpringScrollView>
           {users.map((item, index) =>
-            e.renderItem({
+            this.renderItem({
               item,
               index,
             }),
@@ -178,8 +176,8 @@ class UserManager extends React.PureComponent {
         </reactNativeSpringScrollview.SpringScrollView>
         <modals.SearchUser
           isOpen={showSearchUser}
-          onModalClose={function () {
-            return e.setState({
+          onModalClose={() => {
+            return this.setState({
               showSearchUser: false,
             });
           }}

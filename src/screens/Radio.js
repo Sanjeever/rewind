@@ -101,14 +101,13 @@ class Radio extends React.PureComponent {
     this.getUserRadio();
   }
   render() {
-    const e = this;
     const state = this.state;
     const {loaded, radios} = state;
     return (
       <components.PageContainer
         title={locales.RADIOS}
-        goBack={function () {
-          return e.props.navigation.goBack();
+        goBack={() => {
+          return this.props.navigation.goBack();
         }}
         onTop={this.onTop}
         rightIcon={{
@@ -118,13 +117,13 @@ class Radio extends React.PureComponent {
       >
         {loaded === false ? <components.Spinkit style={g.loading} /> : null}
         <reactNativeSpringScrollview.SpringScrollView
-          ref={function (t) {
-            return (e._scrollView = t);
+          ref={(t) => {
+            return (this._scrollView = t);
           }}
           onLoading={this.getMore}
         >
           {radios.map((t, index) =>
-            e._renderItem({
+            this._renderItem({
               item: t,
               index,
             }),

@@ -7,13 +7,14 @@ class ArtistAlbums extends React.PureComponent {
   formatListItem = (e) => {
     const t = {};
     switch (this.props.api) {
-      case providers.netEase:
+      case providers.netEase: {
         const r = utils.timeFormatter.localeString(e.publishTime);
         t.title = e.name;
         t.subtitle = `${e.size} ${locales.SONG_COUNT}, ${r}`;
         t.img = `${e.picUrl}?param=150y150`;
         t.trans = utils.delve(e, 'alias.0') || utils.delve(e, 'transNames.0');
         break;
+      }
       case providers.qqMusic:
         t.title = e.albumName;
         t.subtitle = `${e.latest_song.song_count} ${locales.SONG_COUNT}, ${e.pubTime}`;
@@ -48,9 +49,8 @@ class ArtistAlbums extends React.PureComponent {
     });
   };
   render() {
-    const e = this;
     return this.props.albums.map((t, index) =>
-      e._renderItem({
+      this._renderItem({
         item: t,
         index,
       }),

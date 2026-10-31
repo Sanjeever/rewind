@@ -196,21 +196,20 @@ class CollectModal extends React.PureComponent {
     await users.removeNetEasePlaylistCache(pid);
   };
   componentDidMount() {
-    const e = this;
-    this.sub = events.emitter.addListener(names.CollectModal, function ({api, song, data}) {
+    this.sub = events.emitter.addListener(names.CollectModal, ({api, song, data}) => {
       if (api) {
-        e.setState({
+        this.setState({
           api,
           mainModalShow: true,
         });
-        e.playlist(api);
-        e.getLocalPlaylist();
+        this.playlist(api);
+        this.getLocalPlaylist();
         if (song) {
-          e.setState({
+          this.setState({
             songItem: song,
           });
         } else if (data) {
-          e.setState({
+          this.setState({
             data,
           });
         }
@@ -221,7 +220,6 @@ class CollectModal extends React.PureComponent {
     this.sub.remove?.();
   }
   render() {
-    const e = this;
     const state = this.state;
     const {playlist, locals} = state;
     return (
@@ -243,8 +241,8 @@ class CollectModal extends React.PureComponent {
           <PlaylistChoice onPress={this.onTop} content={locales.ADD_TO_MIX} />
           <FadingEdge top={30}>
             <reactNativeSpringScrollview.SpringScrollView
-              ref={function (t) {
-                return (e._scrollView = t);
+              ref={(t) => {
+                return (this._scrollView = t);
               }}
             >
               <React.Fragment>
@@ -253,15 +251,15 @@ class CollectModal extends React.PureComponent {
                     key={a}
                     title={t.title}
                     img={t.img}
-                    onPress={function () {
-                      return e.onLocalCollect(a);
+                    onPress={() => {
+                      return this.onLocalCollect(a);
                     }}
                     trackCount={t.tracks.length}
                   />
                 ))}
               </React.Fragment>
               {playlist.map((item, index) =>
-                e._renderItem({
+                this._renderItem({
                   item,
                   index,
                 }),

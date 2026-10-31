@@ -185,14 +185,13 @@ class CustomPlaylist extends React.PureComponent {
     });
   }
   render() {
-    const e = this;
     const img = this.props.route.params.playlist.img;
     return (
       <ReactNative.View style={x.container}>
         <components.Background />
         <reactNativeLargelist.LargeList
-          ref={function (t) {
-            return (e._list = t);
+          ref={(t) => {
+            return (this._list = t);
           }}
           data={[
             {
@@ -203,13 +202,13 @@ class CustomPlaylist extends React.PureComponent {
             return constants.ITEM_HEIGHT;
           }}
           renderIndexPath={this._renderIndexPath}
-          renderHeader={function () {
+          renderHeader={() => {
             return (
               <ReactNative.View>
                 <components.PlaylistForeground
                   coverImgUrl={img}
-                  onMult={function () {
-                    return e.setState({
+                  onMult={() => {
+                    return this.setState({
                       showMult: true,
                     });
                   }}
@@ -227,8 +226,8 @@ class CustomPlaylist extends React.PureComponent {
           goBack={this.goBack}
           onTop={this.onTop}
           textInput={!this.state.loading}
-          onChangeText={function (t) {
-            return e.searchSong(t);
+          onChangeText={(t) => {
+            return this.searchSong(t);
           }}
           opacity={this._nativeOffset.y.interpolate({
             inputRange: [0, constants_DEVICE_WIDTH - 100],
@@ -240,8 +239,8 @@ class CustomPlaylist extends React.PureComponent {
         />
         <modals.MultiplySelectModal
           visible={this.state.showMult}
-          onClose={function () {
-            return e.setState({
+          onClose={() => {
+            return this.setState({
               showMult: false,
             });
           }}

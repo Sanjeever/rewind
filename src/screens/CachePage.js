@@ -60,7 +60,10 @@ class CachePage extends React.PureComponent {
   getCacheSize = async () => {
     try {
       const cacheSize = await files.getCurrentCache();
-      if (this.mounted) this.setState({cacheSize});
+      if (this.mounted)
+        this.setState({
+          cacheSize,
+        });
     } catch (error) {
       toast('读取缓存大小失败：' + error.message);
     }
@@ -107,19 +110,18 @@ class CachePage extends React.PureComponent {
     this.saveStorageCacheSize();
   }
   render() {
-    const e = this;
     const state = this.state;
     const {cacheSize, maxCacheSize} = state;
     return (
       <components.PageContainer
         title={locales.CACHE}
-        goBack={function () {
-          return e.props.navigation.goBack();
+        goBack={() => {
+          return this.props.navigation.goBack();
         }}
         rightIcon={{
           name: icons.BACKUP_RESTORE,
-          onPress: function () {
-            return e.removeSettings();
+          onPress: () => {
+            return this.removeSettings();
           },
         }}
       >

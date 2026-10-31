@@ -1,7 +1,6 @@
 import {toast} from '../native/toast';
 import Clipboard from '@react-native-clipboard/clipboard';
 import * as _appStorage from './../storage/index.js';
-import _assertThisInitialized from '@babel/runtime/helpers/assertThisInitialized';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
 import * as reactNativeLargelist from './../components/Scrolling.js';
@@ -358,11 +357,7 @@ class Playlist extends React.PureComponent {
       if (lastPlayedSong) {
         const s = playlist.findIndex((e) => e.id === lastPlayedSong.id);
         if (s >= 0) {
-          actions.playMusic(
-            lastPlayedSong,
-            s,
-            _assertThisInitialized(_assertThisInitialized(this)),
-          );
+          actions.playMusic(lastPlayedSong, s, this);
           this._list?.scrollTo({
             x: 0,
             y: (s + 1) * constants.ITEM_HEIGHT,
@@ -372,7 +367,7 @@ class Playlist extends React.PureComponent {
           lastPlayedSong: null,
         });
       } else {
-        actions.playMusic(playlist[0], 0, _assertThisInitialized(_assertThisInitialized(this)));
+        actions.playMusic(playlist[0], 0, this);
       }
     }
   };
@@ -391,18 +386,10 @@ class Playlist extends React.PureComponent {
         singer={d.artist}
         alias={d.alias}
         onPress={() => {
-          return actions.playMusic(
-            item,
-            index,
-            _assertThisInitialized(_assertThisInitialized(this)),
-          );
+          return actions.playMusic(item, index, this);
         }}
         detail={() => {
-          return actions.onDetail(
-            item,
-            index,
-            _assertThisInitialized(_assertThisInitialized(this)),
-          );
+          return actions.onDetail(item, index, this);
         }}
         addToQueue={function () {
           return actions.addToQueue(item, api);
@@ -467,13 +454,12 @@ class Playlist extends React.PureComponent {
     });
   };
   componentDidMount() {
-    const e = this;
     const params = this.props.route.params;
     this.switchPlaylist(params);
     this.deleteSub = events.emitter.addListener(
       names.DeleteFromPlaylist,
       async ({api, trackid} = {}) => {
-        const playlistId = e.state.playlistId;
+        const playlistId = this.state.playlistId;
         if (api) {
           let i;
           if (api === providers.netEase) {
@@ -486,7 +472,7 @@ class Playlist extends React.PureComponent {
               toast(error.message);
               return;
             }
-            i = e.state.playlist.filter((e) => e.id !== trackid);
+            i = this.state.playlist.filter((e) => e.id !== trackid);
           } else if (api === providers.qqMusic) {
             const l = params.playlist;
             try {
@@ -495,31 +481,31 @@ class Playlist extends React.PureComponent {
               toast(error.message);
               return;
             }
-            i = e.state.playlist.filter((e) => e.songid !== trackid);
+            i = this.state.playlist.filter((e) => e.songid !== trackid);
           }
-          e.setState({
+          this.setState({
             playlist: i,
           });
           toast(locales.DELETE_SUCCESS);
         } else {
-          e.onRefresh();
+          this.onRefresh();
         }
       },
     );
-    this.playerSub = events.emitter.addListener(names.Player, function (t) {
+    this.playerSub = events.emitter.addListener(names.Player, (t) => {
       const {song, api} = t;
       if (t.type !== 'clearPlayingList') {
-        const n = e.state.playlist;
+        const n = this.state.playlist;
         if (song && api === providers.netEase) {
           const playingIndex = n.findIndex((e) => e.id === song.id);
           if (playingIndex >= 0) {
-            e.setState({
+            this.setState({
               playingIndex,
             });
           }
         }
       } else {
-        e.setState({
+        this.setState({
           playingIndex: -1,
         });
       }
@@ -530,15 +516,14 @@ class Playlist extends React.PureComponent {
     this.playerSub.remove();
   }
   render() {
-    const e = this;
     const state = this.state;
     const {api, coverImgUrl, name, trackCount, id, creator} = state;
     return (
       <ReactNative.View style={I.container}>
         <components.Background />
         <reactNativeLargelist.LargeList
-          ref={function (t) {
-            return (e._list = t);
+          ref={(t) => {
+            return (this._list = t);
           }}
           data={[
             {
@@ -556,7 +541,7 @@ class Playlist extends React.PureComponent {
             return <components.Spinkit />;
           }}
           onNativeContentOffsetExtract={this._nativeOffset}
-          renderHeader={function () {
+          renderHeader={() => {
             return (
               <ReactNative.View>
                 <components.PlaylistForeground
@@ -564,39 +549,39 @@ class Playlist extends React.PureComponent {
                   name={name}
                   api={api}
                   trackCount={trackCount}
-                  onRestore={e.onRestore}
-                  showRestore={e.state.showRestore}
-                  subscribed={e.state.subscribed}
-                  onSubscribe={function () {
-                    return e.onSubscribe(id);
+                  onRestore={this.onRestore}
+                  showRestore={this.state.showRestore}
+                  subscribed={this.state.subscribed}
+                  onSubscribe={() => {
+                    return this.onSubscribe(id);
                   }}
-                  savePic={function () {
-                    return actions.savePic(coverImgUrl, e.state.name);
+                  savePic={() => {
+                    return actions.savePic(coverImgUrl, this.state.name);
                   }}
-                  onSort={e.onSort}
-                  orderText={e.state.orderText}
-                  onSortText={function () {
-                    return e.onSortText(e.state.sortMode);
+                  onSort={this.onSort}
+                  orderText={this.state.orderText}
+                  onSortText={() => {
+                    return this.onSortText(this.state.sortMode);
                   }}
-                  onHeartMode={function () {
-                    return actions.onHeartMode(e);
+                  onHeartMode={() => {
+                    return actions.onHeartMode(this);
                   }}
-                  heartMode={e.state.heartMode}
-                  onMult={function () {
-                    return e.setState({
+                  heartMode={this.state.heartMode}
+                  onMult={() => {
+                    return this.setState({
                       showMult: true,
                     });
                   }}
-                  lastPlayedSong={e.state.lastPlayedSong}
-                  onPlay={e.onLastPlay}
-                  onInsert={e.onInsertLastPlayed}
-                  isCreatedByMe={e.state.isCreatedByMe}
-                  onWebview={e.onWebview}
+                  lastPlayedSong={this.state.lastPlayedSong}
+                  onPlay={this.onLastPlay}
+                  onInsert={this.onInsertLastPlayed}
+                  isCreatedByMe={this.state.isCreatedByMe}
+                  onWebview={this.onWebview}
                   creator={creator}
-                  onUser={e.onUser}
-                  onCopy={e.onCopy}
-                  onOpenUrl={e.onOpenUrl}
-                  onShare={e.onShare}
+                  onUser={this.onUser}
+                  onCopy={this.onCopy}
+                  onOpenUrl={this.onOpenUrl}
+                  onShare={this.onShare}
                 />
               </ReactNative.View>
             );
@@ -613,8 +598,8 @@ class Playlist extends React.PureComponent {
           goBack={this.goBack}
           onTop={this.onTop}
           textInput={!this.state.loading}
-          onChangeText={function (t) {
-            return e.searchSong(t);
+          onChangeText={(t) => {
+            return this.searchSong(t);
           }}
           searchText={this.state.searchText}
           blur={true}
@@ -622,8 +607,8 @@ class Playlist extends React.PureComponent {
         />
         <modals.MultiplySelectModal
           visible={this.state.showMult}
-          onClose={function () {
-            return e.setState({
+          onClose={() => {
+            return this.setState({
               showMult: false,
             });
           }}

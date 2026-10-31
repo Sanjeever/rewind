@@ -197,7 +197,6 @@ class Cover extends React.Component {
     return song !== e.song || showTool !== e.showTool || url !== e.url || playState !== e.playState;
   }
   render() {
-    const e = this;
     const props = this.props;
     const {url, containerStyle} = props;
     return (
@@ -210,8 +209,8 @@ class Cover extends React.Component {
           {url !== '' ? this.renderCoverImage() : null}
         </ReactNative.View>
         <Pager
-          ref={function (t) {
-            return (e.pager = t);
+          ref={(t) => {
+            return (this.pager = t);
           }}
           onPageSelected={this.onPageSelected}
           initialPage={1}

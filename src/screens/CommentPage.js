@@ -31,7 +31,7 @@ class CommentPage extends React.PureComponent {
   };
   getComment = (e, t) => {
     switch (t) {
-      case providers.netEase:
+      case providers.netEase: {
         const id = e.rid || e.id;
         const isRadio = !!e.rid;
         this.NeteaseComment({
@@ -39,9 +39,11 @@ class CommentPage extends React.PureComponent {
           isRadio,
         });
         break;
-      case providers.qqMusic:
+      }
+      case providers.qqMusic: {
         const r = e.id || e.songid;
         this.QQMusicCommnet(r);
+      }
     }
   };
   QQMusicCommnet = (e) => {
@@ -397,7 +399,6 @@ class CommentPage extends React.PureComponent {
     this.init();
   }
   render() {
-    const e = this;
     const state = this.state;
     const {loaded, data, showWordscloud, wordscloud, hotComments, song, title, loadWordsCloudDone} =
       state;
@@ -418,15 +419,15 @@ class CommentPage extends React.PureComponent {
           <components.Spinkit />
         ) : (
           <reactNativeSpringScrollview.SpringScrollView
-            ref={function (t) {
-              return (e._scrollView = t);
+            ref={(t) => {
+              return (this._scrollView = t);
             }}
             onLoading={this.getMore}
             loadingFooter={ParallaxList}
           >
             {this.renderHeader()}
             {data.map((item, index) =>
-              e._renderItem({
+              this._renderItem({
                 item,
                 index,
               }),
@@ -435,8 +436,8 @@ class CommentPage extends React.PureComponent {
         )}
         <ReactNative.Modal
           visible={showWordscloud}
-          onRequestClose={function () {
-            return e.setState({
+          onRequestClose={() => {
+            return this.setState({
               showWordscloud: false,
             });
           }}
@@ -452,8 +453,8 @@ class CommentPage extends React.PureComponent {
               hotComments={hotComments}
               wordscloud={wordscloud}
               song={song}
-              onClose={function () {
-                return e.setState({
+              onClose={() => {
+                return this.setState({
                   showWordscloud: false,
                 });
               }}

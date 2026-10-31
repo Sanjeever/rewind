@@ -218,15 +218,14 @@ class MusicHistory extends React.Component {
     this.loadHistory();
   }
   render() {
-    const e = this;
     const state = this.state;
     const {showModal, netEase, qqMusic, local} = state;
     const c = this.getData();
     return (
       <components.PageContainer
         title={locales.RECENT_PLAY}
-        goBack={function () {
-          return e.props.navigation.goBack();
+        goBack={() => {
+          return this.props.navigation.goBack();
         }}
         rightIcon={{
           name: icons.CHECKBOX_MULTIPLE_MARKED_CIRCLE_OUTLINE,
@@ -235,8 +234,8 @@ class MusicHistory extends React.Component {
         onTop={this.onTop}
       >
         <reactNativeLargelist.LargeList
-          ref={function (t) {
-            return (e._list = t);
+          ref={(t) => {
+            return (this._list = t);
           }}
           data={c}
           heightForIndexPath={this._heightForIndexPath}
@@ -246,8 +245,8 @@ class MusicHistory extends React.Component {
         />
         <HistorySelection
           isOpen={showModal}
-          onClosed={function () {
-            e.setState({
+          onClosed={() => {
+            this.setState({
               showModal: false,
             });
           }}

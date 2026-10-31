@@ -1,3 +1,5 @@
+import _neteaseImage from '../../assets/images/netease.png';
+import _qqmusicImage from '../../assets/images/qqmusic.png';
 import {toast} from '../native/toast';
 import React from 'react';
 import {Image, Keyboard, StyleSheet, View} from 'react-native';
@@ -16,8 +18,8 @@ import SongSearchResults from '../modules/SongSearchResults';
 import SearchSuggestions from '../modules/SearchSuggestions';
 import {searchHistory} from '../storage/history';
 const providerImages = {
-  netEase: require('../../assets/images/netease.png'),
-  qqMusic: require('../../assets/images/qqmusic.png'),
+  netEase: _neteaseImage,
+  qqMusic: _qqmusicImage,
 };
 const resultComponents = [
   SongSearchResults,

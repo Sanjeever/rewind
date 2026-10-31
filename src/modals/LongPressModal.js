@@ -75,9 +75,8 @@ class LongPressModal extends React.PureComponent {
     ReactNative.Linking.openURL(e);
   };
   componentDidMount() {
-    const e = this;
-    this.sub = events.emitter.addListener(names.LongPressModal, function ({item}) {
-      e.setState({
+    this.sub = events.emitter.addListener(names.LongPressModal, ({item}) => {
+      this.setState({
         item,
         obj: trackInfo.extractFullInfo(item),
         visible: true,
@@ -88,7 +87,6 @@ class LongPressModal extends React.PureComponent {
     this.sub.remove?.();
   }
   render() {
-    const e = this;
     const state = this.state;
     const {visible, item} = state;
     const l = this.getImg(item);
@@ -127,22 +125,22 @@ class LongPressModal extends React.PureComponent {
               />
               <components.Icon
                 name={icons.MUSIC_CIRCLE_OUTLINE}
-                onPress={function () {
-                  return e.onPressIcon(C);
+                onPress={() => {
+                  return this.onPressIcon(C);
                 }}
                 color={'#000'}
               />
               <components.Icon
                 name={icons.ACCOUNT_MUSIC_OUTLINE}
-                onPress={function () {
-                  return e.onPressIcon(y);
+                onPress={() => {
+                  return this.onPressIcon(y);
                 }}
                 color={'#000'}
               />
               <components.Icon
                 name={icons.ALBUM}
-                onPress={function () {
-                  return e.onPressIcon(I);
+                onPress={() => {
+                  return this.onPressIcon(I);
                 }}
                 color={'#000'}
               />

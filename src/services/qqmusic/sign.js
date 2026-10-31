@@ -8,7 +8,7 @@ export const qmSign = function (n) {
   const d = base64
     .encode(String.fromCodePoint(...e))
     .replace(/=+$/, '')
-    .replace(/[\/+]/g, '')
+    .replace(/[/+]/g, '')
     .toLowerCase();
   return `zzb${t}${d}${o}`;
 };
@@ -16,7 +16,7 @@ export const getSecuritySign = function (n) {
   for (var r = Math.floor(7 * Math.random() + 10), e = 'zza', t = 0; t < r; t++) {
     e += 'abcdefghijklmnopqrstuvwxyz0123456789'[Math.floor(36 * Math.random())];
   }
-  return (e += d(`CJBPACrRuNy7${n}`));
+  return e + d(`CJBPACrRuNy7${n}`);
 };
 var f = [212, 45, 80, 68, 195, 163, 163, 203, 157, 220, 254, 91, 204, 79, 104, 6];
 var c = [21, 4, 9, 26, 16, 20, 27, 30];
