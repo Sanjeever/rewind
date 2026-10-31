@@ -39,7 +39,6 @@
     "lodash": "4.17.21",
     "lottie-react-native": "7.5.0",
     "lrc-kit": "1.2.1",
-    "lru-cache": "11.2.2",
     "pinyin-pro": "3.27.0",
     "qrcode-generator": "2.0.4",
     "react": "19.3.0",

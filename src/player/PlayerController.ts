@@ -28,7 +28,6 @@ import wakeLock from '../native/wakeLock';
 import {isUsableFile} from '../storage/files';
 import lastTime from '../storage/lastTime';
 import {musicHistory} from '../storage/history';
-import cache from './cache';
 import lyricPreferences from './lyricPreferences';
 import {selectQueue} from './queue';
 import trackUrl from './trackUrl';
@@ -88,9 +87,6 @@ export default class PlayerController extends React.PureComponent<PlayerProps, P
   resumeAfterFocus = false;
   playbackRequest = 0;
   audioFocusType: string | null = null;
-  cachedGetWebMusicUrl = cache((request, api) =>
-    trackUrl.getUrl(api, request, this.props.settings.defaultHighQuality),
-  );
   state: PlayerState = {
     url: '',
     playState: 'paused',
@@ -321,7 +317,7 @@ export default class PlayerController extends React.PureComponent<PlayerProps, P
       else if (api === providers.local) {
         source = command.song.path;
         this.resources.loadArtwork(info.localAlbumId, command.song, request);
-      } else source = await this.cachedGetWebMusicUrl(command, api);
+      } else source = await trackUrl.getUrl(api, command, this.props.settings.defaultHighQuality);
       if (request !== this.playbackRequest) return;
       if (typeof source !== 'string' || !source) throw new Error('未取得可播放地址');
       this.preparePlay(source, request);

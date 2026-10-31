@@ -143,7 +143,6 @@ async function controller() {
     '../storage/history': {
       musicHistory: (song: TrackFields) => calls.history.push(song),
     },
-    './cache': asDefault(<T>(request: T) => request),
     './lyricPreferences': asDefault({
       save: (_key: string, mode: unknown) => calls.preferences.push(mode),
     }),

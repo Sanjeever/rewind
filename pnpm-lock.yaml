@@ -53,9 +53,6 @@ importers:
       lrc-kit:
         specifier: 1.2.1
         version: 1.2.1
-      lru-cache:
-        specifier: 11.2.2
-        version: 11.2.2
       pinyin-pro:
         specifier: 3.27.0
         version: 3.27.0
@@ -2347,10 +2344,6 @@ packages:
 
   lrc-kit@1.2.1:
     resolution: {integrity: sha512-Ukfn5fleQEnl3ar5hmaI52HFrFQ6Xo5rM7gHcXpy9oXpdtxzZU50bN6EpO9wPeo9mFkJ4ojlKAWbuLijQUdjhg==}
-
-  lru-cache@11.2.2:
-    resolution: {integrity: sha512-F9ODfyqML2coTIsQpSkRHnLSZMtkU8Q+mSfcaIyKwy58u+8k5nvAYeiNhsyMARvzNcXJ9QfWVrcPsC9e9rAxtg==}
-    engines: {node: 20 || >=22}
 
   lru-cache@5.1.1:
     resolution: {integrity: sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w==}
@@ -6150,8 +6143,6 @@ snapshots:
       react-native: 0.88.1(@babel/core@7.26.10)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.88.1(@babel/core@7.26.10))(@types/react@19.3.0)(react@19.3.0)
 
   lrc-kit@1.2.1: {}
-
-  lru-cache@11.2.2: {}
 
   lru-cache@5.1.1:
     dependencies:
