@@ -1,8 +1,8 @@
 import type {ScreenProps} from '../navigation/types';
 import type {Provider} from '../services/providers';
 import type {TrackFields, TrackId} from '../services/track';
-import type {CommentItem, CommentReply} from './comments/formatItem';
-import {isNeteaseComment} from './comments/formatItem';
+import type {CommentItem, CommentReply} from '../features/comments/formatItem';
+import {isNeteaseComment} from '../features/comments/formatItem';
 import {errorMessage} from '../utils/types';
 import {toast} from '../native/toast';
 import * as React from 'react';
@@ -16,10 +16,10 @@ import locales from '../locales/index';
 import * as services from '../services/index';
 import * as utils from '../utils/index';
 import * as trackInfo from '../services/trackInfo';
-import commentSegmentation from './../modules/commentSegmentation';
-import CommentCard from './../modules/CommentCard';
-import * as formatItem from './comments/formatItem';
-import CommentAnalysis from './../modules/CommentAnalysis';
+import commentSegmentation from '../features/comments/commentSegmentation';
+import CommentCard from '../features/comments/CommentCard';
+import * as formatItem from '../features/comments/formatItem';
+import CommentAnalysis from '../features/comments/CommentAnalysis';
 const w = (e: number) => e;
 type SongInfo = ReturnType<typeof trackInfo.extractFullInfo>;
 interface State {

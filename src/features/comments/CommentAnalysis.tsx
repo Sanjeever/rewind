@@ -1,15 +1,15 @@
-import Pager from './../components/Pager';
-import Text from './../components/Text';
+import Pager from '../../components/Pager';
+import Text from '../../components/Text';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
-import * as reactNativeSpringScrollview from './../components/Scrolling';
-import * as components from '../components/index';
-import * as constants from '../theme/constants';
-import * as utils from '../utils/index';
+import * as reactNativeSpringScrollview from '../../components/Scrolling';
+import * as components from '../../components/index';
+import * as constants from '../../theme/constants';
+import * as utils from '../../utils/index';
 import CommentBubble from './CommentBubble';
-import type {CommentItem} from '../screens/comments/formatItem';
-import {isNeteaseComment} from '../screens/comments/formatItem';
-import type {extractFullInfo} from '../services/trackInfo';
+import type {CommentItem} from './formatItem';
+import {isNeteaseComment} from './formatItem';
+import type {extractFullInfo} from '../../services/trackInfo';
 import type {PagerViewOnPageSelectedEvent} from 'react-native-pager-view';
 interface Props {
   hotComments: CommentItem[];

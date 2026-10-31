@@ -1,7 +1,7 @@
 import {jest} from '@jest/globals';
 import assert from 'node:assert/strict';
-import type {OnlineProvider} from '../services/providers';
-import type {SearchHistoryEntry} from '../storage/models';
+import type {OnlineProvider} from '../../services/providers';
+import type {SearchHistoryEntry} from '../../storage/models';
 async function suggestions(
   storage: {load(): Promise<SearchHistoryEntry[]>; remove(): Promise<void>} = {
     load: async () => [],
@@ -34,23 +34,23 @@ async function suggestions(
       Object.assign(callback, {
         cancel() {},
       }),
-    '../components/FadingEdge': {},
-    '../components/Scrolling': {
+    '../../components/FadingEdge': {},
+    '../../components/Scrolling': {
       SpringScrollView: undefined,
     },
-    '../components': {
+    '../../components': {
       Icon: undefined,
     },
-    '../components/Text': {},
-    '../theme/constants': {
+    '../../components/Text': {},
+    '../../theme/constants': {
       STATUS_BAR_HEIGHT: undefined,
     },
-    '../theme/icons': {},
-    '../storage': {
+    '../../theme/icons': {},
+    '../../storage': {
       storage,
     },
-    '../storage/keys': {},
-    '../services': {
+    '../../storage/keys': {},
+    '../../services': {
       Netease: {
         search_suggest: () => request('netEase'),
       },
@@ -58,7 +58,7 @@ async function suggestions(
         search_suggest: () => request('qqMusic'),
       },
     },
-    '../screens/search/sections': {
+    './sections': {
       SECTION_KEYS: {
         songs: 'songs',
         artists: 'artists',

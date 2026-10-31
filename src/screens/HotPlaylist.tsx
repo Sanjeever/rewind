@@ -5,7 +5,7 @@ import ParallaxList from '../components/ParallaxList';
 import providers from '../services/providers';
 import * as constants from '../theme/constants';
 import icons from '../theme/icons';
-import PlaylistSearchResults from './../modules/PlaylistSearchResults';
+import PlaylistSearchResults from '../features/search/PlaylistSearchResults';
 import * as services from '../services/index';
 import PlaylistFilters from './../modules/PlaylistFilters';
 import type {Playlist} from '../storage/models';

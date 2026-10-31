@@ -1,15 +1,15 @@
 import React from 'react';
 import {StyleSheet, View} from 'react-native';
-import {LargeList} from '../components/Scrolling';
-import {SongRow, Spinkit, TextButton} from '../components';
-import Text from '../components/Text';
-import {ITEM_HEIGHT} from '../theme/constants';
-import {searchSongs} from '../services/search';
-import {getAlias} from '../services/trackFields';
-import {toDetailModal} from '../events';
-import {playTracks, insertTracks} from '../player/commands';
-import type {DisplayTrack} from '../services/track';
-import type {OnlineProvider} from '../services/providers';
+import {LargeList} from '../../components/Scrolling';
+import {SongRow, Spinkit, TextButton} from '../../components';
+import Text from '../../components/Text';
+import {ITEM_HEIGHT} from '../../theme/constants';
+import {searchSongs} from '../../services/search';
+import {getAlias} from '../../services/trackFields';
+import {toDetailModal} from '../../events';
+import {playTracks, insertTracks} from '../../player/commands';
+import type {DisplayTrack} from '../../services/track';
+import type {OnlineProvider} from '../../services/providers';
 interface Props {
   search: string;
   api: OnlineProvider;

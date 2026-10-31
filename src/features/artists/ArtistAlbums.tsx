@@ -1,11 +1,11 @@
 import * as React from 'react';
-import * as components from '../components/index';
-import providers from '../services/providers';
-import locales from '../locales/index';
-import * as utils from '../utils/index';
-import type {SearchEntity} from '../services/searchEntities';
-import type {Provider} from '../services/providers';
-import type {Navigation} from '../navigation/types';
+import * as components from '../../components/index';
+import providers from '../../services/providers';
+import locales from '../../locales/index';
+import * as utils from '../../utils/index';
+import type {SearchEntity} from '../../services/searchEntities';
+import type {Provider} from '../../services/providers';
+import type {Navigation} from '../../navigation/types';
 class ArtistAlbums extends React.PureComponent<{
   api: Provider;
   albums: SearchEntity[];

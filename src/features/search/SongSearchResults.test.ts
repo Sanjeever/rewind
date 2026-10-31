@@ -1,8 +1,8 @@
 import {jest} from '@jest/globals';
 import assert from 'node:assert/strict';
-import type {SearchOptions, SearchPage} from '../services/search';
-import type {PlayTracks} from '../player/commands';
-import type {DisplayTrack} from '../services/track';
+import type {SearchOptions, SearchPage} from '../../services/search';
+import type {PlayTracks} from '../../player/commands';
+import type {DisplayTrack} from '../../services/track';
 const fixture = (key: string): DisplayTrack => ({
   key,
   api: 'netEase',
@@ -29,28 +29,28 @@ async function screen(
       },
       View: undefined,
     },
-    '../components/Scrolling': {
+    '../../components/Scrolling': {
       LargeList: undefined,
     },
-    '../components': {
+    '../../components': {
       SongRow: undefined,
       Spinkit: undefined,
       TextButton: undefined,
     },
-    '../components/Text': {},
-    '../theme/constants': {
+    '../../components/Text': {},
+    '../../theme/constants': {
       ITEM_HEIGHT: undefined,
     },
-    '../services/search': {
+    '../../services/search': {
       searchSongs,
     },
-    '../services/trackFields': {
+    '../../services/trackFields': {
       getAlias: undefined,
     },
-    '../events': {
+    '../../events': {
       toDetailModal: undefined,
     },
-    '../player/commands': {
+    '../../player/commands': {
       playTracks: (value: PlayTracks) => commands.push(value),
       insertTracks: undefined,
     },

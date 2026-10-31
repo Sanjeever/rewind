@@ -1,8 +1,8 @@
-import Text from './../components/Text';
+import Text from '../../components/Text';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
-import * as components from '../components/index';
-import type {FormattedComment, CommentItem, CommentReply} from '../screens/comments/formatItem';
+import * as components from '../../components/index';
+import type {FormattedComment, CommentItem, CommentReply} from './formatItem';
 class CommentCard extends React.PureComponent<
   FormattedComment & {onUserInfo(item?: CommentItem | CommentReply): void; item?: CommentItem}
 > {

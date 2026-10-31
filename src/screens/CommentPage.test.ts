@@ -15,8 +15,8 @@ jest.unstable_mockModule('../components/ParallaxList', () => ({default: undefine
 jest.unstable_mockModule('../locales/index', () => ({default: {}}));
 jest.unstable_mockModule('../utils/index', () => ({}));
 jest.unstable_mockModule('../services/trackInfo', () => ({}));
-jest.unstable_mockModule('../modules/CommentCard', () => ({default: undefined}));
-jest.unstable_mockModule('../modules/CommentAnalysis', () => ({default: undefined}));
+jest.unstable_mockModule('../features/comments/CommentCard', () => ({default: undefined}));
+jest.unstable_mockModule('../features/comments/CommentAnalysis', () => ({default: undefined}));
 jest.unstable_mockModule('react-native', () => ({StyleSheet: {create: <T>(value: T) => value}}));
 const {default: CommentPage} = await import('./CommentPage');
 test('QQ 评论空结果结束加载，请求拒绝显示原因并结束加载', async () => {

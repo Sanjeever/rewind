@@ -1,17 +1,17 @@
-import Text from './../components/Text';
+import Text from '../../components/Text';
 import 'react';
 import * as ReactNative from 'react-native';
-import TouchableScale from '../components/TouchableScale';
-import * as components from '../components/index';
-import * as constants from '../theme/constants';
-import icons from '../theme/icons';
-import locales from '../locales/index';
-import * as events from '../events/index';
-import * as utils from '../utils/index';
-import * as trackInfo from '../services/trackInfo';
-import type {responses} from '../services/netease/responses';
+import TouchableScale from '../../components/TouchableScale';
+import * as components from '../../components/index';
+import * as constants from '../../theme/constants';
+import icons from '../../theme/icons';
+import locales from '../../locales/index';
+import * as events from '../../events/index';
+import * as utils from '../../utils/index';
+import * as trackInfo from '../../services/trackInfo';
+import type {responses} from '../../services/netease/responses';
 import type * as z from 'zod/mini';
-import type {TrackFields} from '../services/track';
+import type {TrackFields} from '../../services/track';
 export type NewWork = NonNullable<
   z.output<typeof responses.sub_new_songs>['data']
 >['newWorks'][number];

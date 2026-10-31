@@ -1,7 +1,7 @@
 import {jest} from '@jest/globals';
 import React from 'react';
 import renderer, {act} from 'react-test-renderer';
-import type {EntityKind, SearchEntity} from '../services/searchEntities';
+import type {EntityKind, SearchEntity} from '../../services/searchEntities';
 import type {EntitySearchProps} from './EntitySearchResults';
 
 Object.assign(globalThis, {IS_REACT_ACT_ENVIRONMENT: true});
@@ -36,20 +36,20 @@ jest.unstable_mockModule('react-native', () => ({
   SectionList: NativeList,
   ActivityIndicator: Indicator,
 }));
-jest.unstable_mockModule('../theme/constants', () => ({ITEM_HEIGHT: 70}));
-jest.unstable_mockModule('../services/searchEntities', () => ({searchEntities: search}));
-jest.unstable_mockModule('../components', () => ({
+jest.unstable_mockModule('../../theme/constants', () => ({ITEM_HEIGHT: 70}));
+jest.unstable_mockModule('../../services/searchEntities', () => ({searchEntities: search}));
+jest.unstable_mockModule('../../components', () => ({
   ListItem: ({title}: {title: string}) => React.createElement('Row', {title}),
   Spinkit: Loading,
   TextButton: Retry,
 }));
-jest.unstable_mockModule('../components/Text', () => ({
+jest.unstable_mockModule('../../components/Text', () => ({
   default: ({children}: {children: React.ReactNode}) => React.createElement('Text', {}, children),
 }));
-jest.unstable_mockModule('../services/trackDescription', () => ({
+jest.unstable_mockModule('../../services/trackDescription', () => ({
   default: ({item}: {item: SearchEntity}) => ({title: item.name}),
 }));
-jest.unstable_mockModule('../events/queue', () => ({default: {playMV: jest.fn()}}));
+jest.unstable_mockModule('../../events/queue', () => ({default: {playMV: jest.fn()}}));
 const {default: Results} = await import('./EntitySearchResults');
 const indices = {singers: 1, albums: 2, playlists: 3, mvs: 4};
 let tree: renderer.ReactTestRenderer;

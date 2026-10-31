@@ -1,7 +1,7 @@
-import providers from '../services/providers';
-import * as services from '../services';
-import type {Provider} from '../services/providers';
-import type {TrackId} from '../services/track';
+import providers from '../../services/providers';
+import * as services from '../../services';
+import type {Provider} from '../../services/providers';
+import type {TrackId} from '../../services/track';
 type Request = {api: Provider; id: TrackId};
 
 export default {

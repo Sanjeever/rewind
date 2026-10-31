@@ -1,10 +1,10 @@
 import * as React from 'react';
-import * as components from '../components/index';
-import providers from '../services/providers';
-import * as events from '../events/index';
-import queue from '../events/queue';
-import type {TrackFields, TrackId, Artist} from '../services/track';
-import type {Provider} from '../services/providers';
+import * as components from '../../components/index';
+import providers from '../../services/providers';
+import * as events from '../../events/index';
+import queue from '../../events/queue';
+import type {TrackFields, TrackId, Artist} from '../../services/track';
+import type {Provider} from '../../services/providers';
 class ArtistSongs extends React.PureComponent<{api: Provider; hotSongs: TrackFields[]}> {
   formatListItem = (e: TrackFields) => {
     const n: {

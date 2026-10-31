@@ -1,10 +1,10 @@
 import * as React from 'react';
-import * as components from '../components/index';
-import providers from '../services/providers';
-import * as utils from '../utils/index';
-import queue from '../events/queue';
-import type {SearchEntity} from '../services/searchEntities';
-import type {Provider} from '../services/providers';
+import * as components from '../../components/index';
+import providers from '../../services/providers';
+import * as utils from '../../utils/index';
+import queue from '../../events/queue';
+import type {SearchEntity} from '../../services/searchEntities';
+import type {Provider} from '../../services/providers';
 type Video = SearchEntity;
 class ArtistVideos extends React.PureComponent<{api: Provider; mvs: Video[]}> {
   formatListItem = (e: Video) => {

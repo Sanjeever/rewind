@@ -1,9 +1,9 @@
-import Text from './../components/Text';
+import Text from '../../components/Text';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
-import * as components from '../components/index';
+import * as components from '../../components/index';
 import highlightWordsCore from 'highlight-words-core';
-import * as formatItem from '../screens/comments/formatItem';
+import * as formatItem from './formatItem';
 class CommentBubble extends React.PureComponent<{
   item: formatItem.CommentItem | formatItem.CommentReply;
   title?: string;

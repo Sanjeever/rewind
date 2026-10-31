@@ -1,16 +1,16 @@
 import React from 'react';
 import {StyleSheet, View} from 'react-native';
-import {LargeList} from '../components/Scrolling';
-import {ListItem, Spinkit, TextButton} from '../components';
-import Text from '../components/Text';
-import {ITEM_HEIGHT} from '../theme/constants';
-import {searchEntities} from '../services/searchEntities';
-import type {EntityKind, SearchEntity} from '../services/searchEntities';
-import type {OnlineProvider} from '../services/providers';
-import trackDescription from '../services/trackDescription';
-import searchTypes from '../services/searchTypes';
-import queue from '../events/queue';
-import type {Navigation} from '../navigation/types';
+import {LargeList} from '../../components/Scrolling';
+import {ListItem, Spinkit, TextButton} from '../../components';
+import Text from '../../components/Text';
+import {ITEM_HEIGHT} from '../../theme/constants';
+import {searchEntities} from '../../services/searchEntities';
+import type {EntityKind, SearchEntity} from '../../services/searchEntities';
+import type {OnlineProvider} from '../../services/providers';
+import trackDescription from '../../services/trackDescription';
+import searchTypes from '../../services/searchTypes';
+import queue from '../../events/queue';
+import type {Navigation} from '../../navigation/types';
 
 export interface EntitySearchProps {
   search: string;

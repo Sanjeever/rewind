@@ -18,12 +18,12 @@ import * as services from '../services/index';
 import * as utils from '../utils/index';
 import * as sharedUrlsModule from '../services/sharedUrls';
 import users from '../storage/users';
-import ArtistAlbums from './../modules/ArtistAlbums';
-import ArtistVideos from './../modules/ArtistVideos';
-import albumPagination from './../modules/albumPagination';
-import artistAliases from './../modules/artistAliases';
-import ArtistSongs from './../modules/ArtistSongs';
-import styles from './artist/styles';
+import ArtistAlbums from '../features/artists/ArtistAlbums';
+import ArtistVideos from '../features/artists/ArtistVideos';
+import albumPagination from '../features/artists/albumPagination';
+import artistAliases from '../features/artists/artistAliases';
+import ArtistSongs from '../features/artists/ArtistSongs';
+import styles from '../features/artists/styles';
 export const RELEASE_MODE = {
   all: 'all',
   albums: 'albums',
