@@ -1,3 +1,4 @@
+import SongRow from '../features/tracks/SongRow';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
 import * as reactNativeSpringScrollview from './../components/Scrolling';
@@ -97,7 +98,7 @@ class LanguagePage extends React.PureComponent<
           }}
         >
           {f.map((n, t) => (
-            <components.SongRow
+            <SongRow
               key={t}
               song={n.name}
               singer={n.code}

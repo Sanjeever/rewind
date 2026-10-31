@@ -1,3 +1,4 @@
+import SongRow from '../features/tracks/SongRow';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
 import * as reactNativeLargelist from './../components/Scrolling';
@@ -62,7 +63,7 @@ class PlaylistIntersection extends React.PureComponent<ScreenProps<'PlaylistInte
     const index = row;
     const o = trackInfo.extractFullInfo(a);
     return (
-      <components.SongRow
+      <SongRow
         song={o.song}
         singer={o.singer}
         album={o.album}

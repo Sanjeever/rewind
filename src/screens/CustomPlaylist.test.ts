@@ -18,6 +18,7 @@ jest.unstable_mockModule('../storage/playlistFiles', () => ({
 jest.unstable_mockModule('../native/toast', () => ({toast() {}}));
 jest.unstable_mockModule('../components/Text', () => ({default: undefined}));
 jest.unstable_mockModule('../components/index', () => ({}));
+jest.unstable_mockModule('../features/tracks/SongRow', () => ({default: undefined}));
 jest.unstable_mockModule('../features/playlists/PlaylistForeground', () => ({default: undefined}));
 jest.unstable_mockModule('../components/Scrolling', () => ({}));
 jest.unstable_mockModule('../modals/index', () => ({}));

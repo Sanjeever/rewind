@@ -13,6 +13,7 @@ jest.unstable_mockModule('../components', () => ({
   Spinkit: undefined,
 }));
 jest.unstable_mockModule('../components/Scrolling', () => ({SpringScrollView: undefined}));
+jest.unstable_mockModule('../features/tracks/SongRow', () => ({default: undefined}));
 jest.unstable_mockModule('../components/ParallaxList', () => ({default: undefined}));
 jest.unstable_mockModule('../native/toast', () => ({toast() {}}));
 jest.unstable_mockModule('../locales', () => ({default: {}}));

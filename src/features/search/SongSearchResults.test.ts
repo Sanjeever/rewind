@@ -33,11 +33,11 @@ async function screen(
       LargeList: undefined,
     },
     '../../components': {
-      SongRow: undefined,
       Spinkit: undefined,
       TextButton: undefined,
     },
     '../../components/Text': {},
+    '../tracks/SongRow': {},
     '../../theme/constants': {
       ITEM_HEIGHT: undefined,
     },

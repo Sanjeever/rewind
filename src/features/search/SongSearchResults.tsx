@@ -1,7 +1,8 @@
+import SongRow from '../tracks/SongRow';
 import React from 'react';
 import {StyleSheet, View} from 'react-native';
 import {LargeList} from '../../components/Scrolling';
-import {SongRow, Spinkit, TextButton} from '../../components';
+import {Spinkit, TextButton} from '../../components';
 import Text from '../../components/Text';
 import {ITEM_HEIGHT} from '../../theme/constants';
 import {searchSongs} from '../../services/search';

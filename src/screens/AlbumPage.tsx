@@ -1,3 +1,4 @@
+import SongRow from '../features/tracks/SongRow';
 import type {ScreenProps, Navigation} from '../navigation/types';
 import type {TrackFields, TrackId, Artist} from '../services/track';
 import type {SearchEntity} from '../services/searchEntities';
@@ -272,7 +273,7 @@ class AlbumPage extends React.PureComponent<
     const {api, data} = state;
     const s = this.formatListItem(item);
     return (
-      <components.SongRow
+      <SongRow
         index={index}
         song={s.song}
         album={s.duration}

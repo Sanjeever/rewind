@@ -1,5 +1,5 @@
+import SongRow from '../tracks/SongRow';
 import * as React from 'react';
-import * as components from '../../components/index';
 import providers from '../../services/providers';
 import * as events from '../../events/index';
 import queue from '../../events/queue';
@@ -42,7 +42,7 @@ class ArtistSongs extends React.PureComponent<{api: Provider; hotSongs: TrackFie
     const {api, hotSongs} = props;
     const m = this.formatListItem(item);
     return (
-      <components.SongRow
+      <SongRow
         key={index}
         album={m.album}
         song={m.song}

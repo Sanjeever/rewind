@@ -1,3 +1,4 @@
+import SongRow from '../tracks/SongRow';
 import Text from '../../components/Text';
 import 'react';
 import * as ReactNative from 'react-native';
@@ -18,7 +19,7 @@ export type NewWork = NonNullable<
 const GComponent = function (item: TrackFields, t: number) {
   const a = trackInfo.extractFullInfo(item);
   return (
-    <components.SongRow
+    <SongRow
       key={t}
       index={null}
       song={a.song}

@@ -1,3 +1,4 @@
+import SongRow from '../features/tracks/SongRow';
 import type {Navigation} from '../navigation/types';
 import type {TrackFields} from '../services/track';
 import type {Provider} from '../services/providers';
@@ -115,7 +116,7 @@ class MusicHistory extends React.Component<
     const u = trackInfo.extractFullInfo(c);
     return (
       <ReactNative.View>
-        <components.SongRow
+        <SongRow
           song={u.song}
           singer={u.singer}
           album={u.album}

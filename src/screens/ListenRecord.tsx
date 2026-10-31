@@ -1,3 +1,4 @@
+import SongRow from '../features/tracks/SongRow';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
 import * as reactNativeLargelist from './../components/Scrolling';
@@ -154,7 +155,7 @@ class ListenRecord extends React.PureComponent<ScreenProps<'ListenRecord'>, Stat
     const {song, singer, alias} = l;
     const album = item.playCount ? `${item.playCount} ${locales.TIMES}` : l.album;
     return (
-      <components.SongRow
+      <SongRow
         index={index}
         song={song}
         singer={singer}

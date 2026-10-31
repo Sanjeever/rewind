@@ -1,10 +1,11 @@
+import SongRow from '../tracks/SongRow';
 import React from 'react';
 import {Modal, StyleSheet, TouchableOpacity, View} from 'react-native';
 import type {StyleProp, ViewStyle} from 'react-native';
 import Text from '../../components/Text';
 import FadingEdge from '../../components/FadingEdge';
 import {LargeList} from '../../components/Scrolling';
-import {Background, HeaderBar, Icon, SongRow, Title} from '../../components';
+import {Background, HeaderBar, Icon, Title} from '../../components';
 import {storage} from '../../storage';
 import keys from '../../storage/keys';
 import {ITEM_HEIGHT, STATUS_BAR_HEIGHT} from '../../theme/constants';

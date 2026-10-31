@@ -1,3 +1,4 @@
+import SongRow from '../features/tracks/SongRow';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
 import * as reactNativeSpringScrollview from './../components/Scrolling';
@@ -102,7 +103,7 @@ class RadioDetail extends React.PureComponent<
   };
   _renderItem = ({item, index}: {item: Program; index: number}) => {
     return (
-      <components.SongRow
+      <SongRow
         key={index}
         img={`${item.coverUrl}?param=200y200`}
         song={item.name}

@@ -1,14 +1,14 @@
-import Text from './Text';
+import Text from '../../components/Text';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
 import * as reactNativeAnimatable from 'react-native-animatable';
-import TouchableScale from './TouchableScale';
-import Icon from './Icon';
-import * as constants from '../theme/constants';
-import icons from '../theme/icons';
-import * as events from '../events/index';
-import * as utils from '../utils/index';
-import type {Artist, TrackFields} from '../services/track';
+import TouchableScale from '../../components/TouchableScale';
+import Icon from '../../components/Icon';
+import * as constants from '../../theme/constants';
+import icons from '../../theme/icons';
+import * as events from '../../events/index';
+import * as utils from '../../utils/index';
+import type {Artist, TrackFields} from '../../services/track';
 interface SongRowProps {
   onPress?: () => void;
   onLongPress?: () => void;

@@ -4,6 +4,7 @@ jest.unstable_mockModule('react-native', () => ({
   StyleSheet: {create: <T>(value: T) => value},
 }));
 jest.unstable_mockModule('../components/index', () => ({}));
+jest.unstable_mockModule('../features/tracks/SongRow', () => ({default: undefined}));
 jest.unstable_mockModule('../components/Text', () => ({default: undefined}));
 jest.unstable_mockModule('../native/toast', () => ({toast() {}}));
 jest.unstable_mockModule('@react-native-clipboard/clipboard', () => ({default: {}}));

@@ -12,10 +12,10 @@ jest.unstable_mockModule('../components', () => ({
   Background: undefined,
   HeaderBar: undefined,
   Icon: undefined,
-  SongRow: undefined,
   Title: undefined,
 }));
 jest.unstable_mockModule('../components/Text', () => ({default: undefined}));
+jest.unstable_mockModule('../features/tracks/SongRow', () => ({default: undefined}));
 jest.unstable_mockModule('../components/FadingEdge', () => ({default: undefined}));
 jest.unstable_mockModule('../components/Scrolling', () => ({LargeList: undefined}));
 jest.unstable_mockModule('../native/dimensions', () => ({default: {}}));

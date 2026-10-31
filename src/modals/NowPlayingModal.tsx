@@ -1,3 +1,4 @@
+import SongRow from '../features/tracks/SongRow';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
 import FadingEdge from '../components/FadingEdge';
@@ -208,7 +209,7 @@ class NowPlayingModal extends React.PureComponent<
     const i = this.getSongRowExtra(item, index);
     const api = this.props.api;
     return (
-      <components.SongRow
+      <SongRow
         song={o.song}
         singer={o.singer}
         album={o.album}

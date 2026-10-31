@@ -4,6 +4,7 @@ const toast = jest.fn();
 jest.unstable_mockModule('../services/index', () => ({Netease: {recommend_dislike: dislike}}));
 jest.unstable_mockModule('../native/toast', () => ({toast}));
 jest.unstable_mockModule('../components/index', () => ({}));
+jest.unstable_mockModule('../features/tracks/SongRow', () => ({default: undefined}));
 jest.unstable_mockModule('../components/Scrolling', () => ({}));
 jest.unstable_mockModule('../native/TabbedViewPager', () => ({default: undefined}));
 jest.unstable_mockModule('../locales/index', () => ({default: {ERROR: '失败'}}));

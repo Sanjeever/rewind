@@ -1,3 +1,4 @@
+import SongRow from '../features/tracks/SongRow';
 import {toast} from '../native/toast';
 import * as React from 'react';
 import * as reactNativeSpringScrollview from './../components/Scrolling';
@@ -59,7 +60,7 @@ class Cloud extends React.Component<ScreenProps<'Cloud'>, {data: TrackFields[]}>
   _renderItem = ({item, index}: {item: TrackFields; index: number}) => {
     const a = trackInfo.extractFullInfo(item);
     return (
-      <components.SongRow
+      <SongRow
         key={index}
         index={index}
         song={a.song}

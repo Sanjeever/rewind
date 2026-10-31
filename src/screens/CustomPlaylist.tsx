@@ -1,3 +1,4 @@
+import SongRow from '../features/tracks/SongRow';
 import {toast} from '../native/toast';
 import * as immer from 'immer';
 import * as React from 'react';
@@ -71,7 +72,7 @@ class CustomPlaylist extends React.PureComponent<
   _renderItem = ({item, index}: {item: TrackFields; index: number}) => {
     const l = trackInfo.extractFullInfo(item);
     return (
-      <components.SongRow
+      <SongRow
         index={index}
         song={l.song}
         singer={l.singer}

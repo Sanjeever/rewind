@@ -1,3 +1,4 @@
+import SongRow from '../features/tracks/SongRow';
 import {toast} from '../native/toast';
 import * as immer from 'immer';
 import * as React from 'react';
@@ -163,7 +164,7 @@ class MusicRecommend extends React.Component<
           });
         };
     return (
-      <components.SongRow
+      <SongRow
         img={`${u.img}?param=200y200`}
         song={u.song}
         album={u.album}
@@ -188,7 +189,7 @@ class MusicRecommend extends React.Component<
   };
   _renderPlaylist = ({item}: {item: Playlist; index?: number}) => {
     return (
-      <components.SongRow
+      <SongRow
         img={`${item.picUrl}?param=200y200`}
         song={item.name}
         singer={item.copywriter}

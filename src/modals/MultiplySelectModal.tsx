@@ -1,3 +1,4 @@
+import SongRow from '../features/tracks/SongRow';
 import {toast} from '../native/toast';
 import Text from './../components/Text';
 import * as React from 'react';
@@ -200,7 +201,7 @@ class MultiplySelectModal extends React.PureComponent<Props, State> {
     const r = trackInfo.extractFullInfo(item);
     const isChecked = this.isChecked(index);
     return (
-      <components.SongRow
+      <SongRow
         index={index}
         song={r.song}
         singer={r.singer}

@@ -1,3 +1,4 @@
+import SongRow from '../features/tracks/SongRow';
 import type {ScreenProps} from '../navigation/types';
 import type {Provider} from '../services/providers';
 import type {TrackFields, TrackId} from '../services/track';
@@ -238,7 +239,7 @@ class CommentPage extends React.PureComponent<
         }}
       >
         {song && (
-          <components.SongRow
+          <SongRow
             song={song.song}
             album={song.album === '空' ? '' : song.album}
             singer={song.singer}

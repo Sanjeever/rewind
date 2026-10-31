@@ -36,7 +36,6 @@ jest.unstable_mockModule('../components/index', () => ({
   Icon: Host,
   Input: Host,
   Selectable: Host,
-  SongRow: Host,
   Spinkit: Host,
   EmptyFooter: Host,
 }));
@@ -44,6 +43,7 @@ jest.unstable_mockModule('../components/Scrolling', () => ({
   LargeList: List,
   SpringScrollView: Host,
 }));
+jest.unstable_mockModule('../features/tracks/SongRow', () => ({default: Host}));
 jest.unstable_mockModule('../features/playlists/CustomPlaylistHeader', () => ({default: Host}));
 jest.unstable_mockModule('../features/playlists/PlaylistChoice', () => ({default: Host}));
 jest.unstable_mockModule('../theme/constants', () => ({ITEM_HEIGHT: 70}));

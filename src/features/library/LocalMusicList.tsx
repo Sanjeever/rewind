@@ -1,3 +1,4 @@
+import SongRow from '../tracks/SongRow';
 import * as React from 'react';
 import * as reactNativeSpringScrollview from '../../components/Scrolling';
 import * as components from '../../components/index';
@@ -20,7 +21,7 @@ class LocalMusicList extends React.Component<Props> {
   };
   _renderItem = ({item, index}: {item: Track; index: number}) => {
     return (
-      <components.SongRow
+      <SongRow
         key={index}
         song={this.formatAudioName((item.filename || item.title || item.album || item.artist)!)}
         singer={this.props.nosinger !== true ? item.singer || item.artist : undefined}

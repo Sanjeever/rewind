@@ -1,3 +1,4 @@
+import SongRow from '../features/tracks/SongRow';
 import type {ScreenProps, PlaylistParams} from '../navigation/types';
 import type {TrackFields, TrackId} from '../services/track';
 import type {Provider} from '../services/providers';
@@ -416,7 +417,7 @@ class Playlist extends React.PureComponent<ScreenProps<'Playlist'>, State> {
     const {api, playingIndex, isTopList} = state;
     const d = actions.formatItemData(item, api);
     return (
-      <components.SongRow
+      <SongRow
         lastRank={item.lastRank}
         showRank={isTopList}
         songItem={item}

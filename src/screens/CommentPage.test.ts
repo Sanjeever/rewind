@@ -1,4 +1,5 @@
 import {jest} from '@jest/globals';
+jest.unstable_mockModule('../features/tracks/SongRow', () => ({default: undefined}));
 const search = jest.fn<() => Promise<unknown>>();
 const notices: unknown[] = [];
 jest.unstable_mockModule('../services/index', () => ({

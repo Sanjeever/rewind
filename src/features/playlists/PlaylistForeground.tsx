@@ -1,3 +1,4 @@
+import SongRow from '../tracks/SongRow';
 import Text from '../../components/Text';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
@@ -307,7 +308,7 @@ const y = ({lastPlayedSong, onPlay, onInsert}: Props) => {
             }}
           />
         </TouchableScale>
-        <components.SongRow
+        <SongRow
           containerStyle={{
             flex: 1,
           }}
