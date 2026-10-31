@@ -1,3 +1,10 @@
+import type {ScreenProps, UserProfile} from '../navigation/types';
+import type {TrackId} from '../services/track';
+import type {WebViewMessageEvent, WebViewNavigation} from 'react-native-webview';
+import type {LoginProvider} from '../components/LoginView';
+import {errorMessage} from '../utils/types';
+import {neteaseMessage} from './login/messages';
+import type {NeteaseMessage} from './login/messages';
 import {toast} from '../native/toast';
 import {WebView} from 'react-native-webview';
 import * as _appStorage from './../storage/index';
@@ -33,8 +40,20 @@ const C = async () => {
     value: '2.10.6',
   });
 };
-class NeteaseLogin extends React.PureComponent {
-  state = {
+interface State {
+  account: string;
+  password: string;
+  loading: boolean;
+  avatar?: string;
+  nickname?: string;
+  modalOpen: boolean;
+  api: 'netEase';
+  guideModalOpen: boolean;
+  showWebView: boolean;
+  webViewUrl: string | null;
+}
+class NeteaseLogin extends React.PureComponent<ScreenProps<'NeteaseLogin'>, State> {
+  state: State = {
     account: '',
     password: '',
     loading: false,
@@ -55,7 +74,7 @@ class NeteaseLogin extends React.PureComponent {
       });
     }
   };
-  neteaseLoginCellphone = async (account, password) => {
+  neteaseLoginCellphone = async (account: string, password: string) => {
     try {
       await C();
       const response = await services.Netease.login_cellphone(account, password);
@@ -65,7 +84,7 @@ class NeteaseLogin extends React.PureComponent {
         toast(response?.message || locales.ERROR);
       }
     } catch (error) {
-      toast(`登录失败：${error.message}`);
+      toast(`登录失败：${errorMessage(error)}`);
     } finally {
       this.loadMask('loaded');
     }
@@ -85,7 +104,7 @@ class NeteaseLogin extends React.PureComponent {
       toast(locales.INPUT_COMPLETE);
     }
   };
-  neteaseLoginEmail = async (account, password) => {
+  neteaseLoginEmail = async (account: string, password: string) => {
     try {
       await C();
       const response = await services.Netease.login_email(account, password);
@@ -95,14 +114,14 @@ class NeteaseLogin extends React.PureComponent {
         toast(response?.message || locales.ERROR);
       }
     } catch (error) {
-      toast(`登录失败：${error.message}`);
+      toast(`登录失败：${errorMessage(error)}`);
     } finally {
       this.loadMask('loaded');
     }
   };
-  netEaselikelist = async (id) => {
+  netEaselikelist = async (id: TrackId) => {
     const response = await services.Netease.likelist(id);
-    if (response?.code === 200) {
+    if (response?.code === 200 && response.ids) {
       await users.saveUserLikeList(response.ids, providers.netEase);
     }
   };
@@ -132,10 +151,10 @@ class NeteaseLogin extends React.PureComponent {
         guideModalOpen: false,
       });
     } catch (error) {
-      toast(`退出失败：${error.message}`);
+      toast(`退出失败：${errorMessage(error)}`);
     }
   };
-  getPlaylist = async (id) => {
+  getPlaylist = async (id: TrackId) => {
     try {
       await this.netEaselikelist(id);
       const response = await services.Netease.user_playlist(id);
@@ -145,12 +164,12 @@ class NeteaseLogin extends React.PureComponent {
       }
       await this.loginDone(creator);
     } catch (error) {
-      toast(error.message);
+      toast(errorMessage(error));
     } finally {
       this.loadMask('loaded');
     }
   };
-  onNeteaseMessage = async ({profile, token}) => {
+  onNeteaseMessage = async ({profile, token}: NeteaseMessage) => {
     try {
       if (token) {
         await cookies.set('https://music.163.com', {
@@ -162,10 +181,10 @@ class NeteaseLogin extends React.PureComponent {
         await this.loginDone(profile);
       }
     } catch (error) {
-      toast(`登录失败：${error.message}`);
+      toast(`登录失败：${errorMessage(error)}`);
     }
   };
-  loginDone = async (profile) => {
+  loginDone = async (profile: UserProfile) => {
     if (!profile) {
       return;
     }
@@ -178,7 +197,7 @@ class NeteaseLogin extends React.PureComponent {
     await this.netEaselikelist(profile.userId);
     await services.Netease.login_refresh();
   };
-  loadMask = (e) => {
+  loadMask = (e: 'loading' | 'loaded') => {
     switch (e) {
       case 'loading':
         this.setState({
@@ -196,7 +215,7 @@ class NeteaseLogin extends React.PureComponent {
       showWebView: false,
     });
   };
-  onWebview = (e) => {
+  onWebview = (e: LoginProvider) => {
     let webViewUrl = null;
     if (e === 'netease_weibo') {
       webViewUrl = y;
@@ -211,14 +230,14 @@ class NeteaseLogin extends React.PureComponent {
   onUserManager = () => {
     return this.props.navigation.navigate('UserManager');
   };
-  onSelected = (e) => {
+  onSelected = (e: UserProfile) => {
     this.loadMask('loading');
     this.getPlaylist(e.userId);
     this.setState({
       modalOpen: false,
     });
   };
-  netEaseText = (e, t) => {
+  netEaseText = (e: string, t?: 'account' | 'password') => {
     switch (t) {
       case 'account':
         this.setState({
@@ -231,7 +250,7 @@ class NeteaseLogin extends React.PureComponent {
         });
     }
   };
-  clearStorage = async (key) => {
+  clearStorage = async (key: string) => {
     await users.removeProvider(key, providers.netEase);
     if (key === keys.playlist) {
       await users.removeProvider(keys.likelist, providers.netEase);
@@ -268,7 +287,6 @@ class NeteaseLogin extends React.PureComponent {
             _Login={this._Login}
             otherWay={this.otherWay}
             onChangeText={this.netEaseText}
-            onMessage={this.onNeteaseMessage}
             loginOut={this.NeteaseLoginOut}
             onUserManager={this.onUserManager}
             onWebview={this.onWebview}
@@ -328,34 +346,41 @@ class NeteaseLogin extends React.PureComponent {
     );
   }
 }
-class NeteaseLoginScreen extends React.PureComponent {
+interface WebProps {
+  visible: boolean;
+  onClosed(): void;
+  url: string | null;
+  onMessage(message: NeteaseMessage): void;
+  loginOut(): void;
+}
+class NeteaseLoginScreen extends React.PureComponent<
+  WebProps,
+  {injecting: boolean; injectedUrl: string}
+> {
   received = false;
   state = {
     injecting: false,
     injectedUrl: '',
   };
-  getJSON = function (e) {
+  getJSON = function (e: string) {
     let t;
     try {
       t = e.match(/profile.+playlistBeSubscribedCount/)
         ? `${e.replace(/bindings.+\}\]/g, '').slice(0, -3)}}`
         : e;
-      const a = JSON.parse(t);
-      if (typeof a === 'object') {
-        return a;
-      }
-      return null;
+      const result = neteaseMessage.safeParse(JSON.parse(t));
+      return result.success ? result.data : null;
     } catch {
       return null;
     }
   };
-  onMessage = (e) => {
+  onMessage = (e: WebViewMessageEvent) => {
     if (!this.received) {
       const t = this.getJSON(e.nativeEvent.data);
       if (t) {
         const a = t.profile;
         const {userId, code} = a;
-        if (!userId || userId < 0 || code === 401) {
+        if (!userId || Number(userId) < 0 || code === 401) {
           this.props.loginOut();
           toast(locales.NETEASE_LOGIN_RETRY);
         } else {
@@ -366,7 +391,7 @@ class NeteaseLoginScreen extends React.PureComponent {
       }
     }
   };
-  onNavigationStateChange = (e) => {
+  onNavigationStateChange = (e: WebViewNavigation) => {
     if (e.url.match('music.163.com/back/sns')) {
       if (e.url.match('code=401')) {
         toast('授权出现异常');
@@ -450,6 +475,6 @@ class NeteaseLoginScreen extends React.PureComponent {
     );
   }
 }
-var injectedJavaScript =
+const injectedJavaScript =
   '\n  function post() {\n    function message(){\n      if (window.ReactNativeWebView && window.ReactNativeWebView.postMessage) {\n        window.ReactNativeWebView.postMessage(document.body.innerHTML);\n      }\n    }\n    setInterval(message, 500);\n  }\n  post();\n  ';
 export default NeteaseLogin;

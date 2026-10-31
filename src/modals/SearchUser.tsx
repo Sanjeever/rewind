@@ -4,12 +4,16 @@ import * as reactNativeSpringScrollview from './../components/Scrolling';
 import * as components from '../components/index';
 import icons from '../theme/icons';
 import * as services from '../services/index';
-class SearchUser extends React.PureComponent {
-  state = {
+import type {UserProfile} from '../navigation/types';
+class SearchUser extends React.PureComponent<
+  {isOpen: boolean; onModalClose(): void; onSelected(user: UserProfile): void},
+  {data: UserProfile[]; search: string}
+> {
+  state: {data: UserProfile[]; search: string} = {
     data: [],
     search: '',
   };
-  searchUser = (keywords) => {
+  searchUser = (keywords: string) => {
     const t = {
       keywords,
       type: 1002,
@@ -26,7 +30,7 @@ class SearchUser extends React.PureComponent {
       }
     });
   };
-  _renderItem = ({item, index}) => {
+  _renderItem = ({item, index}: {item: UserProfile; index: number}) => {
     return (
       <components.ListItem
         key={index}
@@ -39,7 +43,7 @@ class SearchUser extends React.PureComponent {
       />
     );
   };
-  onSelect = (e) => {
+  onSelect = (e: UserProfile) => {
     this.props.onSelected(e);
   };
   render() {

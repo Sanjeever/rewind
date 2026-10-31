@@ -1,3 +1,10 @@
+import type {ScreenProps} from '../navigation/types';
+import type {TrackId} from '../services/track';
+import type {WebViewMessageEvent, WebViewNavigation} from 'react-native-webview';
+import type {LoginProvider} from '../components/LoginView';
+import {errorMessage} from '../utils/types';
+import {qqMessage} from './login/messages';
+import type {QQMessage} from './login/messages';
 import {toast} from '../native/toast';
 import {WebView} from 'react-native-webview';
 import cookiesModule from '../native/cookies';
@@ -19,8 +26,21 @@ const _ =
   'http://ui.ptlogin2.qq.com/cgi-bin/login?pt_no_auth=1&pt_wxtest=1&pt_no_onekey=1&daid=384&style=9&hln_css=https%3A%2F%2Fy.gtimg.cn%2Fmusic%2Fcommon%2Fupload%2Ft_cm3_photo_publish%2F1117688.png%3Fmax_age%3D2592000&appid=83886593&s_url=https%3A%2F%2Fy.qq.com%2Fm%2Flogin%2Fredirect.html%3Flogin_type%3D1%26surl%3Dhttp://y.qq.com/portal/profile.html';
 const y =
   'http://open.weixin.qq.com/connect/qrconnect?appid=wx48db31d50e334801&redirect_uri=https%3A%2F%2Fy.qq.com%2Fportal%2Fwx_redirect.html%3Flogin_type%3D2%26surl%3Dhttps%3A%2F%2Fy.qq.com%2Fportal%2Fprofile.html&response_type=code&scope=snsapi_login&state=STATE&href=https%3A%2F%2Fy.gtimg.cn%2Fmediastyle%2Fyqq%2Fpopup_wechat.css#wechat_redirect';
-class QQMusicLogin extends React.PureComponent {
-  state = {
+interface State {
+  loading: boolean;
+  avatar?: string;
+  nickname?: string;
+  modalOpen: boolean;
+  api: 'qqMusic';
+  tipModalOpen: boolean;
+  searchText: string;
+  showWebView: boolean;
+  url: null;
+  webViewUrl?: string | null;
+}
+class QQMusicLogin extends React.PureComponent<ScreenProps<'QQMusicLogin'>, State> {
+  loginPending = false;
+  state: State = {
     loading: false,
     avatar: '',
     nickname: '',
@@ -40,7 +60,7 @@ class QQMusicLogin extends React.PureComponent {
       });
     }
   };
-  loadMask = (e) => {
+  loadMask = (e: 'loading' | 'loaded') => {
     switch (e) {
       case 'loading':
         this.setState({
@@ -53,7 +73,7 @@ class QQMusicLogin extends React.PureComponent {
         });
     }
   };
-  onWebview = (e) => {
+  onWebview = (e: LoginProvider) => {
     let webViewUrl = null;
     if (e === 'qqmusic_wechat') {
       webViewUrl = y;
@@ -70,7 +90,7 @@ class QQMusicLogin extends React.PureComponent {
       showWebView: false,
     });
   };
-  qqMusicText = (searchText) => {
+  qqMusicText = (searchText: string) => {
     this.setState({
       searchText,
     });
@@ -95,6 +115,7 @@ class QQMusicLogin extends React.PureComponent {
         throw new Error(locales.PLAYLIST_PRIVATE);
       }
       const created = await services.QQMusic.user_created_list(searchText);
+      if (!created) throw new Error(locales.PLAYLIST_FETCH_FAILED);
       await users.saveUserStorage(response.creator, providers.qqMusic);
       await users.saveUserPlayList([liked, ...response.mydiss.list, ...created], providers.qqMusic);
       this.setState({
@@ -103,29 +124,32 @@ class QQMusicLogin extends React.PureComponent {
       });
       events.emitter.emit(names.UserLogined);
     } catch (error) {
-      toast(error.message);
+      toast(errorMessage(error));
     } finally {
       this.loadMask('loaded');
     }
   };
-  qqMusicLikelist = async (e) => {
+  qqMusicLikelist = async (e: {id?: TrackId}) => {
+    if (!e.id) throw new Error('QQ 音乐歌单缺少标识');
     const playlists = await services.QQMusic.disslist({
       id: e.id,
     });
-    if (playlists.length)
+    if (playlists?.[0]?.songlist)
       await users.saveUserLikeList(
-        playlists[0].songlist.map((song) => song.songmid),
+        playlists[0].songlist.map((song) => song.songmid!),
         providers.qqMusic,
       );
   };
-  onQQMusicMessage = async ({nickname, avatarUrl, cookies}) => {
+  onQQMusicMessage = async ({nickname, avatarUrl, cookies}: QQMessage) => {
     if (!avatarUrl || this.loginPending) {
       return;
     }
     this.loginPending = true;
     try {
       await cookiesModule.setFromResponse('https://c.y.qq.com', cookies);
-      const qq = services.QQMusic.getCookie('uin', cookies).replace(/o/, '');
+      const uin = services.QQMusic.getCookie('uin', cookies);
+      if (!uin) throw new Error('登录响应缺少账号标识');
+      const qq = uin.replace(/o/, '');
       const response = await services.QQMusic.profile(qq, cookies);
       if (!response?.mymusic) {
         throw new Error(locales.PLAYLIST_FETCH_FAILED);
@@ -152,7 +176,7 @@ class QQMusicLogin extends React.PureComponent {
       await this.qqMusicLikelist(liked);
       events.emitter.emit(names.UserLogined);
     } catch (error) {
-      toast(`登录失败：${error.message}`);
+      toast(`登录失败：${errorMessage(error)}`);
     } finally {
       this.loginPending = false;
     }
@@ -191,7 +215,6 @@ class QQMusicLogin extends React.PureComponent {
             nickname={nickname}
             _Login={this._qqMusicLogin}
             onChangeText={this.qqMusicText}
-            onMessage={this.onQQMusicMessage}
             onWebview={this.onWebview}
             api={providers.qqMusic}
           />
@@ -239,8 +262,17 @@ class QQMusicLogin extends React.PureComponent {
     );
   }
 }
-class QQMusicLoginScreen extends React.PureComponent {
-  onNavigationStateChange = (e) => {
+interface WebProps {
+  visible: boolean;
+  onClosed(): void;
+  url?: string | null;
+  onMessage(message: QQMessage): void;
+}
+class QQMusicLoginScreen extends React.PureComponent<
+  WebProps,
+  {webView?: boolean; nav?: boolean; loginUrl?: string}
+> {
+  onNavigationStateChange = (e: WebViewNavigation) => {
     if (e.url.match('ptlogin2.y.qq.com')) {
       this.setState(
         {
@@ -256,17 +288,17 @@ class QQMusicLoginScreen extends React.PureComponent {
       );
     }
   };
-  login = (e) => {
+  login = (e?: string) => {
     if (e === 'wechat') {
       toast(locales.WECHAT_LOGIN_LIMIT);
     }
     this.props.onClosed();
   };
-  onMessage = (e) => {
+  onMessage = (e: WebViewMessageEvent) => {
     try {
-      const t = JSON.parse(e.nativeEvent.data);
-      if (t.avatarUrl) {
-        this.props.onMessage(t);
+      const result = qqMessage.safeParse(JSON.parse(e.nativeEvent.data));
+      if (result.success) {
+        this.props.onMessage(result.data);
         this.login();
       }
     } catch (error) {
@@ -296,9 +328,7 @@ class QQMusicLoginScreen extends React.PureComponent {
             style={{
               flex: 1,
             }}
-            source={{
-              uri: url,
-            }}
+            source={url ? {uri: url} : undefined}
             onMessage={this.onMessage}
             injectedJavaScript={injectedJavaScript}
             automaticallyAdjustContentInsets={false}
@@ -314,6 +344,6 @@ class QQMusicLoginScreen extends React.PureComponent {
     );
   }
 }
-var injectedJavaScript =
+const injectedJavaScript =
   "\nfunction post() {\n  function message(){\n    if (window.ReactNativeWebView && window.ReactNativeWebView.postMessage) {\n      var avatar = document.getElementById('profileHead');\n      var nickname = document.getElementsByClassName('profile__name');\n      var avatar_pe = document.querySelector('.user__avator');\n      if(avatar){\n        var obj = JSON.stringify({\n          avatarUrl:avatar.src,\n          nickname:nickname[0].innerText,\n          cookies:document.cookie\n        });\n        window.ReactNativeWebView.postMessage(obj);\n      }\n      if(avatar_pe) {\n          var username = document.querySelector('.user__name_text');\n          var obj = JSON.stringify({\n              avatarUrl:avatar_pe.src,\n              nickname:username.innerText,\n              cookies:document.cookie\n          });\n          window.ReactNativeWebView.postMessage(obj);\n      }\n    }\n  }\n  setInterval(message, 500);\n}\npost();\n";
 export default QQMusicLogin;

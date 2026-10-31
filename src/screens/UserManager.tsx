@@ -13,8 +13,21 @@ import * as events from '../events/index';
 import * as utils from '../utils/index';
 import * as types from '../utils/types';
 import usersModule from '../storage/users';
-class UserManager extends React.PureComponent {
-  state = {
+import type {ScreenProps} from '../navigation/types';
+import type {NeteaseAccount} from '../storage/models';
+import type {TrackId} from '../services/track';
+import type {Subscription} from '../events/Emitter';
+import {errorMessage} from '../utils/types';
+interface State {
+  users: NeteaseAccount[];
+  showSearchUser: boolean;
+  activeUserId?: TrackId | null;
+  deleting: boolean;
+}
+class UserManager extends React.PureComponent<ScreenProps<'UserManager'>, State> {
+  onSelectedUser!: Subscription;
+  backSubscription?: ReactNative.NativeEventSubscription;
+  state: State = {
     users: [],
     showSearchUser: false,
     activeUserId: null,
@@ -33,7 +46,9 @@ class UserManager extends React.PureComponent {
   saveUsers = () => {
     const users = this.state.users;
     if (types.isArray(users) && users.length > 0) {
-      usersModule.saveRestUsers(users.slice(1));
+      return usersModule
+        .saveRestUsers(users.slice(1))
+        .catch((error) => toast('保存账号失败：' + errorMessage(error)));
     }
   };
   getInfo = async () => {
@@ -58,7 +73,7 @@ class UserManager extends React.PureComponent {
       deleting: !this.state.deleting,
     });
   };
-  onPress = (e, t) => {
+  onPress = (e: NeteaseAccount, t: number) => {
     const n_state = this.state;
     const {deleting, users} = n_state;
     if (deleting === true) {
@@ -72,22 +87,17 @@ class UserManager extends React.PureComponent {
         users: l,
       });
     } else {
-      this.onUserInfo(e.userId);
+      if (e.userId != null) this.onUserInfo(e.userId);
     }
   };
-  onUserInfo = (userId) => {
+  onUserInfo = (userId: TrackId) => {
     this.props.navigation.navigate('UserInfo', {
       userId,
     });
   };
-  onSelected = (e) => {
+  onSelected = (e: NeteaseAccount) => {
     const users = this.state.users;
-    let r = false;
-    users.map((t) => {
-      if (t.userId === e.userId) {
-        r = true;
-      }
-    });
+    const r = users.some((user) => user.userId === e.userId);
     if (r !== true) {
       if (types.isObject(e)) {
         toast(locales.ADDED_TO_TOGGLE_LIST);
@@ -102,18 +112,22 @@ class UserManager extends React.PureComponent {
       toast(locales.ALREADY_IN_TOGGLE_LIST);
     }
   };
-  onChangeUser = (e, t) => {
+  onChangeUser = async (e: NeteaseAccount, t: number) => {
     const r = immer.produce(this.state.users, function (e) {
       utils.swap(e, t, 0);
     });
-    this.setState({
-      users: r,
-    });
-    usersModule.saveUserStorage(e, providers.netEase);
-    events.emitter.emit(names.UserLogined);
-    toast(`已切换到 ${e.nickname}`);
+    try {
+      await usersModule.saveUserStorage(e, providers.netEase);
+      this.setState({
+        users: r,
+      });
+      events.emitter.emit(names.UserLogined);
+      toast(`已切换到 ${e.nickname}`);
+    } catch (error) {
+      toast('切换账号失败：' + errorMessage(error));
+    }
   };
-  renderItem = ({item, index}) => {
+  renderItem = ({item, index}: {item: NeteaseAccount; index: number}) => {
     return (
       <components.ListItem
         key={index}

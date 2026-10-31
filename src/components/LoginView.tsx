@@ -8,13 +8,14 @@ import * as constants from '../theme/constants';
 import icons from '../theme/icons';
 import locales from '../locales/index';
 import type {Provider} from '../services/providers';
+export type LoginProvider = 'qqmusic_qq' | 'qqmusic_wechat' | 'netease_qq' | 'netease_weibo';
 interface Props {
   api: Provider;
   avatar?: string | null;
   nickname?: string | null;
   _Login(): void;
   onChangeText(text: string, field?: 'account' | 'password'): void;
-  onWebview(provider: 'qqmusic_qq' | 'qqmusic_wechat' | 'netease_qq' | 'netease_weibo'): void;
+  onWebview(provider: LoginProvider): void;
   otherWay?: () => void;
   loginOut?: () => void;
   onUserManager?: () => void;

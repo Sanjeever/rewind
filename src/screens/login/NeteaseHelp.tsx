@@ -4,18 +4,12 @@ import * as ReactNative from 'react-native';
 import * as components from '../../components/index';
 import * as constants from '../../theme/constants';
 import icons from '../../theme/icons';
-class NeteaseHelp extends React.PureComponent {
+class NeteaseHelp extends React.PureComponent<{isOpen: boolean; onRequestClose(): void}> {
   render() {
     const props = this.props;
     const {isOpen, onRequestClose} = props;
     return (
-      <ReactNative.Modal
-        visible={isOpen}
-        backdropOpacity={0.8}
-        onRequestClose={onRequestClose}
-        position={'center'}
-        animationType={'fade'}
-      >
+      <ReactNative.Modal visible={isOpen} onRequestClose={onRequestClose} animationType={'fade'}>
         <ReactNative.View
           style={{
             flex: 1,
