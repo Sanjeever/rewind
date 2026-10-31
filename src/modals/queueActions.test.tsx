@@ -11,6 +11,11 @@ const play = jest.fn<(options: PlayTracks) => void>();
 const listeners = new Map<string, (payload: object) => void>();
 const toast = jest.fn();
 const collect = jest.fn<() => Promise<{code: number}>>(async () => ({code: 500}));
+const qqLike = jest.fn<() => Promise<{code: number}>>(async () => ({code: 0}));
+const savePlaylist = jest.fn<(value: unknown) => Promise<void>>(async () => {});
+let document: {playlists: {title: string; tracks: TrackFields[]}[]; opaque?: string} = {
+  playlists: [],
+};
 const tracks: TrackFields[] = [
   {id: 1, name: '同名'},
   {id: 2, name: '同名'},
@@ -44,14 +49,21 @@ jest.unstable_mockModule('../modules/PlaylistChoice', () => ({default: Host}));
 jest.unstable_mockModule('../theme/constants', () => ({ITEM_HEIGHT: 70}));
 jest.unstable_mockModule('../locales/index', () => ({default: {}}));
 jest.unstable_mockModule('../native/toast', () => ({toast}));
-jest.unstable_mockModule('../services/index', () => ({Netease: {playlist_tracks: collect}}));
+jest.unstable_mockModule('../services/index', () => ({
+  Netease: {playlist_tracks: collect},
+  QQMusic: {like: qqLike},
+}));
 jest.unstable_mockModule('../storage/playlistFiles', () => ({
-  default: {getPlaylist: async () => ({playlists: []})},
+  default: {getPlaylist: async () => document, toPlaylist: savePlaylist},
 }));
 jest.unstable_mockModule('../storage/users', () => ({
-  default: {getUserPlayList: async () => ({})},
+  default: {
+    getUserPlayList: async () => ({}),
+    getUserInfo: async () => ({qqMusic: {userId: 2, cookies: 'session=test'}}),
+  },
 }));
 jest.unstable_mockModule('../utils/index', () => ({
+  usable: (value: unknown) => value != null,
   filterHelper: {
     quickSearch: (items: TrackFields[], query: string) =>
       items.filter((item) => item.name?.includes(query)),
@@ -78,6 +90,12 @@ jest.unstable_mockModule('../events/Emitter', () => ({
 const {default: NowPlaying} = await import('./NowPlayingModal');
 const {default: ChangePlaylist} = await import('./ChangePlaylistModal');
 const {default: Collect} = await import('./CollectModal');
+beforeEach(() => {
+  document = {playlists: []};
+  savePlaylist.mockClear();
+  qqLike.mockReset().mockResolvedValue({code: 0});
+  toast.mockClear();
+});
 
 test('队列筛选使用当前输入，按歌曲身份播放同名歌曲，空筛选不回退到原队列', async () => {
   let tree!: renderer.ReactTestRenderer;
@@ -136,4 +154,49 @@ test('收藏重开不沿用旧歌曲，失败保留弹层且不报告成功', as
   expect(modal.state.mainModalShow).toBe(true);
   expect(toast).toHaveBeenCalledWith(expect.stringContaining('收藏失败'));
   await act(async () => tree.unmount());
+});
+function createCollector() {
+  const modal = new Collect({});
+  modal.setState = (update) => {
+    modal.state = {
+      ...modal.state,
+      ...(typeof update === 'function' ? update(modal.state, modal.props) : update),
+    };
+  };
+  return modal;
+}
+test('混合收藏保留逐曲来源、原始字段和未知文档字段', async () => {
+  document = {
+    opaque: '保留',
+    playlists: [{title: '目标', tracks: [{api: 'local', id: 1, path: 'content://one'}]}],
+  };
+  const songs = [
+    {api: 'netEase' as const, id: 1, name: '网易', opaque: 7},
+    {api: 'qqMusic' as const, mid: 'qq1', name: 'QQ'},
+  ];
+  const modal = createCollector();
+  modal.state = {...modal.state, api: 'local', data: songs, mainModalShow: true};
+  await modal.onLocalCollect(0);
+  expect(savePlaylist).toHaveBeenCalledWith({
+    opaque: '保留',
+    playlists: [{title: '目标', tracks: [...songs, document.playlists[0].tracks[0]]}],
+  });
+  expect(songs[0].api).toBe('netEase');
+  expect(document.playlists[0].tracks).toHaveLength(1);
+});
+test('QQ 批量收藏逐首传递当前会话，部分失败保留弹层并报告完成数量', async () => {
+  const modal = createCollector();
+  const data = [{mid: 'one'}, {songmid: 'two'}];
+  modal.state = {...modal.state, api: 'qqMusic', data, mainModalShow: true};
+  await modal.onCollect({title: '喜欢'});
+  expect(qqLike.mock.calls).toEqual([
+    [{songmid: 'one', qq: 2, cookies: 'session=test'}],
+    [{songmid: 'two', qq: 2, cookies: 'session=test'}],
+  ]);
+  expect(modal.state.mainModalShow).toBe(false);
+  qqLike.mockResolvedValueOnce({code: 0}).mockRejectedValueOnce(new Error('请求失败'));
+  modal.state = {...modal.state, api: 'qqMusic', data, mainModalShow: true};
+  await modal.onCollect({title: '我喜欢'});
+  expect(modal.state.mainModalShow).toBe(true);
+  expect(toast).toHaveBeenLastCalledWith('收藏失败（已完成 1/2）：请求失败');
 });

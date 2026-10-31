@@ -15,7 +15,9 @@ export interface AppEvents {
   DeleteFromQueue: {item: TrackFields; api?: Provider};
   LongPressModal: {item: TrackFields};
   DetailModal: TrackDetails;
-  CollectModal: {song?: TrackFields; data?: TrackFields[]; api: Provider};
+  CollectModal: {api: Provider} & (
+    {song: TrackFields; data?: never} | {song?: never; data: TrackFields[]}
+  );
   SavePicModal: {img?: string; song?: string; type?: 'sponsor'};
   PlayerClose: undefined;
   DeleteFromLocal: {deleteIndex: number};

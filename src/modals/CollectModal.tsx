@@ -92,12 +92,12 @@ class CollectModal extends React.PureComponent<Record<string, never>, State> {
         ? [
             {
               ...songItem,
-              api,
+              api: songItem.api || api,
             },
           ]
         : data?.map((song) => ({
             ...song,
-            api,
+            api: song.api || api,
           }));
       if (!additions?.length) {
         return;
@@ -127,12 +127,15 @@ class CollectModal extends React.PureComponent<Record<string, never>, State> {
     }
   };
   onCollect = async (playlist: Playlist) => {
+    let collected = 0;
+    let total = 0;
     try {
       const {songItem, api, data} = this.state;
+      const tracks = data.length ? data : songItem ? [songItem] : [];
+      if (!tracks.length) throw new Error('未选择歌曲');
+      total = tracks.length;
       if (api === providers.netEase) {
         if (playlist.id == null) throw new Error('歌单缺少标识');
-        const tracks = data.length ? data : songItem ? [songItem] : [];
-        if (!tracks.length) throw new Error('未选择歌曲');
         await this.collectToNetease(
           playlist.id,
           tracks.map((song) => {
@@ -145,13 +148,16 @@ class CollectModal extends React.PureComponent<Record<string, never>, State> {
         if (!account?.cookies) {
           throw new Error('请先登录 QQ 音乐');
         }
-        const songmid = songItem?.songmid || songItem?.mid;
-        if (!songmid) throw new Error('未选择 QQ 音乐歌曲');
+        const mids = tracks.map((song) => {
+          const mid = song.songmid || song.mid;
+          if (!mid) throw new Error('QQ 音乐歌曲缺少标识');
+          return mid;
+        });
         if (account.userId == null) throw new Error('QQ 音乐账号缺少标识');
-        if (playlist.title !== '我喜欢' && playlist.dirid == null)
-          throw new Error('歌单缺少目录标识');
-        const response =
-          playlist.title === '我喜欢'
+        const liked = playlist.title === '我喜欢' || playlist.title === '喜欢';
+        if (!liked && playlist.dirid == null) throw new Error('歌单缺少目录标识');
+        for (const songmid of mids) {
+          const response = liked
             ? await services.QQMusic.like({
                 songmid,
                 qq: account.userId,
@@ -163,13 +169,17 @@ class CollectModal extends React.PureComponent<Record<string, never>, State> {
                 qq: account.userId,
                 cookies: account.cookies,
               });
-        if (response?.code !== 0 && response?.title !== locales.COLLECT_SUCCESS) {
-          throw new Error(locales.COLLECT_FAILED);
+          if (response?.code !== 0 && response?.title !== locales.COLLECT_SUCCESS) {
+            throw new Error(locales.COLLECT_FAILED);
+          }
+          collected++;
         }
-      }
+      } else throw new Error('该来源不能收藏到在线歌单');
       this.onClosed();
     } catch (error) {
-      toast(`收藏失败：${errorMessage(error)}`);
+      toast(
+        `收藏失败${collected ? `（已完成 ${collected}/${total}）` : ''}：${errorMessage(error)}`,
+      );
     }
   };
   collectToNetease = async (pid: TrackId, tracks: TrackId[]) => {
