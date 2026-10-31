@@ -29,8 +29,7 @@ export const getFormattedItem = function (
     t = 'content' in e ? providers.netEase : providers.qqMusic;
   }
   if (t === providers.netEase && isNeteaseComment(e)) {
-    const a: FormattedComment = {content: e.content};
-    a.content = e.content;
+    const a: FormattedComment = {content: e.content ?? '评论内容不可用'};
     a.userName = e.user.nickname;
     a.userAvatar = `${e.user.avatarUrl}?param=100y100`;
     a.time = utils.timeFormatter.localeString(e.time);

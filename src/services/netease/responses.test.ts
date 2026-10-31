@@ -70,3 +70,19 @@ test('歌单中的缺失歌手和专辑名不阻止其余歌曲显示，原始�
   };
   expect(responses.playlist_detail.parse(value)).toEqual(value);
 });
+test('已删除回复的空内容不阻止评论列表读取，保留平台删除状态', () => {
+  const value = {
+    code: 200,
+    total: 1,
+    comments: [
+      {
+        commentId: 1,
+        content: '当前评论',
+        time: 1,
+        user: {userId: 1},
+        beReplied: [{content: null, status: -5, user: {userId: 2}}],
+      },
+    ],
+  };
+  expect(responses.comment.parse(value)).toEqual(value);
+});

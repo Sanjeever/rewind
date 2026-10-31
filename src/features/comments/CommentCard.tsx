@@ -61,7 +61,9 @@ class CommentCard extends React.PureComponent<
                     </ReactNative.TouchableOpacity>
                     <components.Selectable>{e.user.nickname}</components.Selectable>
                   </ReactNative.View>
-                  <components.Selectable style={c.subtitle}>{e.content}</components.Selectable>
+                  <components.Selectable style={c.subtitle}>
+                    {e.content ?? '评论内容不可用'}
+                  </components.Selectable>
                 </ReactNative.View>
               ))
             : null}

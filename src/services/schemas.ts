@@ -121,7 +121,7 @@ export const comment = z.looseObject({
   time: z.number(),
   user: profile,
   likedCount: number,
-  beReplied: z.optional(z.array(z.looseObject({content: z.string(), user: profile}))),
+  beReplied: z.optional(z.array(z.looseObject({content: z.nullable(z.string()), user: profile}))),
 });
 export const audio = z.looseObject({
   type: string,
