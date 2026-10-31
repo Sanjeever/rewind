@@ -1,6 +1,6 @@
 import {jest} from '@jest/globals';
 import assert from 'node:assert/strict';
-import {getMusicUrl, searchSongs} from './http.js';
+import {getMusicUrl, searchSongs} from './http';
 afterEach(() => jest.useRealTimers());
 function respond(data: unknown, status = 200) {
   return jest.spyOn(global, 'fetch').mockImplementation(

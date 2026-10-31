@@ -31,7 +31,7 @@ test('QQ 收藏依据业务码返回结果，不把响应文本或错误视作�
 });
 
 test('QQ 资料请求使用传入会话，未传会话时不添加固定 Cookie', async () => {
-  const request = respond({code: 0, data: {}});
+  const request = respond({code: 0, data: {creator: {}, mymusic: [], mydiss: {list: []}}});
   await service.profile('test', 'session=test');
   expect(request.mock.calls[0][1]?.headers).toMatchObject({Cookie: 'session=test'});
   await service.profile('test', undefined);

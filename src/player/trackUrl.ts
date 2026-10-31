@@ -1,8 +1,10 @@
 import providers from '../services/providers';
 import {Netease, QQMusic, provider} from '../services';
+import type {TrackFields} from '../services/track';
+import type {Provider} from '../services/providers';
 
-async function neteaseUrl(song, allowPaid) {
-  const response = await (song.fee > 0 && allowPaid === true
+async function neteaseUrl(song: TrackFields, allowPaid?: boolean) {
+  const response = await (song.fee != null && song.fee > 0 && allowPaid === true
     ? Netease.musicUrl({id: song.id})
     : Netease.freeMusicUrl({id: song.id}));
   if (response?.code !== 200)
@@ -11,18 +13,20 @@ async function neteaseUrl(song, allowPaid) {
     );
   const result = response.data?.[0];
   if (!result) throw new Error('网易云音源响应缺少歌曲');
-  if (result.freeTrialInfo && !(result.payed > 0)) throw new Error('网易云歌曲仅提供试听');
+  if (result.freeTrialInfo && !(result.payed != null && result.payed > 0))
+    throw new Error('网易云歌曲仅提供试听');
   if (!result.url) throw new Error(`网易云未返回播放地址（${result.code ?? '无状态码'}）`);
   return result.url;
 }
 
 export default {
-  async getUrl(api, {song}, allowPaid) {
+  async getUrl(api: Provider, {song}: {song: TrackFields}, allowPaid?: boolean) {
     let primaryError;
     try {
       let url;
       if (api === providers.netEase) url = await neteaseUrl(song, allowPaid);
-      else if (api === providers.qqMusic) url = await QQMusic.getMusicUrl(song.songmid || song.mid);
+      else if (api === providers.qqMusic)
+        url = await QQMusic.getMusicUrl((song.songmid || song.mid)!);
       else throw new Error('未知音源来源：' + api);
       if (typeof url !== 'string' || !url) throw new Error('来源未返回播放地址');
       return url;
@@ -36,7 +40,9 @@ export default {
     } catch (error) {
       throw new AggregateError(
         [primaryError, error],
-        primaryError.message + '；备用音源：' + error.message,
+        String(primaryError instanceof Error ? primaryError.message : primaryError) +
+          '；备用音源：' +
+          String(error instanceof Error ? error.message : error),
         {cause: error},
       );
     }

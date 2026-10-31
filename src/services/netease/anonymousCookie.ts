@@ -1,4 +1,4 @@
-function a(e, n) {
+function a(e: string, n: number) {
   return Array.from(Array(n))
     .map(() => e[Math.floor(Math.random() * e.length)])
     .join('');

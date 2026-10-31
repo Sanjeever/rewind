@@ -1,8 +1,17 @@
 const endpoint = 'https://u.y.qq.com/cgi-bin/musicu.fcg';
 const guid = '4422768122';
 const uin = '1152921504792286499';
+import type * as z from 'zod/mini';
+import {audioResponse, searchResponse} from './responses';
+import {response} from '../schemas';
+const envelope = response({});
 
-async function request(url, options, stage) {
+async function request<S extends z.ZodMiniType>(
+  url: string,
+  options: RequestInit,
+  stage: string,
+  schema: S,
+): Promise<z.output<S>> {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 15000);
   try {
@@ -12,15 +21,23 @@ async function request(url, options, stage) {
       signal: controller.signal,
     });
     if (!response.ok) throw new Error('HTTP ' + response.status);
-    const data = await response.json();
+    const value: unknown = await response.json();
+    const data = envelope.parse(value);
     if (data.code !== 0)
       throw new Error(
         '业务码 ' + data.code + (data.message || data.msg ? '：' + (data.message || data.msg) : ''),
       );
-    return data;
+    return schema.parse(value);
   } catch (error) {
     throw new Error(
-      'QQ 音乐' + stage + '失败：' + (controller.signal.aborted ? '请求超时' : error.message),
+      'QQ 音乐' +
+        stage +
+        '失败：' +
+        (controller.signal.aborted
+          ? '请求超时'
+          : error instanceof Error
+            ? error.message
+            : String(error)),
       {cause: error},
     );
   } finally {
@@ -28,7 +45,7 @@ async function request(url, options, stage) {
   }
 }
 
-export async function searchSongs(query, page = 1) {
+export async function searchSongs(query: string, page = 1) {
   const payload = {
     data: {
       method: 'DoSearchForQQMusicDesktop',
@@ -44,6 +61,7 @@ export async function searchSongs(query, page = 1) {
       body: JSON.stringify(payload),
     },
     '搜索',
+    searchResponse,
   );
   if (response.data?.code !== 0) throw new Error('QQ 音乐搜索失败：业务码 ' + response.data?.code);
   const songs = response.data.data?.body?.song?.list;
@@ -51,7 +69,7 @@ export async function searchSongs(query, page = 1) {
   return songs;
 }
 
-export async function getMusicUrl(mid) {
+export async function getMusicUrl(mid: string) {
   const payload = {
     req: {
       module: 'CDN.SrfCdnDispatchServer',
@@ -88,6 +106,7 @@ export async function getMusicUrl(mid) {
       },
     },
     '音源',
+    audioResponse,
   );
   if (response.req_0?.code !== 0)
     throw new Error('QQ 音乐音源失败：业务码 ' + response.req_0?.code);
@@ -96,7 +115,7 @@ export async function getMusicUrl(mid) {
   if (!item) throw new Error('QQ 音乐音源响应缺少授权结果');
   if (item.result !== 0 || !item.purl)
     throw new Error('QQ 音乐未返回播放授权（' + item.result + '）');
-  const hosts = data.sip?.length ? data.sip : response.req?.data?.sip;
+  const hosts = data?.sip?.length ? data.sip : response.req?.data?.sip;
   const host = hosts?.find((value) => /^https?:\/\//.test(value));
   if (!host) throw new Error('QQ 音乐音源响应缺少 CDN 地址');
   return new URL(item.purl, host).href;

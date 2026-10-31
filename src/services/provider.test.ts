@@ -1,6 +1,10 @@
 import {jest} from '@jest/globals';
 import assert from 'node:assert/strict';
-async function provider(Netease, QQMusic) {
+import type {TrackId} from './track';
+async function provider(
+  Netease: Partial<typeof import('./netease').default>,
+  QQMusic: Partial<typeof import('./qqmusic').default>,
+) {
   jest.resetModules();
   jest.unstable_mockModule('./netease', () => ({
     default: Netease,
@@ -10,9 +14,9 @@ async function provider(Netease, QQMusic) {
     default: QQMusic,
     ...QQMusic,
   }));
-  let resolver;
+  let resolver!: typeof import('./provider').default;
   await jest.isolateModulesAsync(async () => {
-    resolver = (await import('./provider.js')).default;
+    resolver = (await import('./provider')).default;
   });
   return resolver;
 }
@@ -27,7 +31,7 @@ test('QQ 备用请求报错后仍尝试网易云同长度替代歌曲', async ()
     ],
     dt: 3000,
   };
-  const calls = [];
+  const calls: (TrackId | undefined)[] = [];
   const resolver = await provider(
     {
       search: async () => ({

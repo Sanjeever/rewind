@@ -50,6 +50,11 @@ export interface TrackFields {
   mainTrackId?: number;
   rid?: TrackId;
   fee?: number;
+  description?: string;
+  mv?: number;
+  mvid?: TrackId;
+  isFM?: boolean;
+  lastRank?: number;
 }
 
 export interface NeteaseTrack extends TrackFields {

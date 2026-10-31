@@ -1,6 +1,12 @@
 import {jest} from '@jest/globals';
 import assert from 'node:assert/strict';
-async function resolver(services) {
+import type * as z from 'zod/mini';
+import type {responses} from '../services/netease/responses';
+async function resolver(services: {
+  Netease?: Partial<typeof import('../services/netease').default>;
+  QQMusic?: Partial<typeof import('../services/qqmusic').default>;
+  provider?: {getUrlFromOther(): Promise<string | null>};
+}) {
   jest.resetModules();
   jest.unstable_mockModule('../services', () => ({
     provider: undefined,
@@ -9,9 +15,9 @@ async function resolver(services) {
     default: services,
     ...services,
   }));
-  let urls;
+  let urls!: typeof import('./trackUrl').default;
   await jest.isolateModulesAsync(async () => {
-    urls = (await import('./trackUrl.js')).default;
+    urls = (await import('./trackUrl')).default;
   });
   return urls;
 }
@@ -36,7 +42,7 @@ test('主音源报错时仍尝试既有备用来源，备用成功后返回地�
   );
 });
 test('主音源与备用均失败时保留真实业务错误，区分 -460 和歌曲级 -110', async () => {
-  let response = {
+  let response: z.output<typeof responses.freeMusicUrl> = {
     code: -460,
     message: '网络环境风险',
   };

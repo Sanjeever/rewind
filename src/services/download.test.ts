@@ -1,18 +1,14 @@
 import {jest} from '@jest/globals';
 import assert from 'node:assert/strict';
-afterEach(() => {
-  delete global.toast;
-});
 test('QQ 音源明确拒绝后下载仍可使用原有备用来源', async () => {
   jest.resetModules();
-  const opened = [];
-  const notices = [];
-  global.toast = (value) => notices.push(value);
+  const opened: string[] = [];
+  const notices: unknown[] = [];
   const dependencies = {
-    '../native/toast': {toast: (message) => notices.push(message)},
+    '../native/toast': {toast: (message: unknown) => notices.push(message)},
     'react-native': {
       Linking: {
-        openURL: (value) => opened.push(value),
+        openURL: (value: string) => opened.push(value),
       },
     },
     'react-native-blob-util': {},
@@ -45,9 +41,9 @@ test('QQ 音源明确拒绝后下载仍可使用原有备用来源', async () =>
       default: value,
       ...value,
     }));
-  let download;
+  let download!: typeof import('./download').default;
   await jest.isolateModulesAsync(async () => {
-    download = (await import('./download.js')).default;
+    download = (await import('./download')).default;
   });
   await download.download('歌曲', 'mid', 'qqMusic', {}, true);
   assert.deepEqual(opened, ['https://audio/fallback']);

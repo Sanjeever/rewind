@@ -1,6 +1,11 @@
 import {jest} from '@jest/globals';
 import assert from 'node:assert/strict';
-async function searchWith(services) {
+import type * as z from 'zod/mini';
+import type {responses} from './netease/responses';
+async function searchWith(services: {
+  Netease?: Partial<typeof import('./netease').default>;
+  QQMusic?: Partial<typeof import('./qqmusic').default>;
+}) {
   jest.resetModules();
   jest.unstable_mockModule('./index', () => ({
     QQMusic: undefined,
@@ -8,14 +13,14 @@ async function searchWith(services) {
     default: services,
     ...services,
   }));
-  let searchSongs;
+  let searchSongs!: typeof import('./search').searchSongs;
   await jest.isolateModulesAsync(async () => {
     searchSongs = (await import('./search')).searchSongs;
   });
   return searchSongs;
 }
 test('搜索服务统一两种来源结构，并保留正确分页偏移', async () => {
-  const calls = [];
+  const calls: unknown[] = [];
   const search = await searchWith({
     Netease: {
       cloud_search: async (options) => {
@@ -71,7 +76,7 @@ test('搜索服务统一两种来源结构，并保留正确分页偏移', async
   assert.equal(qq.hasMore, false);
 });
 test('真正空结果可结束加载，错误状态和畸形响应不会伪装成空列表', async () => {
-  let response = {
+  let response: z.output<typeof responses.cloud_search> = {
     code: 200,
     result: {
       songCount: 0,

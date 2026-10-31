@@ -1,13 +1,22 @@
 import providers from '../services/providers';
 import {Netease, QQMusic} from '../services';
 import {parseLyric} from '../utils';
+import type {LyricRow} from '../utils/parseLyric';
+import type {TrackFields, TrackId} from '../services/track';
+import type {Provider} from '../services/providers';
+import type {extractFullInfo} from '../services/trackInfo';
+interface Lyrics {
+  lyric: LyricRow[];
+  hasTrans: boolean;
+}
+type Info = ReturnType<typeof extractFullInfo>;
 
-const empty = () => ({lyric: [], hasTrans: false});
-const sameDuration = (left, right) =>
+const empty = (): Lyrics => ({lyric: [], hasTrans: false});
+const sameDuration = (left: number, right: number) =>
   Math.floor(left) === Math.floor(right) || Math.round(left) === Math.round(right);
 
-function translated(lyric, translation) {
-  const byTime = new Map();
+function translated(lyric: LyricRow[], translation: LyricRow[]): Lyrics {
+  const byTime = new Map<number | undefined, LyricRow>();
   for (const line of translation) if (!byTime.has(line.total)) byTime.set(line.total, line);
   return {
     lyric: lyric.map((line) =>
@@ -17,26 +26,27 @@ function translated(lyric, translation) {
   };
 }
 
-async function qqLyric(id) {
+async function qqLyric(id: TrackId) {
   const result = await QQMusic.getLyric(id);
   if (!result || !Array.isArray(result.lyric) || !Array.isArray(result.trans))
     throw new Error('QQ 音乐歌词响应无效');
   return translated(result.lyric, result.trans);
 }
 
-async function matchQQ(query, duration) {
+async function matchQQ(query: string, duration?: number) {
   const songs = await QQMusic.searchSong(query);
   if (!Array.isArray(songs)) throw new Error('QQ 音乐搜索响应无效');
   if (!songs.length) return empty();
   const song = duration
-    ? songs.find((song) => sameDuration(song.interval, duration / 1000))
+    ? songs.find((song) => song.interval != null && sameDuration(song.interval, duration / 1000))
     : songs[0];
-  return song ? qqLyric(song.mid) : empty();
+  return song ? qqLyric(song.mid!) : empty();
 }
 
-async function neteaseLyric(song, info) {
-  if (song.mainTrackId > 0) return {lyric: [{txt: song.description, total: 0}], hasTrans: false};
-  const response = await Netease.lyric(song.id);
+async function neteaseLyric(song: TrackFields, info: Info): Promise<Lyrics> {
+  if (song.mainTrackId != null && song.mainTrackId > 0)
+    return {lyric: [{txt: song.description!, total: 0}], hasTrans: false};
+  const response = await Netease.lyric(song.id!);
   if (!response || response.code !== 200) throw new Error('网易云歌词响应无效');
   if (!response.lrc || response.uncollected === true) {
     const query = info.song + (Array.isArray(info.singer) ? '- ' + info.singer[0].name : '');
@@ -49,7 +59,7 @@ async function neteaseLyric(song, info) {
   return result;
 }
 
-async function localLyric(song, info) {
+async function localLyric(song: TrackFields, info: Info) {
   const query = song.title + (typeof song.singer === 'string' ? ' ' + song.singer : '');
   const response = await Netease.search({keywords: query});
   if (!response || response.code !== 200 || !response.result) throw new Error('网易云搜索响应无效');
@@ -59,21 +69,22 @@ async function localLyric(song, info) {
     throw new Error('网易云搜索响应缺少歌曲');
   }
   const match =
-    (song.duration > 0 &&
+    (song.duration != null &&
+      song.duration > 0 &&
       songs.find((item) =>
-        sameDuration((item.dt ?? item.duration) / 1000, song.duration / 1000),
+        sameDuration((item.dt ?? item.duration)! / 1000, song.duration! / 1000),
       )) ||
     songs[0];
   return match ? neteaseLyric(match, info) : matchQQ(query, song.duration);
 }
 
 export default {
-  getLyric({api, obj, songItem}) {
+  getLyric({api, obj, songItem}: {api: Provider; obj: Info; songItem: TrackFields}) {
     switch (api) {
       case providers.netEase:
         return neteaseLyric(songItem, obj);
       case providers.qqMusic:
-        return qqLyric(obj.uid);
+        return qqLyric(obj.uid!);
       case providers.local:
         return localLyric(songItem, obj);
       default:

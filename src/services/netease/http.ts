@@ -2,6 +2,8 @@ import axios from 'axios';
 import cookies from '../../native/cookies';
 import crypto from '../../native/crypto';
 import anonymousCookie from './anonymousCookie';
+import type * as z from 'zod/mini';
+import {parseResponse} from '../schemas';
 
 const origin = 'https://music.163.com';
 export const http = axios.create({
@@ -26,23 +28,33 @@ http.interceptors.request.use(async (config) => {
   return config;
 });
 
-export async function request(path, query = '', options) {
-  const response = await http.get(query ? path + '?' + query.replace(/^\?/, '') : path, {
+export async function request<S extends z.ZodMiniType>(
+  schema: S,
+  path: string,
+  query = '',
+  options?: {signal: AbortSignal},
+) {
+  const response = await http.get<unknown>(query ? path + '?' + query.replace(/^\?/, '') : path, {
     signal: options?.signal,
   });
-  return response.data;
+  return parseResponse(schema, response.data);
 }
 
-export async function cryptoRequest(path, data, options) {
+export async function cryptoRequest<S extends z.ZodMiniType>(
+  schema: S,
+  path: string,
+  data: Record<string, unknown>,
+  options?: {signal: AbortSignal},
+) {
   const encrypted = await crypto.weapi(data);
   const body =
     'params=' +
     encodeURIComponent(encrypted.params) +
     '&encSecKey=' +
     encodeURIComponent(encrypted.encSecKey);
-  const response = await http.post(path, body, {signal: options?.signal});
+  const response = await http.post<unknown>(path, body, {signal: options?.signal});
   if (response.data === '') throw new Error('网易云服务返回空响应');
-  return response.data;
+  return parseResponse(schema, response.data);
 }
 
 export async function getCsrfToken() {
