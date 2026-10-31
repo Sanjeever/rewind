@@ -3,7 +3,7 @@ import * as React from 'react';
 import * as ReactNative from 'react-native';
 import * as reactNativeAnimatable from 'react-native-animatable';
 import TouchableScale from './TouchableScale';
-import * as components from './index';
+import Icon from './Icon';
 import * as constants from '../theme/constants';
 import icons from '../theme/icons';
 import * as events from '../events/index';
@@ -151,7 +151,7 @@ const E = function ({onPress}: Pick<SongRowProps, 'onPress'>) {
         justifyContent: 'center',
       }}
     >
-      <components.Icon name={icons.PLAY} size={12} style={T.mv} />
+      <Icon name={icons.PLAY} size={12} style={T.mv} />
     </ReactNative.TouchableOpacity>
   );
 };
@@ -169,7 +169,7 @@ const h = function ({
   return (
     <TouchableScale onPress={onPress} activeScale={0.7}>
       <ReactNative.View style={style}>
-        <components.Icon name={name || icons.DOTS_VERTICAL} size={size || 20} />
+        <Icon name={name || icons.DOTS_VERTICAL} size={size || 20} />
       </ReactNative.View>
     </TouchableScale>
   );
@@ -195,7 +195,7 @@ const y = ({showRank, lastRank, index}: Pick<SongRowProps, 'showRank' | 'lastRan
           alignItems: 'center',
         }}
       >
-        {s ? <components.Icon name={s} size={15} /> : null}
+        {s ? <Icon name={s} size={15} /> : null}
         {l ? <Text style={T.rank}>{l}</Text> : null}
       </ReactNative.View>
     );
@@ -230,7 +230,7 @@ const p = ({
       <ReactNative.TouchableOpacity onPress={addToQueue}>
         <ReactNative.View style={T.index}>
           {playing ? (
-            <components.Icon name={icons.EMOTICON_HAPPY_OUTLINE} size={20} />
+            <Icon name={icons.EMOTICON_HAPPY_OUTLINE} size={20} />
           ) : (
             <Text style={[T.song, T.indexText]}>{1 + (0 | (index ?? 0))}</Text>
           )}
@@ -281,7 +281,7 @@ const I = ({
     >
       {isExist ? (
         <reactNativeAnimatable.View animation={'fadeIn'} useNativeDriver={true}>
-          <components.Icon
+          <Icon
             name={icons.CHECK_CIRCLE}
             size={15}
             style={{

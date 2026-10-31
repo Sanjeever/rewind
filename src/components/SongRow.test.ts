@@ -3,7 +3,7 @@ const open = jest.fn();
 jest.unstable_mockModule('../events/index', () => ({toLongPressModal: open}));
 jest.unstable_mockModule('./Text', () => ({default: undefined}));
 jest.unstable_mockModule('./TouchableScale', () => ({default: undefined}));
-jest.unstable_mockModule('./index', () => ({}));
+jest.unstable_mockModule('./Icon', () => ({default: undefined}));
 jest.unstable_mockModule('../utils/index', () => ({}));
 jest.unstable_mockModule('../theme/constants', () => ({
   ITEM_HEIGHT: 70,
