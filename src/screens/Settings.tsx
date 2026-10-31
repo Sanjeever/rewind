@@ -15,11 +15,11 @@ import keysModule from '../storage/keys';
 import locales from '../locales/index';
 import * as events from '../events/index';
 import restartModule from '../native/restart';
-import type {ScreenProps} from '../navigation/types';
+import type {Navigation} from '../navigation/types';
 import {errorMessage} from '../utils/types';
 type SettingValues = typeof defaults.defaultSettings;
 class Settings extends React.Component<
-  {navigation: Pick<ScreenProps<'Settings'>['navigation'], 'goBack'>},
+  {navigation: Pick<Navigation, 'goBack'>},
   {settings: SettingValues; modified: boolean; modal: boolean}
 > {
   scrollView: reactNativeSpringScrollview.SpringScrollView | null = null;

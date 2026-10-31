@@ -7,11 +7,42 @@ import * as components from './index';
 import * as constants from '../theme/constants';
 import icons from '../theme/icons';
 import * as trackInfo from '../services/trackInfo';
-import reactNativePopupMenu from 'react-native-popup-menu';
+import * as reactNativePopupMenu from 'react-native-popup-menu';
+import type {TrackFields} from '../services/track';
+import type {Provider} from '../services/providers';
+import type {Playlist} from '../storage/models';
+interface Props {
+  name?: string;
+  api?: Provider;
+  trackCount?: number;
+  heartMode?: boolean;
+  coverImgUrl?: string;
+  creator?: Playlist['creator'];
+  lastPlayedSong?: TrackFields | null;
+  orderText?: string;
+  showRestore?: boolean;
+  subscribed?: boolean;
+  isCreatedByMe?: boolean;
+  disabledLastPlayedSong?: boolean;
+  onRestore?(): void;
+  onSubscribe?(): void;
+  savePic?(): void;
+  onSortText?(): void;
+  onHeartMode?(): void;
+  onSort?(): void;
+  onMult?(): void;
+  onPlay?(): void;
+  onInsert?(): void;
+  onWebview?(): void;
+  onUser?(): void;
+  onCopy?(): void;
+  onOpenUrl?(): void;
+  onShare?(): void;
+}
 const g = 0.9 * constants.DEVICE_WIDTH;
 const E = 0.5 * constants.DEVICE_WIDTH;
 const b = 0.2 * constants.DEVICE_WIDTH;
-const I = function ({onWebview, onOpenUrl, onCopy, onShare}) {
+const I = function ({onWebview, onOpenUrl, onCopy, onShare}: Props) {
   return (
     <reactNativePopupMenu.Menu>
       <reactNativePopupMenu.MenuTrigger
@@ -26,26 +57,25 @@ const I = function ({onWebview, onOpenUrl, onCopy, onShare}) {
         <components.IconButton name={icons.MENU_OPEN} size={25} disabled={true} />
       </reactNativePopupMenu.MenuTrigger>
       <reactNativePopupMenu.MenuOptions
-        style={{
-          color: '#000',
-          backgroundColor: 'rgba(0, 0, 0, 0.95)',
-          borderWidth: 1,
-          borderColor: '#fff',
-          borderRadius: 16,
-          padding: 8,
-          flex: 0,
-          justifyContent: 'center',
-          alignItems: 'center',
-          flexDirection: 'row',
+        customStyles={{
+          optionsWrapper: {
+            backgroundColor: 'rgba(0, 0, 0, 0.95)',
+            borderWidth: 1,
+            borderColor: '#fff',
+            borderRadius: 16,
+            padding: 8,
+            flex: 0,
+            justifyContent: 'center',
+            alignItems: 'center',
+            flexDirection: 'row',
+          },
+          OptionTouchableComponent: ReactNative.TouchableOpacity,
         }}
         optionsContainerStyle={{
           elevation: 0,
           borderRadius: 16,
           flex: 0,
           width: 'auto',
-        }}
-        customStyles={{
-          OptionTouchableComponent: ReactNative.TouchableOpacity,
         }}
       >
         <reactNativePopupMenu.MenuOption onSelect={onCopy}>
@@ -88,7 +118,7 @@ const I = function ({onWebview, onOpenUrl, onCopy, onShare}) {
     </reactNativePopupMenu.Menu>
   );
 };
-class PlaylistForeground extends React.PureComponent {
+class PlaylistForeground extends React.PureComponent<Props> {
   render() {
     const props = this.props;
     const {
@@ -183,7 +213,7 @@ class PlaylistForeground extends React.PureComponent {
   }
 }
 export default PlaylistForeground;
-var h = ({coverImgUrl, savePic, onUser, creator}) => {
+const h = ({coverImgUrl, savePic, onUser, creator}: Props) => {
   if (coverImgUrl) {
     return (
       <React.Fragment>
@@ -226,7 +256,7 @@ var h = ({coverImgUrl, savePic, onUser, creator}) => {
     </ReactNative.View>
   );
 };
-var y = ({lastPlayedSong, onPlay, onInsert}) => {
+const y = ({lastPlayedSong, onPlay, onInsert}: Props) => {
   if (lastPlayedSong === null) {
     return (
       <ReactNative.TouchableNativeFeedback onPress={onPlay}>
@@ -292,7 +322,7 @@ var y = ({lastPlayedSong, onPlay, onInsert}) => {
     </ReactNative.TouchableNativeFeedback>
   );
 };
-var C = ReactNative.StyleSheet.create({
+const C = ReactNative.StyleSheet.create({
   foreground: {
     width: '100%',
     height: g,

@@ -14,7 +14,7 @@ import restart from '../native/restart';
 import {toast} from '../native/toast';
 import {errorMessage} from '../utils/types';
 import {Alert} from 'react-native';
-import type {ScreenProps} from '../navigation/types';
+import type {Navigation} from '../navigation/types';
 
 type Page = (typeof pagesModule.pages)[number];
 interface State {
@@ -23,7 +23,7 @@ interface State {
   changed: boolean;
 }
 export default class OrderPage extends React.PureComponent<
-  {navigation: Pick<ScreenProps<'OrderPage'>['navigation'], 'goBack'>},
+  {navigation: Pick<Navigation, 'goBack'>},
   State
 > {
   state: State = {pages: pagesModule.pages, apis: pagesModule.apis, changed: false};

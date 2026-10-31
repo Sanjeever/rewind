@@ -11,17 +11,14 @@ import locales from '../locales/index';
 import * as utils from '../utils/index';
 import * as types from '../utils/types';
 import * as files from '../storage/files';
-import type {ScreenProps} from '../navigation/types';
+import type {Navigation} from '../navigation/types';
 interface State {
   caches: {type: string; name: string; size: number}[];
   maxCacheSize: number;
   deleted: boolean;
   cacheSize: number;
 }
-class CachePage extends React.PureComponent<
-  {navigation: Pick<ScreenProps<'CachePage'>['navigation'], 'goBack'>},
-  State
-> {
+class CachePage extends React.PureComponent<{navigation: Pick<Navigation, 'goBack'>}, State> {
   mounted = false;
   state = {
     caches: [

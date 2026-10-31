@@ -12,11 +12,11 @@ import restartModule from '../native/restart';
 import NotificationOption from './../modules/NotificationOption';
 import {toast} from '../native/toast';
 import {errorMessage} from '../utils/types';
-import type {ScreenProps} from '../navigation/types';
+import type {Navigation} from '../navigation/types';
 type Config = typeof notification.configObject;
 const {configObject, configKeys} = notification;
 class MusicNotificationPage extends React.PureComponent<
-  {navigation: Pick<ScreenProps<'MusicNotificationPage'>['navigation'], 'goBack'>},
+  {navigation: Pick<Navigation, 'goBack'>},
   {config: Config; changed: boolean}
 > {
   backSubscription?: ReactNative.NativeEventSubscription;

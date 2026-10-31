@@ -1,4 +1,11 @@
-const i = ({navigation, scene}) => {
+import type {Animated} from 'react-native';
+interface Transition {
+  navigation: {state: {index: number}};
+  scene: {index: number};
+  layout: {isMeasured: boolean};
+  position: Animated.Value;
+}
+const i = ({navigation, scene}: Transition) => {
   const r = navigation.state.index === scene.index;
   const a = r ? 0 : 1000000;
   return {
@@ -13,7 +20,7 @@ const i = ({navigation, scene}) => {
     ],
   };
 };
-const u = (e) => {
+const u = (e: Transition) => {
   const {layout, position, scene} = e;
   if (!layout.isMeasured) {
     return i(e);
@@ -27,7 +34,7 @@ const u = (e) => {
     }),
   };
 };
-const o = function (e) {
+const o = function (e: boolean) {
   return {
     transitionSpec: e
       ? {
@@ -37,7 +44,7 @@ const o = function (e) {
       : {
           useNativeDriver: true,
         },
-    screenInterpolator: function (e) {
+    screenInterpolator: function (e: Transition) {
       return u(e);
     },
   };

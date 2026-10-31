@@ -2,7 +2,7 @@ import {toast} from '../native/toast';
 import Clipboard from '@react-native-clipboard/clipboard';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
-import reactNativePopupMenu from 'react-native-popup-menu';
+import * as reactNativePopupMenu from 'react-native-popup-menu';
 import * as components from '../components/index';
 import VideoPlayer from '../player/VideoPlayer';
 import providers from '../services/providers';
@@ -13,9 +13,18 @@ import * as services from '../services/index';
 import * as events from '../events/index';
 import intentVideo from '../native/intentVideo';
 import orientation from '../native/orientation';
-const y = (brs) => brs[1080] || brs[720] || brs[480] || brs[240];
-class Video extends React.Component {
-  state = {
+import type {ScreenProps} from '../navigation/types';
+import type {Provider} from '../services/providers';
+import type {TrackId} from '../services/track';
+import {errorMessage} from '../utils/types';
+const y = (brs: Record<string, string>) => brs[1080] || brs[720] || brs[480] || brs[240];
+class Video extends React.Component<
+  ScreenProps<'Video'>,
+  {isFullscreen: boolean; hideStatus: boolean; url?: string; title?: string}
+> {
+  active = false;
+  backSubscription?: ReactNative.NativeEventSubscription;
+  state: {isFullscreen: boolean; hideStatus: boolean; url?: string; title?: string} = {
     isFullscreen: false,
     hideStatus: false,
     url: undefined,
@@ -26,29 +35,31 @@ class Video extends React.Component {
       this.exitFullscreen();
       return true;
     }
+    return false;
   };
-  getMVUrl = async (id, api) => {
+  getMVUrl = async (id: TrackId, api: Provider) => {
     try {
       let url;
       let title;
       if (api === providers.netEase) {
         const response = await services.Netease.mv(id);
-        if (response?.data) {
+        if (response?.data?.brs) {
           url = y(response.data.brs);
           title = `${response.data.name} - ${response.data.artistName}`;
         }
       } else if (api === providers.qqMusic) {
-        url = await services.QQMusic.getMV(id);
+        url = (await services.QQMusic.getMV(id)) || undefined;
       }
       if (!url) {
         throw new Error(locales.MV_PLAYER_ERROR);
       }
+      if (!this.active) return;
       this.setState({
         url,
         title,
       });
     } catch (error) {
-      toast(error.message);
+      if (this.active) toast(errorMessage(error));
     }
   };
   fullscreen = () => {
@@ -64,11 +75,12 @@ class Video extends React.Component {
     orientation.lockToPortrait();
   };
   componentDidMount() {
+    this.active = true;
     this.backSubscription = ReactNative.BackHandler.addEventListener(
       'hardwareBackPress',
       this.onBackPress,
     );
-    const e = (this.props.route || {}).params || {};
+    const e = this.props.route.params;
     const {mvid, api} = e;
     this.getMVUrl(mvid, api);
     events.emitter.emit(names.HidePlayer, {
@@ -76,7 +88,8 @@ class Video extends React.Component {
     });
   }
   componentWillUnmount() {
-    this.exitFullscreen();
+    this.active = false;
+    orientation.lockToPortrait();
     this.backSubscription?.remove();
     events.emitter.emit(names.HidePlayer, {
       hide: false,
@@ -116,13 +129,16 @@ class Video extends React.Component {
           TopRight={
             <E
               onCopy={function () {
+                if (!url) return;
                 toast(locales.MV_URL_CLIPBOARD);
                 Clipboard.setString(url);
               }}
               onOpenUrl={function () {
+                if (!url) return;
                 ReactNative.Linking.openURL(url);
               }}
               onIntentVideo={function () {
+                if (!url) return;
                 intentVideo.playVideo(url);
               }}
             />
@@ -136,7 +152,15 @@ class Video extends React.Component {
     );
   }
 }
-var E = function ({onCopy, onOpenUrl, onIntentVideo}) {
+const E = function ({
+  onCopy,
+  onOpenUrl,
+  onIntentVideo,
+}: {
+  onCopy(): void;
+  onOpenUrl(): void;
+  onIntentVideo(): void;
+}) {
   return (
     <reactNativePopupMenu.Menu
       style={{
@@ -155,26 +179,25 @@ var E = function ({onCopy, onOpenUrl, onIntentVideo}) {
         <components.Icon name={icons.DOTS_VERTICAL} />
       </reactNativePopupMenu.MenuTrigger>
       <reactNativePopupMenu.MenuOptions
-        style={{
-          color: '#000',
-          backgroundColor: 'rgba(0, 0, 0, 0.95)',
-          borderWidth: 1,
-          borderColor: '#fff',
-          borderRadius: 16,
-          padding: 8,
-          flex: 0,
-          flexDirection: 'row',
-          justifyContent: 'center',
-          alignItems: 'center',
+        customStyles={{
+          optionsWrapper: {
+            backgroundColor: 'rgba(0, 0, 0, 0.95)',
+            borderWidth: 1,
+            borderColor: '#fff',
+            borderRadius: 16,
+            padding: 8,
+            flex: 0,
+            flexDirection: 'row',
+            justifyContent: 'center',
+            alignItems: 'center',
+          },
+          OptionTouchableComponent: ReactNative.TouchableOpacity,
         }}
         optionsContainerStyle={{
           elevation: 0,
           borderRadius: 16,
           flex: 0,
           width: 'auto',
-        }}
-        customStyles={{
-          OptionTouchableComponent: ReactNative.TouchableOpacity,
         }}
       >
         <reactNativePopupMenu.MenuOption onSelect={onCopy}>
@@ -206,7 +229,7 @@ var E = function ({onCopy, onOpenUrl, onIntentVideo}) {
     </reactNativePopupMenu.Menu>
   );
 };
-var C = ReactNative.StyleSheet.create({
+const C = ReactNative.StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',

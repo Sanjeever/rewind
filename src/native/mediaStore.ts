@@ -14,7 +14,7 @@ export interface MediaTrack {
 
 const native = NativeModules.RNMediaStore as {
   getPlayList(): Promise<{numbers: number; data: MediaTrack[]}>;
-  getArtWork(id: TrackId): Promise<string>;
+  getArtWork(id: string): Promise<string>;
   publish(path: string, name: string, mime: string, subdirectory: string): Promise<string>;
   deleteAudio(id: string): Promise<boolean>;
 };
@@ -32,7 +32,7 @@ async function writePermission() {
 
 export default {
   getPlayList: () => native.getPlayList(),
-  getArtWork: (id: TrackId) => native.getArtWork(id),
+  getArtWork: (id: TrackId) => native.getArtWork(String(id)),
   async publish(path: string, name: string, mime: string, subdirectory: string) {
     await writePermission();
     return native.publish(path, name, mime, subdirectory);

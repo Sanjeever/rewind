@@ -7,7 +7,7 @@ import locales from '../locales';
 import {Netease} from '../services';
 import {toast} from '../native/toast';
 import {errorMessage} from '../utils/types';
-import type {ScreenProps} from '../navigation/types';
+import type {Navigation} from '../navigation/types';
 import type * as z from 'zod/mini';
 import type {radio} from '../services/schemas';
 
@@ -18,10 +18,7 @@ interface State {
   type: 0 | 1;
   page: number;
 }
-export default class Radio extends React.PureComponent<
-  {navigation: Pick<ScreenProps<'Radio'>['navigation'], 'goBack' | 'navigate'>},
-  State
-> {
+export default class Radio extends React.PureComponent<{navigation: Navigation}, State> {
   state: State = {loaded: false, radios: [], type: 0, page: 0};
   list: SpringScrollView | null = null;
   requestId = 0;
