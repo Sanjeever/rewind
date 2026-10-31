@@ -12,14 +12,34 @@ import * as services from '../services/index';
 import * as events from '../events/index';
 import * as utils from '../utils/index';
 import * as trackInfo from '../services/trackInfo';
-let l;
+import type {ScreenProps, Navigation} from '../navigation/types';
+import type {TrackFields} from '../services/track';
+import type {Playlist} from '../storage/models';
+import type {Provider} from '../services/providers';
+import type {PagerViewOnPageSelectedEvent} from 'react-native-pager-view';
+import {errorMessage} from '../utils/types';
 const tabNames = [locales.ARTIST_SONGS, locales.MIX];
-l = {};
+const l: Record<string, string> = {};
 l[locales.ARTIST_SONGS] = '1';
 l[locales.MIX] = '2';
 const k = l;
-class MusicRecommend extends React.Component {
-  state = {
+interface State {
+  api: Provider;
+  data: TrackFields[];
+  loaded: boolean;
+  playlistData: Playlist[];
+  tabIndex: number;
+  dislikeMode: boolean;
+}
+class MusicRecommend extends React.Component<
+  Pick<ScreenProps<'MusicRecommend'>, 'route'> & {navigation: Navigation},
+  State
+> {
+  requestVersion = 0;
+  _songScrollView: reactNativeSpringScrollview.SpringScrollView | null = null;
+  _playlistScrollView: reactNativeSpringScrollview.SpringScrollView | null = null;
+  backSubscription?: ReactNative.NativeEventSubscription;
+  state: State = {
     api: providers.netEase,
     data: [],
     loaded: false,
@@ -38,55 +58,49 @@ class MusicRecommend extends React.Component {
     );
   };
   getRe = async () => {
+    const request = ++this.requestVersion;
     try {
       const response = await services.Netease.recommend_songs();
+      if (request !== this.requestVersion) return;
       if (response?.code === 301) {
         toast(locales.NETEASE_NOT_LOGIN);
         this.props.navigation.navigate('NeteaseLogin');
         return;
       }
-      if (response?.recommend) {
+      if (response.code === 200 && response.recommend) {
         this.setState({
           data: response.recommend,
         });
-        await this.getRePlaylist();
-      }
+        await this.getRePlaylist(request);
+      } else throw new Error(response.message || locales.ERROR);
     } catch (error) {
-      toast(error.message);
+      if (request === this.requestVersion) toast(errorMessage(error));
     } finally {
-      this.setState({
-        loaded: true,
-      });
+      if (request === this.requestVersion)
+        this.setState({
+          loaded: true,
+        });
     }
   };
-  getRePlaylist = async () => {
+  getRePlaylist = async (request = this.requestVersion) => {
     const response = await services.Netease.recommend_playlists();
-    if (response?.code === 200) {
+    if (request !== this.requestVersion) return;
+    if (response?.code === 200 && response.recommend) {
       this.setState({
         playlistData: response.recommend,
       });
-    }
+    } else throw new Error(response.message || locales.ERROR);
   };
   onTop = () => {
-    let e;
-    let t;
-    let n;
-    let r;
-    if (this.state.tabIndex === 0) {
-      if (!((e = (t = this._songScrollView).scrollToBegin) === null || e === undefined)) {
-        e.call(t);
-      }
-    } else if (!((n = (r = this._playlistScrollView).scrollToBegin) === null || n === undefined)) {
-      n.call(r);
-    }
+    (this.state.tabIndex === 0 ? this._songScrollView : this._playlistScrollView)?.scrollToBegin();
   };
-  handlePageSelected = (e) => {
+  handlePageSelected = (e: PagerViewOnPageSelectedEvent) => {
     const position = e.nativeEvent.position;
     this.setState({
       tabIndex: position,
     });
   };
-  _renderScenes = (e) => {
+  _renderScenes = (e: string) => {
     const a_state = this.state;
     const {data, playlistData} = a_state;
     switch (e) {
@@ -95,7 +109,7 @@ class MusicRecommend extends React.Component {
           return (
             <reactNativeSpringScrollview.SpringScrollView
               ref={(e) => {
-                return (this._songScrollView = e);
+                this._songScrollView = e;
               }}
             >
               {data.map((e, t) =>
@@ -108,13 +122,13 @@ class MusicRecommend extends React.Component {
             </reactNativeSpringScrollview.SpringScrollView>
           );
         }
-        return <components.Spinkit />;
+        return this.state.loaded ? <ReactNative.View /> : <components.Spinkit />;
       case '2':
         if (playlistData?.length > 0) {
           return (
             <reactNativeSpringScrollview.SpringScrollView
               ref={(e) => {
-                return (this._playlistScrollView = e);
+                this._playlistScrollView = e;
               }}
             >
               {playlistData.map((e, t) =>
@@ -127,12 +141,12 @@ class MusicRecommend extends React.Component {
             </reactNativeSpringScrollview.SpringScrollView>
           );
         }
-        return <components.Spinkit />;
+        return this.state.loaded ? <ReactNative.View /> : <components.Spinkit />;
       default:
         return null;
     }
   };
-  _renderItem = ({item, index}) => {
+  _renderItem = ({item, index}: {item: TrackFields; index: number}) => {
     const a_state = this.state;
     const {api, data, dislikeMode} = a_state;
     const u = trackInfo.extractFullInfo(item);
@@ -172,7 +186,7 @@ class MusicRecommend extends React.Component {
       />
     );
   };
-  _renderPlaylist = ({item}) => {
+  _renderPlaylist = ({item}: {item: Playlist; index?: number}) => {
     return (
       <components.SongRow
         img={`${item.picUrl}?param=200y200`}
@@ -184,27 +198,32 @@ class MusicRecommend extends React.Component {
       />
     );
   };
-  onPlaylist = (playlist) => {
+  onPlaylist = (playlist: Playlist) => {
     this.props.navigation.navigate('Playlist', {
       playlist,
       api: providers.netEase,
     });
   };
-  onDisklikeSong = async (song, index) => {
-    const response = await services.Netease.recommend_dislike({
-      id: song.id,
-    });
-    const data = immer.produce(this.state.data, (draft) => {
-      if (response.code === 200) {
-        draft[index] = response.data;
-      } else {
-        toast(response.message);
-        draft.splice(index, 1);
-      }
-    });
-    this.setState({
-      data,
-    });
+  onDisklikeSong = async (song: TrackFields, index: number) => {
+    const request = this.requestVersion;
+    try {
+      if (song.id == null) throw new Error('歌曲缺少标识');
+      const response = await services.Netease.recommend_dislike({
+        id: song.id,
+      });
+      if (request !== this.requestVersion || this.state.data[index] !== song) return;
+      if (response.code !== 200 || !response.data)
+        throw new Error(response.message || locales.ERROR);
+      const replacement = response.data;
+      const data = immer.produce(this.state.data, (draft) => {
+        draft[index] = replacement;
+      });
+      this.setState({
+        data,
+      });
+    } catch (error) {
+      if (request === this.requestVersion) toast(errorMessage(error));
+    }
   };
   componentDidMount() {
     this.backSubscription = ReactNative.BackHandler.addEventListener(
@@ -214,6 +233,7 @@ class MusicRecommend extends React.Component {
     this.getRe();
   }
   componentWillUnmount() {
+    this.requestVersion++;
     this.backSubscription?.remove();
   }
   render() {
@@ -233,7 +253,6 @@ class MusicRecommend extends React.Component {
             });
           },
         }}
-        disabledTopFadingEdge={true}
       >
         <TabbedViewPager tabNames={tabNames} onPageSelected={this.handlePageSelected}>
           {tabNames.map((t, key) => (

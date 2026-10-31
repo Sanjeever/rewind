@@ -1,3 +1,11 @@
+import type {Navigation} from '../navigation/types';
+import type {TrackFields} from '../services/track';
+import type {Provider} from '../services/providers';
+import type {ProviderTracks, SelectedIndices} from '../modules/HistorySelection';
+import {toast} from '../native/toast';
+import {errorMessage} from '../utils/types';
+import * as z from 'zod/mini';
+import {track} from '../services/schemas';
 import * as _appStorage from './../storage/index';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
@@ -9,51 +17,58 @@ import icons from '../theme/icons';
 import keys from '../storage/keys';
 import locales from '../locales/index';
 import * as events from '../events/index';
-import * as types from '../utils/types';
 import * as trackInfo from '../services/trackInfo';
 import mediaStore from '../native/mediaStore';
 import * as history from '../storage/history';
 import * as sectionsModule from './history/sections';
-import HistorySelection from './../modules/HistorySelection.js';
-class MusicHistory extends React.Component {
-  state = {
+import HistorySelection from './../modules/HistorySelection';
+const historySchema = z.looseObject({
+  netEase: z.optional(z.array(track)),
+  qqMusic: z.optional(z.array(track)),
+  local: z.optional(z.array(track)),
+});
+class MusicHistory extends React.Component<
+  {navigation: Pick<Navigation, 'goBack'>},
+  ProviderTracks & {showModal: boolean}
+> {
+  _list: reactNativeLargelist.LargeList<TrackFields> | null = null;
+  historyLoaded = false;
+  requestVersion = 0;
+  documentExtra: Record<string, unknown> = {};
+  state: ProviderTracks & {showModal: boolean} = {
     qqMusic: [],
     netEase: [],
     local: [],
     showModal: false,
   };
-  loadHistory = () => {
-    _appStorage.storage
-      .load({
-        key: keys.musicHistory,
-      })
-      .then((e) => {
-        if (e) {
-          if (!types.isObject(e)) {
-            return;
-          }
-          this.setState(
-            {
-              qqMusic: e.qqMusic,
-              netEase: e.netEase,
-              local: e.local,
-            },
-            () => {
-              this.attachLocalPath(e.netEase, providers.netEase);
-              this.attachLocalPath(e.qqMusic, providers.qqMusic);
-            },
-          );
-        }
-      })
-      .catch(() => false);
-  };
-  attachLocalPath = (e, t) => {
-    if (!(e.length < 1)) {
-      mediaStore.attachLocalPath(e).then((e) => {
-        this.setState({
-          [t]: e,
-        });
+  loadHistory = async () => {
+    const request = ++this.requestVersion;
+    try {
+      const raw = await _appStorage.storage.load<unknown>({key: keys.musicHistory});
+      const {netEase = [], qqMusic = [], local = [], ...extra} = historySchema.parse(raw);
+      if (request !== this.requestVersion) return;
+      this.historyLoaded = true;
+      this.documentExtra = extra;
+      this.setState({netEase, qqMusic, local}, () => {
+        this.attachLocalPath(netEase, 'netEase');
+        this.attachLocalPath(qqMusic, 'qqMusic');
       });
+    } catch (error) {
+      if (request !== this.requestVersion) return;
+      if (error instanceof Error && error.name === 'NotFoundError') this.historyLoaded = true;
+      else toast('读取历史失败：' + errorMessage(error));
+    }
+  };
+  attachLocalPath = (e: TrackFields[], t: Provider) => {
+    const request = this.requestVersion;
+    if (!(e.length < 1)) {
+      mediaStore
+        .attachLocalPath(e)
+        .then((e) => {
+          if (request !== this.requestVersion) return;
+          this.setState((state) => ({...state, [t]: e}));
+        })
+        .catch((error) => toast('匹配本地歌曲失败：' + errorMessage(error)));
     }
   };
   listPick = () => {
@@ -75,14 +90,14 @@ class MusicHistory extends React.Component {
   _heightForIndexPath = function () {
     return constants.ITEM_HEIGHT;
   };
-  _heightForSection = (e) => {
+  _heightForSection = (e: number) => {
     const t = sectionsModule.sections[e];
     if (this.sectionDataLength(t) === 0) {
       return 0;
     }
     return sectionsModule.SECTION_HEIGHT;
   };
-  _renderSection = (e) => {
+  _renderSection = (e: number) => {
     const t = sectionsModule.sections[e];
     const a = sectionsModule.sectionTitleMap[t];
     const l = this.sectionDataLength(t);
@@ -93,7 +108,7 @@ class MusicHistory extends React.Component {
       </ReactNative.View>
     );
   };
-  _renderIndexPath = ({section, row}) => {
+  _renderIndexPath = ({section, row}: {section: number; row: number}) => {
     const l = sectionsModule.sections[section];
     const index = row;
     const c = this.state[l][index];
@@ -122,13 +137,13 @@ class MusicHistory extends React.Component {
               api: l,
             });
           }}
-          isExist={c?.localPath}
+          isExist={!!c?.localPath}
           songItem={c}
         />
       </ReactNative.View>
     );
   };
-  onPickDelete = (e) => {
+  onPickDelete = (e: SelectedIndices) => {
     if (e.netEase.length > 0) {
       this.changeList(providers.netEase, e.netEase);
     }
@@ -139,13 +154,11 @@ class MusicHistory extends React.Component {
       this.changeList(providers.local, e.local);
     }
   };
-  changeList = (e, t) => {
+  changeList = (e: Provider, t: number[]) => {
     const a = this.state[e].filter((e, a) => !t.includes(a));
-    this.setState({
-      [e]: a,
-    });
+    this.setState((state) => ({...state, [e]: a}));
   };
-  sectionDataLength = (e) => {
+  sectionDataLength = (e: Provider) => {
     let t;
     const n_state = this.state;
     const {netEase, qqMusic, local} = n_state;
@@ -161,30 +174,17 @@ class MusicHistory extends React.Component {
     }
     return t;
   };
-  playMusic = (item, t, a) => {
-    this.refreshList(item, a);
-    let l;
-    const n_state = this.state;
-    const {netEase, qqMusic, local} = n_state;
-    switch (a) {
-      case providers.qqMusic:
-        l = qqMusic;
-        break;
-      case providers.netEase:
-        l = netEase;
-        break;
-      case providers.local:
-        l = local;
-    }
+  playMusic = (item: TrackFields, _index: number, a: Provider) => {
+    const l = history.cleanedData(this.state[a], item, a);
+    this.setState((state) => ({...state, [a]: l}));
     events.toPlayer({
       item,
       data: l,
       index: 0,
       api: a,
-      localPath: item.localPath,
     });
   };
-  refreshList = (e, t) => {
+  refreshList = (e: TrackFields, t: Provider) => {
     let a;
     const n_state = this.state;
     const {qqMusic, netEase, local} = n_state;
@@ -198,21 +198,24 @@ class MusicHistory extends React.Component {
       case providers.local:
         a = local;
     }
-    this.setState({
-      [t]: history.cleanedData(a, e, t),
-    });
+    this.setState((state) => ({...state, [t]: history.cleanedData(a, e, t)}));
   };
   componentWillUnmount() {
+    this.requestVersion++;
+    if (!this.historyLoaded) return;
     const state = this.state;
     const t = {
+      ...this.documentExtra,
       qqMusic: state.qqMusic,
       netEase: state.netEase,
       local: state.local,
     };
-    _appStorage.storage.save({
-      key: keys.musicHistory,
-      data: t,
-    });
+    _appStorage.storage
+      .save({
+        key: keys.musicHistory,
+        data: t,
+      })
+      .catch((error) => toast('保存历史失败：' + errorMessage(error)));
   }
   componentDidMount() {
     this.loadHistory();
@@ -235,7 +238,7 @@ class MusicHistory extends React.Component {
       >
         <reactNativeLargelist.LargeList
           ref={(t) => {
-            return (this._list = t);
+            this._list = t;
           }}
           data={c}
           heightForIndexPath={this._heightForIndexPath}

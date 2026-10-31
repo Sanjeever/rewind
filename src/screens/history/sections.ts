@@ -1,7 +1,8 @@
 import * as ReactNative from 'react-native';
 import providers from '../../services/providers';
+import type {Provider} from '../../services/providers';
 import locales from '../../locales/index';
-export const sections = Object.keys(providers);
+export const sections = Object.keys(providers) as Provider[];
 export const sectionTitleMap = {
   netEase: locales.NETEASE_MUSIC,
   qqMusic: locales.QQ_MUSIC,
