@@ -35,8 +35,9 @@ export interface TrackFields {
   albumname?: string;
   albummid?: string;
   qqAlbumId?: string;
-  localAlbumId?: number;
-  albumId?: number;
+  localAlbumId?: TrackId;
+  albumId?: TrackId;
+  localPath?: string;
   tns?: string[];
   alias?: string[];
   transName?: string;

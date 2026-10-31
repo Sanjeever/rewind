@@ -1,6 +1,8 @@
 import {Dimensions, StatusBar} from 'react-native';
 export default {
-  get(name) {
+  get(
+    name: 'REAL_WINDOW_HEIGHT' | 'REAL_WINDOW_WIDTH' | 'STATUS_BAR_HEIGHT' | 'SOFT_MENU_BAR_HEIGHT',
+  ) {
     const screen = Dimensions.get('screen');
     const window = Dimensions.get('window');
     return {

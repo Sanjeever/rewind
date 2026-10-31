@@ -1,9 +1,5 @@
-import {NativeModules} from 'react-native';
-const RewindDevice = NativeModules.RewindDevice as {
-  language: string;
-  setLanguageCode(code: string): void;
-};
+import {device} from './info';
 export default {
-  language: RewindDevice.language,
-  setLanguageCode: (code: string) => RewindDevice.setLanguageCode(code),
+  language: device.language,
+  setLanguageCode: (code: string) => device.setLanguageCode(code),
 };
