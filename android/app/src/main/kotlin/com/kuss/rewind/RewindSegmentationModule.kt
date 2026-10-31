@@ -7,7 +7,7 @@ import java.util.concurrent.Executors
 
 class RewindSegmentationModule(context: ReactApplicationContext) : ReactContextBaseJavaModule(context) {
     private val executor = Executors.newSingleThreadExecutor()
-    private val segmenter by lazy { DoubleArrayTrieSegment().enablePartOfSpeechTagging(false) }
+    private val segmenter by lazy { DoubleArrayTrieSegment().enablePartOfSpeechTagging(true) }
 
     override fun getName() = "RewindSegmentation"
 
