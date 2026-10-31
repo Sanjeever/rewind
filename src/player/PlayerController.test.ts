@@ -26,6 +26,7 @@ async function controller() {
     clearedTimers: number[];
     toasts: unknown[];
     history: TrackFields[];
+    preferences: unknown[];
   } = {
     prepared: [],
     play: 0,
@@ -36,6 +37,7 @@ async function controller() {
     clearedTimers: [],
     toasts: [],
     history: [],
+    preferences: [],
   };
   const requests: ((url: string) => void)[] = [];
   let timerId = 0;
@@ -142,7 +144,9 @@ async function controller() {
       musicHistory: (song: TrackFields) => calls.history.push(song),
     },
     './cache': asDefault(<T>(request: T) => request),
-    './lyricPreferences': asDefault({}),
+    './lyricPreferences': asDefault({
+      save: (_key: string, mode: unknown) => calls.preferences.push(mode),
+    }),
     './playMode': asDefault({}),
     './lyrics': asDefault({}),
     './trackUrl': asDefault({
@@ -343,7 +347,7 @@ test('批量插入走统一队列规则，不启动或暂停当前歌曲', async
   play(player, 1);
   requests[0]('https://audio/current');
   await tick();
-  player.insertIntoQueue({
+  player.queue.insert({
     data: [
       {
         id: 2,
@@ -392,4 +396,21 @@ test('卸载取消计时与订阅，迟到的音源不会恢复播放', async ()
   assert.deepEqual(removed, ['commands', 'events', 'state', 'back', 'app', 'notification']);
   assert.deepEqual(calls.prepared, []);
   assert.equal(scheduled.size, 0);
+});
+
+test('切换顺序保留同一业务队列，随机顺序覆盖所有歌曲并保存播放模式', async () => {
+  const {player, calls} = await controller();
+  play(player, 1);
+  player.queue.insert({data: [{id: 2}, {id: 3}], type: 'array', api: 'netEase'});
+  const tracks = player.props.tracks;
+  player.queue.changeMode();
+  assert.equal(player.state.playMode, 'random');
+  assert.deepEqual([...player.state.randomArray].sort(), [0, 1, 2]);
+  player.queue.changeMode();
+  assert.equal(player.state.playMode, 'circulate');
+  player.queue.changeMode();
+  assert.equal(player.state.playMode, 'list');
+  assert.equal(player.props.tracks, tracks);
+  assert.deepEqual(calls.preferences, ['random', 'circulate', 'list']);
+  assert.equal(calls.play, 0);
 });

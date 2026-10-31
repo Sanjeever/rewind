@@ -16,7 +16,7 @@ export default class Player extends PlayerController {
     play: this.playSound,
     togglePlay: this.togglePlay,
     showQueue: this.onNowPlaying,
-    changePlayMode: this.onChangePlayStatus,
+    changePlayMode: this.queue.changeMode,
     toggleLyric: this.presentation.toggleLyric,
     seek: this.seekTo,
     toggleTranslation: this.presentation.toggleTranslation,

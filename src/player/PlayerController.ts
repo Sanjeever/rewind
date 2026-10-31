@@ -1,16 +1,11 @@
+import PlaybackQueue from './PlaybackQueue';
 import PersonalRadio from './PersonalRadio';
 import TrackResources from './TrackResources';
 import {getMiniLyric} from './lyricPosition';
 import PlayerPresentation from './PlayerPresentation';
 import {subscribePlaybackEvent} from './commands';
 import {collectTracks, showTrackDetails, choosePlaylist} from '../modals/commands';
-import type {
-  PlayerProps,
-  PlayerState,
-  QueueSnapshot,
-  PlaybackCommand,
-  InsertCommand,
-} from './types';
+import type {PlayerProps, PlayerState, QueueSnapshot, PlaybackCommand} from './types';
 import type {TrackFields, TrackId} from '../services/track';
 import type {Provider} from '../services/providers';
 import type {PlayerError} from '../native/audioPlayer';
@@ -23,10 +18,9 @@ import React from 'react';
 import {AppState, BackHandler, DeviceEventEmitter} from 'react-native';
 import providers from '../services/providers';
 import names from '../events/names';
-import keys from '../storage/keys';
 import locales from '../locales';
 import {Netease} from '../services';
-import {extractFullInfo, getTrackKey} from '../services/trackInfo';
+import {extractFullInfo} from '../services/trackInfo';
 import parseArtist from '../utils/parseArtist';
 import universalNavigator from '../utils/universalNavigator';
 import stopTimer from '../utils/stopTimer';
@@ -41,13 +35,21 @@ import lastQueue from '../storage/lastQueue';
 import {musicHistory} from '../storage/history';
 import cache from './cache';
 import lyricPreferences from './lyricPreferences';
-import {selectQueue, insertNext, removeFromQueue} from './queue';
+import {selectQueue} from './queue';
 import trackUrl from './trackUrl';
 import notification from './notification';
-import {createPlayOrder, reconcilePlayOrder, getNextPlayIndex, getRandomIndex} from './playOrder';
+import {createPlayOrder, getNextPlayIndex, getRandomIndex} from './playOrder';
 import {subscribePlaybackCommands} from './commands';
 const PROGRESS_INTERVAL = 600;
 export default class PlayerController extends React.PureComponent<PlayerProps, PlayerState> {
+  queue = new PlaybackQueue({
+    getQueue: () => this.props,
+    getState: () => this.state,
+    commit: (update, onCommitted) => this.props.setPlayerData(update, onCommitted),
+    setOrder: (randomArray) => this.setState({randomArray}),
+    setMode: (playMode, randomArray) => this.setState({playMode, randomArray}),
+    play: (command) => this.handlePlayCommand(command),
+  });
   radio = new PersonalRadio({
     getQueue: () => this.props,
     getRequest: () => this.playbackRequest,
@@ -97,7 +99,6 @@ export default class PlayerController extends React.PureComponent<PlayerProps, P
   restoreRequest: number | null = null;
   resumeAfterFocus = false;
   playbackRequest = 0;
-  queueKeys: string[] = [];
   audioFocusType: string | null = null;
   cachedGetWebMusicUrl = cache((request, api) =>
     trackUrl.getUrl(api, request, this.props.settings.defaultHighQuality),
@@ -160,8 +161,8 @@ export default class PlayerController extends React.PureComponent<PlayerProps, P
     this.appStateSubscription = AppState.addEventListener('change', this.handleAppStateChange);
     this.unsubscribeCommands = subscribePlaybackCommands({
       play: this.handlePlayCommand,
-      insert: this.insertIntoQueue,
-      remove: this.removeTrack,
+      insert: this.queue.insert,
+      remove: this.queue.remove,
     });
     this.subscriptions = [
       subscribePlaybackEvent('HidePlayer', (event) =>
@@ -240,80 +241,9 @@ export default class PlayerController extends React.PureComponent<PlayerProps, P
       },
       (selected) => {
         if (request !== this.playbackRequest) return;
-        this.syncPlayOrder(selected.tracks);
+        this.queue.sync(selected.tracks);
         this.loadPlayerResource(selected, command.pid, request);
       },
-    );
-  };
-  syncPlayOrder = (tracks: readonly TrackFields[], playNext: string[] = []) => {
-    const keys = tracks.map((song) => getTrackKey(song));
-    if (
-      playNext.length ||
-      keys.length !== this.queueKeys.length ||
-      keys.some((key, index) => key !== this.queueKeys[index])
-    ) {
-      const randomArray = reconcilePlayOrder(
-        this.queueKeys,
-        keys,
-        this.state.randomArray,
-        getTrackKey(this.activeQueue.songItem, this.activeQueue.api),
-        playNext,
-      );
-      this.setState({
-        randomArray,
-      });
-      this.queueKeys = keys;
-    }
-  };
-  insertIntoQueue = ({data, type, api}: InsertCommand) => {
-    const songs = type === 'array' ? data : [data];
-    if (!songs.length) return;
-    if (!this.props.tracks.length) {
-      this.handlePlayCommand({
-        song: songs[0],
-        data: songs,
-        index: 0,
-        api,
-      });
-      return;
-    }
-    this.props.setPlayerData(
-      (current) => {
-        const next = isActiveQueue(current)
-          ? insertNext(current, songs, api)
-          : selectQueue(
-              current,
-              {
-                song: songs[0],
-                data: songs,
-                index: 0,
-                api,
-              },
-              this.state.playMode,
-            );
-        return {
-          tracks: next.tracks,
-          playingIndex: next.playingIndex,
-        };
-      },
-      (selected) =>
-        this.syncPlayOrder(
-          selected.tracks,
-          songs.map((song) => getTrackKey(song, api)),
-        ),
-    );
-  };
-  removeTrack = ({item}: {item: TrackFields}) => {
-    this.props.setPlayerData(
-      (current) => {
-        if (!isActiveQueue(current)) return {};
-        const next = removeFromQueue(current, item);
-        return {
-          tracks: next.tracks,
-          playingIndex: next.playingIndex,
-        };
-      },
-      (selected) => this.syncPlayOrder(selected.tracks),
     );
   };
   switchSong = () => {
@@ -333,7 +263,7 @@ export default class PlayerController extends React.PureComponent<PlayerProps, P
   clearPlayingList = () => {
     this.playbackRequest++;
     this.switchSong();
-    this.queueKeys = [];
+    this.queue.reset();
     this.setState({
       url: '',
       expanded: false,
@@ -661,20 +591,5 @@ export default class PlayerController extends React.PureComponent<PlayerProps, P
       song: this.activeQueue.songItem,
     });
     this.presentation.close();
-  };
-  onChangePlayStatus = () => {
-    const playMode = (
-      {
-        circulate: 'list',
-        list: 'random',
-        random: 'circulate',
-      } as const
-    )[this.state.playMode];
-    this.setState({
-      playMode,
-      randomArray:
-        playMode === 'random' ? createPlayOrder(this.props.tracks.length) : this.state.randomArray,
-    } as const);
-    lyricPreferences.save(keys.lastPlayMode, playMode);
   };
 }
