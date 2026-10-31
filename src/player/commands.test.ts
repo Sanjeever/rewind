@@ -1,7 +1,11 @@
 import assert from 'node:assert/strict';
 import {playTracks, insertTracks, clearQueue, subscribePlaybackCommands} from './commands';
+import {emitter} from '../events';
 test('播放、插入和清空经过同一命令订阅，解除订阅后不再处理', () => {
   const received: unknown[] = [];
+  const appEvents: unknown[] = [];
+  const observeAppEvent = (name: unknown) => appEvents.push(name);
+  emitter.on('*', observeAppEvent);
   const dispose = subscribePlaybackCommands({
     play: (command) => received.push(['play', command]),
     insert: (command) => received.push(['insert', command]),
@@ -49,4 +53,6 @@ test('播放、插入和清空经过同一命令订阅，解除订阅后不再�
   dispose();
   clearQueue();
   assert.equal(received.length, 3);
+  assert.deepEqual(appEvents, []);
+  emitter.off('*', observeAppEvent);
 });

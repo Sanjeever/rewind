@@ -1,10 +1,9 @@
+import {savePicture} from '../modals/commands';
 import Pager from './../components/Pager';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
 import * as components from '../components/index';
 import * as constants from '../theme/constants';
-import names from '../events/names';
-import * as events from '../events/index';
 import * as utils from '../utils/index';
 import * as trackInfo from '../services/trackInfo';
 import * as playOrder from './playOrder';
@@ -216,7 +215,7 @@ class Cover extends React.Component<Props> {
     );
   };
   savePic = function (img: string, song: string) {
-    events.emitter.emit(names.SavePicModal, {
+    savePicture({
       img,
       song,
     });

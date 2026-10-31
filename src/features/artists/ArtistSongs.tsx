@@ -1,8 +1,9 @@
+import {playTracks, insertTracks} from '../../player/commands';
+import {showTrackDetails} from '../../modals/commands';
 import SongRow from '../tracks/SongRow';
 import * as React from 'react';
 import providers from '../../services/providers';
-import * as events from '../../events/index';
-import queue from '../../events/queue';
+import queue from '../../player/videoActions';
 import type {TrackFields, TrackId, Artist} from '../../services/track';
 import type {Provider} from '../../services/providers';
 class ArtistSongs extends React.PureComponent<{api: Provider; hotSongs: TrackFields[]}> {
@@ -50,25 +51,13 @@ class ArtistSongs extends React.PureComponent<{api: Provider; hotSongs: TrackFie
         img={m.img}
         alias={m.trans}
         onPress={function () {
-          return events.toPlayer({
-            item,
-            data: hotSongs,
-            api,
-            index,
-          });
+          return playTracks({song: item, tracks: hotSongs, api, index});
         }}
         addToQueue={function () {
-          return events.toInsertToList({
-            data: item,
-            api,
-          });
+          return insertTracks({tracks: [item], api});
         }}
         detail={function () {
-          return events.toDetailModal({
-            item,
-            index,
-            api,
-          });
+          return showTrackDetails({song: item, index, api});
         }}
         songItem={item}
         showMV={!!m.mvid}

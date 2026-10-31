@@ -7,7 +7,7 @@ import icons from '../theme/icons';
 import locales from '../locales/index';
 import * as services from '../services/index';
 import * as utils from '../utils/index';
-import queue from '../events/queue';
+import queue from '../player/videoActions';
 import ArtistHeader from '../features/artists/ArtistHeader';
 import type {NewWork} from '../features/artists/ArtistHeader';
 import type {ScreenProps} from '../navigation/types';

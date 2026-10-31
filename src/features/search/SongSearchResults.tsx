@@ -1,3 +1,4 @@
+import {showTrackDetails} from '../../modals/commands';
 import SongRow from '../tracks/SongRow';
 import React from 'react';
 import {StyleSheet, View} from 'react-native';
@@ -7,7 +8,7 @@ import Text from '../../components/Text';
 import {ITEM_HEIGHT} from '../../theme/constants';
 import {searchSongs} from '../../services/search';
 import {getAlias} from '../../services/trackFields';
-import {toDetailModal} from '../../events';
+
 import {playTracks, insertTracks} from '../../player/commands';
 import type {DisplayTrack} from '../../services/track';
 import type {OnlineProvider} from '../../services/providers';
@@ -112,7 +113,7 @@ export default class SongSearchResults extends React.PureComponent<Props, State>
         round
         alias={getAlias(track.source)}
         onPress={() => this.play(track, row)}
-        detail={() => toDetailModal({item: track.source, index: row, api: track.api})}
+        detail={() => showTrackDetails({song: track.source, index: row, api: track.api})}
         addToQueue={() => insertTracks({tracks: [track.source], api: track.api})}
       />
     );

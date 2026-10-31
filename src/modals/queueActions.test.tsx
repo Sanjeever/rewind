@@ -3,12 +3,12 @@ import React from 'react';
 import renderer, {act} from 'react-test-renderer';
 import type {TrackFields} from '../services/track';
 import type {PlayTracks} from '../player/commands';
+import {collectTracks} from './commands';
 Object.assign(globalThis, {IS_REACT_ACT_ENVIRONMENT: true});
 const Host = ({children}: {children?: React.ReactNode}) =>
   React.createElement('View', {}, children);
 const List = (props: object) => React.createElement('List', props);
 const play = jest.fn<(options: PlayTracks) => void>();
-const listeners = new Map<string, (payload: object) => void>();
 const toast = jest.fn();
 const collect = jest.fn<() => Promise<{code: number}>>(async () => ({code: 500}));
 const qqLike = jest.fn<() => Promise<{code: number}>>(async () => ({code: 0}));
@@ -73,19 +73,8 @@ jest.unstable_mockModule('../utils/index', () => ({
 jest.unstable_mockModule('../player/commands', () => ({
   playTracks: play,
   clearQueue() {},
-}));
-jest.unstable_mockModule('../events/Emitter', () => ({
-  emitter: {
-    addListener: (name: string, listener: (payload: object) => void) => {
-      listeners.set(name, listener);
-      return {
-        remove() {
-          listeners.delete(name);
-        },
-      };
-    },
-    emit() {},
-  },
+  insertTracks() {},
+  removeFromPlaybackQueue() {},
 }));
 const {default: NowPlaying} = await import('./NowPlayingModal');
 const {default: ChangePlaylist} = await import('./ChangePlaylistModal');
@@ -143,10 +132,10 @@ test('收藏重开不沿用旧歌曲，失败保留弹层且不报告成功', as
     tree = renderer.create(<Collect />);
   });
   const modal = tree.root.findByType(Collect).instance as InstanceType<typeof Collect>;
-  await act(async () => listeners.get('CollectModal')?.({api: 'netEase', song: tracks[0]}));
+  await act(async () => collectTracks({api: 'netEase', song: tracks[0]}));
   expect(modal.state.songItem).toEqual(tracks[0]);
   await act(async () => modal.onClosed());
-  await act(async () => listeners.get('CollectModal')?.({api: 'netEase', data: [tracks[1]]}));
+  await act(async () => collectTracks({api: 'netEase', data: [tracks[1]]}));
   expect(modal.state.songItem).toBeNull();
   expect(modal.state.data).toEqual([tracks[1]]);
   await act(async () => modal.onCollect({id: 10}));

@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as components from '../../components/index';
 import providers from '../../services/providers';
 import * as utils from '../../utils/index';
-import queue from '../../events/queue';
+import queue from '../../player/videoActions';
 import type {SearchEntity} from '../../services/searchEntities';
 import type {Provider} from '../../services/providers';
 type Video = SearchEntity;

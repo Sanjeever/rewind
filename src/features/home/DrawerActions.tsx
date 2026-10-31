@@ -1,3 +1,4 @@
+import {savePicture} from '../../modals/commands';
 import {toast} from '../../native/toast';
 import Text from '../../components/Text';
 import * as React from 'react';
@@ -39,7 +40,7 @@ class DrawerActions extends React.PureComponent<Props, {netEaseLogined: boolean}
     }
   };
   sponsor = function () {
-    events.emitter.emit(names.SavePicModal, {
+    savePicture({
       type: 'sponsor',
       song: 'sponsor',
     });

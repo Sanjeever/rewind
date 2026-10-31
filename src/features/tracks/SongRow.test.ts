@@ -1,6 +1,6 @@
 import {jest} from '@jest/globals';
 const open = jest.fn();
-jest.unstable_mockModule('../../events/index', () => ({toLongPressModal: open}));
+jest.unstable_mockModule('../../modals/commands', () => ({showTrackActions: open}));
 jest.unstable_mockModule('../../components/Text', () => ({default: undefined}));
 jest.unstable_mockModule('../../components/TouchableScale', () => ({default: undefined}));
 jest.unstable_mockModule('../../components/Icon', () => ({default: undefined}));

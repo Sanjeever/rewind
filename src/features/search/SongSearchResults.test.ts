@@ -47,8 +47,8 @@ async function screen(
     '../../services/trackFields': {
       getAlias: undefined,
     },
-    '../../events': {
-      toDetailModal: undefined,
+    '../../modals/commands': {
+      showTrackDetails: undefined,
     },
     '../../player/commands': {
       playTracks: (value: PlayTracks) => commands.push(value),

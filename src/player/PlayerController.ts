@@ -1,3 +1,5 @@
+import {subscribePlaybackEvent} from './commands';
+import {collectTracks, showTrackDetails, choosePlaylist} from '../modals/commands';
 import type {
   PlayerProps,
   PlayerState,
@@ -161,17 +163,17 @@ export default class PlayerController extends React.PureComponent<PlayerProps, P
       remove: this.removeTrack,
     });
     this.subscriptions = [
-      emitter.addListener(names.HidePlayer, (event) =>
+      subscribePlaybackEvent('HidePlayer', (event) =>
         this.setState({
           hidePlayer: !!event?.hide,
         }),
       ),
-      emitter.addListener(names.PlayerClose, () => {
+      subscribePlaybackEvent('PlayerClose', () => {
         if (this.state.expanded) this._playerClose(true);
       }),
-      emitter.addListener(names.FM_MODE, this.onFmMode),
-      emitter.addListener(names.AUDIO_NOISY, this.pauseSound),
-      emitter.addListener(names.CloseTimerEvent, this.setCloseTimer),
+      subscribePlaybackEvent('FM_MODE', this.onFmMode),
+      subscribePlaybackEvent('AUDIO_NOISY', this.pauseSound),
+      subscribePlaybackEvent('CloseTimerEvent', this.setCloseTimer),
       DeviceEventEmitter.addListener(names.NATIVE_AUDIO_FOCUS, this.handleAudioFocus),
     ];
     this._sliderPanResponder = PanResponder.create({
@@ -743,17 +745,17 @@ export default class PlayerController extends React.PureComponent<PlayerProps, P
     }
   };
   onCollect = () =>
-    emitter.emit(names.CollectModal, {
+    collectTracks({
       api: this.activeQueue.api,
       song: this.activeQueue.songItem,
     });
   onDetail = () =>
-    emitter.emit(names.DetailModal, {
+    showTrackDetails({
       api: this.activeQueue.api,
       song: this.activeQueue.songItem,
       index: this.activeQueue.playingIndex,
     });
-  onChangePlaylist = () => emitter.emit(names.ChangePlaylist);
+  onChangePlaylist = () => choosePlaylist();
   onNowPlaying = () => this.props.setDisplayNowPlaying(true);
   onTimer = () => stopTimer.open();
   onCheck = () => {

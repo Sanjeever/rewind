@@ -1,3 +1,5 @@
+import {playTracks} from '../../player/commands';
+import {showTrackDetails} from '../../modals/commands';
 import SongRow from '../tracks/SongRow';
 import Text from '../../components/Text';
 import 'react';
@@ -7,7 +9,6 @@ import * as components from '../../components/index';
 import * as constants from '../../theme/constants';
 import icons from '../../theme/icons';
 import locales from '../../locales/index';
-import * as events from '../../events/index';
 import * as utils from '../../utils/index';
 import * as trackInfo from '../../services/trackInfo';
 import type {responses} from '../../services/netease/responses';
@@ -30,20 +31,10 @@ const GComponent = function (item: TrackFields, t: number) {
         height: 55,
       }}
       onPress={function () {
-        return events.toPlayer({
-          item,
-          data: [item],
-          index: t,
-          api: 'netEase',
-          type: 'insert',
-        });
+        return playTracks({song: item, tracks: [item], index: t, api: 'netEase', type: 'insert'});
       }}
       detail={function () {
-        return events.toDetailModal({
-          item,
-          index: t,
-          api: 'netEase',
-        });
+        return showTrackDetails({song: item, index: t, api: 'netEase'});
       }}
     />
   );
@@ -58,9 +49,9 @@ const PComponent = ({item, onAlbum}: {item: NewWork; onAlbum(): void}) => {
       subtitle={subtitle}
       onPage={onAlbum}
       onPress={function () {
-        return events.toPlayer({
-          item: songLists[0],
-          data: songLists,
+        return playTracks({
+          song: songLists[0],
+          tracks: songLists,
           index: 0,
           api: 'netEase',
           type: songLists.length > 1 ? undefined : 'insert',

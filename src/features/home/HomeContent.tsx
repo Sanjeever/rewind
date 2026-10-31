@@ -1,3 +1,4 @@
+import {togglePersonalRadio} from '../../player/commands';
 import log from '../../services/logger';
 import locales from '../../locales';
 import {toast} from '../../native/toast';
@@ -368,7 +369,7 @@ class Home extends React.PureComponent<{navigation: Navigation}, State> {
         this.props.navigation.navigate('Radio');
         break;
       case 'privateFM':
-        events.emitter.emit(names.FM_MODE);
+        togglePersonalRadio();
         break;
       case 'charts':
         this.props.navigation.navigate('Charts');

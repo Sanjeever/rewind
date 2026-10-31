@@ -1,3 +1,5 @@
+import {showTrackDetails} from '../modals/commands';
+import {insertTracks, playTracks} from '../player/commands';
 import {toast} from '../native/toast';
 import * as React from 'react';
 import * as components from '../components/index';
@@ -130,17 +132,10 @@ class LocalMusic extends React.Component<
             return this.playMusic(t, a);
           }}
           onDetail={function (item, t) {
-            return events.toDetailModal({
-              item,
-              index: t,
-              api: providers.local,
-            });
+            return showTrackDetails({song: item, index: t, api: providers.local});
           }}
           addToQueue={function (e) {
-            return events.toInsertToList({
-              data: e,
-              api: providers.local,
-            });
+            return insertTracks({tracks: [e], api: providers.local});
           }}
           ref={(instance) => {
             this.listParent = instance;
@@ -154,12 +149,7 @@ class LocalMusic extends React.Component<
     if (!playList) return;
     const a = playList;
     const r = playList.findIndex((t) => t.title === item.title);
-    events.toPlayer({
-      item,
-      data: a,
-      index: r,
-      api: providers.local,
-    });
+    playTracks({song: item, tracks: a, index: r, api: providers.local});
   }
 }
 export default LocalMusic;

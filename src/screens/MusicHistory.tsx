@@ -1,3 +1,5 @@
+import {showTrackDetails} from '../modals/commands';
+import {insertTracks, playTracks} from '../player/commands';
 import SongRow from '../features/tracks/SongRow';
 import type {Navigation} from '../navigation/types';
 import type {TrackFields} from '../services/track';
@@ -17,7 +19,6 @@ import * as constants from '../theme/constants';
 import icons from '../theme/icons';
 import keys from '../storage/keys';
 import locales from '../locales/index';
-import * as events from '../events/index';
 import * as trackInfo from '../services/trackInfo';
 import mediaStore from '../native/mediaStore';
 import * as history from '../storage/history';
@@ -126,17 +127,10 @@ class MusicHistory extends React.Component<
             return this.playMusic(c, index, l);
           }}
           detail={function () {
-            return events.toDetailModal({
-              item: c,
-              index,
-              api: l,
-            });
+            return showTrackDetails({song: c, index, api: l});
           }}
           addToQueue={function () {
-            return events.toInsertToList({
-              data: c,
-              api: l,
-            });
+            return insertTracks({tracks: [c], api: l});
           }}
           isExist={!!c?.localPath}
           songItem={c}
@@ -178,12 +172,7 @@ class MusicHistory extends React.Component<
   playMusic = (item: TrackFields, _index: number, a: Provider) => {
     const l = history.cleanedData(this.state[a], item, a);
     this.setState((state) => ({...state, [a]: l}));
-    events.toPlayer({
-      item,
-      data: l,
-      index: 0,
-      api: a,
-    });
+    playTracks({song: item, tracks: l, index: 0, api: a});
   };
   refreshList = (e: TrackFields, t: Provider) => {
     let a;

@@ -1,3 +1,4 @@
+import {subscribeModal} from './commands';
 import {toast} from '../native/toast';
 import Clipboard from '@react-native-clipboard/clipboard';
 import * as React from 'react';
@@ -6,10 +7,8 @@ import * as reactNativeAnimatable from 'react-native-animatable';
 import * as components from '../components/index';
 import providers from '../services/providers';
 import * as constants from '../theme/constants';
-import names from '../events/names';
 import icons from '../theme/icons';
 import locales from '../locales/index';
-import * as events from '../events/index';
 import * as trackInfo from '../services/trackInfo';
 import * as sharedUrlsModule from '../services/sharedUrls';
 import type {TrackFields} from '../services/track';
@@ -88,7 +87,7 @@ class LongPressModal extends React.PureComponent<Record<string, never>, State> {
     ReactNative.Linking.openURL(e);
   };
   componentDidMount() {
-    this.sub = events.emitter.addListener(names.LongPressModal, ({item}) => {
+    this.sub = subscribeModal('LongPressModal', ({item}) => {
       this.setState({
         item,
         obj: trackInfo.extractFullInfo(item),

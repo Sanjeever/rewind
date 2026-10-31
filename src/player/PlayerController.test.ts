@@ -152,6 +152,7 @@ async function controller() {
     './gestures': asDefault({}),
     './commands': {
       subscribePlaybackCommands: undefined,
+      subscribePlaybackEvent: undefined,
     },
   };
   for (const [name, value] of Object.entries(dependencies))

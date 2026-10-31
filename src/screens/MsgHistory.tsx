@@ -1,3 +1,4 @@
+import {playTracks} from '../player/commands';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
 import * as reactNativeSpringScrollview from './../components/Scrolling';
@@ -5,9 +6,8 @@ import * as components from '../components/index';
 import providers from '../services/providers';
 import icons from '../theme/icons';
 import * as services from '../services/index';
-import * as events from '../events/index';
 import * as utils from '../utils/index';
-import queue from '../events/queue';
+import queue from '../player/videoActions';
 import styles from './messages/styles';
 import type {ScreenProps} from '../navigation/types';
 import type {TrackFields, TrackId} from '../services/track';
@@ -84,13 +84,7 @@ class MsgHistory extends React.Component<
     queue.playMV(id!, providers.netEase);
   };
   Song = function (e: TrackFields) {
-    events.toPlayer({
-      item: e,
-      data: [e],
-      index: 0,
-      api: providers.netEase,
-      type: 'insert',
-    });
+    playTracks({song: e, tracks: [e], index: 0, api: providers.netEase, type: 'insert'});
   };
   componentDidMount() {
     const params = this.props.route.params;

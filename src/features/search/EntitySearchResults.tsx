@@ -9,7 +9,7 @@ import type {EntityKind, SearchEntity} from '../../services/searchEntities';
 import type {OnlineProvider} from '../../services/providers';
 import trackDescription from '../../services/trackDescription';
 import searchTypes from '../../services/searchTypes';
-import queue from '../../events/queue';
+import queue from '../../player/videoActions';
 import type {Navigation} from '../../navigation/types';
 
 export interface EntitySearchProps {

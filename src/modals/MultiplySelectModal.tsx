@@ -1,3 +1,5 @@
+import {playTracks} from '../player/commands';
+import {collectTracks} from './commands';
 import SongRow from '../features/tracks/SongRow';
 import {toast} from '../native/toast';
 import Text from './../components/Text';
@@ -101,12 +103,7 @@ class MultiplySelectModal extends React.PureComponent<Props, State> {
     const api = this.props.api;
     const t = this.getCheckedData();
     if (t && t.length !== 0) {
-      events.toPlayer({
-        item: t[0],
-        data: t,
-        index: 0,
-        api,
-      });
+      playTracks({song: t[0], tracks: t, index: 0, api});
       this.setState({
         checked: {},
         showModal: false,
@@ -151,7 +148,7 @@ class MultiplySelectModal extends React.PureComponent<Props, State> {
   onCollectModal = () => {
     const api = this.props.api;
     const data = this.getCheckedData();
-    events.emitter.emit(names.CollectModal, {
+    collectTracks({
       api,
       data,
     });

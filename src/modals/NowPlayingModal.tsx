@@ -1,3 +1,5 @@
+import {choosePlaylist, savePicture, showTrackDetails, subscribeModal} from './commands';
+import {playTracks, removeFromPlaybackQueue, insertTracks} from '../player/commands';
 import SongRow from '../features/tracks/SongRow';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
@@ -5,11 +7,9 @@ import FadingEdge from '../components/FadingEdge';
 import * as reactNativeLargelist from './../components/Scrolling';
 import * as components from '../components/index';
 import * as constants from '../theme/constants';
-import names from '../events/names';
 import icons from '../theme/icons';
 import tabIcons from '../theme/tabIcons';
 import locales from '../locales/index';
-import * as events from '../events/index';
 import * as utils from '../utils/index';
 import '../utils/types';
 import * as b from '../services/trackInfo';
@@ -95,7 +95,7 @@ class NowPlayingModal extends React.PureComponent<
     );
   };
   changePlaylist = function () {
-    events.emitter.emit(names.ChangePlaylist);
+    choosePlaylist();
   };
   onMode = (mode: Mode) => {
     this.setState({
@@ -187,7 +187,7 @@ class NowPlayingModal extends React.PureComponent<
     const songItem = this.props.songItem;
     if (!songItem) return;
     const t = b.extractFullInfo(songItem, 'big');
-    events.emitter.emit(names.SavePicModal, {
+    savePicture({
       img: t.img,
       song: songItem.name,
     });
@@ -237,11 +237,7 @@ class NowPlayingModal extends React.PureComponent<
     }
     return {
       detail: function () {
-        return events.toDetailModal({
-          item: e,
-          index: t,
-          api,
-        });
+        return showTrackDetails({song: e, index: t, api});
       },
     };
   };
@@ -249,18 +245,13 @@ class NowPlayingModal extends React.PureComponent<
     const data = this.props.data;
     const o = data.findIndex((t) => b.getTrackKey(e, api) === b.getTrackKey(t, api));
     if (o < 0) return;
-    events.toPlayer({
-      item: e,
-      data,
-      index: o,
-      api,
-    });
+    playTracks({song: e, tracks: data, index: o, api});
   };
   deleteFromQueue = (e: TrackFields, _index: number) => {
     const props = this.props;
     const n_api = props.api;
     if (b.getTrackKey(e, n_api) !== b.getTrackKey(props.data[props.index], n_api)) {
-      events.emitter.emit(names.DeleteFromQueue, {
+      removeFromPlaybackQueue({
         item: e,
         api: n_api,
       });
@@ -270,14 +261,11 @@ class NowPlayingModal extends React.PureComponent<
     const props = this.props;
     const n_api = props.api;
     if (b.getTrackKey(e, n_api) !== b.getTrackKey(props.data[props.index], n_api)) {
-      events.toInsertToList({
-        data: e,
-        api: n_api,
-      });
+      insertTracks({tracks: [e], api: n_api});
     }
   };
   componentDidMount() {
-    this.sub = events.emitter.addListener(names.NowPlayingModal, (t) => {
+    this.sub = subscribeModal('NowPlayingModal', (t) => {
       if (t.forceClose === true) {
         this.forceClose();
       }

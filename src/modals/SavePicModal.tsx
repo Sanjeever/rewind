@@ -1,3 +1,4 @@
+import {subscribeModal} from './commands';
 import {toast} from '../native/toast';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
@@ -5,9 +6,7 @@ import * as ReactNativeAnimatable from 'react-native-animatable';
 import rnFetchBlob from 'react-native-blob-util';
 import * as constants from '../theme/constants';
 import * as paths from '../storage/paths';
-import names from '../events/names';
 import locales from '../locales/index';
-import * as events from '../events/index';
 import _mediaStore from '../native/mediaStore';
 import type {Subscription} from '../events/Emitter';
 import {errorMessage} from '../utils/types';
@@ -87,7 +86,7 @@ class SavePicModal extends React.PureComponent<Record<string, never>, State> {
     ReactNative.Linking.openURL(m);
   };
   componentDidMount() {
-    this.sub = events.emitter.addListener(names.SavePicModal, (t) => {
+    this.sub = subscribeModal('SavePicModal', (t) => {
       this.setState({
         img: t.img,
         song: t.song,

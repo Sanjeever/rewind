@@ -1,3 +1,5 @@
+import {showTrackDetails} from '../modals/commands';
+import {insertTracks, playTracks} from '../player/commands';
 import SongRow from '../features/tracks/SongRow';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
@@ -8,7 +10,6 @@ import providers from '../services/providers';
 import * as constants from '../theme/constants';
 import locales from '../locales/index';
 import * as services from '../services/index';
-import * as events from '../events/index';
 import * as trackInfo from '../services/trackInfo';
 import type {ScreenProps, UserProfile} from '../navigation/types';
 import type {TrackFields, TrackId} from '../services/track';
@@ -169,17 +170,10 @@ class ListenRecord extends React.PureComponent<ScreenProps<'ListenRecord'>, Stat
           });
         }}
         detail={function () {
-          return events.toDetailModal({
-            item,
-            index,
-            api: providers.netEase,
-          });
+          return showTrackDetails({song: item, index, api: providers.netEase});
         }}
         addToQueue={function () {
-          return events.toInsertToList({
-            data: item,
-            api: providers.netEase,
-          });
+          return insertTracks({tracks: [item], api: providers.netEase});
         }}
         songItem={item}
       />
@@ -196,12 +190,7 @@ class ListenRecord extends React.PureComponent<ScreenProps<'ListenRecord'>, Stat
   }) => {
     const l = this.state[dataKey];
     if (l.length > 0) {
-      events.toPlayer({
-        item,
-        data: l,
-        index,
-        api: providers.netEase,
-      });
+      playTracks({song: item, tracks: l, index, api: providers.netEase});
     }
   };
   componentDidMount() {

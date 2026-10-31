@@ -1,5 +1,14 @@
+import {insertTracks, playTracks} from '../../player/commands';
+import {showTrackDetails, savePicture} from '../../modals/commands';
 import type {TrackFields, TrackId, Artist} from '../../services/track';
 import type {Provider} from '../../services/providers';
+import {toast} from '../../native/toast';
+import providers from '../../services/providers';
+import locales from '../../locales/index';
+import * as services from '../../services/index';
+import * as utils from '../../utils/index';
+import queue from '../../player/videoActions';
+import users from '../../storage/users';
 export interface PlaylistActionContext {
   state: {
     playlistId: TrackId | null;
@@ -19,15 +28,6 @@ export interface PlaylistData {
   trackCount?: number;
   moreFunc?: () => Promise<{songs: TrackFields[]} | undefined>;
 }
-import {toast} from '../../native/toast';
-import providers from '../../services/providers';
-import names from '../../events/names';
-import locales from '../../locales/index';
-import * as services from '../../services/index';
-import * as events from '../../events/index';
-import * as utils from '../../utils/index';
-import queue from '../../events/queue';
-import users from '../../storage/users';
 const p = (
   tracks: TrackFields[],
   trackIds: {
@@ -186,19 +186,11 @@ const g = {
     queue.playMV(a!, t);
   },
   addToQueue: function (data: TrackFields, api: Provider) {
-    events.toInsertToList({
-      data,
-      api,
-    });
+    insertTracks({tracks: [data], api});
   },
   onDetail: function (item: TrackFields, index: number, {state}: PlaylistActionContext) {
     const {playlistId, api} = state;
-    events.toDetailModal({
-      item,
-      index,
-      api,
-      playlistId,
-    });
+    showTrackDetails({song: item, index, api, playlistId});
   },
   playMusic: function (item: TrackFields, t: number, a: PlaylistActionContext) {
     const state = a.state;
@@ -212,17 +204,11 @@ const g = {
         }
       });
     }
-    events.toPlayer({
-      item,
-      data: d,
-      index,
-      api,
-      pid: playlistId ?? undefined,
-    });
+    playTracks({song: item, tracks: d, index, api, pid: playlistId ?? undefined});
     a.collectPlaylistOrder();
   },
   savePic: function (img?: string, song?: string) {
-    events.emitter.emit(names.SavePicModal, {
+    savePicture({
       img,
       song,
     });
@@ -246,12 +232,7 @@ const g = {
         id: item.id,
         ...item.songInfo,
       }));
-      events.toPlayer({
-        item: tracks[0],
-        data: tracks,
-        index: 0,
-        api,
-      });
+      playTracks({song: tracks[0], tracks: tracks, index: 0, api});
     }
   },
   onSubscribe: function (e: TrackId, t: 'subscribe' | 'unsubscribe', a: Provider) {

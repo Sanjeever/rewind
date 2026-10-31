@@ -1,3 +1,4 @@
+import {setPlayerHidden} from '../player/commands';
 import {toast} from '../native/toast';
 import Clipboard from '@react-native-clipboard/clipboard';
 import * as React from 'react';
@@ -6,11 +7,9 @@ import * as reactNativePopupMenu from 'react-native-popup-menu';
 import * as components from '../components/index';
 import VideoPlayer from '../player/VideoPlayer';
 import providers from '../services/providers';
-import names from '../events/names';
 import icons from '../theme/icons';
 import locales from '../locales/index';
 import * as services from '../services/index';
-import * as events from '../events/index';
 import intentVideo from '../native/intentVideo';
 import orientation from '../native/orientation';
 import type {ScreenProps} from '../navigation/types';
@@ -83,7 +82,7 @@ class Video extends React.Component<
     const e = this.props.route.params;
     const {mvid, api} = e;
     this.getMVUrl(mvid, api);
-    events.emitter.emit(names.HidePlayer, {
+    setPlayerHidden({
       hide: true,
     });
   }
@@ -91,7 +90,7 @@ class Video extends React.Component<
     this.active = false;
     orientation.lockToPortrait();
     this.backSubscription?.remove();
-    events.emitter.emit(names.HidePlayer, {
+    setPlayerHidden({
       hide: false,
     });
   }

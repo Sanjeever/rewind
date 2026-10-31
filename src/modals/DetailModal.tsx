@@ -1,3 +1,5 @@
+import {collectTracks, closeNowPlaying, savePicture, subscribeModal} from './commands';
+import {closePlayer, insertTracks} from '../player/commands';
 import {toast} from '../native/toast';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
@@ -13,13 +15,13 @@ import downloadModule from '../services/download';
 import * as events from '../events/index';
 import * as utils from '../utils/index';
 import * as trackInfo from '../services/trackInfo';
-import queue from '../events/queue';
+import queue from '../player/videoActions';
 import ActionRow from './ActionRow';
 import CloseButton from './CloseButton';
 import _mediaStore from '../native/mediaStore';
 import type {Provider} from '../services/providers';
 import type {TrackFields, TrackId, Artist} from '../services/track';
-import type {TrackDetails} from '../events/types';
+import type {TrackDetails} from './types';
 import type {Subscription} from '../events/Emitter';
 import type {NavigateArgs} from '../navigation/types';
 import {errorMessage} from '../utils/types';
@@ -224,7 +226,7 @@ class DetailModal extends React.PureComponent<
     const state = this.state;
     const {api, songItem} = state;
     if (!api || !songItem) return;
-    events.emitter.emit(names.CollectModal, {
+    collectTracks({
       api,
       song: songItem,
     });
@@ -271,10 +273,8 @@ class DetailModal extends React.PureComponent<
   };
   navigateTo = (...args: NavigateArgs) => {
     utils.universalNavigator.navigate(...args);
-    events.emitter.emit(names.PlayerClose);
-    events.emitter.emit(names.NowPlayingModal, {
-      forceClose: true,
-    });
+    closePlayer();
+    closeNowPlaying();
     this.onClose();
   };
   onArtist = () => {
@@ -321,11 +321,7 @@ class DetailModal extends React.PureComponent<
     const state = this.state;
     const {songItem, api} = state;
     if (songItem && api) {
-      events.emitter.emit(names.InsertToList, {
-        data: songItem,
-        type: 'item',
-        api,
-      });
+      insertTracks({tracks: [songItem], api});
     }
   };
   onDownload = () => {
@@ -354,7 +350,7 @@ class DetailModal extends React.PureComponent<
     const state = this.state;
     const {song, songItem} = state;
     if (!song || !songItem) return;
-    events.emitter.emit(names.SavePicModal, {
+    savePicture({
       img: song.img,
       song: songItem.name,
     });
@@ -363,7 +359,7 @@ class DetailModal extends React.PureComponent<
     return `${utils.parseArtist(t)} - ${e}`.replace(/\//gi, 'x');
   };
   componentDidMount() {
-    this.sub = events.emitter.addListener(names.DetailModal, (t) => {
+    this.sub = subscribeModal('DetailModal', (t) => {
       this.setState({
         mainModalShow: true,
       });

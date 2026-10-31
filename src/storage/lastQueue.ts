@@ -1,6 +1,7 @@
+import {playTracks} from '../player/commands';
 import {storage} from './index';
 import keys from './keys';
-import {toPlayer} from '../events';
+
 import type {SavedQueue} from './models';
 
 async function load() {
@@ -20,9 +21,9 @@ export default {
   async emit() {
     const queue = await load();
     if (queue?.tracks?.[queue.index] && queue.api) {
-      toPlayer({
-        item: queue.tracks[queue.index],
-        data: queue.tracks,
+      playTracks({
+        song: queue.tracks[queue.index],
+        tracks: queue.tracks,
         index: queue.index,
         api: queue.api,
         restore: true,

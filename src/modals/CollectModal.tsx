@@ -1,3 +1,4 @@
+import {subscribeModal} from './commands';
 import {toast} from '../native/toast';
 import Text from './../components/Text';
 import * as React from 'react';
@@ -6,11 +7,9 @@ import FadingEdge from '../components/FadingEdge';
 import * as reactNativeSpringScrollview from './../components/Scrolling';
 import * as components from '../components/index';
 import providers from '../services/providers';
-import names from '../events/names';
 import locales from '../locales/index';
 import playlistFiles from '../storage/playlistFiles';
 import * as services from '../services/index';
-import * as events from '../events/index';
 import * as utils from '../utils/index';
 import '../utils/types';
 import users from '../storage/users';
@@ -203,7 +202,7 @@ class CollectModal extends React.PureComponent<Record<string, never>, State> {
     await users.removeNetEasePlaylistCache(pid);
   };
   componentDidMount() {
-    this.sub = events.emitter.addListener(names.CollectModal, ({api, song, data}) => {
+    this.sub = subscribeModal('CollectModal', ({api, song, data}) => {
       if (api) {
         this.setState({
           api,

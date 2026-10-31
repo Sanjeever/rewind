@@ -1,3 +1,5 @@
+import {playTracks, insertTracks} from '../player/commands';
+import {showTrackDetails} from '../modals/commands';
 import SongRow from '../features/tracks/SongRow';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
@@ -6,7 +8,6 @@ import * as components from '../components/index';
 import * as constants from '../theme/constants';
 import locales from '../locales/index';
 import * as services from '../services/index';
-import * as events from '../events/index';
 import * as trackInfo from '../services/trackInfo';
 import IntersectionHeader from '../features/playlists/IntersectionHeader';
 import PlaylistComparison from '../features/playlists/PlaylistComparison';
@@ -70,22 +71,13 @@ class PlaylistIntersection extends React.PureComponent<ScreenProps<'PlaylistInte
         index={index}
         alias={o.alias}
         onPress={function () {
-          return events.toPlayer({
-            item: a,
-            data,
-            index,
-          });
+          return playTracks({song: a, tracks: data, index});
         }}
         detail={function () {
-          return events.toDetailModal({
-            item: a,
-            index,
-          });
+          return showTrackDetails({song: a, index});
         }}
         addToQueue={function () {
-          return events.toInsertToList({
-            data: a,
-          });
+          return insertTracks({tracks: [a]});
         }}
       />
     );

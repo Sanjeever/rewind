@@ -1,3 +1,5 @@
+import {showTrackDetails} from '../modals/commands';
+import {insertTracks, playTracks} from '../player/commands';
 import SongRow from '../features/tracks/SongRow';
 import {toast} from '../native/toast';
 import * as immer from 'immer';
@@ -8,7 +10,6 @@ import * as components from '../components/index';
 import * as modals from '../modals/index';
 import * as constants from '../theme/constants';
 import locales from '../locales/index';
-import * as events from '../events/index';
 import * as utils from '../utils/index';
 import * as trackInfo from '../services/trackInfo';
 import playlistFiles from '../storage/playlistFiles';
@@ -84,17 +85,10 @@ class CustomPlaylist extends React.PureComponent<
           return this.playMusic(item, index, item.api);
         }}
         detail={function () {
-          return events.toDetailModal({
-            item,
-            index,
-            api: item.api,
-          });
+          return showTrackDetails({song: item, index, api: item.api});
         }}
         addToQueue={function () {
-          return events.toInsertToList({
-            data: item,
-            api: item.api,
-          });
+          return insertTracks({tracks: [item], api: item.api});
         }}
       />
     );
@@ -175,12 +169,7 @@ class CustomPlaylist extends React.PureComponent<
     this.setState({
       index,
     });
-    events.toPlayer({
-      item,
-      data: playlist,
-      index,
-      api,
-    });
+    playTracks({song: item, tracks: playlist, index, api});
   };
   goBack = () => {
     this.props.navigation.goBack();

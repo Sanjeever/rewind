@@ -1,3 +1,4 @@
+import {subscribePlaybackEvent} from '../player/commands';
 import SongRow from '../features/tracks/SongRow';
 import type {ScreenProps, PlaylistParams} from '../navigation/types';
 import type {TrackFields, TrackId} from '../services/track';
@@ -539,7 +540,7 @@ class Playlist extends React.PureComponent<ScreenProps<'Playlist'>, State> {
         this.onRefresh();
       }
     });
-    this.playerSub = events.emitter.addListener(names.Player, (t) => {
+    this.playerSub = subscribePlaybackEvent('Player', (t) => {
       if (t.type !== 'clearPlayingList') {
         const {song, api} = t;
         const n = this.state.playlist;

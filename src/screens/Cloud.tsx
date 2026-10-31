@@ -1,13 +1,12 @@
+import {insertTracks, playTracks} from '../player/commands';
 import SongRow from '../features/tracks/SongRow';
 import {toast} from '../native/toast';
 import * as React from 'react';
 import * as reactNativeSpringScrollview from './../components/Scrolling';
 import * as components from '../components/index';
 import providers from '../services/providers';
-import names from '../events/names';
 import locales from '../locales/index';
 import * as services from '../services/index';
-import * as events from '../events/index';
 import '../utils/types';
 import * as trackInfo from '../services/trackInfo';
 import type {ScreenProps} from '../navigation/types';
@@ -77,20 +76,11 @@ class Cloud extends React.Component<ScreenProps<'Cloud'>, {data: TrackFields[]}>
   };
   addToQueue = (data: TrackFields) => {
     const api = providers.netEase;
-    events.emitter.emit(names.InsertToList, {
-      data,
-      type: 'item',
-      api,
-    });
+    insertTracks({tracks: [data], api});
   };
   playMusic = (e: TrackFields, t: number) => {
     const data = this.state.data;
-    events.toPlayer({
-      item: e,
-      data,
-      index: t,
-      api: providers.netEase,
-    });
+    playTracks({song: e, tracks: data, index: t, api: providers.netEase});
   };
   componentDidMount() {
     this.getList();

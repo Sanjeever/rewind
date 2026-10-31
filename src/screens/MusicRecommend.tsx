@@ -1,3 +1,5 @@
+import {playTracks, insertTracks} from '../player/commands';
+import {showTrackDetails} from '../modals/commands';
 import SongRow from '../features/tracks/SongRow';
 import {toast} from '../native/toast';
 import * as immer from 'immer';
@@ -10,7 +12,6 @@ import providers from '../services/providers';
 import icons from '../theme/icons';
 import locales from '../locales/index';
 import * as services from '../services/index';
-import * as events from '../events/index';
 import * as utils from '../utils/index';
 import * as trackInfo from '../services/trackInfo';
 import type {ScreenProps, Navigation} from '../navigation/types';
@@ -156,12 +157,7 @@ class MusicRecommend extends React.Component<
           return this.onDisklikeSong(item, index);
         }
       : function () {
-          return events.toPlayer({
-            item,
-            data,
-            index,
-            api,
-          });
+          return playTracks({song: item, tracks: data, index, api});
         };
     return (
       <SongRow
@@ -171,17 +167,10 @@ class MusicRecommend extends React.Component<
         singer={u.singer}
         onPress={onPress}
         detail={function () {
-          return events.toDetailModal({
-            item,
-            index,
-            api,
-          });
+          return showTrackDetails({song: item, index, api});
         }}
         addToQueue={function () {
-          return events.toInsertToList({
-            data: item,
-            api,
-          });
+          return insertTracks({tracks: [item], api});
         }}
         songItem={item}
       />

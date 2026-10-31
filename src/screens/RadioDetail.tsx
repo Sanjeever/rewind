@@ -1,3 +1,4 @@
+import {playTracks} from '../player/commands';
 import SongRow from '../features/tracks/SongRow';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
@@ -6,10 +7,8 @@ import * as components from '../components/index';
 import ParallaxList from '../components/ParallaxList';
 import providers from '../services/providers';
 import * as constants from '../theme/constants';
-import names from '../events/names';
 import icons from '../theme/icons';
 import * as services from '../services/index';
-import * as events from '../events/index';
 import type {ScreenProps} from '../navigation/types';
 import type {TrackId} from '../services/track';
 import type * as z from 'zod/mini';
@@ -116,12 +115,7 @@ class RadioDetail extends React.PureComponent<
   };
   playRadio = (song: Program, t: number) => {
     const data = this.state.data;
-    events.emitter.emit(names.Player, {
-      song,
-      data,
-      index: t,
-      api: providers.netEase,
-    });
+    playTracks({song, tracks: data, index: t, api: providers.netEase});
   };
   componentDidMount() {
     const params = this.props.route.params;

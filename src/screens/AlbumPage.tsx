@@ -1,3 +1,5 @@
+import {playTracks, insertTracks} from '../player/commands';
+import {showTrackDetails} from '../modals/commands';
 import SongRow from '../features/tracks/SongRow';
 import type {ScreenProps, Navigation} from '../navigation/types';
 import type {TrackFields, TrackId, Artist} from '../services/track';
@@ -17,9 +19,8 @@ import * as constants from '../theme/constants';
 import icons from '../theme/icons';
 import locales from '../locales/index';
 import * as services from '../services/index';
-import * as events from '../events/index';
 import * as utils from '../utils/index';
-import queue from '../events/queue';
+import queue from '../player/videoActions';
 import * as sharedUrlsModule from '../services/sharedUrls';
 import Description from './album/Description';
 const constants_DEVICE_WIDTH = constants.DEVICE_WIDTH;
@@ -134,21 +135,12 @@ class AlbumPage extends React.PureComponent<
     const state = this.state;
     const {api, data} = state;
     const item = data[0];
-    events.toPlayer({
-      item,
-      data,
-      index: 0,
-      api,
-    });
+    playTracks({song: item, tracks: data, index: 0, api});
   };
   addToPlaylist = () => {
     const state = this.state;
     const {api, data} = state;
-    events.toInsertToList({
-      data,
-      api,
-      type: 'array',
-    });
+    insertTracks({tracks: data, api});
   };
   onWebview = () => {
     const url = this.getSharedLink();
@@ -279,25 +271,13 @@ class AlbumPage extends React.PureComponent<
         album={s.duration}
         singer={s.singer}
         onPress={function () {
-          return events.toPlayer({
-            item,
-            data,
-            index,
-            api,
-          });
+          return playTracks({song: item, tracks: data, index, api});
         }}
         addToQueue={function () {
-          return events.toInsertToList({
-            data: item,
-            api,
-          });
+          return insertTracks({tracks: [item], api});
         }}
         detail={function () {
-          return events.toDetailModal({
-            item,
-            index,
-            api,
-          });
+          return showTrackDetails({song: item, index, api});
         }}
         alias={s.alias}
         showMV={s.showMV}

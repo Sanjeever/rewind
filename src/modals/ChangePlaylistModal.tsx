@@ -1,3 +1,5 @@
+import {playTracks} from '../player/commands';
+import {closeNowPlaying, subscribeModal} from './commands';
 import {toast} from '../native/toast';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
@@ -5,10 +7,8 @@ import FadingEdge from '../components/FadingEdge';
 import * as reactNativeSpringScrollview from './../components/Scrolling';
 import * as components from '../components/index';
 import providers from '../services/providers';
-import names from '../events/names';
 import locales from '../locales/index';
 import * as services from '../services/index';
-import * as events from '../events/index';
 import * as utils from '../utils/index';
 import '../utils/types';
 import * as trackInfo from '../services/trackInfo';
@@ -141,20 +141,12 @@ class ChangePlaylistModal extends React.PureComponent<
   emit = ({api, data}: {api: Provider; data: TrackFields[]}) => {
     if (!data.length) throw new Error('歌单为空');
     const index = utils.random.getInt(0, data.length);
-    events.toPlayer({
-      item: data[index],
-      data,
-      index,
-      api,
-      type: names.ChangePlaylist,
-    });
+    playTracks({song: data[index], tracks: data, index, api, type: 'ChangePlaylist'});
     this.closePickPlaylistModal();
-    events.emitter.emit(names.NowPlayingModal, {
-      forceClose: true,
-    });
+    closeNowPlaying();
   };
   componentDidMount() {
-    this.sub = events.emitter.addListener(names.ChangePlaylist, () => {
+    this.sub = subscribeModal('ChangePlaylist', () => {
       this.setState({
         modalVisible: true,
         loaded: false,

@@ -49,7 +49,7 @@ jest.unstable_mockModule('../../components/Text', () => ({
 jest.unstable_mockModule('../../services/trackDescription', () => ({
   default: ({item}: {item: SearchEntity}) => ({title: item.name}),
 }));
-jest.unstable_mockModule('../../events/queue', () => ({default: {playMV: jest.fn()}}));
+jest.unstable_mockModule('../../player/videoActions', () => ({default: {playMV: jest.fn()}}));
 const {default: Results} = await import('./EntitySearchResults');
 const indices = {singers: 1, albums: 2, playlists: 3, mvs: 4};
 let tree: renderer.ReactTestRenderer;
