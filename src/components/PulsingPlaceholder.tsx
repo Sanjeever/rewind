@@ -2,29 +2,32 @@ import * as React from 'react';
 import * as ReactNative from 'react-native';
 const o = 1000;
 const s = 500;
-class PulsingPlaceholder extends React.PureComponent {
+class PulsingPlaceholder extends React.PureComponent<ReactNative.TextProps & {textMode?: boolean}> {
+  _animation: ReactNative.Animated.CompositeAnimation | null = null;
   _animValue = new ReactNative.Animated.Value(0.3);
   start = () => {
     this._animation = ReactNative.Animated.timing(this._animValue, {
       toValue: 1,
-      easing: ReactNative.Easing.easeIn,
       useNativeDriver: true,
       duration: o,
     });
-    this._animation.start(() => {
+    this._animation.start(({finished}) => {
+      if (!finished) return;
       this._animation = ReactNative.Animated.timing(this._animValue, {
         toValue: 0.3,
         useNativeDriver: true,
         duration: s,
       });
-      this._animation.start(this.start);
+      this._animation.start(({finished}) => {
+        if (finished) this.start();
+      });
     });
   };
   componentDidMount() {
     this.start();
   }
   componentWillUnmount() {
-    this._animation.stop?.();
+    this._animation?.stop();
   }
   render() {
     const props = this.props;
