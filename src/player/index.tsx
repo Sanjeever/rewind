@@ -1,3 +1,10 @@
+import {collectTracks, showTrackDetails, choosePlaylist} from '../modals/commands';
+import {recordPlayed} from './playbackHistory';
+import stopTimer from '../utils/stopTimer';
+import universalNavigator from '../utils/universalNavigator';
+import providers from '../services/providers';
+import locales from '../locales';
+import {toast} from '../native/toast';
 import {getLyricIndex} from './lyricPosition';
 import React from 'react';
 import {View} from 'react-native';
@@ -8,6 +15,40 @@ import styles, {BOTTOM_BAR_HEIGHT, SOFT_MENU_HEIGHT} from './styles';
 import {isActiveQueue} from './types';
 
 export default class Player extends PlayerController {
+  onLike = () =>
+    this.resources.toggleLike(
+      this.activeQueue.songItem,
+      this.activeQueue.api,
+      this.state.isLike,
+      this.playbackRequest,
+    );
+  onCollect = () =>
+    collectTracks({
+      api: this.activeQueue.api,
+      song: this.activeQueue.songItem,
+    });
+  onDetail = () =>
+    showTrackDetails({
+      api: this.activeQueue.api,
+      song: this.activeQueue.songItem,
+      index: this.activeQueue.playingIndex,
+    });
+  onChangePlaylist = () => choosePlaylist();
+  onNowPlaying = () => this.props.setDisplayNowPlaying(true);
+  onTimer = () => stopTimer.open();
+  onCheck = () => {
+    if (this.activeQueue.api === providers.netEase)
+      return recordPlayed(this.activeQueue.songItem, this.props.settings.recordPlayCount);
+    toast(locales.PLAY_COUNT_ONLY_SUPPORT_NETEASE);
+  };
+  onComment = () => {
+    if (this.activeQueue.api === providers.local) return toast(locales.COMMENT_LOCAL_CAN_NOT);
+    universalNavigator.navigate('CommentPage', {
+      api: this.activeQueue.api,
+      song: this.activeQueue.songItem,
+    });
+    this.presentation.close();
+  };
   actions = {
     changeSong: this.changeSong,
     open: this.presentation.open,

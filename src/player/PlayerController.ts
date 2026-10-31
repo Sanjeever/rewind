@@ -1,10 +1,10 @@
+import {saveSelection, restoreProgress, recordPlayed} from './playbackHistory';
 import PlaybackQueue from './PlaybackQueue';
 import PersonalRadio from './PersonalRadio';
 import TrackResources from './TrackResources';
 import {getMiniLyric} from './lyricPosition';
 import PlayerPresentation from './PlayerPresentation';
 import {subscribePlaybackEvent} from './commands';
-import {collectTracks, showTrackDetails, choosePlaylist} from '../modals/commands';
 import type {PlayerProps, PlayerState, QueueSnapshot, PlaybackCommand} from './types';
 import type {TrackFields, TrackId} from '../services/track';
 import type {Provider} from '../services/providers';
@@ -19,19 +19,14 @@ import {AppState, BackHandler, DeviceEventEmitter} from 'react-native';
 import providers from '../services/providers';
 import names from '../events/names';
 import locales from '../locales';
-import {Netease} from '../services';
 import {extractFullInfo} from '../services/trackInfo';
 import parseArtist from '../utils/parseArtist';
-import universalNavigator from '../utils/universalNavigator';
-import stopTimer from '../utils/stopTimer';
 import AudioPlayer from '../native/audioPlayer';
 import timer from '../native/timer';
 import shutdown from '../native/shutdown';
 import wakeLock from '../native/wakeLock';
 import {isUsableFile} from '../storage/files';
-import lastSong from '../storage/lastSong';
 import lastTime from '../storage/lastTime';
-import lastQueue from '../storage/lastQueue';
 import {musicHistory} from '../storage/history';
 import cache from './cache';
 import lyricPreferences from './lyricPreferences';
@@ -63,13 +58,6 @@ export default class PlayerController extends React.PureComponent<PlayerProps, P
     setLiked: (isLike) => this.setState({isLike}),
     setArtwork: (url) => this.setState({url}),
   });
-  onLike = () =>
-    this.resources.toggleLike(
-      this.activeQueue.songItem,
-      this.activeQueue.api,
-      this.state.isLike,
-      this.playbackRequest,
-    );
   presentation = new PlayerPresentation({
     getState: () => this.state,
     getSong: () => this.activeQueue.songItem,
@@ -362,7 +350,11 @@ export default class PlayerController extends React.PureComponent<PlayerProps, P
             this.setState({
               lastPlayedTracksLoaded: true,
             });
-            this.seekToLastPlayedTime(request);
+            restoreProgress(
+              request,
+              (current) => current === this.playbackRequest,
+              (seconds) => this.seekTo(seconds, false),
+            );
           } else {
             if (this.activeQueue.settings.autoLoadLastPlayedTracks)
               lastTime.save(0).catch((error) => toast('保存进度失败：' + error.message));
@@ -371,10 +363,7 @@ export default class PlayerController extends React.PureComponent<PlayerProps, P
         },
       );
     });
-    lastSong
-      .save(this.activeQueue.api, this.activeQueue.songItem)
-      .catch((error) => toast('保存播放记录失败：' + error.message));
-    this.saveLastPlayedTracks();
+    saveSelection(this.activeQueue, this.props.settings.autoLoadLastPlayedTracks);
   };
   errorWhenPlay = (error: PlayerError) => {
     toast('播放失败：' + (error.message || error.type));
@@ -397,17 +386,6 @@ export default class PlayerController extends React.PureComponent<PlayerProps, P
       });
     }
   };
-  saveLastPlayedTracks = () => {
-    if (!this.activeQueue.settings.autoLoadLastPlayedTracks) return;
-    const {tracks, playingIndex: index, api} = this.activeQueue;
-    return lastQueue
-      .save({
-        tracks,
-        index,
-        api,
-      })
-      .catch((error) => toast('保存队列失败：' + error.message));
-  };
   playSound = () => {
     const request = this.playbackRequest;
     this.audio?.play((finished) => {
@@ -423,15 +401,6 @@ export default class PlayerController extends React.PureComponent<PlayerProps, P
     if (play) this.playSound();
   };
   togglePlay = () => (this.state.playState === 'playing' ? this.pauseSound() : this.playSound());
-  seekToLastPlayedTime = async (request: number) => {
-    try {
-      const seconds = await lastTime.get();
-      if (request !== this.playbackRequest) return;
-      this.seekTo(seconds, false);
-    } catch (error) {
-      if (request === this.playbackRequest) toast('恢复进度失败：' + errorMessage(error));
-    }
-  };
   exit = async () => {
     try {
       if (this.props.settings.autoLoadLastPlayedTracks) {
@@ -474,21 +443,7 @@ export default class PlayerController extends React.PureComponent<PlayerProps, P
     const finishedSong = this.activeQueue.songItem;
     if (this.state.playMode === 'circulate') this.seekTo(0);
     else this.changeSong('next');
-    this.recordPlayed(finishedSong);
-  };
-  recordPlayed = async (song: TrackFields) => {
-    if (song.api !== providers.netEase || !this.props.settings.recordPlayCount) return;
-    try {
-      const response = await Netease.play_count(
-        song.id!,
-        (typeof song.album === 'object' ? song.album?.id : undefined) ||
-          (!Array.isArray(song.al) ? song.al?.id : undefined),
-        Math.floor(song.dt! / 1000),
-      );
-      if (response?.code !== 200) throw new Error('播放记录响应无效');
-    } catch (error) {
-      toast('记录播放次数失败：' + errorMessage(error));
-    }
+    recordPlayed(finishedSong, this.props.settings.recordPlayCount);
   };
   intervalCurrentTimeGetter = () => {
     if (this.currentTimeTimer) timer.clearTimeout(this.currentTimeTimer);
@@ -564,32 +519,5 @@ export default class PlayerController extends React.PureComponent<PlayerProps, P
       else this.pauseSound();
       toast(locales.PLAY_STOPPED);
     }, minutes * 60000);
-  };
-  onCollect = () =>
-    collectTracks({
-      api: this.activeQueue.api,
-      song: this.activeQueue.songItem,
-    });
-  onDetail = () =>
-    showTrackDetails({
-      api: this.activeQueue.api,
-      song: this.activeQueue.songItem,
-      index: this.activeQueue.playingIndex,
-    });
-  onChangePlaylist = () => choosePlaylist();
-  onNowPlaying = () => this.props.setDisplayNowPlaying(true);
-  onTimer = () => stopTimer.open();
-  onCheck = () => {
-    if (this.activeQueue.api === providers.netEase)
-      return this.recordPlayed(this.activeQueue.songItem);
-    toast(locales.PLAY_COUNT_ONLY_SUPPORT_NETEASE);
-  };
-  onComment = () => {
-    if (this.activeQueue.api === providers.local) return toast(locales.COMMENT_LOCAL_CAN_NOT);
-    universalNavigator.navigate('CommentPage', {
-      api: this.activeQueue.api,
-      song: this.activeQueue.songItem,
-    });
-    this.presentation.close();
   };
 }
