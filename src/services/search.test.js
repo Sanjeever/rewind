@@ -10,7 +10,7 @@ async function searchWith(services) {
   }));
   let searchSongs;
   await jest.isolateModulesAsync(async () => {
-    searchSongs = (await import('./search.js')).searchSongs;
+    searchSongs = (await import('./search')).searchSongs;
   });
   return searchSongs;
 }

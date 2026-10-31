@@ -1,10 +1,22 @@
 import {Netease, QQMusic} from './index';
 import providers from './providers';
 import {normalizeTrack} from './trackInfo';
+import type {OnlineProvider} from './providers';
+import type {DisplayTrack, TrackFields} from './track';
+export interface SearchOptions {
+  query: string;
+  api: OnlineProvider;
+  offset?: number;
+}
+export interface SearchPage {
+  tracks: DisplayTrack[];
+  offset: number;
+  hasMore: boolean;
+}
 
-export async function searchSongs({query, api, offset = 0}) {
-  let songs;
-  let total;
+export async function searchSongs({query, api, offset = 0}: SearchOptions): Promise<SearchPage> {
+  let songs: TrackFields[] | undefined;
+  let total: number | undefined;
   if (api === providers.netEase) {
     const response = await Netease.cloud_search({keywords: query, offset, limit: 30});
     if (response?.code !== 200)
