@@ -96,7 +96,7 @@ export async function searchEntities({
   }
   if (!Array.isArray(list)) throw new Error('搜索响应缺少结果列表');
   const items = list.map((value: unknown) => record(value) as SearchEntity);
-  const next = offset + items.length;
+  const next = api === 'qqMusic' ? (Math.floor(offset / 30) + 1) * 30 : offset + items.length;
   return {
     items,
     offset: next,

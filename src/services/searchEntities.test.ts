@@ -38,3 +38,11 @@ test('搜索拒绝和损坏响应不伪装为空结果', async () => {
     '2001',
   );
 });
+test('QQ 返回不足三十项仍按整数页继续，不把结果条数当成源页码', async () => {
+  qq.mockResolvedValue({mv: {list: Array.from({length: 29}, (_, id) => ({id})), total: 61}});
+  const first = await searchEntities({query: '词', api: 'qqMusic', kind: 'mvs'});
+  expect(first.offset).toBe(30);
+  expect(first.hasMore).toBe(true);
+  await searchEntities({query: '词', api: 'qqMusic', kind: 'mvs', offset: first.offset});
+  expect(qq).toHaveBeenLastCalledWith({keywords: '词', type: 'mv', page: 2});
+});
