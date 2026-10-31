@@ -43,7 +43,7 @@ async function screen(searchSongs) {
     }));
   let Results;
   await jest.isolateModulesAsync(async () => {
-    Results = (await import('./SongSearchResults.js')).default;
+    Results = (await import('./SongSearchResults')).default;
   });
   const instance = new Results({
     search: '同一个关键词',

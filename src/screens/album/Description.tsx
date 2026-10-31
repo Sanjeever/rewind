@@ -4,18 +4,19 @@ import * as ReactNative from 'react-native';
 import * as components from '../../components/index';
 import * as constants from '../../theme/constants';
 import icons from '../../theme/icons';
-class Description extends React.PureComponent {
+class Description extends React.PureComponent<{
+  showModal: boolean;
+  albumImg?: string;
+  onClose(): void;
+  company?: string;
+  publishTime?: string;
+  description?: string;
+}> {
   render() {
     const props = this.props;
     const {showModal, albumImg, onClose, company, publishTime, description} = props;
     return (
-      <ReactNative.Modal
-        visible={showModal}
-        backdropOpacity={0.8}
-        onRequestClose={onClose}
-        position={'center'}
-        animationType={'fade'}
-      >
+      <ReactNative.Modal visible={showModal} onRequestClose={onClose} animationType={'fade'}>
         <ReactNative.View
           style={{
             flex: 1,

@@ -8,13 +8,26 @@ import icons from '../theme/icons';
 import * as events from '../events/index';
 import '../utils/types';
 import users from '../storage/users';
-class ProfileHeader extends React.PureComponent {
-  state = {
+import type {Subscription} from '../events/Emitter';
+interface Profile {
+  avatarUrl: string;
+  nickname?: string;
+  page: 'NeteaseLogin' | 'QQMusicLogin';
+}
+class ProfileHeader extends React.PureComponent<
+  {
+    onNavigate(route: 'NeteaseLogin' | 'QQMusicLogin' | 'InitialLogin'): void;
+    nativeOffset: {y: ReactNative.Animated.Value};
+  },
+  {data: Profile[]}
+> {
+  sub!: Subscription;
+  state: {data: Profile[]} = {
     data: [],
   };
   getUserInfo = async () => {
     const accounts = await users.getUserInfo();
-    const data = [];
+    const data: Profile[] = [];
     if (typeof accounts?.netEase?.avatarUrl === 'string') {
       data.push({
         avatarUrl: `${accounts.netEase.avatarUrl}?param=200y200`,
@@ -33,7 +46,7 @@ class ProfileHeader extends React.PureComponent {
       data,
     });
   };
-  easterEgg = function (e) {
+  easterEgg = function (e?: string) {
     toast(`你好啊，${e}`);
   };
   renderAvatars = () => {
@@ -64,11 +77,15 @@ class ProfileHeader extends React.PureComponent {
                             outputRange: [-constants.DEVICE_WIDTH / 2 + 100 * r, 0],
                             extrapolate: 'clamp',
                           }),
+                        },
+                        {
                           translateX: nativeOffset.y.interpolate({
                             inputRange: [-constants.DEVICE_WIDTH, 0],
                             outputRange: [0.35 * constants.DEVICE_WIDTH - 30, 0],
                             extrapolate: 'clamp',
                           }),
+                        },
+                        {
                           scale: nativeOffset.y.interpolate({
                             inputRange: [-constants.DEVICE_WIDTH, 0],
                             outputRange: [2, 1],
@@ -141,7 +158,7 @@ class ProfileHeader extends React.PureComponent {
     );
   }
 }
-var m = ReactNative.StyleSheet.create({
+const m = ReactNative.StyleSheet.create({
   container: {
     width: '100%',
     marginTop: 50,

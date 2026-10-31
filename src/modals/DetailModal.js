@@ -14,8 +14,8 @@ import * as events from '../events/index';
 import * as utils from '../utils/index';
 import * as trackInfo from '../services/trackInfo';
 import queue from '../events/queue';
-import ActionRow from './../modules/ActionRow.js';
-import CloseButton from './../modules/CloseButton.js';
+import ActionRow from './../modules/ActionRow';
+import CloseButton from './../modules/CloseButton';
 import _mediaStore from '../native/mediaStore';
 const C = {
   title: locales.DELETE_FROM_LOCAL,

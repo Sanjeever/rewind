@@ -3,7 +3,13 @@ import * as ReactNative from 'react-native';
 import * as components from '../components/index';
 import * as constants from '../theme/constants';
 import icons from '../theme/icons';
-const SComponent = function ({onPress, isRound}) {
+const SComponent = function ({
+  onPress,
+  isRound,
+}: {
+  onPress?: ReactNative.TouchableOpacityProps['onPress'];
+  isRound?: boolean;
+}) {
   return (
     <ReactNative.View
       style={{

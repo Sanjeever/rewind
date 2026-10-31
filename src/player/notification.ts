@@ -6,15 +6,17 @@ import keys from '../storage/keys';
 import AudioPlayer from '../native/audioPlayer';
 
 export default {
-  init(actions) {
+  init(actions: {previous(): void; play(): void; pause(): void; next(): void; stop(): void}) {
     let active = true;
-    const subscriptions = [];
+    const subscriptions: (() => void)[] = [];
     const load = async () => {
       let config;
       try {
-        config = await storage.load({key: keys.musicNotification});
+        config = await storage.load<typeof notification.configObject>({
+          key: keys.musicNotification,
+        });
       } catch (error) {
-        if (error.name !== 'NotFoundError') throw error;
+        if (!(error instanceof Error && error.name === 'NotFoundError')) throw error;
         config = notification.configObject;
       }
       if (!active) return;
@@ -31,7 +33,7 @@ export default {
       }
       if (config.next.on) subscriptions.push(AudioPlayer.on('nextTrack', actions.next));
       if (config.stop.on) subscriptions.push(AudioPlayer.on('stop', actions.stop));
-      if (Platform.Version >= 29) AudioPlayer.enableControl('seek', config.seekbar.on);
+      if (Number(Platform.Version) >= 29) AudioPlayer.enableControl('seek', config.seekbar.on);
     };
     load().catch((error) => {
       if (active) toast('通知控制初始化失败：' + error.message);

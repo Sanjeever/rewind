@@ -6,6 +6,7 @@ import icons from '../theme/icons';
 import locales from '../locales/index';
 import restartModule from '../native/restart';
 import languageModule from '../native/language';
+import type {ScreenProps} from '../navigation/types';
 const f = [
   {
     name: '中文/大陆',
@@ -24,7 +25,11 @@ const f = [
     code: 'en_US',
   },
 ];
-class LanguagePage extends React.PureComponent {
+class LanguagePage extends React.PureComponent<
+  ScreenProps<'LanguagePage'>,
+  {language: string; changed: boolean}
+> {
+  backSubscription?: ReactNative.NativeEventSubscription;
   state = {
     language: languageModule.language,
     changed: false,
@@ -32,13 +37,13 @@ class LanguagePage extends React.PureComponent {
   onBackPress = () => {
     return this.state.changed === true && (this.alertChange(), true);
   };
-  confirmChange = function (e) {
+  confirmChange = function (e: string) {
     languageModule.setLanguageCode(e);
     setTimeout(() => {
       restartModule.restart();
     }, 99);
   };
-  changeLanguage = (language) => {
+  changeLanguage = (language: string) => {
     this.setState({
       language,
       changed: !(language === languageModule.language),

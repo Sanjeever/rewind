@@ -9,7 +9,7 @@ import icons from '../theme/icons';
 import keys from '../storage/keys';
 import locales from '../locales/index';
 import restartModule from '../native/restart';
-import NotificationOption from './../modules/NotificationOption.js';
+import NotificationOption from './../modules/NotificationOption';
 const {configObject, configKeys} = notification;
 class MusicNotificationPage extends React.PureComponent {
   state = {

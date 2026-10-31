@@ -1,7 +1,15 @@
 import 'react';
 import * as ReactNative from 'react-native';
 import * as components from '../components/index';
-const CComponent = function ({name, switched, onSwitch}) {
+const CComponent = function ({
+  name,
+  switched,
+  onSwitch,
+}: {
+  name: string;
+  switched: boolean;
+  onSwitch(): void;
+}) {
   return (
     <ReactNative.TouchableNativeFeedback onPress={onSwitch}>
       <ReactNative.View

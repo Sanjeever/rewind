@@ -4,36 +4,34 @@ import * as components from '../components/index';
 import locales from '../locales/index';
 import audioPlayer from '../native/audioPlayer';
 import languageModule from '../native/language';
-class FeaturePage extends React.PureComponent {
-  onPage = (e) => {
-    this.props.navigation.navigate(e);
-  };
+import type {ScreenProps} from '../navigation/types';
+class FeaturePage extends React.PureComponent<ScreenProps<'FeaturePage'>> {
   render() {
     const t = [
       {
         title: locales.LANGUAGE,
         subtitle: languageModule.language,
-        page: 'LanguagePage',
+        onPress: () => this.props.navigation.navigate('LanguagePage'),
       },
       {
         title: locales.BACKGROUND,
         subtitle: locales.BACKGROUND_SUB,
-        page: 'Skin',
+        onPress: () => this.props.navigation.navigate('Skin'),
       },
       {
         title: locales.ORDER,
         subtitle: locales.ORDER_SUB,
-        page: 'OrderPage',
+        onPress: () => this.props.navigation.navigate('OrderPage'),
       },
       {
         title: locales.CACHE,
         subtitle: '/Android/data/com.kuss.rewind/cache/audio-cache',
-        page: 'CachePage',
+        onPress: () => this.props.navigation.navigate('CachePage'),
       },
       {
         title: locales.MUSIC_NOTIFICATION,
         subtitle: locales.MUSIC_NOTIFICATION_SUB,
-        page: 'MusicNotificationPage',
+        onPress: () => this.props.navigation.navigate('MusicNotificationPage'),
       },
       {
         title: locales.EQUALIZER,
@@ -61,13 +59,7 @@ class FeaturePage extends React.PureComponent {
               key={key}
               title={t.title}
               subtitle={t.subtitle}
-              onPress={
-                t.onPress
-                  ? t.onPress
-                  : () => {
-                      return this.onPage(t.page);
-                    }
-              }
+              onPress={t.onPress}
             />
           ))}
         </reactNativeSpringScrollview.SpringScrollView>

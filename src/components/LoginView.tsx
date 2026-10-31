@@ -7,8 +7,20 @@ import providers from '../services/providers';
 import * as constants from '../theme/constants';
 import icons from '../theme/icons';
 import locales from '../locales/index';
+import type {Provider} from '../services/providers';
+interface Props {
+  api: Provider;
+  avatar?: string | null;
+  nickname?: string | null;
+  _Login(): void;
+  onChangeText(text: string, field?: 'account' | 'password'): void;
+  onWebview(provider: 'qqmusic_qq' | 'qqmusic_wechat' | 'netease_qq' | 'netease_weibo'): void;
+  otherWay?: () => void;
+  loginOut?: () => void;
+  onUserManager?: () => void;
+}
 const p = 0.05 * constants.DEVICE_HEIGHT;
-class LoginView extends React.PureComponent {
+class LoginView extends React.PureComponent<Props> {
   renderQQMusic = () => {
     const r_props = this.props;
     const {_Login, onChangeText, onWebview} = r_props;
@@ -95,7 +107,7 @@ class LoginView extends React.PureComponent {
               },
               y.inputText,
             ]}
-            underlineColorAndroid={0}
+            underlineColorAndroid={'transparent'}
             placeholder={locales.PASSWORD}
             onChangeText={function (e) {
               return onChangeText(e, 'password');
@@ -209,7 +221,7 @@ class LoginView extends React.PureComponent {
   }
 }
 export default LoginView;
-var y = ReactNative.StyleSheet.create({
+const y = ReactNative.StyleSheet.create({
   container: {
     flex: 1,
     width: '100%',
@@ -243,7 +255,7 @@ var y = ReactNative.StyleSheet.create({
     width: 200,
     marginTop: 0.5 * p,
     borderRadius: 50,
-    backgroundColor: 0,
+    backgroundColor: 'transparent',
     borderWidth: 1,
     borderColor: constants.COLORS.primary,
     padding: 10,

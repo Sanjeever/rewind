@@ -100,7 +100,7 @@ export default class EntitySearchResults extends React.PureComponent<Props, Stat
   };
   open = (item: SearchEntity) => {
     const {kind, api, navigation} = this.props;
-    if (kind === 'mvs') queue.playMV(api === 'netEase' ? item.id : item.v_id, api);
+    if (kind === 'mvs') queue.playMV((api === 'netEase' ? item.id : item.v_id)!, api);
     else if (kind === 'playlists') navigation.navigate('Playlist', {playlist: item, api});
     else navigation.navigate(kind === 'albums' ? 'AlbumPage' : 'ArtistPage', {item, api});
   };

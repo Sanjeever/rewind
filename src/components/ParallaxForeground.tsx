@@ -5,7 +5,15 @@ import * as reactNativeAnimatable from 'react-native-animatable';
 import * as constants from '../theme/constants';
 import icons from '../theme/icons';
 import * as components from './index';
-class ParallaxForeground extends React.PureComponent {
+interface Props {
+  img?: string | null;
+  subtitle?: string | string[] | null;
+  title?: string;
+  animOffsetY: ReactNative.Animated.Value;
+  alias?: string;
+  onInfo?: () => void;
+}
+class ParallaxForeground extends React.PureComponent<Props> {
   renderBottomMask = () => {
     const animOffsetY = this.props.animOffsetY;
     return (
@@ -107,7 +115,8 @@ class ParallaxForeground extends React.PureComponent {
               </Text>
             )}
           </components.Selectable>
-          {m?.length > 0 &&
+          {m &&
+            m.length > 0 &&
             m.map(
               (e, key) =>
                 typeof e === 'string' && (
@@ -125,7 +134,7 @@ class ParallaxForeground extends React.PureComponent {
   }
 }
 export default ParallaxForeground;
-var f = ReactNative.StyleSheet.create({
+const f = ReactNative.StyleSheet.create({
   foreground: {
     height: constants.DEVICE_WIDTH,
     width: '100%',

@@ -15,7 +15,7 @@ import * as utils from '../utils/index';
 import '../utils/types';
 import users from '../storage/users';
 import CustomPlaylistHeader from './../modules/CustomPlaylistHeader.js';
-import PlaylistChoice from './../modules/PlaylistChoice.js';
+import PlaylistChoice from './../modules/PlaylistChoice';
 class CollectModal extends React.PureComponent {
   state = {
     api: '',

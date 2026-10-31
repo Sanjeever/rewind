@@ -11,7 +11,17 @@ import locales from '../locales/index';
 import * as utils from '../utils/index';
 import * as types from '../utils/types';
 import * as files from '../storage/files';
-class CachePage extends React.PureComponent {
+import type {ScreenProps} from '../navigation/types';
+interface State {
+  caches: {type: string; name: string; size: number}[];
+  maxCacheSize: number;
+  deleted: boolean;
+  cacheSize: number;
+}
+class CachePage extends React.PureComponent<
+  {navigation: Pick<ScreenProps<'CachePage'>['navigation'], 'goBack'>},
+  State
+> {
   mounted = false;
   state = {
     caches: [
@@ -44,7 +54,7 @@ class CachePage extends React.PureComponent {
   };
   getStorageCacheSize = () => {
     return _appStorage.storage
-      .load({
+      .load<number>({
         key: keys.maxCacheSize,
       })
       .then((maxCacheSize) => {
@@ -65,7 +75,7 @@ class CachePage extends React.PureComponent {
           cacheSize,
         });
     } catch (error) {
-      toast('读取缓存大小失败：' + error.message);
+      toast('读取缓存大小失败：' + (error instanceof Error ? error.message : String(error)));
     }
   };
   removeSettings = () => {
@@ -97,7 +107,7 @@ class CachePage extends React.PureComponent {
         cacheSize: 0,
       });
     } catch (error) {
-      toast(`清理缓存失败：${error.message}`);
+      toast(`清理缓存失败：${error instanceof Error ? error.message : String(error)}`);
     }
   };
   componentDidMount() {
@@ -143,7 +153,7 @@ class CachePage extends React.PureComponent {
     );
   }
 }
-var g = ReactNative.StyleSheet.create({
+const g = ReactNative.StyleSheet.create({
   scrollContainer: {
     paddingHorizontal: 12,
   },

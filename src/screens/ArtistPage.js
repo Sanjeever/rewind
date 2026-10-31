@@ -15,8 +15,8 @@ import * as sharedUrlsModule from '../services/sharedUrls';
 import users from '../storage/users';
 import ArtistAlbums from './../modules/ArtistAlbums.js';
 import ArtistVideos from './../modules/ArtistVideos.js';
-import albumPagination from './../modules/albumPagination.js';
-import artistAliases from './../modules/artistAliases.js';
+import albumPagination from './../modules/albumPagination';
+import artistAliases from './../modules/artistAliases';
 import ArtistSongs from './../modules/ArtistSongs.js';
 import styles from './artist/styles';
 export const RELEASE_MODE = {

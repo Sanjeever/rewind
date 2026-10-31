@@ -2,7 +2,13 @@ import Text from './../components/Text';
 import 'react';
 import 'react-native';
 import TouchableScale from '../components/TouchableScale';
-const FComponent = function ({onPress, content}) {
+const FComponent = function ({
+  onPress,
+  content,
+}: {
+  onPress?: () => void;
+  content?: React.ReactNode;
+}) {
   return (
     <TouchableScale onPress={onPress}>
       <Text

@@ -3,6 +3,7 @@ import * as React from 'react';
 import * as ReactNative from 'react-native';
 import * as components from '../components/index';
 import * as constants from '../theme/constants';
+import type {ScreenProps} from '../navigation/types';
 const injectedJavaScript = `
   (function() {
     function changeFrame(){
@@ -16,7 +17,7 @@ const injectedJavaScript = `
     changeFrame();
   })();
 `;
-class WebViewPage extends React.Component {
+class WebViewPage extends React.Component<ScreenProps<'WebViewPage'>, {url: string}> {
   state = {
     url: '',
   };
@@ -36,7 +37,6 @@ class WebViewPage extends React.Component {
         <ReactNative.View style={d.container}>
           <components.Background />
           <WebView
-            ref={(instance) => (this.webView = instance)}
             style={{
               flex: 1,
               width: '100%',
@@ -60,7 +60,7 @@ class WebViewPage extends React.Component {
     );
   }
 }
-var d = ReactNative.StyleSheet.create({
+const d = ReactNative.StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: constants.STATUS_BAR_HEIGHT,

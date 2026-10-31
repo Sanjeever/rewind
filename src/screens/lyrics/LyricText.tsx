@@ -1,7 +1,13 @@
 import Text from './../../components/Text';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
-class LyricText extends React.PureComponent {
+class LyricText extends React.PureComponent<{
+  lyric?: string;
+  trans?: string;
+  onPress?: () => void;
+  style?: ReactNative.StyleProp<ReactNative.ViewStyle>;
+  hidden?: boolean;
+}> {
   render() {
     const props = this.props;
     const {lyric, trans, onPress, style, hidden} = props;
@@ -16,15 +22,15 @@ class LyricText extends React.PureComponent {
             },
           ]}
         >
-          {lyric?.length > 0 ? <Text style={[s.text]}>{lyric}</Text> : null}
-          {trans?.length > 0 ? <Text style={[s.text]}>{trans || ''}</Text> : null}
+          {lyric && lyric.length > 0 ? <Text style={[s.text]}>{lyric}</Text> : null}
+          {trans && trans.length > 0 ? <Text style={[s.text]}>{trans}</Text> : null}
         </ReactNative.View>
       </ReactNative.TouchableOpacity>
     );
   }
 }
 export default LyricText;
-var s = ReactNative.StyleSheet.create({
+const s = ReactNative.StyleSheet.create({
   textCon: {
     flex: 1,
     justifyContent: 'center',

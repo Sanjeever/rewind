@@ -8,9 +8,22 @@ import {searchSongs} from '../services/search';
 import {getAlias} from '../services/trackFields';
 import {toDetailModal} from '../events';
 import {playTracks, insertTracks} from '../player/commands';
+import type {DisplayTrack} from '../services/track';
+import type {OnlineProvider} from '../services/providers';
+interface Props {
+  search: string;
+  api: OnlineProvider;
+}
+interface State {
+  tracks: DisplayTrack[];
+  loading: boolean;
+  error: Error | null;
+  hasMore: boolean;
+}
 
-export default class SongSearchResults extends React.PureComponent {
-  state = {tracks: [], loading: false, error: null, hasMore: false};
+export default class SongSearchResults extends React.PureComponent<Props, State> {
+  list: LargeList<DisplayTrack> | null = null;
+  state: State = {tracks: [], loading: false, error: null, hasMore: false};
   requestId = 0;
   offset = 0;
   pending = false;
@@ -19,7 +32,7 @@ export default class SongSearchResults extends React.PureComponent {
     this.search();
   }
 
-  componentDidUpdate(previous) {
+  componentDidUpdate(previous: Props) {
     if (previous.search !== this.props.search || previous.api !== this.props.api) this.search();
   }
 
@@ -62,7 +75,10 @@ export default class SongSearchResults extends React.PureComponent {
       this.list?.endLoading(!result.hasMore);
     } catch (error) {
       if (requestId !== this.requestId) return;
-      this.setState({loading: false, error});
+      this.setState({
+        loading: false,
+        error: error instanceof Error ? error : new Error(String(error)),
+      });
       this.list?.endLoading();
     } finally {
       if (requestId === this.requestId) this.pending = false;
@@ -73,7 +89,7 @@ export default class SongSearchResults extends React.PureComponent {
     if (this.state.hasMore && !this.state.error) return this.fetchPage();
   };
 
-  play = (track, index) => {
+  play = (track: DisplayTrack, index: number) => {
     playTracks({
       song: track.source,
       tracks: this.state.tracks.map((item) => item.source),
@@ -83,7 +99,7 @@ export default class SongSearchResults extends React.PureComponent {
     });
   };
 
-  renderSong = ({row}) => {
+  renderSong = ({row}: {row: number}) => {
     const track = this.state.tracks[row];
     return (
       <SongRow

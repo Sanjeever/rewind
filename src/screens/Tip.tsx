@@ -4,7 +4,8 @@ import * as ReactNative from 'react-native';
 import * as components from '../components/index';
 import icons from '../theme/icons';
 import * as endpoints from '../services/endpoints';
-class Tip extends React.Component {
+import type {ScreenProps} from '../navigation/types';
+class Tip extends React.Component<ScreenProps<'Tip'>, {url: string}> {
   state = {
     url: `${endpoints.HOST_PAGE}/tutorial`,
   };
@@ -19,7 +20,7 @@ class Tip extends React.Component {
   };
   componentDidMount() {
     const params = this.props.route.params;
-    if (params) {
+    if (params?.url) {
       const url = params.url;
       this.setState({
         url,
@@ -31,7 +32,6 @@ class Tip extends React.Component {
       <ReactNative.Modal onRequestClose={this.goBack} animationType={'fade'}>
         <ReactNative.View style={p.container}>
           <WebView
-            ref={(instance) => (this.webView = instance)}
             style={{
               flex: 1,
               width: '100%',
@@ -44,7 +44,6 @@ class Tip extends React.Component {
             domStorageEnabled={true}
             startInLoadingState={true}
             automaticallyAdjustContentInsets={false}
-            useWebKit={true}
           />
           <components.Icon
             name={icons.LINK_VARIANT}
@@ -59,7 +58,7 @@ class Tip extends React.Component {
   }
 }
 export default Tip;
-var p = ReactNative.StyleSheet.create({
+const p = ReactNative.StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#000',

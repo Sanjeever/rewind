@@ -8,7 +8,32 @@ import * as constants from '../theme/constants';
 import icons from '../theme/icons';
 import * as events from '../events/index';
 import * as utils from '../utils/index';
-class SongRow extends React.PureComponent {
+import type {Artist, TrackFields} from '../services/track';
+interface SongRowProps {
+  onPress?: () => void;
+  songItem?: TrackFields;
+  img?: string | null;
+  index?: number | null;
+  song?: string;
+  album?: string;
+  singer?: string | Artist[] | null;
+  detail?: () => void;
+  onMV?: () => void;
+  showMV?: boolean;
+  textStyle?: ReactNative.StyleProp<ReactNative.ViewStyle>;
+  playing?: boolean;
+  addToQueue?: () => void;
+  containerStyle?: ReactNative.StyleProp<ReactNative.ViewStyle>;
+  deleteBtn?: () => void;
+  isExist?: boolean;
+  alias?: string;
+  isChecked?: boolean;
+  disabled?: boolean;
+  showRank?: boolean;
+  lastRank?: number;
+  round?: boolean;
+}
+class SongRow extends React.PureComponent<SongRowProps> {
   handleOnPress = () => {
     requestAnimationFrame(() => {
       this.props.onPress?.();
@@ -110,7 +135,7 @@ class SongRow extends React.PureComponent {
     );
   }
 }
-var E = function ({onPress}) {
+const E = function ({onPress}: Pick<SongRowProps, 'onPress'>) {
   return (
     <ReactNative.TouchableOpacity
       onPress={onPress}
@@ -125,7 +150,17 @@ var E = function ({onPress}) {
     </ReactNative.TouchableOpacity>
   );
 };
-var h = function ({style, onPress, name, size}) {
+const h = function ({
+  style,
+  onPress,
+  name,
+  size,
+}: {
+  style?: ReactNative.StyleProp<ReactNative.ViewStyle>;
+  onPress?: () => void;
+  name?: string;
+  size?: number;
+}) {
   return (
     <TouchableScale onPress={onPress} activeScale={0.7}>
       <ReactNative.View style={style}>
@@ -134,12 +169,12 @@ var h = function ({style, onPress, name, size}) {
     </TouchableScale>
   );
 };
-const y = ({showRank, lastRank, index}) => {
+const y = ({showRank, lastRank, index}: Pick<SongRowProps, 'showRank' | 'lastRank' | 'index'>) => {
   if (showRank) {
-    let l = '';
+    let l: string | number = '';
     let s;
     if (lastRank || lastRank === 0) {
-      const o = lastRank - index;
+      const o = lastRank - (index ?? 0);
       if (o === 0) {
         s = icons.TRENDING_NEUTRAL;
       } else {
@@ -161,7 +196,7 @@ const y = ({showRank, lastRank, index}) => {
     );
   }
 };
-var b = ({img, addToQueue}) => {
+const b = ({img, addToQueue}: Pick<SongRowProps, 'img' | 'addToQueue'>) => {
   if (img) {
     return (
       <TouchableScale onPress={addToQueue}>
@@ -177,7 +212,14 @@ var b = ({img, addToQueue}) => {
     );
   }
 };
-var p = ({index, img, addToQueue, playing, showRank, lastRank}) => {
+const p = ({
+  index,
+  img,
+  addToQueue,
+  playing,
+  showRank,
+  lastRank,
+}: Pick<SongRowProps, 'index' | 'img' | 'addToQueue' | 'playing' | 'showRank' | 'lastRank'>) => {
   if (index !== null && !img) {
     return (
       <ReactNative.TouchableOpacity onPress={addToQueue}>
@@ -185,7 +227,7 @@ var p = ({index, img, addToQueue, playing, showRank, lastRank}) => {
           {playing ? (
             <components.Icon name={icons.EMOTICON_HAPPY_OUTLINE} size={20} />
           ) : (
-            <Text style={[T.song, T.indexText]}>{1 + (0 | index)}</Text>
+            <Text style={[T.song, T.indexText]}>{1 + (0 | (index ?? 0))}</Text>
           )}
           {y({
             showRank,
@@ -197,7 +239,17 @@ var p = ({index, img, addToQueue, playing, showRank, lastRank}) => {
     );
   }
 };
-var I = ({textStyle, song, playing, alias, isExist, singers, album}) => (
+const I = ({
+  textStyle,
+  song,
+  playing,
+  alias,
+  isExist,
+  singers,
+  album,
+}: Pick<SongRowProps, 'textStyle' | 'song' | 'playing' | 'alias' | 'isExist' | 'album'> & {
+  singers?: string | null;
+}) => (
   <ReactNative.View style={[T.textCon, textStyle]}>
     <Text
       numberOfLines={1}
@@ -233,7 +285,7 @@ var I = ({textStyle, song, playing, alias, isExist, singers, album}) => (
           />
         </reactNativeAnimatable.View>
       ) : null}
-      {singers?.length > 0 ? (
+      {singers && singers.length > 0 ? (
         <Text numberOfLines={1} style={[T.singer]}>
           {singers} {album && `|  ${album}`}
         </Text>
@@ -241,7 +293,7 @@ var I = ({textStyle, song, playing, alias, isExist, singers, album}) => (
     </ReactNative.View>
   </ReactNative.View>
 );
-var T = ReactNative.StyleSheet.create({
+const T = ReactNative.StyleSheet.create({
   container: {
     height: constants.ITEM_HEIGHT,
     width: '100%',

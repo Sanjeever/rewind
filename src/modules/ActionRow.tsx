@@ -2,7 +2,11 @@ import Text from './../components/Text';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
 import TouchableScale from '../components/TouchableScale';
-class ActionRow extends React.PureComponent {
+class ActionRow extends React.PureComponent<{
+  onPress?: () => void;
+  title: string;
+  value?: string | null;
+}> {
   render() {
     const props = this.props;
     const {onPress, title, value} = props;
@@ -46,7 +50,7 @@ class ActionRow extends React.PureComponent {
   }
 }
 export default ActionRow;
-var u = ReactNative.StyleSheet.create({
+const u = ReactNative.StyleSheet.create({
   text: {
     fontSize: 16,
     textAlign: 'center',

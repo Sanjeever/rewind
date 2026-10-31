@@ -17,7 +17,7 @@ jest.unstable_mockModule('../storage/files', () => ({getCurrentCache: size}));
 const {default: CachePage} = await import('./CachePage');
 
 test('缓存设置缺失沿用默认值，其余读取、写入和重置错误可见', async () => {
-  const page = new CachePage({});
+  const page = new CachePage({navigation: {goBack() {}}});
   load.mockRejectedValue(Object.assign(new Error('缺失'), {name: 'NotFoundError'}));
   await page.getStorageCacheSize();
   expect(toast).not.toHaveBeenCalled();
