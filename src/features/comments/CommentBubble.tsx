@@ -2,7 +2,7 @@ import Text from '../../components/Text';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
 import * as components from '../../components/index';
-import highlightWordsCore from 'highlight-words-core';
+import {findAll} from 'highlight-words-core';
 import * as formatItem from './formatItem';
 class CommentBubble extends React.PureComponent<{
   item: formatItem.CommentItem | formatItem.CommentReply;
@@ -15,9 +15,10 @@ class CommentBubble extends React.PureComponent<{
     const u = formatItem.getFormattedItem(item);
     if (title && u.content) {
       const textToHighlight = u.content;
-      const b = highlightWordsCore.findAll({
+      const b = findAll({
         textToHighlight,
         searchWords: [title],
+        autoEscape: true,
       });
       return (
         <components.Selectable
