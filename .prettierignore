@@ -1,0 +1,7 @@
+node_modules/
+.cache/
+android/
+assets/
+pnpm-lock.yaml
+handoff.md
+AGENTS.md

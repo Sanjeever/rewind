@@ -1,3 +1,5 @@
 allowBuilds:
   core-js: false
   react-native-storage: false
+minimumReleaseAgeExclude:
+  - eslint@10.14.0

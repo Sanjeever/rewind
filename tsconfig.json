@@ -1,0 +1,12 @@
+{
+  "extends": "@react-native/typescript-config",
+  "compilerOptions": {
+    "strict": true,
+    "noEmit": true,
+    "allowJs": true,
+    "checkJs": false,
+    "types": ["react", "jest", "node"]
+  },
+  "include": ["src/**/*", "index.js"],
+  "exclude": ["node_modules", ".cache", "android"]
+}

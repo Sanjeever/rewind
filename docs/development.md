@@ -6,15 +6,15 @@
 
 准备 Node.js、pnpm、JDK 17 和 Android SDK。安装依赖前按下表确认工具链，避免在文档维护第二份版本清单。
 
-| 内容 | 事实来源 |
-| --- | --- |
-| Node 范围、pnpm、JS 依赖与命令 | [package.json](../package.json)；依赖解析见 [pnpm-lock.yaml](../pnpm-lock.yaml) |
-| Android SDK、Build Tools、NDK、Kotlin 与最低设备 API | [android/build.gradle](../android/build.gradle)；依赖模块也可能要求额外 Build Tools |
-| Gradle Wrapper | [Wrapper 配置](../android/gradle/wrapper/gradle-wrapper.properties) |
-| AGP 与 Gradle 插件的 JDK 要求 | 固定版本的 `@react-native/gradle-plugin`，安装后可查其 `gradle/libs.versions.toml` 与构建文件 |
-| ABI、新架构、Hermes 与 Gradle 参数 | [android/gradle.properties](../android/gradle.properties) |
-| 应用标识、版本、构建类型与签名 | [android/app/build.gradle](../android/app/build.gradle)；JS 注册名见 [index.js](../index.js) |
-| 权限声明与运行时申请 | [AndroidManifest.xml](../android/app/src/main/AndroidManifest.xml)、[权限入口](../src/native/permissions.js) |
+| 内容                                                 | 事实来源                                                                                                     |
+| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| Node 范围、pnpm、JS 依赖与命令                       | [package.json](../package.json)；依赖解析见 [pnpm-lock.yaml](../pnpm-lock.yaml)                              |
+| Android SDK、Build Tools、NDK、Kotlin 与最低设备 API | [android/build.gradle](../android/build.gradle)；依赖模块也可能要求额外 Build Tools                          |
+| Gradle Wrapper                                       | [Wrapper 配置](../android/gradle/wrapper/gradle-wrapper.properties)                                          |
+| AGP 与 Gradle 插件的 JDK 要求                        | 固定版本的 `@react-native/gradle-plugin`，安装后可查其 `gradle/libs.versions.toml` 与构建文件                |
+| ABI、新架构、Hermes 与 Gradle 参数                   | [android/gradle.properties](../android/gradle.properties)                                                    |
+| 应用标识、版本、构建类型与签名                       | [android/app/build.gradle](../android/app/build.gradle)；JS 注册名见 [index.js](../index.js)                 |
+| 权限声明与运行时申请                                 | [AndroidManifest.xml](../android/app/src/main/AndroidManifest.xml)、[权限入口](../src/native/permissions.js) |
 
 设置 `JAVA_HOME` 指向所需 JDK，优先用 `ANDROID_HOME` 指向本机 SDK，并将 SDK 的 `platform-tools` 加入 `PATH`。使用 `ANDROID_SDK_ROOT` 时也须保证 `adb` 在 `PATH` 中，因为 React Native CLI 通过 `ANDROID_HOME` 或 `PATH` 定位它。Gradle 还支持本地 `android/local.properties`，该文件保持忽略，不提交机器路径。
 
@@ -35,7 +35,7 @@ pnpm start
 pnpm android --no-packager
 ```
 
-Debug 使用 Metro。应用内开发菜单支持刷新，首页菜单图标长按也可打开开发菜单。Windows、macOS 使用相同 pnpm 入口，[Android 脚本](../scripts/android.cjs)选择对应 Gradle Wrapper。单独构建与安装 Debug：
+Debug 使用 Metro。应用内开发菜单支持刷新，首页菜单图标长按也可打开开发菜单。Windows、macOS 使用相同 pnpm 入口，[Android 脚本](../scripts/android.mjs)选择对应 Gradle Wrapper。单独构建与安装 Debug：
 
 ```sh
 pnpm android:build
@@ -64,11 +64,16 @@ SDK/JDK 本机路径、私钥、凭据、缓存和构建输出不提交。仓库
 ## 检查与验收
 
 ```sh
+pnpm check
 pnpm test
 pnpm bundle:android
 ```
 
-测试使用 Jest 与 React Native preset，发现规则、转换和 mock 配置见 [jest.config.cjs](../jest.config.cjs)。回归测试靠近对应源码，按变更概念查[实现与回归入口](architecture.md#按概念查实现与回归)，不维护固定的测试数量或文件清单。
+`pnpm check` 串行执行 ESLint、Prettier、严格类型检查与测试；各项也可通过 `lint`、`format:check`、`typecheck` 独立运行。`lint:fix` 和 `format` 会修改文件。GitHub Actions 在 push 和 PR 中冻结锁文件安装并执行检查。
+
+工具配置采用 ESM；Babel 同步加载依赖项目 Node 范围内的原生 `require(esm)` 能力。类型配置沿用 React Native，TypeScript 负责检查，Metro/Babel 负责打包。
+
+测试使用 Jest 与 React Native preset，发现规则、转换和 mock 配置见 [jest.config.js](../jest.config.js)。回归测试靠近对应源码，按变更概念查[实现与回归入口](architecture.md#按概念查实现与回归)，不维护固定的测试数量或文件清单。
 
 单独 Metro 包写入 `.cache/metro/`；常规 Android 构建由 Gradle 插件管理打包，无需预先执行 `pnpm bundle:android`。
 

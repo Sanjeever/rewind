@@ -1,6 +1,8 @@
-const {getDefaultConfig, mergeConfig} = require('@react-native/metro-config');
+import {fileURLToPath} from 'node:url';
+import {dirname} from 'node:path';
+import {getDefaultConfig, mergeConfig} from '@react-native/metro-config';
 
-module.exports = mergeConfig(getDefaultConfig(__dirname), {
+export default mergeConfig(getDefaultConfig(dirname(fileURLToPath(import.meta.url))), {
   resolver: {
     blockList: [/[/\\]\.cache[/\\].*/],
   },
