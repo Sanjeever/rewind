@@ -1,9 +1,23 @@
 import 'react';
 import * as ReactNative from 'react-native';
-import reactNativePopupMenu from 'react-native-popup-menu';
+import * as reactNativePopupMenu from 'react-native-popup-menu';
 import * as components from '../components/index';
 import icons from '../theme/icons';
-const DComponent = function ({onWebview, onOpenUrl, onCopy, onShare, followed, onLike}) {
+const DComponent = function ({
+  onWebview,
+  onOpenUrl,
+  onCopy,
+  onShare,
+  followed,
+  onLike,
+}: {
+  onWebview(): void;
+  onOpenUrl(): void;
+  onCopy(): void;
+  onShare(): void;
+  followed: boolean;
+  onLike(): void;
+}) {
   return (
     <reactNativePopupMenu.Menu
       style={{
@@ -22,17 +36,6 @@ const DComponent = function ({onWebview, onOpenUrl, onCopy, onShare, followed, o
         <components.IconButton name={icons.DOTS_VERTICAL} size={25} disabled />
       </reactNativePopupMenu.MenuTrigger>
       <reactNativePopupMenu.MenuOptions
-        style={{
-          color: '#000',
-          backgroundColor: 'rgba(0, 0, 0, 0.95)',
-          borderWidth: 1,
-          borderColor: '#fff',
-          borderRadius: 16,
-          padding: 8,
-          flex: 0,
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
         optionsContainerStyle={{
           elevation: 0,
           borderRadius: 16,
@@ -41,6 +44,16 @@ const DComponent = function ({onWebview, onOpenUrl, onCopy, onShare, followed, o
           marginTop: 32,
         }}
         customStyles={{
+          optionsWrapper: {
+            backgroundColor: 'rgba(0, 0, 0, 0.95)',
+            borderWidth: 1,
+            borderColor: '#fff',
+            borderRadius: 16,
+            padding: 8,
+            flex: 0,
+            justifyContent: 'center',
+            alignItems: 'center',
+          },
           OptionTouchableComponent: ReactNative.TouchableOpacity,
         }}
       >

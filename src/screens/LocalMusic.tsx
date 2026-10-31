@@ -8,16 +8,24 @@ import locales from '../locales/index';
 import * as events from '../events/index';
 import * as utils from '../utils/index';
 import mediaStore from '../native/mediaStore';
-import LocalMusicList from './../modules/LocalMusicList.js';
+import LocalMusicList from './../modules/LocalMusicList';
+import type {ScreenProps} from '../navigation/types';
+import type {MediaTrack} from '../native/mediaStore';
+import type {Subscription} from '../events/Emitter';
 const h = {
   time: 'random',
   random: 'song',
   song: 'artist',
   artist: 'album',
   album: 'time',
-};
-class LocalMusic extends React.Component {
-  state = {
+} as const;
+class LocalMusic extends React.Component<
+  ScreenProps<'LocalMusic'>,
+  {playList: MediaTrack[] | null; oriList: MediaTrack[]; sortMode: keyof typeof h}
+> {
+  listParent: LocalMusicList | null = null;
+  deleteReciver!: Subscription;
+  state: {playList: MediaTrack[] | null; oriList: MediaTrack[]; sortMode: keyof typeof h} = {
     playList: null,
     oriList: [],
     sortMode: 'time',
@@ -51,26 +59,26 @@ class LocalMusic extends React.Component {
         break;
       case 'song':
         e = locales.SONG_ORDER;
-        this.searchSong(':1', false, false);
+        this.searchSong(':1');
         break;
       case 'artist':
         e = locales.ARTIST_ORDER;
-        this.searchSong(':2', false, false);
+        this.searchSong(':2');
         break;
       case 'album':
         e = locales.ALBUM_ORDER;
-        this.searchSong(':3', false, false);
+        this.searchSong(':3');
         break;
       case 'random':
         e = locales.RANDOM_ORDER;
-        this.searchSong(':4', false, false);
+        this.searchSong(':4');
     }
     toast(e);
     this.setState({
       sortMode: sortMode_1,
     });
   };
-  searchSong = (e) => {
+  searchSong = (e: string) => {
     const oriList = this.state.oriList;
     if (oriList) {
       const a = utils.filterHelper.search(oriList, e);
@@ -80,7 +88,7 @@ class LocalMusic extends React.Component {
     }
   };
   onTop = () => {
-    this.listParent.onTop?.();
+    this.listParent?.onTop();
   };
   componentDidMount() {
     this.deleteReciver = events.emitter.addListener(names.DeleteFromLocal, ({deleteIndex}) => {
@@ -102,7 +110,6 @@ class LocalMusic extends React.Component {
       <components.PageContainer
         title={locales.LOCAL_MUSIC}
         goBack={this.goBack}
-        opacity={this.opacity}
         onTop={this.onTop}
         onChangeText={(t) => {
           return this.searchSong(t);
@@ -118,7 +125,7 @@ class LocalMusic extends React.Component {
         ]}
       >
         <LocalMusicList
-          data={this.state.playList}
+          data={this.state.playList ?? undefined}
           playMusic={(t, a) => {
             return this.playMusic(t, a);
           }}
@@ -135,13 +142,16 @@ class LocalMusic extends React.Component {
               api: providers.local,
             });
           }}
-          ref={(instance) => (this.listParent = instance)}
+          ref={(instance) => {
+            this.listParent = instance;
+          }}
         />
       </components.PageContainer>
     );
   }
-  playMusic(item) {
+  playMusic(item: MediaTrack, _index?: number) {
     const playList = this.state.playList;
+    if (!playList) return;
     const a = playList;
     const r = playList.findIndex((t) => t.title === item.title);
     events.toPlayer({

@@ -3,7 +3,12 @@ import * as React from 'react';
 import * as ReactNative from 'react-native';
 import * as components from '../components/index';
 import icons from '../theme/icons';
-class CustomPlaylistHeader extends React.PureComponent {
+class CustomPlaylistHeader extends React.PureComponent<{
+  onPress(): void;
+  title?: string;
+  img?: string;
+  trackCount?: number;
+}> {
   render() {
     const props = this.props;
     const {onPress, title, img, trackCount} = props;
@@ -40,7 +45,7 @@ class CustomPlaylistHeader extends React.PureComponent {
             <Text style={[c.title]} numberOfLines={2}>
               {title}
             </Text>
-            <Text style={[c.subtitle]}>
+            <Text>
               {'- '}
               {trackCount}
               {' -'}
@@ -52,7 +57,7 @@ class CustomPlaylistHeader extends React.PureComponent {
   }
 }
 export default CustomPlaylistHeader;
-var c = ReactNative.StyleSheet.create({
+const c = ReactNative.StyleSheet.create({
   cover: {
     height: 80,
     width: 80,

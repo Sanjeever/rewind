@@ -10,7 +10,7 @@ import locales from '../locales/index';
 import * as services from '../services/index';
 import * as events from '../events/index';
 import * as types from '../utils/types';
-import UserHeader from './../modules/UserHeader.js';
+import UserHeader from './../modules/UserHeader';
 const tabViewHeight = constants.DEVICE_HEIGHT - constants.DEVICE_WIDTH - constants.ITEM_HEIGHT;
 class FollowPage extends React.PureComponent {
   _nativeOffset = {

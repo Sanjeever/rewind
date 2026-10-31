@@ -1,7 +1,8 @@
 import 'react';
 import PulsingPlaceholder from '../../components/PulsingPlaceholder';
+import type {TextProps, StyleProp, TextStyle} from 'react-native';
 const i = {
-  PlaceHolder: function ({style}) {
+  PlaceHolder: function ({style}: {style?: StyleProp<TextStyle>}) {
     return (
       <PulsingPlaceholder
         style={[
@@ -13,7 +14,15 @@ const i = {
       />
     );
   },
-  Avatar: function ({style, size, radius = size / 2}) {
+  Avatar: function ({
+    style,
+    size,
+    radius = size == null ? undefined : size / 2,
+  }: {
+    style?: StyleProp<TextStyle>;
+    size?: number;
+    radius?: number;
+  }) {
     return (
       <PulsingPlaceholder
         style={[
@@ -27,7 +36,7 @@ const i = {
       />
     );
   },
-  Text: function ({numbers = 14, ...rest}) {
+  Text: function ({numbers = 14, ...rest}: TextProps & {numbers?: number}) {
     return (
       <PulsingPlaceholder {...rest} textMode>
         {'■'.repeat(numbers).split('').join(' ')}

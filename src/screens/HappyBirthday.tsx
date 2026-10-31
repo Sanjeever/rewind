@@ -2,7 +2,11 @@ import Text from './../components/Text';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
 import * as utils from '../utils/index';
-class HappyBirthday extends React.PureComponent {
+import type {ScreenProps} from '../navigation/types';
+class HappyBirthday extends React.PureComponent<
+  ScreenProps<'HappyBirthday'>,
+  {avatarUrl?: string | null; nickname?: string | null; living: number | null}
+> {
   state = {
     avatarUrl: null,
     nickname: null,
@@ -72,7 +76,7 @@ class HappyBirthday extends React.PureComponent {
     );
   }
 }
-var c = ReactNative.StyleSheet.create({
+const c = ReactNative.StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#000',

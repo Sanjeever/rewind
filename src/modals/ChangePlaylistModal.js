@@ -13,7 +13,7 @@ import * as utils from '../utils/index';
 import '../utils/types';
 import * as trackInfo from '../services/trackInfo';
 import users from '../storage/users';
-import CustomPlaylistHeader from './../modules/CustomPlaylistHeader.js';
+import CustomPlaylistHeader from './../modules/CustomPlaylistHeader';
 import PlaylistChoice from './../modules/PlaylistChoice';
 class ChangePlaylistModal extends React.PureComponent {
   state = {

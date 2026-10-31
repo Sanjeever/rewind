@@ -56,7 +56,7 @@ export const track = z.looseObject({
   duration: number,
   interval: number,
   fee: number,
-  mv: number,
+  mv: z.optional(z.union([z.number(), z.looseObject({vid: z.optional(id)})])),
   mvid: z.optional(id),
   mainTrackId: number,
   rid: z.optional(id),

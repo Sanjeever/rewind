@@ -1,6 +1,13 @@
 import 'react';
 import * as components from '../../components/index';
-const IComponent = function ({icon, onPress}) {
+import type {IconProps} from '../../components/Icon';
+const IComponent = function ({
+  icon,
+  onPress,
+}: {
+  icon: Pick<IconProps, 'name' | 'color'>;
+  onPress(): void;
+}) {
   return (
     <components.TouchableBorderless
       onPress={onPress}

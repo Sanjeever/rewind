@@ -2,7 +2,8 @@ import 'react';
 import * as ReactNative from 'react-native';
 import Placeholders from './Placeholders';
 import styles from './styles';
-const IComponent = function ({info}) {
+import type linkData from './linkData';
+const IComponent = function ({info}: {info: typeof linkData}) {
   return (
     <>
       <Placeholders.Text

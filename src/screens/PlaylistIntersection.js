@@ -7,7 +7,7 @@ import locales from '../locales/index';
 import * as services from '../services/index';
 import * as events from '../events/index';
 import * as trackInfo from '../services/trackInfo';
-import IntersectionHeader from './../modules/IntersectionHeader.js';
+import IntersectionHeader from './../modules/IntersectionHeader';
 import PlaylistComparison from './../modules/PlaylistComparison.js';
 const b = {
   intersection: 'intersection',

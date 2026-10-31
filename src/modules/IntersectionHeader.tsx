@@ -5,6 +5,7 @@ import TouchableScale from '../components/TouchableScale';
 import * as components from '../components/index';
 import icons from '../theme/icons';
 import locales from '../locales/index';
+import type {Playlist} from '../storage/models';
 const f = ReactNative.StyleSheet.create({
   header: {
     paddingHorizontal: 15,
@@ -26,7 +27,21 @@ const f = ReactNative.StyleSheet.create({
     borderColor: '#fff',
   },
 });
-const SComponent = function ({left, right, onChangePlaylist, iLength, type, toggleType}) {
+const SComponent = function ({
+  left,
+  right,
+  onChangePlaylist,
+  iLength,
+  type,
+  toggleType,
+}: {
+  left?: Playlist | null;
+  right?: Playlist | null;
+  onChangePlaylist(): void;
+  iLength: number;
+  type: 'intersection' | 'difference';
+  toggleType(): void;
+}) {
   return (
     <ReactNative.View style={f.header}>
       {left ? (

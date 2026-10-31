@@ -571,7 +571,8 @@ export default class PlayerController extends React.PureComponent<PlayerProps, P
     try {
       const response = await Netease.play_count(
         song.id!,
-        (typeof song.album === 'object' ? song.album?.id : undefined) || song.al?.id,
+        (typeof song.album === 'object' ? song.album?.id : undefined) ||
+          (!Array.isArray(song.al) ? song.al?.id : undefined),
         Math.floor(song.dt! / 1000),
       );
       if (response?.code !== 200) throw new Error('播放记录响应无效');

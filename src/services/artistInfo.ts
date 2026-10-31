@@ -2,7 +2,9 @@ import type {ArtworkSize, TrackFields} from './track';
 export default {
   netEase(song: TrackFields, size: ArtworkSize) {
     const image =
-      (typeof song.album === 'object' && song.album?.picUrl) || song.al?.picUrl || song.coverUrl;
+      (typeof song.album === 'object' && song.album?.picUrl) ||
+      (!Array.isArray(song.al) && song.al?.picUrl) ||
+      song.coverUrl;
     if (image) return image + (size === 'small' ? '?param=100y100' : '?param=1000y1000');
   },
   qqMusic(song: TrackFields, size: ArtworkSize) {

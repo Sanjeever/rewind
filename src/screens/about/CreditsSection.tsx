@@ -2,7 +2,17 @@ import Text from './../../components/Text';
 import 'react';
 import * as ReactNative from 'react-native';
 import styles from './styles';
-const NComponent = function ({onPress, renderAvatar, title, subtitle}) {
+const NComponent = function ({
+  onPress,
+  renderAvatar,
+  title,
+  subtitle,
+}: {
+  onPress(): void;
+  renderAvatar(): React.ReactNode;
+  title: string;
+  subtitle: string;
+}) {
   return (
     <ReactNative.TouchableNativeFeedback onPress={onPress}>
       <ReactNative.View style={styles.itemStyle}>

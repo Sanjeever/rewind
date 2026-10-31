@@ -2,40 +2,48 @@ import * as React from 'react';
 import * as components from '../components/index';
 import providers from '../services/providers';
 import * as events from '../events/index';
-import * as utils from '../utils/index';
 import queue from '../events/queue';
-class ArtistSongs extends React.PureComponent {
-  formatListItem = (e) => {
-    const n = {};
+import type {TrackFields, TrackId, Artist} from '../services/track';
+import type {Provider} from '../services/providers';
+class ArtistSongs extends React.PureComponent<{api: Provider; hotSongs: TrackFields[]}> {
+  formatListItem = (e: TrackFields) => {
+    const n: {
+      song?: string;
+      singer?: string | Artist[];
+      album?: string;
+      img?: string;
+      trans?: string;
+      mvid?: TrackId;
+    } = {};
+    const album = typeof e.album === 'object' ? e.album : undefined;
     switch (this.props.api) {
       case providers.netEase:
         n.song = e.name;
         n.singer = e.artists;
-        n.album = e.album.name;
-        n.img = `${e.album.picUrl}?param=200y200`;
-        n.trans = utils.delve(e, 'transNames.0');
+        n.album = album!.name;
+        n.img = `${album!.picUrl}?param=200y200`;
+        n.trans = e.transNames?.[0];
         break;
       case providers.qqMusic:
         n.song = e.name;
         n.singer = e.singer;
-        n.album = e.album.name;
-        n.img = `http://y.gtimg.cn/music/photo_new/T002R150x150M000${e.album.mid}.jpg`;
+        n.album = album!.name;
+        n.img = `http://y.gtimg.cn/music/photo_new/T002R150x150M000${album!.mid}.jpg`;
     }
-    n.mvid = e.mv?.vid || e.vid || e.mvid;
+    n.mvid = (typeof e.mv === 'object' ? e.mv?.vid : undefined) || e.vid || e.mvid;
     return n;
   };
-  onMV = (e) => {
+  onMV = (e: TrackId) => {
     const api = this.props.api;
     queue.playMV(e, api);
   };
-  _renderItem = ({item, index}) => {
+  _renderItem = ({item, index}: {item: TrackFields; index: number}) => {
     const r_props = this.props;
     const {api, hotSongs} = r_props;
     const m = this.formatListItem(item);
     return (
       <components.SongRow
         key={index}
-        curIndex={null}
         album={m.album}
         song={m.song}
         singer={m.singer}
@@ -65,7 +73,7 @@ class ArtistSongs extends React.PureComponent {
         songItem={item}
         showMV={!!m.mvid}
         onMV={() => {
-          return this.onMV(m.mvid);
+          return this.onMV(m.mvid!);
         }}
       />
     );

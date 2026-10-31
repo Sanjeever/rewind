@@ -4,7 +4,7 @@ import * as _appStorage from './../storage/index';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
 import reactNativeImageCropPicker from 'react-native-image-crop-picker';
-import reactNativeSlider from '@react-native-community/slider';
+import reactNativeSlider from '../components/Slider';
 import * as components from '../components/index';
 import * as constants from '../theme/constants';
 import names from '../events/names';
@@ -14,8 +14,12 @@ import locales from '../locales/index';
 import * as events from '../events/index';
 import restartModule from '../native/restart';
 import * as files from '../storage/files';
-class Skin extends React.Component {
-  state = {
+import type {ScreenProps} from '../navigation/types';
+class Skin extends React.Component<
+  ScreenProps<'Skin'>,
+  {img: string | null; value: number; blur: boolean}
+> {
+  state: {img: string | null; value: number; blur: boolean} = {
     img: '',
     value: 1,
     blur: false,
@@ -98,14 +102,14 @@ class Skin extends React.Component {
       },
     );
   };
-  onBlur = (blur) => {
+  onBlur = (blur: boolean) => {
     this.setState({
       blur,
     });
   };
   componentDidMount() {
     _appStorage.storage
-      .load({
+      .load<{path: string; opacity: number; blur: boolean}>({
         key: keys.background,
       })
       .then((t) => {
@@ -137,7 +141,7 @@ class Skin extends React.Component {
             },
           ]}
           source={{
-            uri: img,
+            uri: img ?? undefined,
           }}
           blurRadius={blur ? 10 : 0}
         />
@@ -177,12 +181,6 @@ class Skin extends React.Component {
               maximumTrackTintColor: 'rgba(255,255,255,0.1)',
               minimumTrackTintColor: 'rgba(255,255,255,0.8)',
               thumbTintColor: '#fff',
-              thumbStyle: [
-                {
-                  height: 10,
-                  width: 10,
-                },
-              ],
               style: {
                 width: 200,
               },
@@ -220,7 +218,7 @@ class Skin extends React.Component {
     );
   }
 }
-var C = ReactNative.StyleSheet.create({
+const C = ReactNative.StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#000',

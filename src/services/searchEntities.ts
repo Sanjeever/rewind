@@ -3,6 +3,14 @@ import type {OnlineProvider} from './providers';
 
 export type EntityKind = 'playlists' | 'albums' | 'singers' | 'mvs';
 export interface SearchEntity {
+  size?: number;
+  pubTime?: string;
+  albumMID?: string;
+  latest_song?: {song_count: number};
+  title?: string;
+  date?: string;
+  pic?: string;
+  vid?: string | number;
   id?: string | number;
   mid?: string;
   v_id?: string;

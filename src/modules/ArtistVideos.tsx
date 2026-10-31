@@ -3,12 +3,15 @@ import * as components from '../components/index';
 import providers from '../services/providers';
 import * as utils from '../utils/index';
 import queue from '../events/queue';
-class ArtistVideos extends React.PureComponent {
-  formatListItem = (e) => {
-    const t = {};
+import type {SearchEntity} from '../services/searchEntities';
+import type {Provider} from '../services/providers';
+type Video = SearchEntity & {publishTime?: string};
+class ArtistVideos extends React.PureComponent<{api: Provider; mvs: Video[]}> {
+  formatListItem = (e: Video) => {
+    const t: {title?: string | null; subtitle?: string | null; img?: string | null} = {};
     switch (this.props.api) {
       case providers.netEase: {
-        const r = utils.timeFormatter.parseTime(e.duration / 1000);
+        const r = utils.timeFormatter.parseTime(e.duration! / 1000);
         t.title = e.name;
         t.subtitle = `${r} | ${e.publishTime}`;
         t.img = `${e.imgurl}?param=500y500`;
@@ -26,7 +29,7 @@ class ArtistVideos extends React.PureComponent {
     }
     return t;
   };
-  _renderItem = ({item, index}) => {
+  _renderItem = ({item, index}: {item: Video; index: number}) => {
     const i = this.formatListItem(item);
     return (
       <components.ListItem
@@ -41,9 +44,9 @@ class ArtistVideos extends React.PureComponent {
       />
     );
   };
-  playMV = function (e, t) {
+  playMV = function (e: Video, t: Provider) {
     const r = t === providers.netEase ? e.id : e.vid;
-    queue.playMV(r, t);
+    queue.playMV(r!, t);
   };
   render() {
     return this.props.mvs.map((item, index) =>

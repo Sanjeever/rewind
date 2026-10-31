@@ -17,13 +17,15 @@ import CreditsSection from './about/CreditsSection';
 import LinkList from './about/LinkList';
 import styles from './about/styles';
 import _loading from '../../assets/animations/loading';
-class About extends React.PureComponent {
+import type {ScreenProps} from '../navigation/types';
+class About extends React.PureComponent<ScreenProps<'About'>, {speed: number; ended: boolean}> {
+  _scrollView: Scrolling.SpringScrollView | null = null;
   ICON_SIZE = 27;
   state = {
     speed: 1,
     ended: false,
   };
-  linking = function (e) {
+  linking = function (e: string) {
     ReactNative.Linking.openURL(e);
   };
   onHelp = () => {
@@ -33,9 +35,9 @@ class About extends React.PureComponent {
     return this.props.navigation.goBack();
   };
   onTop = () => {
-    return this._scrollView.scrollToBegin?.();
+    return this._scrollView?.scrollToBegin();
   };
-  onClip = function (e) {
+  onClip = function (e: string) {
     toast(`${locales.COPIED} ${e}`);
     _default.setString(e);
   };
@@ -158,7 +160,7 @@ class About extends React.PureComponent {
       >
         <Scrolling.SpringScrollView
           ref={(t) => {
-            return (this._scrollView = t);
+            this._scrollView = t;
           }}
           style={{
             padding: 15,

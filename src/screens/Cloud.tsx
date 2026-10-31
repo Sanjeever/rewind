@@ -9,8 +9,12 @@ import * as services from '../services/index';
 import * as events from '../events/index';
 import '../utils/types';
 import * as trackInfo from '../services/trackInfo';
-class Cloud extends React.Component {
-  state = {
+import type {ScreenProps} from '../navigation/types';
+import type {TrackFields} from '../services/track';
+import {errorMessage} from '../utils/types';
+class Cloud extends React.Component<ScreenProps<'Cloud'>, {data: TrackFields[]}> {
+  _scrollView: reactNativeSpringScrollview.SpringScrollView | null = null;
+  state: {data: TrackFields[]} = {
     data: [],
   };
   getList = async () => {
@@ -46,13 +50,13 @@ class Cloud extends React.Component {
         })),
       });
     } catch (error) {
-      toast(error.message);
+      toast(errorMessage(error));
     }
   };
   onTop = () => {
-    this._scrollView.scrollToBegin?.();
+    this._scrollView?.scrollToBegin();
   };
-  _renderItem = ({item, index}) => {
+  _renderItem = ({item, index}: {item: TrackFields; index: number}) => {
     const a = trackInfo.extractFullInfo(item);
     return (
       <components.SongRow
@@ -70,15 +74,15 @@ class Cloud extends React.Component {
       />
     );
   };
-  addToQueue = (data) => {
-    const api = this.state.api;
+  addToQueue = (data: TrackFields) => {
+    const api = providers.netEase;
     events.emitter.emit(names.InsertToList, {
       data,
       type: 'item',
       api,
     });
   };
-  playMusic = (e, t) => {
+  playMusic = (e: TrackFields, t: number) => {
     const data = this.state.data;
     events.toPlayer({
       item: e,
@@ -102,7 +106,7 @@ class Cloud extends React.Component {
       >
         <reactNativeSpringScrollview.SpringScrollView
           ref={(t) => {
-            return (this._scrollView = t);
+            this._scrollView = t;
           }}
         >
           {data.map((t, n) =>

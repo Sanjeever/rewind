@@ -9,11 +9,20 @@ import names from '../events/names';
 import locales from '../locales/index';
 import * as events from '../events/index';
 import _mediaStore from '../native/mediaStore';
+import type {Subscription} from '../events/Emitter';
+import {errorMessage} from '../utils/types';
 const m =
   'alipays://platformapi/startapp?saId=10000007&qrcode=https://qr.alipay.com/fkx05853auiq7gkm8jbmccb';
 const uri = 'https://s2.ax1x.com/2020/02/27/301NcV.jpg';
-class SavePicModal extends React.PureComponent {
-  state = {
+interface State {
+  img?: string;
+  song?: string;
+  mainModalShow: boolean;
+  type: string;
+}
+class SavePicModal extends React.PureComponent<Record<string, never>, State> {
+  sub!: Subscription;
+  state: State = {
     img: '',
     song: '',
     mainModalShow: false,
@@ -38,10 +47,10 @@ class SavePicModal extends React.PureComponent {
       }
       this.onClosed();
     } catch (error) {
-      toast(`${locales.SAVE_FAILED}：${error.message}`);
+      toast(`${locales.SAVE_FAILED}：${errorMessage(error)}`);
     }
   };
-  downloadSource = async (source, name, folder) => {
+  downloadSource = async (source: string, name: string, folder: string) => {
     const temporary = `${paths.cache_dir}cover-${Date.now()}.jpg`;
     try {
       let path = source;
@@ -146,7 +155,7 @@ class SavePicModal extends React.PureComponent {
     );
   }
 }
-var g = ReactNative.StyleSheet.create({
+const g = ReactNative.StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',

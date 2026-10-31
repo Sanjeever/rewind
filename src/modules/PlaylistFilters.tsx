@@ -7,8 +7,14 @@ import * as services from '../services/index';
 import * as utils from '../utils/index';
 import * as filterColors from '../components/filterColors';
 import filterStyles from '../components/filterStyles';
-class PlaylistFilters extends React.PureComponent {
-  renderCategoryItem = ({item, index}) => {
+class PlaylistFilters extends React.PureComponent<{
+  visible: boolean;
+  onClose(): void;
+  onSearch(): void;
+  currentType: string;
+  onType(type: string): void;
+}> {
+  renderCategoryItem = ({item, index}: {item: {name: string}; index: number}) => {
     const fontSize = utils.random.getInt(20, 30);
     return React.createElement(filterStyles, {
       key: index,

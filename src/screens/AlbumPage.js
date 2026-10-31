@@ -4,7 +4,7 @@ import _default2 from './../components/Text';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
 import * as components from '../components/index';
-import OverflowMenu from './../modules/OverflowMenu.js';
+import OverflowMenu from './../modules/OverflowMenu';
 import providers from '../services/providers';
 import * as constants from '../theme/constants';
 import icons from '../theme/icons';

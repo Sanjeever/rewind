@@ -8,18 +8,25 @@ import * as services from '../services/index';
 import '../utils/index';
 import playlists from '../storage/playlists';
 import users from '../storage/users';
-class Charts extends React.PureComponent {
-  state = {
+import type {Playlist} from '../storage/models';
+import type {ScreenProps} from '../navigation/types';
+import {errorMessage} from '../utils/types';
+class Charts extends React.PureComponent<
+  ScreenProps<'Charts'>,
+  {data: Playlist[]; loading: boolean}
+> {
+  _scrollView: reactNativeSpringScrollview.SpringScrollView | null = null;
+  state: {data: Playlist[]; loading: boolean} = {
     data: [],
     loading: true,
   };
   onTop = () => {
-    this._scrollView.scrollToBegin?.();
+    this._scrollView?.scrollToBegin();
   };
   getCharts = async () => {
     try {
       const response = await services.Netease.charts();
-      if (response?.code !== 200) {
+      if (response?.code !== 200 || !response.list) {
         throw new Error(response?.message || locales.ERROR);
       }
       const stored = await users.getCharts();
@@ -27,14 +34,14 @@ class Charts extends React.PureComponent {
         data: stored?.length === response.list.length ? stored : response.list,
       });
     } catch (error) {
-      toast(error.message);
+      toast(errorMessage(error));
     } finally {
       this.setState({
         loading: false,
       });
     }
   };
-  _renderItem = ({item, index}) => {
+  _renderItem = ({item, index}: {item: Playlist; index: number}) => {
     return (
       <components.ListItem
         key={index}
@@ -47,14 +54,14 @@ class Charts extends React.PureComponent {
       />
     );
   };
-  Playlist = (playlist, t) => {
+  Playlist = (playlist: Playlist, t: number) => {
     this.collect(t);
     this.props.navigation.navigate('Playlist', {
       playlist,
       api: providers.netEase,
     });
   };
-  collect = (e) => {
+  collect = (e: number) => {
     const data = this.state.data;
     playlists.collectCharts({
       list: data,
@@ -89,7 +96,7 @@ class Charts extends React.PureComponent {
         )}
         <reactNativeSpringScrollview.SpringScrollView
           ref={(t) => {
-            return (this._scrollView = t);
+            this._scrollView = t;
           }}
         >
           {data.map((item, r) =>

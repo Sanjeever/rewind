@@ -6,7 +6,13 @@ import * as constants from '../theme/constants';
 import icons from '../theme/icons';
 import locales from '../locales/index';
 import styles from '../screens/users/styles';
-class UserHeader extends React.PureComponent {
+import type {UserProfile} from '../navigation/types';
+class UserHeader extends React.PureComponent<{
+  profile: Partial<UserProfile>;
+  followed: boolean;
+  nativeOffset: {y: ReactNative.Animated.Value};
+  onHeart(): void;
+}> {
   render() {
     const props = this.props;
     const {profile, followed, nativeOffset, onHeart} = props;
@@ -95,7 +101,6 @@ class UserHeader extends React.PureComponent {
             style={{
               marginTop: 15,
               alignItems: 'center',
-              opcity: 0.7,
             }}
           >
             {follows ? (
@@ -115,7 +120,7 @@ class UserHeader extends React.PureComponent {
   }
 }
 export default UserHeader;
-var d = ReactNative.StyleSheet.create({
+const d = ReactNative.StyleSheet.create({
   text: {
     textAlign: 'center',
   },

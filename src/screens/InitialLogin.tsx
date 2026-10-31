@@ -7,15 +7,11 @@ import * as Scrolling from './../components/Scrolling';
 import * as Index from '../components/index';
 import providers from '../services/providers';
 import locales from '../locales/index';
-class InitialLogin extends React.Component {
-  goTo = (e) => {
-    let t;
-    if (e === providers.netEase) {
-      t = 'NeteaseLogin';
-    } else if (e === providers.qqMusic) {
-      t = 'QQMusicLogin';
-    }
-    this.props.navigation.navigate(t);
+import type {ScreenProps} from '../navigation/types';
+import type {OnlineProvider} from '../services/providers';
+class InitialLogin extends React.Component<ScreenProps<'InitialLogin'>> {
+  goTo = (e: OnlineProvider) => {
+    this.props.navigation.navigate(e === providers.netEase ? 'NeteaseLogin' : 'QQMusicLogin');
   };
   render() {
     return (
@@ -48,7 +44,7 @@ class InitialLogin extends React.Component {
     );
   }
 }
-var p = function ({onPress, source}) {
+const p = function ({onPress, source}: {onPress(): void; source: ReactNative.ImageSourcePropType}) {
   return (
     <Index.TouchableBorderless onPress={onPress} style={b.iconCon}>
       <ReactNative.View>
@@ -57,7 +53,7 @@ var p = function ({onPress, source}) {
     </Index.TouchableBorderless>
   );
 };
-var b = ReactNative.StyleSheet.create({
+const b = ReactNative.StyleSheet.create({
   con: {
     height: constants.DEVICE_HEIGHT - (40 + constants.STATUS_BAR_HEIGHT),
     width: constants.DEVICE_WIDTH,

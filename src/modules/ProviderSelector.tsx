@@ -6,8 +6,11 @@ import * as ReactNative from 'react-native';
 import * as Index from '../components/index';
 import providers from '../services/providers';
 import icons from '../theme/icons';
-class ProviderSelector extends React.PureComponent {
-  renderApiIcon = function (e) {
+type Props = {active?: boolean} & (
+  {type: 'pages'; data: {icon: {name: string}; title: string}} | {type: 'apis'; data: string}
+);
+class ProviderSelector extends React.PureComponent<Props> {
+  renderApiIcon = function (e: string) {
     let source;
     switch (e) {
       case providers.netEase:
@@ -47,28 +50,28 @@ class ProviderSelector extends React.PureComponent {
       },
     ],
   };
-  componentDidUpdate(e) {
+  componentDidUpdate(e: Props) {
     if (this.props.active !== e.active) {
       ReactNative.Animated.timing(this._active, {
         duration: 300,
         easing: ReactNative.Easing.bounce,
         toValue: Number(this.props.active),
+        useNativeDriver: true,
       }).start();
     }
   }
   render() {
     const props = this.props;
-    const e_data = props.data;
     if (props.type === 'pages') {
       return (
         <ReactNative.Animated.View style={[d.row, this._style]}>
           <Index.Icon
-            name={e_data.icon.name}
+            name={props.data.icon.name}
             style={{
               marginRight: 10,
             }}
           />
-          {React.createElement(_default, null, e_data.title)}
+          {React.createElement(_default, null, props.data.title)}
         </ReactNative.Animated.View>
       );
     }
@@ -82,14 +85,14 @@ class ProviderSelector extends React.PureComponent {
           this._style,
         ]}
       >
-        {this.renderApiIcon(e_data)}
-        {React.createElement(_default, null, e_data)}
+        {this.renderApiIcon(props.data)}
+        {React.createElement(_default, null, props.data)}
       </ReactNative.Animated.View>
     );
   }
 }
 export default ProviderSelector;
-var d = ReactNative.StyleSheet.create({
+const d = ReactNative.StyleSheet.create({
   row: {
     paddingHorizontal: 5,
     height: 50,

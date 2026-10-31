@@ -3,7 +3,7 @@ import Clipboard from '@react-native-clipboard/clipboard';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
 import * as components from '../components/index';
-import OverflowMenu from './../modules/OverflowMenu.js';
+import OverflowMenu from './../modules/OverflowMenu';
 import providers from '../services/providers';
 import * as constants from '../theme/constants';
 import icons from '../theme/icons';
@@ -13,11 +13,11 @@ import * as utils from '../utils/index';
 import * as types from '../utils/types';
 import * as sharedUrlsModule from '../services/sharedUrls';
 import users from '../storage/users';
-import ArtistAlbums from './../modules/ArtistAlbums.js';
-import ArtistVideos from './../modules/ArtistVideos.js';
+import ArtistAlbums from './../modules/ArtistAlbums';
+import ArtistVideos from './../modules/ArtistVideos';
 import albumPagination from './../modules/albumPagination';
 import artistAliases from './../modules/artistAliases';
-import ArtistSongs from './../modules/ArtistSongs.js';
+import ArtistSongs from './../modules/ArtistSongs';
 import styles from './artist/styles';
 export const RELEASE_MODE = {
   all: 'all',

@@ -31,7 +31,7 @@ export interface TrackFields {
   artists?: Artist[];
   ar?: Artist[];
   album?: Album | string;
-  al?: Album;
+  al?: Album | Album[];
   albumname?: string;
   albummid?: string;
   qqAlbumId?: string;
@@ -51,7 +51,9 @@ export interface TrackFields {
   rid?: TrackId;
   fee?: number;
   description?: string;
-  mv?: number;
+  mv?: number | {vid?: TrackId};
+  vid?: TrackId;
+  transNames?: string[];
   mvid?: TrackId;
   isFM?: boolean;
   lastRank?: number;

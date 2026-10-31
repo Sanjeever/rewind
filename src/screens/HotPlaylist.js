@@ -7,7 +7,7 @@ import * as constants from '../theme/constants';
 import icons from '../theme/icons';
 import PlaylistSearchResults from './../modules/PlaylistSearchResults';
 import * as services from '../services/index';
-import PlaylistFilters from './../modules/PlaylistFilters.js';
+import PlaylistFilters from './../modules/PlaylistFilters';
 const type = '全部歌单';
 class HotPlaylist extends React.PureComponent {
   _savedType = null;

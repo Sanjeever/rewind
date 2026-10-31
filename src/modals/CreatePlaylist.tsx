@@ -6,7 +6,10 @@ import * as components from '../components/index';
 import icons from '../theme/icons';
 import locales from '../locales/index';
 import * as files from '../storage/files';
-class CreatePlaylist extends React.PureComponent {
+class CreatePlaylist extends React.PureComponent<
+  {showModal: boolean; closeModal(): void; createPL(playlist: {title: string; img: string}): void},
+  {coverImg: string; coverTitle: string}
+> {
   state = {
     coverImg: '',
     coverTitle: locales.DEFAULT_MIX_TITLE,
@@ -126,7 +129,7 @@ class CreatePlaylist extends React.PureComponent {
   }
 }
 export default CreatePlaylist;
-var m = ReactNative.StyleSheet.create({
+const m = ReactNative.StyleSheet.create({
   labelText: {
     fontSize: 13,
     opacity: 0.9,

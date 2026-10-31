@@ -12,7 +12,7 @@ export const getAlias = (song: TrackFields) => song.tns?.[0] || song.alias?.[0] 
 export function getAlbum(song: TrackFields) {
   return (
     (typeof song.album === 'object' && song.album?.name) ||
-    song.al?.name ||
+    (!Array.isArray(song.al) && song.al?.name) ||
     song.albumname ||
     (typeof song.album === 'string' ? song.album : '')
   );
