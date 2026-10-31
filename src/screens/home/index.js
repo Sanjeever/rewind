@@ -1,7 +1,7 @@
 import log from '../../services/logger';
 import locales from '../../locales';
 import {toast} from '../../native/toast';
-import _default from './../../components/Pager.js';
+import _default from './../../components/Pager';
 import * as _appStorage from './../../storage/index';
 import * as immer from 'immer';
 import * as React from 'react';

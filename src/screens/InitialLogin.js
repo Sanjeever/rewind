@@ -3,7 +3,7 @@ import _qqmusicImage from '../../assets/images/qqmusic.png';
 import * as constants from '../theme/constants';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
-import * as Scrolling from './../components/Scrolling.js';
+import * as Scrolling from './../components/Scrolling';
 import * as Index from '../components/index';
 import providers from '../services/providers';
 import locales from '../locales/index';

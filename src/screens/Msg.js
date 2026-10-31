@@ -1,6 +1,6 @@
 import {toast} from '../native/toast';
 import * as React from 'react';
-import * as reactNativeSpringScrollview from './../components/Scrolling.js';
+import * as reactNativeSpringScrollview from './../components/Scrolling';
 import * as components from '../components/index';
 import locales from '../locales/index';
 import * as services from '../services/index';

@@ -2,7 +2,7 @@ import {toast} from '../native/toast';
 import Text from './../components/Text';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
-import * as reactNativeLargelist from './../components/Scrolling.js';
+import * as reactNativeLargelist from './../components/Scrolling';
 import * as components from '../components/index';
 import ParallaxList from '../components/ParallaxList';
 import providers from '../services/providers';

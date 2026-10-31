@@ -1,7 +1,7 @@
 import 'react';
 import * as ReactNative from 'react-native';
 import * as constants from '../theme/constants';
-const UComponent = function (e) {
+const UComponent = function (e: ReactNative.SwitchProps) {
   return (
     <ReactNative.Switch
       trackColor={{

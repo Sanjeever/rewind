@@ -5,7 +5,7 @@ import {mergeSettings} from '../settings/merge';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
 import reactNativeSlider from '@react-native-community/slider';
-import * as reactNativeSpringScrollview from './../components/Scrolling.js';
+import * as reactNativeSpringScrollview from './../components/Scrolling';
 import * as components from '../components/index';
 import * as defaults from '../settings/defaults';
 import * as constants from '../theme/constants';

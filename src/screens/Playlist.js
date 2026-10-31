@@ -3,7 +3,7 @@ import Clipboard from '@react-native-clipboard/clipboard';
 import * as _appStorage from './../storage/index';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
-import * as reactNativeLargelist from './../components/Scrolling.js';
+import * as reactNativeLargelist from './../components/Scrolling';
 import * as components from '../components/index';
 import * as modals from '../modals/index';
 import PlaylistTabs from '../components/PlaylistTabs';

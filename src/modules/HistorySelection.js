@@ -3,7 +3,7 @@ import * as _appStorage from './../storage/index';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
 import FadingEdge from '../components/FadingEdge';
-import * as reactNativeLargelist from './../components/Scrolling.js';
+import * as reactNativeLargelist from './../components/Scrolling';
 import * as components from '../components/index';
 import providers from '../services/providers';
 import * as constants from '../theme/constants';

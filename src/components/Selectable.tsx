@@ -1,7 +1,7 @@
 import Text from './Text';
 import * as React from 'react';
-import 'react-native';
-class Selectable extends React.PureComponent {
+import type {TextProps} from 'react-native';
+class Selectable extends React.PureComponent<TextProps> {
   render() {
     const props = this.props;
     const {children, ...rest} = props;

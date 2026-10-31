@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as ReactNative from 'react-native';
 import * as constants from '../theme/constants';
-class Input extends React.PureComponent {
+class Input extends React.PureComponent<ReactNative.TextInputProps> {
   render() {
     const props = this.props;
     const {style, maxLength, ...rest} = props;

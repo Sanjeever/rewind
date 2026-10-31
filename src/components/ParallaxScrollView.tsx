@@ -1,7 +1,15 @@
 import * as React from 'react';
 import * as ReactNative from 'react-native';
-import * as reactNativeSpringScrollview from './Scrolling.js';
-class ParallaxScrollView extends React.PureComponent {
+import * as reactNativeSpringScrollview from './Scrolling';
+import type {SpringScrollViewProps} from './Scrolling';
+interface Props extends SpringScrollViewProps {
+  renderForeground?: (offset: {
+    x: ReactNative.Animated.Value;
+    y: ReactNative.Animated.Value;
+  }) => React.ReactNode;
+  onRef?: (view: reactNativeSpringScrollview.SpringScrollView | null) => void;
+}
+class ParallaxScrollView extends React.PureComponent<Props> {
   _nativeOffset = {
     x: new ReactNative.Animated.Value(0),
     y: new ReactNative.Animated.Value(0),

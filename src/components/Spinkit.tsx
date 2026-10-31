@@ -3,7 +3,10 @@ import * as React from 'react';
 import * as ReactNative from 'react-native';
 import * as constants from '../theme/constants';
 import loading from '../../assets/animations/loading';
-class Spinkit extends React.PureComponent {
+class Spinkit extends React.PureComponent<{
+  size?: number;
+  style?: ReactNative.StyleProp<ReactNative.ViewStyle>;
+}> {
   render() {
     const {size = constants.SPINKIT_SIZE, style} = this.props;
     return (

@@ -2,7 +2,7 @@ import {toast} from '../native/toast';
 import * as _appStorage from './../storage/index';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
-import * as reactNativeSpringScrollview from './../components/Scrolling.js';
+import * as reactNativeSpringScrollview from './../components/Scrolling';
 import * as components from '../components/index';
 import providers from '../services/providers';
 import icons from '../theme/icons';

@@ -3,7 +3,25 @@ import * as React from 'react';
 import * as ReactNative from 'react-native';
 import * as components from './index';
 import icons from '../theme/icons';
-class SettingItem extends React.PureComponent {
+interface Props {
+  title?: React.ReactNode;
+  subtitle?: React.ReactNode;
+  onPress?: () => void;
+  onLongPress?: ReactNative.TouchableNativeFeedbackProps['onLongPress'];
+  coverImg?: string;
+  coverImgStyle?: ReactNative.StyleProp<ReactNative.ImageStyle>;
+  containerStyle?: ReactNative.StyleProp<ReactNative.ViewStyle>;
+  rounded?: boolean;
+  titleStyle?: ReactNative.StyleProp<ReactNative.TextStyle>;
+  textStyle?: ReactNative.StyleProp<ReactNative.TextStyle>;
+  numberOfLines?: number;
+  textConStyle?: ReactNative.StyleProp<ReactNative.ViewStyle>;
+  switchButton?: boolean;
+  switched?: boolean;
+  onSwitch?: (value?: boolean) => void;
+  showChevron?: boolean;
+}
+class SettingItem extends React.PureComponent<Props> {
   handleOnPress = () => {
     requestAnimationFrame(() => {
       this.props.onPress?.();
@@ -72,7 +90,7 @@ class SettingItem extends React.PureComponent {
     );
   }
 }
-var c = ReactNative.StyleSheet.create({
+const c = ReactNative.StyleSheet.create({
   container: {
     height: 50,
     flexDirection: 'row',

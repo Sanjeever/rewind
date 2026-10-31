@@ -1,11 +1,63 @@
 import React from 'react';
 import {ActivityIndicator, RefreshControl, ScrollView, SectionList, View} from 'react-native';
+import type {
+  Animated,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+  ScrollViewProps,
+  SectionListProps,
+  StyleProp,
+  ViewStyle,
+} from 'react-native';
+type Offset = {x?: Animated.Value; y?: Animated.Value};
+type ScrollOptions = {x?: number; y?: number; animated?: boolean};
+interface RefreshHeaderProps {
+  offset: Animated.Value;
+  bottomOffset: number;
+  style?: StyleProp<ViewStyle>;
+}
+interface LoadingProps {
+  onRefresh?: () => void | Promise<unknown>;
+  onLoading?: () => void | Promise<unknown>;
+  onNativeContentOffsetExtract?: Offset;
+  refreshHeader?: React.ComponentType<RefreshHeaderProps>;
+  loadingFooter?: React.ComponentType<RefreshHeaderProps>;
+  renderHeader?: () => React.ReactElement | null;
+  renderFooter?: () => React.ReactElement | null;
+}
+export type SpringScrollViewProps = Omit<ScrollViewProps, 'onRefresh'> &
+  LoadingProps & {contentStyle?: StyleProp<ViewStyle>};
+interface IndexPath {
+  section: number;
+  row: number;
+}
+interface Section<T> {
+  items: readonly T[];
+  index: number;
+  key: string;
+}
+type LargeListProps<T> = Omit<
+  SectionListProps<T, Section<T>>,
+  'sections' | 'renderItem' | 'renderSectionHeader' | 'onRefresh'
+> &
+  LoadingProps & {
+    data: {items: readonly T[]}[];
+    renderIndexPath(path: IndexPath): React.ReactNode;
+    heightForIndexPath?: (path: IndexPath) => number;
+    renderEmpty?: () => React.ReactElement | null;
+    renderSection?: (section: number) => React.ReactNode;
+    heightForSection?: (section: number) => number;
+  };
 
-export class RefreshHeader extends React.Component {
-  state = {status: 'idle'};
+export class RefreshHeader extends React.Component<RefreshHeaderProps> {
+  state: {status: 'idle' | 'refreshing' | 'loading' | 'allLoaded'} = {status: 'idle'};
 }
 
-function trackOffset(event, offset, listener) {
+function trackOffset(
+  event: NativeSyntheticEvent<NativeScrollEvent>,
+  offset: Offset | undefined,
+  listener: ScrollViewProps['onScroll'],
+) {
   if (offset) {
     offset.x?.setValue(event.nativeEvent.contentOffset.x);
     offset.y?.setValue(event.nativeEvent.contentOffset.y);
@@ -13,19 +65,20 @@ function trackOffset(event, offset, listener) {
   listener?.(event);
 }
 
-export class SpringScrollView extends React.Component {
+export class SpringScrollView extends React.Component<SpringScrollViewProps> {
+  scrollView: React.ComponentRef<typeof ScrollView> | null = null;
   state = {refreshing: false, loading: false, allLoaded: false};
-  lastLoadHeight = null;
+  lastLoadHeight: number | null = null;
   contentHeight = 0;
-  scrollTo = (options) => this.scrollView.scrollTo(options);
+  scrollTo = (options: ScrollOptions) => this.scrollView!.scrollTo(options);
   scrollToBegin = (animated = true) => this.scrollTo({x: 0, y: 0, animated});
   endRefresh = () => this.setState({refreshing: false});
   endLoading = (allLoaded = false) => this.setState({loading: false, allLoaded});
   refresh = () => {
     this.lastLoadHeight = null;
     this.setState({refreshing: true, allLoaded: false});
-    const pending = this.props.onRefresh();
-    if (pending?.finally) pending.finally(this.endRefresh);
+    const pending = this.props.onRefresh!();
+    if (pending) pending.finally(this.endRefresh);
   };
   loadMore = () => {
     if (
@@ -37,11 +90,11 @@ export class SpringScrollView extends React.Component {
       return;
     this.lastLoadHeight = this.contentHeight;
     this.setState({loading: true}, () => {
-      const pending = this.props.onLoading();
-      if (pending?.finally) pending.finally(() => this.setState({loading: false}));
+      const pending = this.props.onLoading!();
+      if (pending) pending.finally(() => this.setState({loading: false}));
     });
   };
-  onScroll = (event) => {
+  onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     trackOffset(event, this.props.onNativeContentOffsetExtract, this.props.onScroll);
     const {contentOffset, contentSize, layoutMeasurement} = event.nativeEvent;
     this.contentHeight = contentSize.height;
@@ -97,18 +150,19 @@ export class SpringScrollView extends React.Component {
   }
 }
 
-export class LargeList extends React.Component {
+export class LargeList<T = unknown> extends React.Component<LargeListProps<T>> {
+  list: SectionList<T, Section<T>> | null = null;
   state = {refreshing: false, loading: false, allLoaded: false};
-  lastLoadCount = null;
-  scrollTo = (options) => this.list.getScrollResponder()?.scrollTo(options);
+  lastLoadCount: number | null = null;
+  scrollTo = (options: ScrollOptions) => this.list!.getScrollResponder()?.scrollTo(options);
   scrollToBegin = (animated = true) => this.scrollTo({x: 0, y: 0, animated});
   endRefresh = () => this.setState({refreshing: false});
   endLoading = (allLoaded = false) => this.setState({loading: false, allLoaded});
   refresh = () => {
     this.lastLoadCount = null;
     this.setState({refreshing: true, allLoaded: false});
-    const pending = this.props.onRefresh();
-    if (pending?.finally) pending.finally(this.endRefresh);
+    const pending = this.props.onRefresh!();
+    if (pending) pending.finally(this.endRefresh);
   };
   loadMore = () => {
     const count = this.props.data.reduce((count, section) => count + section.items.length, 0);
@@ -121,8 +175,8 @@ export class LargeList extends React.Component {
       return;
     this.lastLoadCount = count;
     this.setState({loading: true}, () => {
-      const pending = this.props.onLoading();
-      if (pending?.finally) pending.finally(() => this.setState({loading: false}));
+      const pending = this.props.onLoading!();
+      if (pending) pending.finally(() => this.setState({loading: false}));
     });
   };
   render() {
@@ -150,7 +204,7 @@ export class LargeList extends React.Component {
       data: section.items,
     }));
     return (
-      <SectionList
+      <SectionList<T, Section<T>>
         {...props}
         ref={(list) => {
           this.list = list;

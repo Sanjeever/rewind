@@ -7,7 +7,30 @@ import icons from '../theme/icons';
 import locales from '../locales/index';
 import * as components from './index';
 import Input from './Input';
-class HeaderBar extends React.PureComponent {
+import type {IconProps} from './Icon';
+type HeaderIcon = Pick<IconProps, 'name' | 'size' | 'color'> & {onPress?: () => void};
+export interface HeaderBarProps {
+  title?: React.ReactNode;
+  bold?: boolean;
+  onTop?: () => void;
+  fontColor?: ReactNative.ColorValue;
+  onSubmitEditing?: ReactNative.TextInputProps['onSubmitEditing'];
+  onChangeText?: (text: string) => void;
+  searchText?: string;
+  forceShowTextInput?: boolean;
+  rightIcon?: HeaderIcon | HeaderIcon[] | (() => React.ReactNode);
+  opacity?: number | ReactNative.Animated.Value;
+  goBack?: () => void;
+  blur?: boolean;
+  headerBlur?: boolean;
+  headerStyle?: ReactNative.StyleProp<ReactNative.ViewStyle>;
+  toolStyle?: ReactNative.StyleProp<ReactNative.ViewStyle>;
+  textInput?: boolean;
+  backIcon?: Pick<IconProps, 'name'>;
+  iconColor?: ReactNative.ColorValue;
+  disabledTextInputBtn?: boolean;
+}
+class HeaderBar extends React.PureComponent<HeaderBarProps> {
   state = {
     showTextInput: false,
     hideStatusBar: false,
@@ -31,7 +54,7 @@ class HeaderBar extends React.PureComponent {
             style={b.textInput}
             placeholder={locales.SEARCH}
             onChangeText={function (e) {
-              return onChangeText(e);
+              return onChangeText!(e);
             }}
             onSubmitEditing={onSubmitEditing}
             value={searchText}
@@ -55,9 +78,11 @@ class HeaderBar extends React.PureComponent {
                 paddingLeft: 5,
                 paddingRight: 5,
               },
-              fontColor && {
-                color: fontColor,
-              },
+              fontColor
+                ? {
+                    color: fontColor,
+                  }
+                : undefined,
               bold && b.bold,
             ]}
           >
@@ -73,7 +98,7 @@ class HeaderBar extends React.PureComponent {
       if (typeof rightIcon === 'function') {
         return <ReactNative.View style={b.rightIcon}>{rightIcon()}</ReactNative.View>;
       }
-      if (typeof rightIcon !== 'object' || rightIcon.length) {
+      if (Array.isArray(rightIcon)) {
         return (
           <ReactNative.View
             style={[
@@ -104,7 +129,7 @@ class HeaderBar extends React.PureComponent {
         <ReactNative.View style={b.rightIcon}>
           {React.createElement(h, {
             onPress: function () {
-              return rightIcon.onPress();
+              return rightIcon.onPress!();
             },
             size: rightIcon.size,
             name: rightIcon.name,
@@ -117,7 +142,7 @@ class HeaderBar extends React.PureComponent {
   _onTop = () => {
     this.props.onTop?.();
   };
-  onRightIcon = (e) => {
+  onRightIcon = (e: HeaderIcon) => {
     if (e.name === 'magnify') {
       this.switchTextInput();
     } else if (e.onPress) {
@@ -196,16 +221,16 @@ class HeaderBar extends React.PureComponent {
     );
   }
 }
-var h = function ({onPress, name, size}) {
+const h = function ({onPress, name, size}: HeaderIcon) {
   return (
     <components.TouchableBorderless style={b.padding} onPress={onPress}>
       <components.Icon style={b.iconStyle} name={name} size={size} />
     </components.TouchableBorderless>
   );
 };
-var b = ReactNative.StyleSheet.create({
+const b = ReactNative.StyleSheet.create({
   container: {
-    height: 40 + ReactNative.StatusBar.currentHeight,
+    height: 40 + constants.STATUS_BAR_HEIGHT,
     width: '100%',
   },
   borderline: {

@@ -1,7 +1,15 @@
 import 'react';
 import * as ReactNative from 'react-native';
 import ReactNativeLinearGradient from 'react-native-linear-gradient';
-export default function ({colors, from = 'top', style}) {
+export default function ({
+  colors,
+  from = 'top',
+  style,
+}: {
+  colors?: string[];
+  from?: 'top' | 'bottom';
+  style?: ReactNative.StyleProp<ReactNative.ViewStyle>;
+}) {
   const colors_1 =
     colors ||
     (() => {

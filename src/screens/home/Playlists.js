@@ -1,9 +1,9 @@
 import Text from './../../components/Text';
-import _default2 from './../../components/Pager.js';
+import _default2 from './../../components/Pager';
 import * as immer from 'immer';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
-import * as reactNativeLargelist from './../../components/Scrolling.js';
+import * as reactNativeLargelist from './../../components/Scrolling';
 import * as components from '../../components/index';
 import PlaylistTabs from '../../components/PlaylistTabs';
 import * as constants from '../../theme/constants';

@@ -1,15 +1,17 @@
 import LottieView from 'lottie-react-native';
 import React from 'react';
 import * as ReactNative from 'react-native';
-import * as reactNativeSpringScrollview from './Scrolling.js';
+import * as reactNativeSpringScrollview from './Scrolling';
 import * as Index from './index';
 import * as constants from '../theme/constants';
 import _layout from '../theme/layout';
-const style = {
+const AnimatedLottie = ReactNative.Animated.createAnimatedComponent(LottieView);
+const style: ReactNative.ViewStyle = {
   flex: 1,
   justifyContent: 'center',
 };
 class ParallaxList extends reactNativeSpringScrollview.RefreshHeader {
+  static height = constants.SPINKIT_SIZE + 80;
   render() {
     const status = this.state.status;
     if (status === 'allLoaded') {
@@ -30,7 +32,7 @@ class ParallaxList extends reactNativeSpringScrollview.RefreshHeader {
     });
     return (
       <ReactNative.View style={style}>
-        <LottieView
+        <AnimatedLottie
           source={_layout}
           progress={progress}
           style={{
@@ -44,4 +46,3 @@ class ParallaxList extends reactNativeSpringScrollview.RefreshHeader {
   }
 }
 export default ParallaxList;
-ParallaxList.height = constants.SPINKIT_SIZE + 80;

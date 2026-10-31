@@ -1,9 +1,11 @@
 import LottieReactNative from 'lottie-react-native';
+import {Animated} from 'react-native';
 import 'react';
-import * as reactNativeSpringScrollview from './Scrolling.js';
+import * as reactNativeSpringScrollview from './Scrolling';
 import * as components from './index';
 import * as constants from '../theme/constants';
 import layout from '../theme/layout';
+const AnimatedLottie = Animated.createAnimatedComponent(LottieReactNative);
 class PlaylistTabs extends reactNativeSpringScrollview.RefreshHeader {
   render() {
     if (this.state.status === 'refreshing') {
@@ -14,7 +16,7 @@ class PlaylistTabs extends reactNativeSpringScrollview.RefreshHeader {
       outputRange: [1, 0],
     });
     return (
-      <LottieReactNative
+      <AnimatedLottie
         source={layout}
         progress={progress}
         style={{

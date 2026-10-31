@@ -4,7 +4,7 @@ import * as _appStorage from './../storage/index';
 import cookies from '../native/cookies';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
-import * as reactNativeSpringScrollview from './../components/Scrolling.js';
+import * as reactNativeSpringScrollview from './../components/Scrolling';
 import * as components from '../components/index';
 import * as modals from '../modals/index';
 import providers from '../services/providers';

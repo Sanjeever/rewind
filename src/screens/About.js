@@ -4,7 +4,7 @@ import _default2 from './../components/Text';
 import LottieView from 'lottie-react-native';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
-import * as Scrolling from './../components/Scrolling.js';
+import * as Scrolling from './../components/Scrolling';
 import TouchableScale from '../components/TouchableScale';
 import * as Index from '../components/index';
 import Placeholders from './about/Placeholders';

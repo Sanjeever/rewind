@@ -2,7 +2,11 @@ import 'react';
 import * as ReactNative from 'react-native';
 import Background from './Background';
 import HeaderBar from './HeaderBar';
-const FComponent = function ({style, children, blur, headerBlur, ...rest}) {
+import type {HeaderBarProps} from './HeaderBar';
+type Props = React.PropsWithChildren<
+  HeaderBarProps & {style?: ReactNative.StyleProp<ReactNative.ViewStyle>}
+>;
+const FComponent = function ({style, children, blur, headerBlur, ...rest}: Props) {
   return (
     <ReactNative.View
       style={[

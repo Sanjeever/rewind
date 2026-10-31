@@ -1,7 +1,10 @@
 import * as React from 'react';
 import * as ReactNative from 'react-native';
 import * as components from './index';
-class IconButton extends React.PureComponent {
+import type {IconProps} from './Icon';
+class IconButton extends React.PureComponent<
+  Pick<IconProps, 'name' | 'onPress' | 'size' | 'disabled'>
+> {
   render() {
     const props = this.props;
     const {onPress, name, size, disabled} = props;

@@ -16,7 +16,17 @@ const c = ReactNative.StyleSheet.create({
     fontWeight: 'bold',
   },
 });
-const HComponent = function ({name, onPress, highlight, textStyle}) {
+const HComponent = function ({
+  name,
+  onPress,
+  highlight,
+  textStyle,
+}: {
+  name: string;
+  onPress?: ReactNative.TouchableOpacityProps['onPress'];
+  highlight?: boolean;
+  textStyle?: ReactNative.StyleProp<ReactNative.TextStyle>;
+}) {
   return (
     <ReactNative.TouchableOpacity onPress={onPress}>
       <ReactNative.View style={c.container}>

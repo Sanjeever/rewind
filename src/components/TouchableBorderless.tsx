@@ -1,6 +1,11 @@
 import 'react';
 import * as ReactNative from 'react-native';
 import * as utils from '../utils/index';
+interface Props extends ReactNative.TouchableNativeFeedbackProps {
+  size?: number;
+  touchableBackground?: ReactNative.ColorValue;
+  onPress?: () => void;
+}
 const UComponent = function ({
   style,
   size = 40,
@@ -8,7 +13,7 @@ const UComponent = function ({
   touchableBackground = 'rgba(255,255,255,0.3)',
   onPress,
   ...rest
-}) {
+}: Props) {
   return (
     <ReactNative.View
       style={[

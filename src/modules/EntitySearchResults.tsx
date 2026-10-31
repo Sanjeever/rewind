@@ -38,7 +38,7 @@ export default class EntitySearchResults extends React.PureComponent<Props, Stat
   offset = 0;
   pending = false;
   searched = false;
-  list: LargeList | null = null;
+  list: LargeList<SearchEntity> | null = null;
 
   componentDidMount() {
     if (this.active()) this.search();

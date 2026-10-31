@@ -1,7 +1,7 @@
 import {toast} from '../native/toast';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
-import * as reactNativeSpringScrollview from './../components/Scrolling.js';
+import * as reactNativeSpringScrollview from './../components/Scrolling';
 import * as components from '../components/index';
 import ParallaxList from '../components/ParallaxList';
 import providers from '../services/providers';

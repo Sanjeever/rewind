@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as ReactNative from 'react-native';
-import * as reactNativeSpringScrollview from './Scrolling.js';
+import * as reactNativeSpringScrollview from './Scrolling';
 import * as components from './index';
 import * as utils from '../utils/index';
 import updateModule from '../services/update';

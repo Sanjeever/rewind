@@ -1,7 +1,13 @@
 import * as _appStorage from './../storage/index';
 import keys from '../storage/keys';
 import * as files from '../storage/files';
-let o = {};
+export interface BackgroundState {
+  url?: string;
+  opacity?: number;
+  blur?: boolean;
+  error?: boolean;
+}
+let o: BackgroundState = {};
 let i = false;
 export const getBackground = function () {
   if (i) {
@@ -9,9 +15,13 @@ export const getBackground = function () {
   }
   return initBackgroundState();
 };
-export var initBackgroundState = async () => {
+export const initBackgroundState = async () => {
   try {
-    const background = await _appStorage.storage.load({
+    const background = await _appStorage.storage.load<{
+      path?: string;
+      opacity?: number;
+      blur?: boolean;
+    }>({
       key: keys.background,
     });
     o =
@@ -25,7 +35,7 @@ export var initBackgroundState = async () => {
         : await p();
     return o;
   } catch (error) {
-    if (error.name !== 'NotFoundError') {
+    if (!(error instanceof Error && error.name === 'NotFoundError')) {
       throw error;
     }
     o = {
@@ -36,7 +46,7 @@ export var initBackgroundState = async () => {
     i = true;
   }
 };
-var p = () =>
+const p = () =>
   files.getBackgroundCache().then((url) => {
     if (url) {
       return {

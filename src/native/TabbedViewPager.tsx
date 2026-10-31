@@ -1,11 +1,22 @@
 import React from 'react';
 import {View, Text, Pressable} from 'react-native';
 import PagerView from '../components/Pager';
+import type {PagerProps} from '../components/Pager';
+import type {ColorValue} from 'react-native';
+interface Props extends PagerProps {
+  tabNames?: string[];
+  tabTextColor?: ColorValue;
+  tabSelectedTextColor?: ColorValue;
+  tabIndicatorColor?: ColorValue;
+  tabBackground?: ColorValue;
+  tabIndicatorHeight?: number;
+}
 
-export default class TabbedViewPager extends React.Component {
+export default class TabbedViewPager extends React.Component<Props> {
+  pager: React.ComponentRef<typeof PagerView> | null = null;
   state = {index: this.props.initialPage ?? 0};
-  setPage = (index) => this.pager.setPage(index);
-  setPageWithoutAnimation = (index) => this.pager.setPageWithoutAnimation(index);
+  setPage = (index: number) => this.pager!.setPage(index);
+  setPageWithoutAnimation = (index: number) => this.pager!.setPageWithoutAnimation(index);
   render() {
     const {
       tabNames,

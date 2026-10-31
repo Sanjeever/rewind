@@ -5,8 +5,23 @@ import TouchableScale from './TouchableScale';
 import * as components from './index';
 import * as constants from '../theme/constants';
 import icons from '../theme/icons';
+import type {IconProps} from './Icon';
+interface Props {
+  img?: string | null;
+  errorIconName?: string;
+  title?: React.ReactNode;
+  subtitle?: React.ReactNode;
+  trans?: string | null;
+  vip?: boolean;
+  numberOfLines?: number;
+  onPress?: ReactNative.TouchableNativeFeedbackProps['onPress'];
+  onLongPress?: ReactNative.TouchableNativeFeedbackProps['onLongPress'];
+  onPressImg?: ReactNative.TouchableNativeFeedbackProps['onPress'];
+  rightIcon?: IconProps;
+}
 const d = '6y-UleORITEDbvrOLV0Q8A==/5639395138885805';
-class ListItem extends React.PureComponent {
+class ListItem extends React.PureComponent<Props> {
+  static defaultProps = {numberOfLines: 1};
   state = {
     imgError: false,
   };
@@ -52,7 +67,7 @@ class ListItem extends React.PureComponent {
         <components.Icon
           name={icons.HEART_OUTLINE}
           style={{
-            backgroundColor: 0,
+            backgroundColor: 'transparent',
           }}
           size={23}
         />
@@ -127,10 +142,7 @@ class ListItem extends React.PureComponent {
     );
   }
 }
-ListItem.defaultProps = {
-  numberOfLines: 1,
-};
-var b = ReactNative.StyleSheet.create({
+const b = ReactNative.StyleSheet.create({
   container: {
     height: constants.ITEM_HEIGHT,
     width: '100%',

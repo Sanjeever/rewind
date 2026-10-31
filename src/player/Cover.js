@@ -1,4 +1,4 @@
-import Pager from './../components/Pager.js';
+import Pager from './../components/Pager';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
 import * as components from '../components/index';

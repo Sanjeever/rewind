@@ -2,7 +2,7 @@ import * as _appStorage from './../storage/index';
 import * as immer from 'immer';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
-import * as reactNativeSpringScrollview from './../components/Scrolling.js';
+import * as reactNativeSpringScrollview from './../components/Scrolling';
 import * as components from '../components/index';
 import notification from '../settings/notification';
 import icons from '../theme/icons';

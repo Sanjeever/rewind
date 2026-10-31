@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as reactNativeLargelist from './../components/Scrolling.js';
+import * as reactNativeLargelist from './../components/Scrolling';
 import * as components from '../components/index';
 import ParallaxList from '../components/ParallaxList';
 import providers from '../services/providers';

@@ -6,13 +6,29 @@ import names from '../events/names';
 import keys from '../storage/keys';
 import * as events from '../events/index';
 import * as backgroundModule from '../theme/background';
-class Background extends React.PureComponent {
-  state = {
+import type {Subscription} from '../events/Emitter';
+import type {AppEvents} from '../events/types';
+interface Props {
+  coverUrl?: string | null;
+  bgStyle?: ReactNative.StyleProp<ReactNative.ViewStyle>;
+  hideMask?: boolean;
+  imageStyle?: ReactNative.StyleProp<ReactNative.ImageStyle>;
+  blur?: boolean;
+}
+interface State {
+  url: string | null;
+  opacity?: number;
+  error: boolean;
+  blur: boolean;
+}
+class Background extends React.PureComponent<Props, State> {
+  sub!: Subscription;
+  state: State = {
     url: null,
     error: false,
     blur: false,
   };
-  changeBackgroundEmitter = (e) => {
+  changeBackgroundEmitter = (e: AppEvents['ChangeBackground']) => {
     if (e?.path) {
       _appStorage.storage
         .save({
@@ -30,9 +46,8 @@ class Background extends React.PureComponent {
     }
   };
   loadBackground = async () => {
-    this.setState({
-      ...(await backgroundModule.getBackground()),
-    });
+    const background = await backgroundModule.getBackground();
+    this.setState((state) => ({...state, ...background}));
   };
   componentDidMount() {
     this.loadBackground();
@@ -72,7 +87,7 @@ class Background extends React.PureComponent {
             style={[
               p.msk,
               {
-                opacity: coverUrl ? 0.3 : 1 - opacity,
+                opacity: coverUrl ? 0.3 : 1 - opacity!,
               },
             ]}
           />
@@ -81,7 +96,7 @@ class Background extends React.PureComponent {
     );
   }
 }
-var p = ReactNative.StyleSheet.create({
+const p = ReactNative.StyleSheet.create({
   background: {
     position: 'absolute',
     top: 0,

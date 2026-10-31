@@ -1,7 +1,7 @@
 import Text from './Text';
 import 'react';
 import * as ReactNative from 'react-native';
-const UComponent = function ({children, style}) {
+const UComponent = function ({children, style}: ReactNative.TextProps) {
   return (
     <Text
       style={[

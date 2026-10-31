@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as ReactNative from 'react-native';
-import * as reactNativeLargelist from './../components/Scrolling.js';
+import * as reactNativeLargelist from './../components/Scrolling';
 import * as components from '../components/index';
 import TabbedViewPager from '../native/TabbedViewPager';
 import providers from '../services/providers';

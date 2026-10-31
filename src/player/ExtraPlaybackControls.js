@@ -1,4 +1,4 @@
-import Pager from './../components/Pager.js';
+import Pager from './../components/Pager';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
 import tabIcons from '../theme/tabIcons';
