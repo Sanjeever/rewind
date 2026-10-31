@@ -50,7 +50,12 @@ class RewindCryptoModule(context: ReactApplicationContext) : ReactContextBaseJav
     }
 
     @ReactMethod
-    fun tencentSignature(data: String, promise: Promise) { promise.reject("E_NLP_NOT_CONFIGURED", "评论分词服务尚未配置") }
+    fun decodeBase64(values: ReadableArray, promise: Promise) {
+        try {
+            val decoded = (0 until values.size()).map { String(Base64.decode(values.getString(it)!!, Base64.DEFAULT), Charsets.UTF_8) }
+            promise.resolve(Arguments.fromList(decoded))
+        } catch (error: Exception) { promise.reject("E_BASE64", "歌词编码无效", error) }
+    }
 
     override fun invalidate() { executor.shutdown(); super.invalidate() }
 }

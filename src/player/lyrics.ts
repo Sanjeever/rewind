@@ -1,6 +1,8 @@
 import providers from '../services/providers';
 import {Netease, QQMusic} from '../services';
 import {parseLyric} from '../utils';
+import {findMatchingTrack} from '../services/trackMatch';
+import {getSong, getSinger} from '../services/trackFields';
 import type {LyricRow} from '../utils/parseLyric';
 import type {TrackFields, TrackId} from '../services/track';
 import type {Provider} from '../services/providers';
@@ -12,17 +14,26 @@ interface Lyrics {
 type Info = ReturnType<typeof extractFullInfo>;
 
 const empty = (): Lyrics => ({lyric: [], hasTrans: false});
-const sameDuration = (left: number, right: number) =>
-  Math.floor(left) === Math.floor(right) || Math.round(left) === Math.round(right);
-
 function translated(lyric: LyricRow[], translation: LyricRow[]): Lyrics {
-  const byTime = new Map<number | undefined, LyricRow>();
-  for (const line of translation) if (!byTime.has(line.total)) byTime.set(line.total, line);
+  let next = 0;
+  let matched = false;
   return {
-    lyric: lyric.map((line) =>
-      byTime.has(line.total) ? {...line, trans: byTime.get(line.total)} : line,
-    ),
-    hasTrans: translation.length > 0,
+    lyric: lyric.map((line) => {
+      if (line.total == null) return line;
+      while (
+        next < translation.length &&
+        (translation[next].total == null || translation[next].total! < line.total - 0.3)
+      )
+        next++;
+      const trans = translation[next];
+      if (trans?.total != null && Math.abs(trans.total - line.total) <= 0.3) {
+        next++;
+        matched = true;
+        return {...line, trans};
+      }
+      return line;
+    }),
+    hasTrans: matched,
   };
 }
 
@@ -33,24 +44,29 @@ async function qqLyric(id: TrackId) {
   return translated(result.lyric, result.trans);
 }
 
-async function matchQQ(query: string, duration?: number) {
+function queryFor(song: TrackFields) {
+  const singers = getSinger(song);
+  const artist = typeof singers === 'string' ? singers : singers?.[0]?.name;
+  return [getSong(song), artist].filter(Boolean).join(' ');
+}
+
+async function matchQQ(source: TrackFields) {
+  const query = queryFor(source);
   const songs = await QQMusic.searchSong(query);
   if (!Array.isArray(songs)) throw new Error('QQ 音乐搜索响应无效');
   if (!songs.length) return empty();
-  const song = duration
-    ? songs.find((song) => song.interval != null && sameDuration(song.interval, duration / 1000))
-    : songs[0];
+  const song = findMatchingTrack(source, songs);
   return song ? qqLyric(song.mid!) : empty();
 }
 
-async function neteaseLyric(song: TrackFields, info: Info): Promise<Lyrics> {
+async function neteaseLyric(song: TrackFields): Promise<Lyrics> {
   if (song.mainTrackId != null && song.mainTrackId > 0)
     return {lyric: [{txt: song.description!, total: 0}], hasTrans: false};
   const response = await Netease.lyric(song.id!);
   if (!response || response.code !== 200) throw new Error('网易云歌词响应无效');
+  if (response.nolyric === true) return empty();
   if (!response.lrc || response.uncollected === true) {
-    const query = info.song + (Array.isArray(info.singer) ? '- ' + info.singer[0].name : '');
-    return matchQQ(query, song.dt ?? song.duration);
+    return matchQQ(song);
   }
   const lyric = parseLyric(response.lrc.lyric);
   const translation = response.tlyric?.lyric ? parseLyric(response.tlyric.lyric) : [];
@@ -59,34 +75,28 @@ async function neteaseLyric(song: TrackFields, info: Info): Promise<Lyrics> {
   return result;
 }
 
-async function localLyric(song: TrackFields, info: Info) {
-  const query = song.title + (typeof song.singer === 'string' ? ' ' + song.singer : '');
+async function localLyric(song: TrackFields) {
+  const query = queryFor(song);
   const response = await Netease.search({keywords: query});
   if (!response || response.code !== 200 || !response.result) throw new Error('网易云搜索响应无效');
   const songs = response.result.songs;
   if (!Array.isArray(songs)) {
-    if (response.result.songCount === 0) return matchQQ(query, song.duration);
+    if (response.result.songCount === 0) return matchQQ(song);
     throw new Error('网易云搜索响应缺少歌曲');
   }
-  const match =
-    (song.duration != null &&
-      song.duration > 0 &&
-      songs.find((item) =>
-        sameDuration((item.dt ?? item.duration)! / 1000, song.duration! / 1000),
-      )) ||
-    songs[0];
-  return match ? neteaseLyric(match, info) : matchQQ(query, song.duration);
+  const match = findMatchingTrack(song, songs);
+  return match ? neteaseLyric(match) : matchQQ(song);
 }
 
 export default {
   getLyric({api, obj, songItem}: {api: Provider; obj: Info; songItem: TrackFields}) {
     switch (api) {
       case providers.netEase:
-        return neteaseLyric(songItem, obj);
+        return neteaseLyric(songItem);
       case providers.qqMusic:
         return qqLyric(obj.uid!);
       case providers.local:
-        return localLyric(songItem, obj);
+        return localLyric(songItem);
       default:
         throw new Error('未知歌词来源：' + api);
     }

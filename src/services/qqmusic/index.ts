@@ -1,4 +1,4 @@
-import {responses, lyricResponse, videoKey, videoFiles} from './responses';
+import {responses, videoKey, videoFiles} from './responses';
 import type {TrackId} from '../track';
 interface AccountRequest {
   userId: TrackId;
@@ -6,16 +6,8 @@ interface AccountRequest {
 }
 import * as qqHttp from './http';
 import {searchSongPage} from './search';
-import * as utils from '../../utils/index';
+import {getLyric} from './lyrics';
 import * as sign from './sign';
-const headers = {
-  'User-Agent':
-    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36',
-  Accept: '*/*',
-  Referer: 'http://y.qq.com/portal/player.html',
-  'Accept-Language': 'zh-CN,zh;q=0.8',
-  Host: 'c.y.qq.com',
-};
 class QQMusicService {
   searchTypeMap = {
     song: 0,
@@ -366,26 +358,7 @@ class QQMusicService {
     }
   }
   getLyric(mid: TrackId) {
-    return fetch(
-      `http://c.y.qq.com/lyric/fcgi-bin/fcg_query_lyric_new.fcg?callback=MusicJsonCallback_lrc&pcachetime=1494070301711&songmid=${mid}&g_tk=5381&jsonpCallback=MusicJsonCallback_lrc&loginUin=0&hostUin=0&format=jsonp&inCharset=utf8&outCharset=utf-8¬ice=0&platform=yqq&needNewCode=0`,
-      {
-        headers,
-      },
-    )
-      .then((e) => e.text())
-      .then((e) => {
-        const t = e.replace(/(MusicJsonCallback_lrc\()/gi, '').replace(/\)/g, '');
-        const n = lyricResponse.parse(JSON.parse(t));
-        const r = utils.base64.decode(n.lyric);
-        const i = utils.base64.decode(n.trans);
-        return {
-          lyric: utils.parseLyric(r),
-          trans: utils.parseLyric(i),
-        };
-      })
-      .catch((e) => {
-        throw e;
-      });
+    return getLyric(mid);
   }
   async getMV(id: TrackId) {
     const files = await this.getMVFiles(id);
