@@ -2,7 +2,7 @@ import * as ReactNative from 'react-native';
 const _ = ReactNative.Dimensions.get('screen');
 export const DEVICE_WIDTH = _.width;
 export const DEVICE_HEIGHT = _.height;
-export const STATUS_BAR_HEIGHT = ReactNative.StatusBar.currentHeight;
+export const STATUS_BAR_HEIGHT = ReactNative.StatusBar.currentHeight!;
 export const ITEM_HEIGHT = 70;
 export const SPINKIT_SIZE = 60;
 export const COLORS = {
