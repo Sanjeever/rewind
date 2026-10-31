@@ -1,7 +1,6 @@
 import type {ScreenProps} from '../navigation/types';
 import type {TrackId} from '../services/track';
 import type {WebViewMessageEvent, WebViewNavigation} from 'react-native-webview';
-import type {LoginProvider} from '../features/account/LoginView';
 import {errorMessage} from '../utils/types';
 import {qqMessage} from '../features/account/loginMessages';
 import type {QQMessage} from '../features/account/loginMessages';
@@ -22,10 +21,7 @@ import '../utils/types';
 import users from '../storage/users';
 import LoginView from '../features/account/LoginView';
 import QQMusicHelp from '../features/account/QQMusicHelp';
-const _ =
-  'http://ui.ptlogin2.qq.com/cgi-bin/login?pt_no_auth=1&pt_wxtest=1&pt_no_onekey=1&daid=384&style=9&hln_css=https%3A%2F%2Fy.gtimg.cn%2Fmusic%2Fcommon%2Fupload%2Ft_cm3_photo_publish%2F1117688.png%3Fmax_age%3D2592000&appid=83886593&s_url=https%3A%2F%2Fy.qq.com%2Fm%2Flogin%2Fredirect.html%3Flogin_type%3D1%26surl%3Dhttp://y.qq.com/portal/profile.html';
-const y =
-  'http://open.weixin.qq.com/connect/qrconnect?appid=wx48db31d50e334801&redirect_uri=https%3A%2F%2Fy.qq.com%2Fportal%2Fwx_redirect.html%3Flogin_type%3D2%26surl%3Dhttps%3A%2F%2Fy.qq.com%2Fportal%2Fprofile.html&response_type=code&scope=snsapi_login&state=STATE&href=https%3A%2F%2Fy.gtimg.cn%2Fmediastyle%2Fyqq%2Fpopup_wechat.css#wechat_redirect';
+const loginUrl = 'https://y.qq.com/n/ryqq/profile';
 interface State {
   loading: boolean;
   avatar?: string;
@@ -73,15 +69,9 @@ class QQMusicLogin extends React.PureComponent<ScreenProps<'QQMusicLogin'>, Stat
         });
     }
   };
-  onWebview = (e: LoginProvider) => {
-    let webViewUrl = null;
-    if (e === 'qqmusic_wechat') {
-      webViewUrl = y;
-    } else if (e === 'qqmusic_qq') {
-      webViewUrl = _;
-    }
+  onWebview = () => {
     this.setState({
-      webViewUrl,
+      webViewUrl: loginUrl,
       showWebView: true,
     });
   };
@@ -332,7 +322,7 @@ class QQMusicLoginScreen extends React.PureComponent<
             domStorageEnabled={true}
             onNavigationStateChange={this.onNavigationStateChange}
             userAgent={
-              'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36'
+              'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'
             }
           />
         </ReactNative.View>
