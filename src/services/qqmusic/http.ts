@@ -1,6 +1,6 @@
 const endpoint = 'https://u.y.qq.com/cgi-bin/musicu.fcg';
 import type * as z from 'zod/mini';
-import {audioResponse, detailResponse} from './responses';
+import {audioResponse, detailResponse, cdnResponse} from './responses';
 import {response} from '../schemas';
 import {getSession, guid} from './session';
 import type {TrackFields} from '../track';
@@ -127,7 +127,20 @@ export async function getMusicUrl(mid: string, highQuality = false, track?: Trac
   if (!item) throw new Error('QQ 音乐音源响应缺少授权结果');
   if (item.result !== 0 || !item.purl)
     throw new Error('QQ 音乐未返回播放授权（' + item.result + '）');
-  const hosts = data?.sip?.length ? data.sip : response.req?.data?.sip;
+  if (/^https?:\/\//.test(item.purl)) return item.purl;
+  let hosts = data?.sip?.length ? data.sip : response.req?.data?.sip;
+  if (!hosts?.length) {
+    const cdn = await call(
+      'music.audioCdnDispatch.cdnDispatch',
+      'GetCdnDispatch',
+      {guid, uid: session.musicId, use_new_domain: 1, use_ipv6: 1},
+      '音源 CDN',
+      cdnResponse,
+      session,
+    );
+    if (cdn.req_0?.code !== 0) throw new Error('QQ 音乐 CDN 调度失败：业务码 ' + cdn.req_0?.code);
+    hosts = cdn.req_0.data?.sip;
+  }
   const host = hosts?.find((value) => /^https?:\/\//.test(value));
   if (!host) throw new Error('QQ 音乐音源响应缺少 CDN 地址');
   return new URL(item.purl, host).href;

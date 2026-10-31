@@ -107,6 +107,32 @@ test('QQ 授权拒绝、空授权与损坏响应均保留明确错误', async ()
   );
   await assert.rejects(getMusicUrl('mid', false, {file: {media_mid: 'media'}}), /未返回播放授权/);
 });
+test('新版授权未附带 CDN 时向平台申请调度，保持同一账号会话', async () => {
+  const fetch = jest
+    .spyOn(global, 'fetch')
+    .mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
+          code: 0,
+          req_0: {code: 0, data: {sip: [], midurlinfo: [{result: 0, purl: 'song.mp3?vkey=test'}]}},
+        }),
+      ),
+    )
+    .mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({code: 0, req_0: {code: 0, data: {sip: ['https://cdn.example/']}}}),
+      ),
+    );
+  expect(await getMusicUrl('mid', false, {file: {media_mid: 'media'}})).toBe(
+    'https://cdn.example/song.mp3?vkey=test',
+  );
+  const options = fetch.mock.calls[1][1];
+  assert.ok(typeof options?.body === 'string');
+  expect(JSON.parse(options.body)).toMatchObject({
+    comm: {uin: '123'},
+    req_0: {method: 'GetCdnDispatch'},
+  });
+});
 test('QQ HTTP 和网络错误不会被转换成 undefined 音源', async () => {
   const fetch = respond({}, 503);
   await assert.rejects(getMusicUrl('mid'), /HTTP 503/);

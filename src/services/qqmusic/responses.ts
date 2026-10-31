@@ -75,6 +75,9 @@ export const detailResponse = response({
   ),
 });
 const cdn = z.looseObject({sip: optional(z.array(z.string()))});
+export const cdnResponse = response({
+  req_0: optional(z.looseObject({code: z.number(), data: optional(cdn)})),
+});
 export const audioResponse = response({
   req_0: optional(
     z.looseObject({
