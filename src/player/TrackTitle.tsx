@@ -3,6 +3,16 @@ import 'react';
 import * as ReactNative from 'react-native';
 import * as components from '../components/index';
 import * as constants from '../theme/constants';
+interface Props {
+  title?: string | null;
+  subtitle?: string;
+  viewStyle?: ReactNative.StyleProp<ReactNative.ViewStyle>;
+  titleStyle?: ReactNative.StyleProp<ReactNative.TextStyle>;
+  authorStyle?: ReactNative.StyleProp<ReactNative.TextStyle>;
+  onPress?: (() => void) | null;
+  alias?: string;
+  numberOfLines?: number;
+}
 const size = 0.65 * constants.DEVICE_WIDTH;
 const f = ReactNative.StyleSheet.create({
   songTitleCon: {
@@ -34,7 +44,7 @@ const CComponent = function ({
   onPress,
   alias,
   numberOfLines,
-}) {
+}: Props) {
   return (
     <ReactNative.View
       accessible={false}
@@ -55,7 +65,7 @@ const CComponent = function ({
           {alias && <Text style={f.alias}> ({alias})</Text>}
         </Text>
       ) : null}
-      {subtitle?.length > 0 ? (
+      {subtitle && subtitle.length > 0 ? (
         <Text
           numberOfLines={numberOfLines || 1}
           style={[f.songAuthor, ReactNative.StyleSheet.flatten(authorStyle)]}
@@ -63,7 +73,7 @@ const CComponent = function ({
           {subtitle}
         </Text>
       ) : null}
-      {Boolean(onPress) && (
+      {onPress && (
         <components.TouchableBorderless
           onPress={onPress}
           style={{

@@ -1,17 +1,39 @@
 import Text from './../components/Text';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
-import * as LyricList from './LyricList';
+import LyricDataSource from './LyricDataSource';
+import VirtualLyricList from './VirtualLyricList';
 import * as constants from '../theme/constants';
 import locales from '../locales/index';
+import type {LyricRow} from '../utils/parseLyric';
+import type {PlayState} from './types';
+export interface LyricLineProps {
+  lyric: LyricRow[] | null;
+  currentTime: number;
+  getIndex(lines: readonly LyricRow[], seconds: number): number;
+  showTrans: boolean;
+  hasTrans: boolean;
+  changeShowTrans(): void;
+  changeFontSize(size: number): void;
+  fontSize: number;
+  seekTo(seconds: number): void;
+  onTap(): void;
+  viewStyle?: ReactNative.StyleProp<ReactNative.ViewStyle>;
+  playState: PlayState;
+  showTool: boolean;
+  lrcText?: string | null;
+}
 const lyric_1 = 'Nothing is true';
 const trans = '万物皆虚';
-class LyricLine extends React.PureComponent {
+class LyricLine extends React.PureComponent<LyricLineProps, {index: number | null}> {
+  _list: VirtualLyricList<LyricRow> | null = null;
+  timer?: ReturnType<typeof setTimeout>;
+  visibleIndex?: number;
   dragged = false;
-  state = {
+  state: {index: number | null} = {
     index: null,
   };
-  scroll = (e, t) => {
+  scroll = (e: LyricRow[], t: number) => {
     const n = this.props.getIndex(e, t);
     if (n !== this.state.index) {
       if (this._list && n && this.dragged === false) {
@@ -40,7 +62,7 @@ class LyricLine extends React.PureComponent {
       }
     }
   };
-  getTrans = (e) => {
+  getTrans = (e: LyricRow) => {
     if (this.props.showTrans === false) {
       return null;
     }
@@ -57,10 +79,10 @@ class LyricLine extends React.PureComponent {
       this.dragged = false;
     }, 2000);
   };
-  onVisibleItemsChange = (e) => {
+  onVisibleItemsChange = (e: {firstIndex: number; lastIndex: number}) => {
     this.visibleIndex = ((e.firstIndex + e.lastIndex + 1) / 2) | 0;
   };
-  getVelocity = (e) => {
+  getVelocity = (e: number) => {
     if (!this.visibleIndex) {
       return 1000;
     }
@@ -145,25 +167,24 @@ class LyricLine extends React.PureComponent {
   emptyComp = function () {
     return <ReactNative.View style={h.space} />;
   };
-  _renderItem = ({item, index}) => {
+  _renderItem = ({item, index}: {item: LyricRow; index: number}) => {
     const l = this.getTrans(item);
     const a = !this.props.showTrans && item.txt.match('翻译贡献者');
+    const seconds = item.total;
     return React.createElement(LyricLineScreen, {
       highlight: this.state.index === index,
       lyric: !a && this.renderTxt(item.txt),
       trans: l && this.renderTxt(l.txt),
-      onPress: () => {
-        return this.seekTo(item);
-      },
+      onPress: seconds == null ? undefined : () => this.seekTo(seconds),
       fontSize: this.props.fontSize,
     });
   };
-  seekTo = (e) => {
-    const t = e.total - 0.5;
+  seekTo = (seconds: number) => {
+    const t = seconds - 0.5;
     this.props.seekTo(t);
     this.dragged = false;
   };
-  renderTxt = function (e) {
+  renderTxt = function (e: string) {
     return e
       .replace(/&apos;/gm, "'")
       .replace(/\/\//g, '')
@@ -173,7 +194,7 @@ class LyricLine extends React.PureComponent {
   componentDidMount() {
     this.scrollToCurrentLine();
   }
-  componentDidUpdate(e) {
+  componentDidUpdate(e: LyricLineProps) {
     const props = this.props;
     const {currentTime, lyric} = props;
     if (currentTime !== e.currentTime) {
@@ -186,9 +207,11 @@ class LyricLine extends React.PureComponent {
   }
   render() {
     const lyric = this.props.lyric;
-    const dataSource = new LyricList.DataSource(lyric, function (e, t) {
-      return String(t);
-    });
+    const dataSource =
+      lyric &&
+      new LyricDataSource(lyric, function (_e, t) {
+        return String(t);
+      });
     return (
       <ReactNative.View style={[h.container, this.props.viewStyle]}>
         <ReactNative.View
@@ -196,7 +219,7 @@ class LyricLine extends React.PureComponent {
           onTouchStart={this.props.onTap}
         />
         {lyric && lyric.length > 0 && dataSource ? (
-          <LyricList.default
+          <VirtualLyricList
             style={{
               flex: 1,
               width: '80%',
@@ -205,7 +228,7 @@ class LyricLine extends React.PureComponent {
             dataSource={dataSource}
             renderItem={this._renderItem}
             ref={(t) => {
-              return (this._list = t);
+              this._list = t;
             }}
             showVerticalScrollBar={false}
             isScrollOverMode={false}
@@ -234,7 +257,15 @@ class LyricLine extends React.PureComponent {
     );
   }
 }
-class LyricLineScreen extends React.PureComponent {
+interface LineProps {
+  lyric?: string | false;
+  trans?: string | null;
+  highlight: boolean;
+  onPress?: () => void;
+  style?: ReactNative.StyleProp<ReactNative.ViewStyle>;
+  fontSize: number;
+}
+class LyricLineScreen extends React.PureComponent<LineProps> {
   render() {
     const {lyric = '', trans = '', highlight, onPress, style, fontSize} = this.props;
     return (
@@ -271,7 +302,7 @@ class LyricLineScreen extends React.PureComponent {
     );
   }
 }
-var h = ReactNative.StyleSheet.create({
+const h = ReactNative.StyleSheet.create({
   container: {
     height: '100%',
     width: constants.DEVICE_WIDTH,
@@ -298,8 +329,8 @@ var h = ReactNative.StyleSheet.create({
     height: 180,
   },
   overlay: {
-    top: ReactNative.StatusBar.currentHeight + 50,
-    backgroundColor: 0,
+    top: constants.STATUS_BAR_HEIGHT + 50,
+    backgroundColor: 'transparent',
   },
 });
 export default LyricLine;

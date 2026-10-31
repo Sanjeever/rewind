@@ -2,7 +2,13 @@ import * as React from 'react';
 import * as ReactNative from 'react-native';
 import * as reactNativeAnimatable from 'react-native-animatable';
 import * as utils from '../utils/index';
-class PlaybackTime extends React.PureComponent {
+class PlaybackTime extends React.PureComponent<{
+  width: number;
+  animatedOpacity: ReactNative.Animated.Value;
+  color?: ReactNative.ColorValue;
+  duration: number;
+  currentTime: number;
+}> {
   render() {
     const props = this.props;
     const {width, animatedOpacity, color, duration, currentTime} = props;
@@ -10,7 +16,6 @@ class PlaybackTime extends React.PureComponent {
     return (
       <reactNativeAnimatable.View
         pointerEvents={'none'}
-        ref={(instance) => (this.slidingTimeText = instance)}
         animation={'fadeIn'}
         useNativeDriver={true}
         style={[

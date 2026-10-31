@@ -10,10 +10,31 @@ import * as types from '../utils/types';
 import * as trackInfo from '../services/trackInfo';
 import * as playOrder from './playOrder';
 import TrackTitle from './TrackTitle';
+import type {TrackFields} from '../services/track';
+import type {PlayMode} from './types';
+import type {
+  PagerViewOnPageSelectedEvent,
+  PageScrollStateChangedNativeEventData,
+} from 'react-native-pager-view';
+interface Props {
+  playerOpen(): void;
+  togglePlay(): void;
+  prev(): void;
+  next(): void;
+  index: number;
+  data: readonly TrackFields[];
+  unknown: boolean;
+  playMode: PlayMode;
+  isRound: boolean;
+  currentMiniLyric?: string | false;
+  randomArray: readonly number[];
+  coverStyle?: ReactNative.StyleProp<ReactNative.ViewStyle>;
+}
 const m = 50;
 const height = 60;
-class MiniPlayerContent extends React.PureComponent {
-  scrollState = 'idle';
+class MiniPlayerContent extends React.PureComponent<Props> {
+  pager: React.ComponentRef<typeof Pager> | null = null;
+  scrollState: PageScrollStateChangedNativeEventData['pageScrollState'] = 'idle';
   triggerImage = false;
   onTouchEnd = () => {
     if (this.scrollState === 'idle' && this.triggerImage === false) {
@@ -30,10 +51,10 @@ class MiniPlayerContent extends React.PureComponent {
   renderCovers = () => {
     return [0, 1, 2].map((e) => this.renderItem(e));
   };
-  onPageScrollStateChanged = (e) => {
+  onPageScrollStateChanged = (e: PageScrollStateChangedNativeEventData['pageScrollState']) => {
     this.scrollState = e;
   };
-  onPageSelected = (e) => {
+  onPageSelected = (e: PagerViewOnPageSelectedEvent) => {
     const position = e.nativeEvent.position;
     if (position !== 1) {
       const r = this.props;
@@ -43,10 +64,10 @@ class MiniPlayerContent extends React.PureComponent {
       } else {
         next();
       }
-      this.pager.setPageWithoutAnimation(1);
+      this.pager!.setPageWithoutAnimation(1);
     }
   };
-  renderItem = (e) => {
+  renderItem = (e: number) => {
     const n_props = this.props;
     const {index, data, unknown, playMode, isRound, currentMiniLyric, randomArray} = n_props;
     const v = playOrder.getNextPlayIndexByPagerPos({
@@ -56,7 +77,7 @@ class MiniPlayerContent extends React.PureComponent {
       len: data.length,
       randomArray,
     });
-    const P =
+    const P: Partial<ReturnType<typeof trackInfo.extractFullInfo>> =
       unknown && e === 2
         ? {
             song: '？？？',
@@ -104,7 +125,6 @@ class MiniPlayerContent extends React.PureComponent {
               }}
             >
               <ReactNative.Image
-                ref={(instance) => (this.img = instance)}
                 style={[
                   {
                     width: '90%',
@@ -136,7 +156,6 @@ class MiniPlayerContent extends React.PureComponent {
           authorStyle={{
             fontSize: 12,
           }}
-          dashline={false}
           title={P.song}
           subtitle={e === 1 && currentMiniLyric ? currentMiniLyric : utils.parseArtist(P.singer)}
           numberOfLines={1}
@@ -149,7 +168,7 @@ class MiniPlayerContent extends React.PureComponent {
     return (
       <Pager
         ref={(t) => {
-          return (this.pager = t);
+          this.pager = t;
         }}
         onPageSelected={this.onPageSelected}
         initialPage={1}

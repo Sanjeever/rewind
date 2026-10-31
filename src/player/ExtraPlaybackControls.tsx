@@ -5,7 +5,22 @@ import tabIcons from '../theme/tabIcons';
 import buttons from './buttons';
 import styles from './styles';
 import ControlIcon from './ControlIcon';
-class ExtraPlaybackControls extends React.PureComponent {
+import type {PlayState} from './types';
+interface Props {
+  animatedOpacity: ReactNative.Animated.Value;
+  onLike(): void;
+  onComment(): void;
+  onDetail(): void;
+  onFmMode(): void;
+  onTimer(): void;
+  onCheck(): void;
+  showLyric: boolean;
+  color?: ReactNative.ColorValue;
+  isFM: boolean;
+  isLike: boolean;
+  playState: PlayState;
+}
+class ExtraPlaybackControls extends React.PureComponent<Props> {
   render() {
     const props = this.props;
     const {
@@ -49,21 +64,13 @@ class ExtraPlaybackControls extends React.PureComponent {
           >
             <ControlIcon
               name={isLike === true ? buttons.HEART.name : buttons.HEART_OFF.name}
-              type={buttons.HEART.type}
               onPress={onLike}
               color={showLyric ? '#fff' : color}
               size={23}
             />
-            <ControlIcon
-              name={buttons.COMMENT.name}
-              type={buttons.COMMENT.type}
-              onPress={onComment}
-              color={color}
-              size={23}
-            />
+            <ControlIcon name={buttons.COMMENT.name} onPress={onComment} color={color} size={23} />
             <ControlIcon
               name={buttons.MORE.name}
-              type={buttons.MORE.type}
               onPress={onDetail}
               color={showLyric ? '#fff' : color}
               size={23}
@@ -80,23 +87,10 @@ class ExtraPlaybackControls extends React.PureComponent {
               paddingHorizontal: 45,
             }}
           >
-            <ControlIcon
-              name={buttons.TIMER.name}
-              type={buttons.TIMER.type}
-              onPress={onTimer}
-              color={color}
-              size={23}
-            />
-            <ControlIcon
-              name={buttons.CHECK.name}
-              type={buttons.CHECK.type}
-              onPress={onCheck}
-              color={color}
-              size={24}
-            />
+            <ControlIcon name={buttons.TIMER.name} onPress={onTimer} color={color} size={23} />
+            <ControlIcon name={buttons.CHECK.name} onPress={onCheck} color={color} size={24} />
             <ControlIcon
               name={tabIcons.FM.name}
-              type={tabIcons.FM.type}
               onPress={onFmMode}
               color={color}
               style={[

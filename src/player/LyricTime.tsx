@@ -3,7 +3,12 @@ import * as React from 'react';
 import * as ReactNative from 'react-native';
 import * as utils from '../utils/index';
 import styles from './styles';
-class LyricTime extends React.PureComponent {
+class LyricTime extends React.PureComponent<{
+  color?: ReactNative.ColorValue;
+  duration: number;
+  currentTime: number;
+  showLyric: boolean;
+}> {
   render() {
     const props = this.props;
     const {color, duration, currentTime, showLyric} = props;

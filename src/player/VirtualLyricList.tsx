@@ -1,7 +1,18 @@
 import React from 'react';
 import {FlatList} from 'react-native';
+import type {FlatListProps} from 'react-native';
+type ViewabilityEvent<T> = Parameters<NonNullable<FlatListProps<T>['onViewableItemsChanged']>>[0];
+import type LyricDataSource from './LyricDataSource';
+interface Props<T> extends Omit<FlatListProps<T>, 'data' | 'renderItem' | 'keyExtractor'> {
+  dataSource: LyricDataSource<T>;
+  renderItem(info: {item: T; index: number}): React.ReactElement | null;
+  showVerticalScrollBar?: boolean;
+  isScrollOverMode?: boolean;
+  onVisibleItemsChange?: (indices: {firstIndex: number; lastIndex: number}) => void;
+}
 
-export default class LyricList extends React.Component {
+export default class LyricList<T> extends React.Component<Props<T>, {revision: number}> {
+  list: FlatList<T> | null = null;
   state = {revision: 0};
   listener = {
     onPush: () => this.update(),
@@ -16,7 +27,7 @@ export default class LyricList extends React.Component {
   componentDidMount() {
     this.props.dataSource._addListener(this.listener);
   }
-  componentDidUpdate(previous) {
+  componentDidUpdate(previous: Props<T>) {
     if (previous.dataSource !== this.props.dataSource) {
       previous.dataSource._removeListener(this.listener);
       this.props.dataSource._addListener(this.listener);
@@ -25,13 +36,21 @@ export default class LyricList extends React.Component {
   componentWillUnmount() {
     this.props.dataSource._removeListener(this.listener);
   }
-  scrollToIndex = ({index, animated = true}) =>
-    this.list.scrollToIndex({index, animated, viewPosition: 0.5});
-  onViewableItemsChanged = ({viewableItems}) => {
-    if (viewableItems.length)
+  scrollToIndex = ({
+    index,
+    animated = true,
+  }: {
+    index: number;
+    animated?: boolean;
+    velocity?: number;
+  }) => this.list!.scrollToIndex({index, animated, viewPosition: 0.5});
+  onViewableItemsChanged = ({viewableItems}: ViewabilityEvent<T>) => {
+    const firstIndex = viewableItems[0]?.index;
+    const lastIndex = viewableItems[viewableItems.length - 1]?.index;
+    if (firstIndex != null && lastIndex != null)
       this.props.onVisibleItemsChange?.({
-        firstIndex: viewableItems[0].index,
-        lastIndex: viewableItems[viewableItems.length - 1].index,
+        firstIndex,
+        lastIndex,
       });
   };
   render() {
@@ -45,7 +64,7 @@ export default class LyricList extends React.Component {
     } = this.props;
     const data = Array.from({length: dataSource.size()}, (_, index) => dataSource.get(index));
     return (
-      <FlatList
+      <FlatList<T>
         {...props}
         ref={(list) => {
           this.list = list;
@@ -57,7 +76,7 @@ export default class LyricList extends React.Component {
         showsVerticalScrollIndicator={showVerticalScrollBar}
         onViewableItemsChanged={this.onViewableItemsChanged}
         onScrollToIndexFailed={({index, averageItemLength}) =>
-          this.list.scrollToOffset({offset: index * averageItemLength, animated: false})
+          this.list!.scrollToOffset({offset: index * averageItemLength, animated: false})
         }
       />
     );

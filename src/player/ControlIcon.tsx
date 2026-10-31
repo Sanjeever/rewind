@@ -2,7 +2,12 @@ import 'react';
 import * as ReactNative from 'react-native';
 import TouchableScale from '../components/TouchableScale';
 import * as components from '../components/index';
-const SComponent = function (e) {
+import type {IconProps} from '../components/Icon';
+export type ControlIconProps = Pick<
+  IconProps,
+  'name' | 'size' | 'color' | 'disabled' | 'style' | 'onPress' | 'onLongPress'
+> & {type?: string};
+const SComponent = function (e: ControlIconProps) {
   const {name, size} = e;
   const size_1 = size === undefined ? 28 : size;
   const {color, disabled} = e;

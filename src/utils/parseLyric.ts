@@ -8,6 +8,11 @@ export interface LyricLine {
   total: number;
   trans?: LyricLine;
 }
+export interface LyricRow {
+  txt: string;
+  total?: number;
+  trans?: LyricRow;
+}
 export default (function parseLyric(text: string): LyricLine[] {
   return Lrc.parse(text)
     .lyrics.filter((line) => line.content.trim().length > 0)

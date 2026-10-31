@@ -3,13 +3,26 @@ import * as React from 'react';
 import * as ReactNative from 'react-native';
 import * as reactNativeAnimatable from 'react-native-animatable';
 import styles from './styles';
-const o = (txt) =>
+import type {LyricRow} from '../utils/parseLyric';
+interface Props {
+  currentTime: number;
+  getLyricIndex(lines: readonly LyricRow[], seconds: number): number;
+  lyric: readonly LyricRow[];
+  showTrans: boolean;
+  animatedOpacity: ReactNative.Animated.Value;
+  SOFT_MENU_HEIGHT: number;
+  width: number;
+  isRound: boolean;
+}
+const o = (txt: string) =>
   txt
     .replace(/&apos;/gm, "'")
     .replace(/\/\//g, '')
     .replace(/&quot;/g, '"')
     .replace(/\[.+\]/gi, '');
-class Toolbar extends React.PureComponent {
+class Toolbar extends React.PureComponent<Props> {
+  miniLyricIndex?: number;
+  miniLyric!: boolean;
   render() {
     const props = this.props;
     const {
@@ -23,7 +36,7 @@ class Toolbar extends React.PureComponent {
       isRound,
     } = props;
     const m = getLyricIndex(lyric, currentTime + 0.3);
-    if (m > this.miniLyricIndex) {
+    if (this.miniLyricIndex !== undefined && m > this.miniLyricIndex) {
       this.miniLyric = false;
     } else {
       this.miniLyric = true;

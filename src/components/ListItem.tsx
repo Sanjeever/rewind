@@ -20,7 +20,7 @@ interface Props {
   rightIcon?: IconProps;
 }
 const d = '6y-UleORITEDbvrOLV0Q8A==/5639395138885805';
-class ListItem extends React.PureComponent<Props> {
+class ListItem extends React.PureComponent<Props, {imgError: boolean}> {
   static defaultProps = {numberOfLines: 1};
   state = {
     imgError: false,

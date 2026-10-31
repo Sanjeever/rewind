@@ -12,7 +12,7 @@ interface Props extends PagerProps {
   tabIndicatorHeight?: number;
 }
 
-export default class TabbedViewPager extends React.Component<Props> {
+export default class TabbedViewPager extends React.Component<Props, {index: number}> {
   pager: React.ComponentRef<typeof PagerView> | null = null;
   state = {index: this.props.initialPage ?? 0};
   setPage = (index: number) => this.pager!.setPage(index);

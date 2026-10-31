@@ -2,6 +2,7 @@ import type {Provider} from '../services/providers';
 import type {TrackFields} from '../services/track';
 
 export type PlayMode = 'list' | 'random' | 'circulate';
+export type PlayState = 'playing' | 'paused';
 export interface QueueSelection {
   song: TrackFields;
   data: readonly TrackFields[];

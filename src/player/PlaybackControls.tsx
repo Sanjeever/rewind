@@ -5,7 +5,20 @@ import styles from './styles';
 import ControlIcon from './ControlIcon';
 import PlayButton from './PlayButton';
 import AnimatedPlayButton from './AnimatedPlayButton';
-class PlaybackControls extends React.PureComponent {
+import type {PlayMode, PlayState} from './types';
+interface Props {
+  animatedOpacity: ReactNative.Animated.Value;
+  playMode: PlayMode;
+  onChangePlayStatus(): void;
+  showLyric: boolean;
+  changeSong(direction: 'pre' | 'next'): void;
+  togglePlay(): void;
+  onNowPlaying(): void;
+  color?: ReactNative.ColorValue;
+  playState: PlayState;
+  loaded: boolean;
+}
+class PlaybackControls extends React.PureComponent<Props> {
   render() {
     const props = this.props;
     const {
@@ -44,7 +57,6 @@ class PlaybackControls extends React.PureComponent {
           />
           <ControlIcon
             name={buttons.PREV.name}
-            type={buttons.PREV.type}
             onPress={function () {
               return changeSong('pre');
             }}
@@ -56,7 +68,6 @@ class PlaybackControls extends React.PureComponent {
           <PlayButton playState={playState} onPress={togglePlay} color={color} loaded={loaded} />
           <ControlIcon
             name={buttons.NEXT.name}
-            type={buttons.NEXT.type}
             onPress={function () {
               return changeSong('next');
             }}
@@ -68,7 +79,6 @@ class PlaybackControls extends React.PureComponent {
           <ControlIcon
             onPress={onNowPlaying}
             name={buttons.LIST.name}
-            type={buttons.LIST.type}
             color={color}
             style={{
               padding: 5,

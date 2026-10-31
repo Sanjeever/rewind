@@ -25,6 +25,11 @@ interface LoadingProps {
   renderHeader?: () => React.ReactElement | null;
   renderFooter?: () => React.ReactElement | null;
 }
+interface LoadingState {
+  refreshing: boolean;
+  loading: boolean;
+  allLoaded: boolean;
+}
 export type SpringScrollViewProps = Omit<ScrollViewProps, 'onRefresh'> &
   LoadingProps & {contentStyle?: StyleProp<ViewStyle>};
 interface IndexPath {
@@ -49,7 +54,10 @@ type LargeListProps<T> = Omit<
     heightForSection?: (section: number) => number;
   };
 
-export class RefreshHeader extends React.Component<RefreshHeaderProps> {
+export class RefreshHeader extends React.Component<
+  RefreshHeaderProps,
+  {status: 'idle' | 'refreshing' | 'loading' | 'allLoaded'}
+> {
   state: {status: 'idle' | 'refreshing' | 'loading' | 'allLoaded'} = {status: 'idle'};
 }
 
@@ -65,7 +73,7 @@ function trackOffset(
   listener?.(event);
 }
 
-export class SpringScrollView extends React.Component<SpringScrollViewProps> {
+export class SpringScrollView extends React.Component<SpringScrollViewProps, LoadingState> {
   scrollView: React.ComponentRef<typeof ScrollView> | null = null;
   state = {refreshing: false, loading: false, allLoaded: false};
   lastLoadHeight: number | null = null;
@@ -150,7 +158,7 @@ export class SpringScrollView extends React.Component<SpringScrollViewProps> {
   }
 }
 
-export class LargeList<T = unknown> extends React.Component<LargeListProps<T>> {
+export class LargeList<T = unknown> extends React.Component<LargeListProps<T>, LoadingState> {
   list: SectionList<T, Section<T>> | null = null;
   state = {refreshing: false, loading: false, allLoaded: false};
   lastLoadCount: number | null = null;

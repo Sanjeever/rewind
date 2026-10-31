@@ -3,17 +3,19 @@ import * as ReactNative from 'react-native';
 import * as components from '../components/index';
 import buttons from './buttons';
 import ControlIcon from './ControlIcon';
+import type {ControlIconProps} from './ControlIcon';
+import type {PlayState} from './types';
 const u = {
   playing: {
     name: buttons.PAUSE.name,
-    type: buttons.PAUSE.type,
   },
   paused: {
     name: buttons.PLAY.name,
-    type: buttons.PLAY.type,
   },
 };
-class PlayButton extends React.PureComponent {
+class PlayButton extends React.PureComponent<
+  Omit<ControlIconProps, 'name'> & {playState: PlayState; loaded?: boolean; spinSize?: number}
+> {
   render() {
     const {
       playState,
@@ -30,7 +32,6 @@ class PlayButton extends React.PureComponent {
         <ControlIcon
           color={color}
           name={u[playState].name}
-          type={u[playState].type}
           size={size}
           onPress={onPress}
           onLongPress={onLongPress}

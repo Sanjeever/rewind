@@ -30,7 +30,10 @@ export interface HeaderBarProps {
   iconColor?: ReactNative.ColorValue;
   disabledTextInputBtn?: boolean;
 }
-class HeaderBar extends React.PureComponent<HeaderBarProps> {
+class HeaderBar extends React.PureComponent<
+  HeaderBarProps,
+  {showTextInput: boolean; hideStatusBar: boolean}
+> {
   state = {
     showTextInput: false,
     hideStatusBar: false,

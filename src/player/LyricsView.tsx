@@ -3,7 +3,16 @@ import * as ReactNative from 'react-native';
 import FadingEdge from '../components/FadingEdge';
 import styles from './styles';
 import LyricLine from './LyricLine';
-class LyricsView extends React.PureComponent {
+import type {LyricLineProps} from './LyricLine';
+type Props = Omit<LyricLineProps, 'fontSize' | 'getIndex'> & {
+  animatedOpacity: ReactNative.Animated.Value;
+  hidePlayingTime: boolean;
+  playSound(): void;
+  changeFontSize(size: number): void;
+  lyricFontSize: number;
+  getLyricIndex: LyricLineProps['getIndex'];
+};
+class LyricsView extends React.PureComponent<Props> {
   render() {
     const props = this.props;
     const {

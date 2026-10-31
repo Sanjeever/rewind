@@ -1,10 +1,15 @@
 import Text from './../components/Text';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
-class QueuePosition extends React.PureComponent {
+class QueuePosition extends React.PureComponent<{
+  extraBottomValue: number;
+  animatedOpacity?: ReactNative.Animated.Value;
+  currentIndex: number;
+  tracksLength: number;
+}> {
   render() {
     const props = this.props;
-    const {extraBottomValue, animtedOpacity, currentIndex, tracksLength} = props;
+    const {extraBottomValue, animatedOpacity, currentIndex, tracksLength} = props;
     return (
       <ReactNative.Animated.View
         accessible={false}
@@ -14,7 +19,7 @@ class QueuePosition extends React.PureComponent {
             padding: 10,
             alignSelf: 'center',
             bottom: 5 + extraBottomValue,
-            opacity: animtedOpacity,
+            opacity: animatedOpacity,
           },
         ]}
       >

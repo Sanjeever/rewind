@@ -1,7 +1,20 @@
 import * as React from 'react';
-import reactNativeSlider from '@react-native-community/slider';
+import reactNativeSlider from '../components/Slider';
 import styles from './styles';
-class SeekBar extends React.PureComponent {
+interface Props {
+  showLyric: boolean;
+  isRound: boolean;
+  duration: number;
+  currentTime: number;
+  loaded: boolean;
+  slidingStart(value: number): void;
+  onSliderValueChange(value: number): void;
+  slidingEnd(value: number): void;
+  width: number;
+  disabled?: boolean;
+  SOFT_MENU_HEIGHT?: number;
+}
+class SeekBar extends React.PureComponent<Props> {
   render() {
     const props = this.props;
     const {
@@ -18,7 +31,6 @@ class SeekBar extends React.PureComponent {
     } = props;
     return React.createElement(reactNativeSlider, {
       disabled,
-      animateTransitions: false,
       style: [
         {
           width,
@@ -43,31 +55,9 @@ class SeekBar extends React.PureComponent {
       thumbTintColor: 'rgba(255,255,255,0.8)',
       maximumValue: duration && duration > 0 ? duration : 0,
       value: loaded && currentTime && currentTime > 0 ? currentTime : 0,
-      trackStyle: [
-        {
-          top: 0,
-          height: 2,
-          borderRadius: 1,
-        },
-        (isRound === true || showLyric === true) && {
-          top: null,
-          bottom: 0,
-        },
-      ],
-      thumbStyle: [
-        {
-          height: 2,
-          width: 2,
-          backgroundColor: 0,
-        },
-      ],
       onSlidingStart: slidingStart,
       onValueChange: onSliderValueChange,
       onSlidingComplete: slidingEnd,
-      thumbTouchSize: {
-        height: 40,
-        width: 2 * width,
-      },
     });
   }
 }

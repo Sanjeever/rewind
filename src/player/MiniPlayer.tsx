@@ -4,7 +4,25 @@ import FadingEdge from '../components/FadingEdge';
 import * as constants from '../theme/constants';
 import MiniPlayerContent from './MiniPlayerContent';
 import PlayButton from './PlayButton';
-class MiniPlayer extends React.PureComponent {
+import type {TrackFields} from '../services/track';
+import type {PlayMode, PlayState} from './types';
+interface Props {
+  playingIndex: number;
+  tracks: readonly TrackFields[];
+  changeSong(direction: 'pre' | 'next'): void;
+  playerOpen(): void;
+  playMode: PlayMode;
+  playState: PlayState;
+  togglePlay(): void;
+  loaded: boolean;
+  hideTopBorder: boolean;
+  isRound: boolean;
+  unknown: boolean;
+  currentMiniLyric?: string | false;
+  onNowPlaying(): void;
+  randomArray: readonly number[];
+}
+class MiniPlayer extends React.PureComponent<Props> {
   render() {
     const props = this.props;
     const {
@@ -13,7 +31,6 @@ class MiniPlayer extends React.PureComponent {
       changeSong,
       playerOpen,
       playMode,
-      onDetail,
       playState,
       togglePlay,
       loaded,
@@ -26,7 +43,6 @@ class MiniPlayer extends React.PureComponent {
     } = props;
     return (
       <ReactNative.View
-        ref={(instance) => (this.imgCon = instance)}
         style={[
           {
             height: '100%',
@@ -45,7 +61,7 @@ class MiniPlayer extends React.PureComponent {
               },
         ]}
       >
-        <FadingEdge left={20} right={100}>
+        <FadingEdge>
           <MiniPlayerContent
             coverStyle={{
               alignItems: 'center',
@@ -61,7 +77,6 @@ class MiniPlayer extends React.PureComponent {
             }}
             playerOpen={playerOpen}
             playMode={playMode}
-            onPress={onDetail}
             isRound={isRound}
             unknown={unknown}
             togglePlay={togglePlay}
