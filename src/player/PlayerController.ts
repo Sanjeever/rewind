@@ -1,3 +1,4 @@
+import PersonalRadio from './PersonalRadio';
 import TrackResources from './TrackResources';
 import {getMiniLyric} from './lyricPosition';
 import PlayerPresentation from './PlayerPresentation';
@@ -47,6 +48,13 @@ import {createPlayOrder, reconcilePlayOrder, getNextPlayIndex, getRandomIndex} f
 import {subscribePlaybackCommands} from './commands';
 const PROGRESS_INTERVAL = 600;
 export default class PlayerController extends React.PureComponent<PlayerProps, PlayerState> {
+  radio = new PersonalRadio({
+    getQueue: () => this.props,
+    getRequest: () => this.playbackRequest,
+    isPlayingRadio: () => this.state.isFM,
+    play: (command) => this.handlePlayCommand(command),
+    clearQueue: () => this.clearPlayingList(),
+  });
   resources = new TrackResources({
     isCurrent: (request) => request === this.playbackRequest,
     setLyric: (lyric, hasTrans) => this.props.setLyric(lyric, hasTrans),
@@ -90,7 +98,6 @@ export default class PlayerController extends React.PureComponent<PlayerProps, P
   resumeAfterFocus = false;
   playbackRequest = 0;
   queueKeys: string[] = [];
-  savedFMQueue: Pick<QueueSnapshot, 'tracks' | 'playingIndex' | 'songItem' | 'api'> | null = null;
   audioFocusType: string | null = null;
   cachedGetWebMusicUrl = cache((request, api) =>
     trackUrl.getUrl(api, request, this.props.settings.defaultHighQuality),
@@ -165,7 +172,7 @@ export default class PlayerController extends React.PureComponent<PlayerProps, P
       subscribePlaybackEvent('PlayerClose', () => {
         if (this.state.expanded) this.presentation.close(true);
       }),
-      subscribePlaybackEvent('FM_MODE', this.onFmMode),
+      subscribePlaybackEvent('FM_MODE', this.radio.toggle),
       subscribePlaybackEvent('AUDIO_NOISY', this.pauseSound),
       subscribePlaybackEvent('CloseTimerEvent', this.setCloseTimer),
       DeviceEventEmitter.addListener(names.NATIVE_AUDIO_FOCUS, this.handleAudioFocus),
@@ -512,7 +519,7 @@ export default class PlayerController extends React.PureComponent<PlayerProps, P
     const {tracks, playingIndex, api} = this.activeQueue;
     if (!tracks.length) return;
     if (type === 'next' && this.state.isFM && playingIndex === tracks.length - 1)
-      return this.startFM();
+      return this.radio.load();
     const index =
       this.state.playMode === 'random'
         ? getRandomIndex({
@@ -654,57 +661,6 @@ export default class PlayerController extends React.PureComponent<PlayerProps, P
       song: this.activeQueue.songItem,
     });
     this.presentation.close();
-  };
-  onFmMode = () => {
-    if (this.state.isFM) this.stopFM();
-    else {
-      const {tracks, playingIndex, songItem, api} = this.props;
-      this.savedFMQueue = {
-        tracks,
-        playingIndex,
-        songItem,
-        api,
-      };
-      this.startFM();
-    }
-  };
-  startFM = async () => {
-    const request = this.playbackRequest;
-    try {
-      const response = await Netease.personal_fm();
-      if (request !== this.playbackRequest) return;
-      if (response?.code === 405) {
-        toast(locales.NETEASE_NOT_LOGIN);
-        universalNavigator.navigate('NeteaseLogin');
-        return;
-      }
-      if (!Array.isArray(response?.data) || !response.data.length)
-        throw new Error('私人电台未返回歌曲');
-      const tracks = response.data.map((song) => ({
-        ...song,
-        isFM: true,
-      }));
-      this.handlePlayCommand({
-        song: tracks[0],
-        data: tracks,
-        index: 0,
-        api: providers.netEase,
-      });
-    } catch (error) {
-      if (request === this.playbackRequest) toast('私人电台加载失败：' + errorMessage(error));
-    }
-  };
-  stopFM = () => {
-    const saved = this.savedFMQueue;
-    this.savedFMQueue = null;
-    if (saved?.songItem && saved.api != null && saved.playingIndex != null)
-      this.handlePlayCommand({
-        song: saved.songItem,
-        data: saved.tracks,
-        index: saved.playingIndex,
-        api: saved.api,
-      });
-    else this.clearPlayingList();
   };
   onChangePlayStatus = () => {
     const playMode = (

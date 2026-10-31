@@ -25,7 +25,7 @@ export default class Player extends PlayerController {
     toggleTools: this.presentation.toggleTools,
     like: this.onLike,
     comment: this.onComment,
-    toggleFM: this.onFmMode,
+    toggleFM: this.radio.toggle,
     timer: this.onTimer,
     recordPlay: this.onCheck,
     slidingStart: this.presentation.slidingStart,
