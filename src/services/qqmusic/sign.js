@@ -1,45 +1,39 @@
-const _toConsumableArray = require('@babel/runtime/helpers/toConsumableArray');
-const _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
-Object.defineProperty(exports, '__esModule', {
-  value: true,
-});
-exports.qmSign = function (n) {
-  var r = utils.md5.hex_md5(n).toLowerCase(),
-    e = f.map(function (n, e) {
-      return n ^ parseInt(r.slice(2 * e, 2 * e + 2), 16);
-    }),
-    t = c.map(l(r)).join(''),
-    o = i.map(l(r)).join(''),
-    d = base64.default
-      .encode(String.fromCodePoint.apply(String, _toConsumableArray(e)))
-      .replace(/=+$/, '')
-      .replace(/[\/+]/g, '')
-      .toLowerCase();
-  return 'zzb' + t + d + o;
+import base64 from 'base-64';
+import * as utils from '../../utils/index';
+export const qmSign = function (n) {
+  const r = utils.md5.hex_md5(n).toLowerCase();
+  const e = f.map((n, e) => n ^ parseInt(r.slice(2 * e, 2 * e + 2), 16));
+  const t = c.map(l(r)).join('');
+  const o = i.map(l(r)).join('');
+  const d = base64
+    .encode(String.fromCodePoint(...e))
+    .replace(/=+$/, '')
+    .replace(/[\/+]/g, '')
+    .toLowerCase();
+  return `zzb${t}${d}${o}`;
 };
-exports.getSecuritySign = function (n) {
-  for (var r = Math.floor(7 * Math.random() + 10), e = 'zza', t = 0; t < r; t++)
+export const getSecuritySign = function (n) {
+  for (var r = Math.floor(7 * Math.random() + 10), e = 'zza', t = 0; t < r; t++) {
     e += 'abcdefghijklmnopqrstuvwxyz0123456789'[Math.floor(36 * Math.random())];
-  return (e += d('CJBPACrRuNy7' + n));
+  }
+  return (e += d(`CJBPACrRuNy7${n}`));
 };
-var base64 = _interopRequireDefault(require('base-64')),
-  utils = require('../../utils/index'),
-  f = [212, 45, 80, 68, 195, 163, 163, 203, 157, 220, 254, 91, 204, 79, 104, 6],
-  c = [21, 4, 9, 26, 16, 20, 27, 30],
-  i = [18, 11, 3, 2, 1, 7, 6, 25],
-  l = function (n) {
-    return function (r) {
-      return n[r];
-    };
+var f = [212, 45, 80, 68, 195, 163, 163, 203, 157, 220, 254, 91, 204, 79, 104, 6];
+var c = [21, 4, 9, 26, 16, 20, 27, 30];
+var i = [18, 11, 3, 2, 1, 7, 6, 25];
+var l = (n) =>
+  function (r) {
+    return n[r];
   };
-var d = function (n) {
+var d = (n) => {
   function r(n, r) {
-    var e = (65535 & n) + (65535 & r);
+    const e = (65535 & n) + (65535 & r);
     return (((n >> 16) + (r >> 16) + (e >> 16)) << 16) | (65535 & e);
   }
   function e(n, e, t, o, u, a) {
     return r(((f = r(r(e, n), r(o, a))) << (c = u)) | (f >>> (32 - c)), t);
-    var f, c;
+    var f;
+    var c;
   }
   function t(n, r, t, o, u, a, f) {
     return e((r & t) | (~r & o), n, r, u, a, f);
@@ -54,25 +48,26 @@ var d = function (n) {
     return e(t ^ (r | ~o), n, r, u, a, f);
   }
   function f(n) {
-    return (function (n) {
-      var r,
-        e = '';
-      for (r = 0; r < 32 * n.length; r += 8)
+    return ((n) => {
+      let r;
+      let e = '';
+      for (r = 0; r < 32 * n.length; r += 8) {
         e += String.fromCharCode((n[r >> 5] >>> (r % 32)) & 255);
+      }
       return e;
     })(
-      (function (n, e) {
+      ((n, e) => {
         n[e >> 5] |= 128 << (e % 32);
         n[14 + (((e + 64) >>> 9) << 4)] = e;
-        var f,
-          c,
-          i,
-          l,
-          d,
-          h = 1732584193,
-          g = -271733879,
-          p = -1732584194,
-          m = 271733878;
+        let f;
+        let c;
+        let i;
+        let l;
+        let d;
+        let h = 1732584193;
+        let g = -271733879;
+        let p = -1732584194;
+        let m = 271733878;
         for (f = 0; f < n.length; f += 16) {
           c = h;
           i = g;
@@ -463,30 +458,30 @@ var d = function (n) {
         }
         return [h, g, p, m];
       })(
-        (function (n) {
-          var r,
-            e = [];
-          for (e[(n.length >> 2) - 1] = void 0, r = 0; r < e.length; r += 1) e[r] = 0;
-          for (r = 0; r < 8 * n.length; r += 8)
+        ((n) => {
+          let r;
+          const e = [];
+          e[(n.length >> 2) - 1] = undefined;
+          for (r = 0; r < e.length; r += 1) {
+            e[r] = 0;
+          }
+          for (r = 0; r < 8 * n.length; r += 8) {
             e[r >> 5] |= (255 & n.charCodeAt(r / 8)) << (r % 32);
+          }
           return e;
         })(n),
         8 * n.length,
       ),
     );
   }
-  return (function (n) {
-    var r,
-      e,
-      t = '';
+  return ((n) => {
+    let r;
+    let e;
+    let t = '';
     for (e = 0; e < n.length; e += 1) {
       r = n.charCodeAt(e);
       t += '0123456789abcdef'.charAt((r >>> 4) & 15) + '0123456789abcdef'.charAt(15 & r);
     }
     return t;
-  })(
-    (function (n) {
-      return f(unescape(encodeURIComponent(n)));
-    })(n),
-  );
+  })(((n) => f(unescape(encodeURIComponent(n))))(n));
 };

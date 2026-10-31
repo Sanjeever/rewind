@@ -1,8 +1,4 @@
-Object.defineProperty(exports, '__esModule', {
-  value: true,
-});
-exports.sharedUrls = void 0;
-exports.sharedUrls = {
+export const sharedUrls = {
   netEase: {
     song: 'https://music.163.com/m/song?id=',
     artist: 'https://music.163.com/m/artist?id=',

@@ -1,269 +1,233 @@
-const _default = require('./../components/Text.js').default;
-const _interopRequireWildcard = require('@babel/runtime/helpers/interopRequireWildcard');
-const _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
-Object.defineProperty(exports, '__esModule', {
-  value: true,
-});
-exports.default = void 0;
-var React = _interopRequireWildcard(require('react')),
-  ReactNative = require('react-native'),
-  components = require('../components/index'),
-  providers = _interopRequireDefault(require('../services/providers')),
-  constants = require('../theme/constants'),
-  names = _interopRequireDefault(require('../events/names')),
-  icons = _interopRequireDefault(require('../theme/icons')),
-  locales = _interopRequireDefault(require('../locales/index')),
-  services = require('../services/index'),
-  events = require('../events/index'),
-  types = _interopRequireWildcard(require('../utils/types')),
-  styles = _interopRequireDefault(require('./users/styles')),
-  y = class t extends React.PureComponent {
-    constructor() {
-      var e, n, a;
-      for (var r = arguments.length, y = new Array(r), I = 0; I < r; I++) y[I] = arguments[I];
-      return (
-        (n = a = super(...y)),
-        (a.state = {
-          profile: {},
-          playlist: [],
-          listenSongs: 0,
-          peopleCanSeeMyPlayRecord: false,
-        }),
-        (a.getInfo = async function (id) {
-          const response = await services.Netease.user_detail(id);
-          if (!response) return;
-          if (response.code === 301) {
-            toast(locales.default.NETEASE_NOT_LOGIN);
-            return;
-          }
-          if (!response.profile) throw new Error(response.message || locales.default.ERROR);
-          a.setState({
-            profile: response.profile,
-            listenSongs: response.listenSongs,
-            peopleCanSeeMyPlayRecord: response.peopleCanSeeMyPlayRecord,
-          });
-          await a.getPlaylist(id);
-        }),
-        (a.getPlaylist = async function (id) {
-          const response = await services.Netease.user_playlist(id);
-          if (response?.playlist)
-            a.setState({
-              playlist: response.playlist,
-            });
-        }),
-        (a.onFollow = function () {
-          var e = a.state.profile;
-          a.props.navigation.navigate('FollowPage', {
-            profile: e,
-          });
-        }),
-        (a.onSelectedUser = function () {
-          var e = a.state.profile;
-          events.emitter.emit(names.default.SelectedUser, e);
-        }),
-        (a.renderForeground = function (e) {
-          var t = a.state,
-            n = t.profile,
-            r = t.listenSongs,
-            s = n.backgroundUrl,
-            c = n.avatarUrl,
-            f = n.nickname,
-            g = n.signature,
-            y = [
-              {
-                translateY: e.y.interpolate({
-                  inputRange: [-constants.DEVICE_WIDTH, 0],
-                  outputRange: [-constants.DEVICE_WIDTH / 2, 0],
-                  extrapolate: 'clamp',
-                }),
-              },
-              {
-                scale: e.y.interpolate({
-                  inputRange: [-constants.DEVICE_WIDTH, 0],
-                  outputRange: [2, 1],
-                  extrapolate: 'clamp',
-                }),
-              },
-            ];
-          return React.default.createElement(
-            ReactNative.View,
-            {
-              style: E.foreground,
-            },
-            types.isString(s) &&
-              React.default.createElement(ReactNative.Animated.Image, {
-                source: {
-                  uri: s,
-                },
-                style: [
-                  E.background,
-                  {
-                    transform: y,
-                  },
-                ],
-              }),
-            React.default.createElement(ReactNative.Animated.View, {
-              style: [
-                E.overlay,
-                {
-                  transform: y,
-                },
-              ],
-            }),
-            c &&
-              React.default.createElement(
-                ReactNative.TouchableOpacity,
-                {
-                  onPress: a.onFollow,
-                  onLongPress: a.onSelectedUser,
-                },
-                React.default.createElement(
-                  ReactNative.Animated.View,
-                  {
-                    style: {
-                      padding: 20,
-                      alignItems: 'center',
-                    },
-                  },
-                  React.default.createElement(styles.default, {
-                    imgUrl: c,
-                    nativeOffset: e,
-                  }),
-                  React.default.createElement(
-                    ReactNative.Animated.View,
-                    {
-                      style: {
-                        alignItems: 'center',
-                        opacity: e.y.interpolate({
-                          inputRange: [-constants.DEVICE_WIDTH / 3, 0],
-                          outputRange: [0, 1],
-                          extrapolate: 'clamp',
-                        }),
-                      },
-                    },
-                    f
-                      ? React.default.createElement(
-                          _default,
-                          {
-                            numberOfLines: 1,
-                            style: [E.title],
-                          },
-                          f,
-                        )
-                      : null,
-                    g
-                      ? React.default.createElement(
-                          _default,
-                          {
-                            numberOfLines: 2,
-                            style: [E.subtitle],
-                          },
-                          g,
-                        )
-                      : null,
-                  ),
-                ),
-              ),
-            React.default.createElement(
-              ReactNative.View,
-              {
-                style: {
-                  height: 60,
-                  width: '100%',
-                  position: 'absolute',
-                  bottom: 0,
-                },
-              },
-              React.default.createElement(components.ListItem, {
-                img: null,
-                errorIconName: icons.default.CHART_BAR,
-                title: locales.default.LISTEN_RECORD,
-                subtitle: r + ' ' + locales.default.SONG_COUNT,
-                onPress: a.onListenRecord,
-              }),
-            ),
-          );
-        }),
-        (a.onListenRecord = function () {
-          var e = a.state,
-            t = e.profile;
-          e.peopleCanSeeMyPlayRecord
-            ? a.props.navigation.navigate('ListenRecord', {
-                profile: t,
-              })
-            : toast(locales.default.INVISIBLE);
-        }),
-        (a.onPlaylist = function (e) {
-          a.props.navigation.navigate('Playlist', {
-            playlist: e,
-            api: providers.default.netEase,
-          });
-        }),
-        (a.renderItem = function (e) {
-          var t = e.item,
-            n = e.index;
-          return React.default.createElement(components.ListItem, {
-            key: n,
-            img: t.coverImgUrl + '?param=200y200',
-            title: 0 === n ? '♡' : t.name,
-            subtitle: t.trackCount + ' ' + locales.default.SONG_COUNT,
-            onPress: function () {
-              return a.onPlaylist(t);
-            },
-            rightIcon: {
-              name: icons.default.INTERSECTION,
-              size: 22,
-              onPress: function () {
-                return a.onPlaylistIntersection(t);
-              },
-            },
-          });
-        }),
-        (a.onPlaylistIntersection = function (e) {
-          a.props.navigation.navigate('PlaylistIntersection', {
-            item: e,
-          });
-        }),
-        n
-      );
+import Text from './../components/Text.js';
+import * as React from 'react';
+import * as ReactNative from 'react-native';
+import * as components from '../components/index';
+import providers from '../services/providers';
+import * as constants from '../theme/constants';
+import names from '../events/names';
+import icons from '../theme/icons';
+import locales from '../locales/index';
+import * as services from '../services/index';
+import * as events from '../events/index';
+import * as types from '../utils/types';
+import styles from './users/styles';
+class UserInfo extends React.PureComponent {
+  state = {
+    profile: {},
+    playlist: [],
+    listenSongs: 0,
+    peopleCanSeeMyPlayRecord: false,
+  };
+  getInfo = async (id) => {
+    const response = await services.Netease.user_detail(id);
+    if (!response) {
+      return;
     }
-    componentDidMount() {
-      var e = this.props.route.params;
-      if (types.isObject(e)) {
-        var t = e.userId;
-        types.isNumber(t) && this.getInfo(t);
-      }
+    if (response.code === 301) {
+      toast(locales.NETEASE_NOT_LOGIN);
+      return;
     }
-    render() {
-      var e = this,
-        t = this.state.playlist;
-      return React.default.createElement(
-        ReactNative.View,
-        {
-          style: E.container,
-        },
-        React.default.createElement(components.Background, null),
-        React.default.createElement(
-          components.ParallaxScrollView,
-          {
-            renderForeground: this.renderForeground,
-          },
-          (null === t || void 0 === t ? void 0 : t.length) > 0
-            ? t.map(function (t, n) {
-                return e.renderItem({
-                  item: t,
-                  index: n,
-                });
-              })
-            : React.default.createElement(components.Spinkit, {
-                style: E.spinkit,
-              }),
-          React.default.createElement(components.EmptyFooter, null),
-        ),
-      );
+    if (!response.profile) {
+      throw new Error(response.message || locales.ERROR);
+    }
+    this.setState({
+      profile: response.profile,
+      listenSongs: response.listenSongs,
+      peopleCanSeeMyPlayRecord: response.peopleCanSeeMyPlayRecord,
+    });
+    await this.getPlaylist(id);
+  };
+  getPlaylist = async (id) => {
+    const response = await services.Netease.user_playlist(id);
+    if (response?.playlist) {
+      this.setState({
+        playlist: response.playlist,
+      });
     }
   };
-exports.default = y;
+  onFollow = () => {
+    const profile = this.state.profile;
+    this.props.navigation.navigate('FollowPage', {
+      profile,
+    });
+  };
+  onSelectedUser = () => {
+    const profile = this.state.profile;
+    events.emitter.emit(names.SelectedUser, profile);
+  };
+  renderForeground = (nativeOffset) => {
+    const a_state = this.state;
+    const {profile, listenSongs} = a_state;
+    const {backgroundUrl, avatarUrl, nickname, signature} = profile;
+    const transform = [
+      {
+        translateY: nativeOffset.y.interpolate({
+          inputRange: [-constants.DEVICE_WIDTH, 0],
+          outputRange: [-constants.DEVICE_WIDTH / 2, 0],
+          extrapolate: 'clamp',
+        }),
+      },
+      {
+        scale: nativeOffset.y.interpolate({
+          inputRange: [-constants.DEVICE_WIDTH, 0],
+          outputRange: [2, 1],
+          extrapolate: 'clamp',
+        }),
+      },
+    ];
+    return (
+      <ReactNative.View style={E.foreground}>
+        {types.isString(backgroundUrl) && (
+          <ReactNative.Animated.Image
+            source={{
+              uri: backgroundUrl,
+            }}
+            style={[
+              E.background,
+              {
+                transform,
+              },
+            ]}
+          />
+        )}
+        <ReactNative.Animated.View
+          style={[
+            E.overlay,
+            {
+              transform,
+            },
+          ]}
+        />
+        {avatarUrl && (
+          <ReactNative.TouchableOpacity onPress={this.onFollow} onLongPress={this.onSelectedUser}>
+            <ReactNative.Animated.View
+              style={{
+                padding: 20,
+                alignItems: 'center',
+              }}
+            >
+              {React.createElement(styles, {
+                imgUrl: avatarUrl,
+                nativeOffset,
+              })}
+              <ReactNative.Animated.View
+                style={{
+                  alignItems: 'center',
+                  opacity: nativeOffset.y.interpolate({
+                    inputRange: [-constants.DEVICE_WIDTH / 3, 0],
+                    outputRange: [0, 1],
+                    extrapolate: 'clamp',
+                  }),
+                }}
+              >
+                {nickname ? (
+                  <Text numberOfLines={1} style={[E.title]}>
+                    {nickname}
+                  </Text>
+                ) : null}
+                {signature ? (
+                  <Text numberOfLines={2} style={[E.subtitle]}>
+                    {signature}
+                  </Text>
+                ) : null}
+              </ReactNative.Animated.View>
+            </ReactNative.Animated.View>
+          </ReactNative.TouchableOpacity>
+        )}
+        <ReactNative.View
+          style={{
+            height: 60,
+            width: '100%',
+            position: 'absolute',
+            bottom: 0,
+          }}
+        >
+          <components.ListItem
+            img={null}
+            errorIconName={icons.CHART_BAR}
+            title={locales.LISTEN_RECORD}
+            subtitle={`${listenSongs} ${locales.SONG_COUNT}`}
+            onPress={this.onListenRecord}
+          />
+        </ReactNative.View>
+      </ReactNative.View>
+    );
+  };
+  onListenRecord = () => {
+    const a_state = this.state;
+    const e_profile = a_state.profile;
+    if (a_state.peopleCanSeeMyPlayRecord) {
+      this.props.navigation.navigate('ListenRecord', {
+        profile: e_profile,
+      });
+    } else {
+      toast(locales.INVISIBLE);
+    }
+  };
+  onPlaylist = (playlist) => {
+    this.props.navigation.navigate('Playlist', {
+      playlist,
+      api: providers.netEase,
+    });
+  };
+  renderItem = ({item, index}) => {
+    return (
+      <components.ListItem
+        key={index}
+        img={`${item.coverImgUrl}?param=200y200`}
+        title={index === 0 ? '♡' : item.name}
+        subtitle={`${item.trackCount} ${locales.SONG_COUNT}`}
+        onPress={() => {
+          return this.onPlaylist(item);
+        }}
+        rightIcon={{
+          name: icons.INTERSECTION,
+          size: 22,
+          onPress: () => {
+            return this.onPlaylistIntersection(item);
+          },
+        }}
+      />
+    );
+  };
+  onPlaylistIntersection = (e) => {
+    this.props.navigation.navigate('PlaylistIntersection', {
+      item: e,
+    });
+  };
+  componentDidMount() {
+    const params = this.props.route.params;
+    if (types.isObject(params)) {
+      const t = params.userId;
+      if (types.isNumber(t)) {
+        this.getInfo(t);
+      }
+    }
+  }
+  render() {
+    const e = this;
+    const playlist = this.state.playlist;
+    return (
+      <ReactNative.View style={E.container}>
+        <components.Background />
+        <components.ParallaxScrollView renderForeground={this.renderForeground}>
+          {playlist?.length > 0 ? (
+            playlist.map((t, index) =>
+              e.renderItem({
+                item: t,
+                index,
+              }),
+            )
+          ) : (
+            <components.Spinkit style={E.spinkit} />
+          )}
+          <components.EmptyFooter />
+        </components.ParallaxScrollView>
+      </ReactNative.View>
+    );
+  }
+}
+export default UserInfo;
 var E = ReactNative.StyleSheet.create({
   container: {
     flex: 1,

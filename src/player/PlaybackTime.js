@@ -1,56 +1,42 @@
-const _interopRequireWildcard = require('@babel/runtime/helpers/interopRequireWildcard');
-Object.defineProperty(exports, '__esModule', {
-  value: true,
-});
-exports.default = void 0;
-var React = _interopRequireWildcard(require('react')),
-  ReactNative = require('react-native'),
-  reactNativeAnimatable = _interopRequireWildcard(require('react-native-animatable')),
-  utils = require('../utils/index'),
-  p = class t extends React.PureComponent {
-    constructor() {
-      return super(...arguments);
-    }
-    render() {
-      var e = this.props,
-        t = e.width,
-        r = e.animatedOpacity,
-        i = e.color,
-        a = e.duration,
-        p = e.currentTime,
-        u = utils.timeFormatter.parseTime(p) + ' / ' + utils.timeFormatter.parseTime(a);
-      return React.default.createElement(
-        reactNativeAnimatable.View,
-        {
-          pointerEvents: 'none',
-          ref: (instance) => (this.slidingTimeText = instance),
-          animation: 'fadeIn',
-          useNativeDriver: true,
-          style: [
-            {
-              width: t,
-              position: 'absolute',
-              top: t,
-              height: 30,
-              justifyContent: 'center',
-              alignItems: 'center',
-              opacity: 0.5,
-            },
-          ],
-        },
-        React.default.createElement(
-          ReactNative.Animated.Text,
+import * as React from 'react';
+import * as ReactNative from 'react-native';
+import * as reactNativeAnimatable from 'react-native-animatable';
+import * as utils from '../utils/index';
+class PlaybackTime extends React.PureComponent {
+  render() {
+    const props = this.props;
+    const {width, animatedOpacity, color, duration, currentTime} = props;
+    const u = `${utils.timeFormatter.parseTime(currentTime)} / ${utils.timeFormatter.parseTime(duration)}`;
+    return (
+      <reactNativeAnimatable.View
+        pointerEvents={'none'}
+        ref={(instance) => (this.slidingTimeText = instance)}
+        animation={'fadeIn'}
+        useNativeDriver={true}
+        style={[
           {
-            style: [
-              {
-                color: i,
-                opacity: r,
-              },
-            ],
+            width,
+            position: 'absolute',
+            top: width,
+            height: 30,
+            justifyContent: 'center',
+            alignItems: 'center',
+            opacity: 0.5,
           },
-          u,
-        ),
-      );
-    }
-  };
-exports.default = p;
+        ]}
+      >
+        <ReactNative.Animated.Text
+          style={[
+            {
+              color,
+              opacity: animatedOpacity,
+            },
+          ]}
+        >
+          {u}
+        </ReactNative.Animated.Text>
+      </reactNativeAnimatable.View>
+    );
+  }
+}
+export default PlaybackTime;

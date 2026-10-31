@@ -1,141 +1,105 @@
-const _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
-Object.defineProperty(exports, '__esModule', {
-  value: true,
-});
-exports.default = void 0;
-var React = _interopRequireDefault(require('react')),
-  ReactNative = require('react-native'),
-  Placeholders = _interopRequireDefault(require('./Placeholders')),
-  styles = _interopRequireDefault(require('./styles')),
-  i = function (e) {
-    var t = e.info;
-    return React.default.createElement(
-      React.default.Fragment,
-      null,
-      React.default.createElement(Placeholders.default.Text, {
-        style: [
-          styles.default.text,
+import 'react';
+import * as ReactNative from 'react-native';
+import Placeholders from './Placeholders';
+import styles from './styles';
+const IComponent = function ({info}) {
+  return (
+    <>
+      <Placeholders.Text
+        style={[
+          styles.text,
           {
             marginBottom: 10,
             paddingLeft: 9,
           },
-        ],
-        numbers: 22,
-      }),
-      t.sites.map(function (e, t) {
-        return React.default.createElement(
-          ReactNative.View,
-          {
-            style: styles.default.itemStyle,
-            key: t,
-          },
-          React.default.createElement(Placeholders.default.Avatar, {
-            style: styles.default.avatar,
-          }),
-          React.default.createElement(
-            ReactNative.View,
-            {
-              style: {
-                marginHorizontal: 10,
-                flex: 1,
-              },
-            },
-            React.default.createElement(Placeholders.default.Text, {
-              style: [
-                styles.default.text,
+        ]}
+        numbers={22}
+      />
+      {info.sites.map((e, t) => (
+        <ReactNative.View style={styles.itemStyle} key={t}>
+          <Placeholders.Avatar style={styles.avatar} />
+          <ReactNative.View
+            style={{
+              marginHorizontal: 10,
+              flex: 1,
+            }}
+          >
+            <Placeholders.Text
+              style={[
+                styles.text,
                 {
                   marginLeft: 5,
                 },
-              ],
-              numbers: 8,
-            }),
-            React.default.createElement(Placeholders.default.Text, {
-              style: [
-                styles.default.text,
+              ]}
+              numbers={8}
+            />
+            <Placeholders.Text
+              style={[
+                styles.text,
                 {
                   marginLeft: 5,
                   fontSize: 13,
                 },
-              ],
-              numbers: 12,
-            }),
-          ),
-        );
-      }),
-      React.default.createElement(Placeholders.default.Text, {
-        style: [
-          styles.default.title,
+              ]}
+              numbers={12}
+            />
+          </ReactNative.View>
+        </ReactNative.View>
+      ))}
+      <Placeholders.Text
+        style={[
+          styles.title,
           {
             fontSize: 16,
             marginLeft: 5,
           },
-        ],
-        numbers: 3,
-      }),
-      t.persons.map(function (e, t) {
-        return React.default.createElement(
-          ReactNative.View,
-          {
-            style: styles.default.itemStyle,
-            key: t,
-          },
-          React.default.createElement(Placeholders.default.Avatar, {
-            style: styles.default.avatar,
-          }),
-          React.default.createElement(
-            ReactNative.View,
-            {
-              style: {
-                paddingHorizontal: 10,
-                flex: 1,
-              },
-            },
-            React.default.createElement(Placeholders.default.Text, {
-              style: [styles.default.text],
-              numbers: 5,
-            }),
-            React.default.createElement(Placeholders.default.Text, {
-              style: [
-                styles.default.text,
+        ]}
+        numbers={3}
+      />
+      {info.persons.map((e, t) => (
+        <ReactNative.View style={styles.itemStyle} key={t}>
+          <Placeholders.Avatar style={styles.avatar} />
+          <ReactNative.View
+            style={{
+              paddingHorizontal: 10,
+              flex: 1,
+            }}
+          >
+            <Placeholders.Text style={[styles.text]} numbers={5} />
+            <Placeholders.Text
+              style={[
+                styles.text,
                 {
                   fontSize: 13,
                 },
-              ],
-              numbers: 10,
-            }),
-          ),
-        );
-      }),
-      React.default.createElement(Placeholders.default.Text, {
-        style: [
-          styles.default.title,
+              ]}
+              numbers={10}
+            />
+          </ReactNative.View>
+        </ReactNative.View>
+      ))}
+      <Placeholders.Text
+        style={[
+          styles.title,
           {
             fontSize: 16,
             marginLeft: 5,
           },
-        ],
-        numbers: 3,
-      }),
-      React.default.createElement(
-        ReactNative.View,
-        {
-          style: [
-            styles.default.osCon,
-            {
-              paddingLeft: 15,
-            },
-          ],
-        },
-        React.default.createElement(Placeholders.default.Text, {
-          numberOfLines: 1,
-          style: [styles.default.text],
-          numbers: 3,
-        }),
-        React.default.createElement(Placeholders.default.Text, {
-          numberOfLines: 1,
-          style: [styles.default.text],
-        }),
-      ),
-    );
-  };
-exports.default = i;
+        ]}
+        numbers={3}
+      />
+      <ReactNative.View
+        style={[
+          styles.osCon,
+          {
+            paddingLeft: 15,
+          },
+        ]}
+      >
+        <Placeholders.Text numberOfLines={1} style={[styles.text]} numbers={3} />
+        <Placeholders.Text numberOfLines={1} style={[styles.text]} />
+      </ReactNative.View>
+    </>
+  );
+};
+export default IComponent;

@@ -1,29 +1,24 @@
-const _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
-const _appStorage = require('./../storage/index.js');
-Object.defineProperty(exports, '__esModule', {
-  value: true,
-});
-exports.default = exports.check = void 0;
-var keys = _interopRequireDefault(require('../storage/keys')),
-  u = async function () {
-    try {
-      return await _appStorage.storage.load({
-        key: keys.default.firstTime,
-      });
-    } catch (error) {
-      if (error.name !== 'NotFoundError') throw error;
-      await s();
-      return true;
-    }
-  };
-exports.check = u;
-var s = function () {
-    return _appStorage.storage.save({
-      key: keys.default.firstTime,
-      data: false,
+import * as _appStorage from './../storage/index.js';
+import keys from '../storage/keys';
+export const check = async () => {
+  try {
+    return await _appStorage.storage.load({
+      key: keys.firstTime,
     });
-  },
-  i = {
-    check: u,
-  };
-exports.default = i;
+  } catch (error) {
+    if (error.name !== 'NotFoundError') {
+      throw error;
+    }
+    await s();
+    return true;
+  }
+};
+var s = () =>
+  _appStorage.storage.save({
+    key: keys.firstTime,
+    data: false,
+  });
+const i = {
+  check,
+};
+export default i;

@@ -1,44 +1,36 @@
-const _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
-Object.defineProperty(exports, '__esModule', {
-  value: true,
-});
-exports.default = void 0;
-var React = _interopRequireDefault(require('react')),
-  buttons = _interopRequireDefault(require('./buttons')),
-  ControlIcon = _interopRequireDefault(require('./ControlIcon')),
-  d = function (e) {
-    var a,
-      t = e.playMode,
-      l = e.onPress,
-      r = e.color,
-      d = e.size,
-      f = e.style;
-    switch (t) {
-      case 'list':
-        a = {
-          name: buttons.default.REPEAT.name,
-          type: buttons.default.REPEAT.type,
-        };
-        break;
-      case 'random':
-        a = {
-          name: buttons.default.RANDOM.name,
-          type: buttons.default.RANDOM.type,
-        };
-        break;
-      case 'circulate':
-        a = {
-          name: buttons.default.CIRLUATE.name,
-          type: buttons.default.CIRLUATE.type,
-        };
-    }
-    return React.default.createElement(ControlIcon.default, {
-      onPress: l,
-      name: a.name || null,
-      type: a.type,
-      size: d || 28,
-      color: r,
-      style: f,
-    });
-  };
-exports.default = d;
+import 'react';
+import buttons from './buttons';
+import ControlIcon from './ControlIcon';
+const DComponent = function ({playMode, onPress, color, size, style}) {
+  let a;
+  switch (playMode) {
+    case 'list':
+      a = {
+        name: buttons.REPEAT.name,
+        type: buttons.REPEAT.type,
+      };
+      break;
+    case 'random':
+      a = {
+        name: buttons.RANDOM.name,
+        type: buttons.RANDOM.type,
+      };
+      break;
+    case 'circulate':
+      a = {
+        name: buttons.CIRLUATE.name,
+        type: buttons.CIRLUATE.type,
+      };
+  }
+  return (
+    <ControlIcon
+      onPress={onPress}
+      name={a.name || null}
+      type={a.type}
+      size={size || 28}
+      color={color}
+      style={style}
+    />
+  );
+};
+export default DComponent;

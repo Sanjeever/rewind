@@ -14,7 +14,6 @@ import ArtistSearchResults from '../modules/ArtistSearchResults';
 import SongSearchResults from '../modules/SongSearchResults';
 import SearchSuggestions from '../modules/SearchSuggestions';
 import {searchHistory} from '../storage/history';
-
 const providerImages = {
   netEase: require('../../assets/images/netease.png'),
   qqMusic: require('../../assets/images/qqmusic.png'),
@@ -26,7 +25,6 @@ const resultComponents = [
   PlaylistSearchResults,
   VideoSearchResults,
 ];
-
 export default class SearchPage extends React.PureComponent {
   state = {
     api: providers.netEase,
@@ -37,53 +35,93 @@ export default class SearchPage extends React.PureComponent {
     show: false,
     historyVersion: 0,
     routes: [
-      {key: '0', title: locales.ARTIST_SONGS},
-      {key: '1', title: locales.ARTIST},
-      {key: '2', title: locales.ARTIST_ALBUM},
-      {key: '3', title: locales.MIX},
-      {key: '4', title: locales.ARTIST_MV},
+      {
+        key: '0',
+        title: locales.ARTIST_SONGS,
+      },
+      {
+        key: '1',
+        title: locales.ARTIST,
+      },
+      {
+        key: '2',
+        title: locales.ARTIST_ALBUM,
+      },
+      {
+        key: '3',
+        title: locales.MIX,
+      },
+      {
+        key: '4',
+        title: locales.ARTIST_MV,
+      },
     ],
   };
-
   componentDidMount() {
     this.mounted = true;
   }
   componentWillUnmount() {
     this.mounted = false;
   }
-
   submit = () => {
     const query = this.state.text.trim();
-    if (!query) return;
-    this.setState({query, show: true, focusing: false});
+    if (!query) {
+      return;
+    }
+    this.setState({
+      query,
+      show: true,
+      focusing: false,
+    });
     searchHistory(query, this.state.api)
       .then(() => {
-        if (this.mounted) this.setState((state) => ({historyVersion: state.historyVersion + 1}));
+        if (this.mounted) {
+          this.setState((state) => ({
+            historyVersion: state.historyVersion + 1,
+          }));
+        }
       })
-      .catch((error) => toast('保存搜索历史失败：' + error.message));
+      .catch((error) => toast(`保存搜索历史失败：${error.message}`));
     Keyboard.dismiss();
   };
-
   changeProvider = () => {
     const api = this.state.api === providers.netEase ? providers.qqMusic : providers.netEase;
-    this.setState({api}, this.submit);
+    this.setState(
+      {
+        api,
+      },
+      this.submit,
+    );
   };
-
   changeText = (text) => {
-    this.setState({text});
+    this.setState({
+      text,
+    });
   };
-
   selectSuggestion = (item, section) => {
     if (section === SECTION_KEYS.history) {
-      this.setState({text: item.text, api: item.api}, this.submit);
+      this.setState(
+        {
+          text: item.text,
+          api: item.api,
+        },
+        this.submit,
+      );
     } else if (section === SECTION_KEYS.songs) {
-      this.setState({text: item.name}, this.submit);
+      this.setState(
+        {
+          text: item.name,
+        },
+        this.submit,
+      );
     } else {
       const screen = section === SECTION_KEYS.artists ? 'ArtistPage' : 'AlbumPage';
-      this.props.navigation.navigate(screen, {item, api: this.state.api});
+      this.props.navigation.navigate(screen, {
+        item,
+        api: this.state.api,
+      });
     }
   };
-
   renderScene = ({route}) => {
     const Result = resultComponents[Number(route.key)];
     return (
@@ -95,7 +133,6 @@ export default class SearchPage extends React.PureComponent {
       />
     );
   };
-
   renderTabBar = (props) => (
     <TabBar
       {...props}
@@ -106,7 +143,6 @@ export default class SearchPage extends React.PureComponent {
       style={styles.tabBar}
     />
   );
-
   render() {
     const {api, text, focusing, show} = this.state;
     return (
@@ -123,7 +159,11 @@ export default class SearchPage extends React.PureComponent {
             placeholder="Everything……"
             onChangeText={this.changeText}
             onSubmitEditing={this.submit}
-            onFocus={() => this.setState({focusing: true})}
+            onFocus={() =>
+              this.setState({
+                focusing: true,
+              })
+            }
           />
           <TouchableBorderless
             onPress={this.changeProvider}
@@ -148,16 +188,21 @@ export default class SearchPage extends React.PureComponent {
             navigationState={this.state}
             renderScene={this.renderScene}
             renderTabBar={this.renderTabBar}
-            onIndexChange={(index) => this.setState({index})}
+            onIndexChange={(index) =>
+              this.setState({
+                index,
+              })
+            }
           />
         )}
       </View>
     );
   }
 }
-
 const styles = StyleSheet.create({
-  container: {flex: 1},
+  container: {
+    flex: 1,
+  },
   toolbar: {
     marginTop: STATUS_BAR_HEIGHT,
     height: 40,
@@ -166,8 +211,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     paddingHorizontal: 10,
   },
-  textInput: {flex: 1, fontSize: 16, paddingHorizontal: 10},
-  button: {padding: 6},
+  textInput: {
+    flex: 1,
+    fontSize: 16,
+    paddingHorizontal: 10,
+  },
+  button: {
+    padding: 6,
+  },
   provider: {
     height: '100%',
     width: '100%',
@@ -175,9 +226,24 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flex: 1,
   },
-  providerImage: {height: 25, width: 25},
-  tabBar: {marginTop: -10, backgroundColor: 'transparent', elevation: 0},
-  tab: {backgroundColor: 'transparent'},
-  label: {backgroundColor: 'transparent', fontSize: 13, padding: 0},
-  indicator: {backgroundColor: COLORS.primary},
+  providerImage: {
+    height: 25,
+    width: 25,
+  },
+  tabBar: {
+    marginTop: -10,
+    backgroundColor: 'transparent',
+    elevation: 0,
+  },
+  tab: {
+    backgroundColor: 'transparent',
+  },
+  label: {
+    backgroundColor: 'transparent',
+    fontSize: 13,
+    padding: 0,
+  },
+  indicator: {
+    backgroundColor: COLORS.primary,
+  },
 });

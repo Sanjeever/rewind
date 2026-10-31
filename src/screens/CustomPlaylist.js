@@ -1,280 +1,265 @@
-const _interopRequireWildcard = require('@babel/runtime/helpers/interopRequireWildcard');
-const _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
-Object.defineProperty(exports, '__esModule', {
-  value: true,
-});
-exports.default = void 0;
-var immer = require('immer'),
-  React = _interopRequireWildcard(require('react')),
-  ReactNative = require('react-native'),
-  reactNativeLargelist = require('./../components/Scrolling.js'),
-  components = require('../components/index'),
-  modals = require('../modals/index'),
-  constants = require('../theme/constants'),
-  locales = _interopRequireDefault(require('../locales/index')),
-  events = require('../events/index'),
-  utils = require('../utils/index'),
-  trackInfo = require('../services/trackInfo'),
-  playlistFiles = _interopRequireDefault(require('../storage/playlistFiles')),
-  g = constants.DEVICE_WIDTH,
-  v = class t extends React.PureComponent {
-    constructor(e) {
-      var a;
-      (a = super(e))._nativeOffset = {
-        x: new ReactNative.Animated.Value(0),
-        y: new ReactNative.Animated.Value(0),
-      };
-      a.onDeleteCustom = async function (ids) {
-        const tracks = a.state.oriList.filter((song) => !ids.includes(song.id));
-        await a.updatePlaylist(tracks);
-        a.setState({
-          playlist: tracks,
-          oriList: tracks,
-        });
-      };
-      a.updatePlaylist = async function (tracks) {
-        const current = await playlistFiles.default.getPlaylist();
-        const playlists = immer.produce(current.playlists, (draft) => {
-          draft[a.state.playlistIndex].tracks = tracks;
-        });
-        await playlistFiles.default.toPlaylist({
-          ...current,
-          playlists,
-        });
-      };
-      a._renderIndexPath = function (e) {
-        var t = e.row,
-          n = a.state.playlist;
-        return a._renderItem({
-          item: n[t],
-          index: t,
-        });
-      };
-      a._renderItem = function (e) {
-        var t = e.item,
-          n = e.index,
-          l = (0, trackInfo.extractFullInfo)(t);
-        return React.default.createElement(components.SongRow, {
-          index: n,
-          song: l.song,
-          singer: l.singer,
-          album: l.album,
-          onLongPress: function () {
-            return a.alertDeleteItem(n);
-          },
-          onPress: function () {
-            return a.playMusic(t, n, t.api);
-          },
-          detail: function () {
-            return (0, events.toDetailModal)({
-              item: t,
-              index: n,
-              api: t.api,
-            });
-          },
-          addToQueue: function () {
-            return (0, events.toInsertToList)({
-              data: t,
-              api: t.api,
-            });
-          },
-        });
-      };
-      a.alertDeleteItem = function (e) {
-        ReactNative.Alert.alert(locales.default.DELETE_THIS_SONG, locales.default.CAN_NOT_RECOVER, [
-          {
-            text: locales.default.CANCEL,
-            onPress: function () {
-              return null;
-            },
-            style: 'cancel',
-          },
-          {
-            text: locales.default.CONFIRM,
-            onPress: function () {
-              return a.deleteItem(e);
-            },
-          },
-        ]);
-      };
-      a.deleteItem = async function (index) {
-        const tracks = a.state.playlist.filter((song, i) => i !== index);
-        try {
-          await a.updatePlaylist(tracks);
-          a.setState({
-            playlist: tracks,
-            oriList: tracks,
+import * as immer from 'immer';
+import * as React from 'react';
+import * as ReactNative from 'react-native';
+import * as reactNativeLargelist from './../components/Scrolling.js';
+import * as components from '../components/index';
+import * as modals from '../modals/index';
+import * as constants from '../theme/constants';
+import locales from '../locales/index';
+import * as events from '../events/index';
+import * as utils from '../utils/index';
+import * as trackInfo from '../services/trackInfo';
+import playlistFiles from '../storage/playlistFiles';
+const constants_DEVICE_WIDTH = constants.DEVICE_WIDTH;
+class CustomPlaylist extends React.PureComponent {
+  _nativeOffset = {
+    x: new ReactNative.Animated.Value(0),
+    y: new ReactNative.Animated.Value(0),
+  };
+  onDeleteCustom = async (ids) => {
+    const tracks = this.state.oriList.filter((song) => !ids.includes(song.id));
+    await this.updatePlaylist(tracks);
+    this.setState({
+      playlist: tracks,
+      oriList: tracks,
+    });
+  };
+  updatePlaylist = async (tracks) => {
+    const current = await playlistFiles.getPlaylist();
+    const playlists = immer.produce(current.playlists, (draft) => {
+      draft[this.state.playlistIndex].tracks = tracks;
+    });
+    await playlistFiles.toPlaylist({
+      ...current,
+      playlists,
+    });
+  };
+  _renderIndexPath = ({row}) => {
+    const playlist = this.state.playlist;
+    return this._renderItem({
+      item: playlist[row],
+      index: row,
+    });
+  };
+  _renderItem = ({item, index}) => {
+    const l = trackInfo.extractFullInfo(item);
+    return (
+      <components.SongRow
+        index={index}
+        song={l.song}
+        singer={l.singer}
+        album={l.album}
+        onLongPress={() => {
+          return this.alertDeleteItem(index);
+        }}
+        onPress={() => {
+          return this.playMusic(item, index, item.api);
+        }}
+        detail={function () {
+          return events.toDetailModal({
+            item,
+            index,
+            api: item.api,
           });
-        } catch (error) {
-          toast('保存歌单失败：' + error.message);
-        }
-      };
-      a.searchSong = function (e) {
-        var t = a.state.oriList;
-        if (t) {
-          var n = utils.filterHelper.quickSearch(t, e);
-          a.setState({
-            playlist: n,
-            searching: '' !== e,
-            index: null,
-            showRestore: '' !== e,
+        }}
+        addToQueue={function () {
+          return events.toInsertToList({
+            data: item,
+            api: item.api,
           });
-        }
-      };
-      a.onTop = function () {
-        var e;
-        null === (e = a._list) ||
-          void 0 === e ||
-          e.scrollTo({
-            x: 0,
-            y: 0,
-          });
-      };
-      a.onScroll = function (e) {
-        var t = e.nativeEvent.contentOffset.y,
-          n = g - 100;
-        t < n
-          ? a.setState({
-              showHeader: false,
-              title: locales.default.MIX,
-            })
-          : t > n &&
-            a.setState({
-              showHeader: true,
-              title: a.state.name,
-            });
-      };
-      a.playMusic = function (e, t, n) {
-        var l = a.state,
-          i = l.searching,
-          r = l.playlist,
-          s = t;
-        true === i &&
-          r.filter(function (t, a) {
-            t.id === e.id && (s = a);
-          });
-        a.setState({
-          index: s,
-        });
-        (0, events.toPlayer)({
-          item: e,
-          data: r,
-          index: s,
-          api: n,
-        });
-      };
-      a.goBack = function () {
-        a.props.navigation.goBack();
-      };
-      a.state = {
-        title: locales.default.MIX,
-        playlistIndex: null,
-        playlist: [],
-        oriList: [],
-        loading: true,
-        searching: false,
-        showList: true,
-        showModal: false,
-        showRestore: false,
-        showHeader: false,
-        subscribed: false,
-        showMult: false,
-      };
-      return a;
-    }
-    componentDidMount() {
-      var e = this.props.route.params,
-        t = e.playlist,
-        a = e.index,
-        n = t.tracks;
+        }}
+      />
+    );
+  };
+  alertDeleteItem = (e) => {
+    ReactNative.Alert.alert(locales.DELETE_THIS_SONG, locales.CAN_NOT_RECOVER, [
+      {
+        text: locales.CANCEL,
+        onPress: function () {
+          return null;
+        },
+        style: 'cancel',
+      },
+      {
+        text: locales.CONFIRM,
+        onPress: () => {
+          return this.deleteItem(e);
+        },
+      },
+    ]);
+  };
+  deleteItem = async (index) => {
+    const tracks = this.state.playlist.filter((song, i) => i !== index);
+    try {
+      await this.updatePlaylist(tracks);
       this.setState({
-        playlistIndex: a,
-        playlist: n,
-        oriList: n,
-        name: t.title,
-        loading: false,
+        playlist: tracks,
+        oriList: tracks,
+      });
+    } catch (error) {
+      toast(`保存歌单失败：${error.message}`);
+    }
+  };
+  searchSong = (e) => {
+    const oriList = this.state.oriList;
+    if (oriList) {
+      const playlist = utils.filterHelper.quickSearch(oriList, e);
+      this.setState({
+        playlist,
+        searching: e !== '',
+        index: null,
+        showRestore: e !== '',
       });
     }
-    render() {
-      var e = this,
-        t = this.props.route.params.playlist.img;
-      return React.default.createElement(
-        ReactNative.View,
-        {
-          style: x.container,
-        },
-        React.default.createElement(components.Background, null),
-        React.default.createElement(reactNativeLargelist.LargeList, {
-          ref: function (t) {
+  };
+  onTop = () => {
+    this._list?.scrollTo({
+      x: 0,
+      y: 0,
+    });
+  };
+  onScroll = (e) => {
+    const t = e.nativeEvent.contentOffset.y;
+    const n = constants_DEVICE_WIDTH - 100;
+    if (t < n) {
+      this.setState({
+        showHeader: false,
+        title: locales.MIX,
+      });
+    } else if (t > n) {
+      this.setState({
+        showHeader: true,
+        title: this.state.name,
+      });
+    }
+  };
+  playMusic = (item, t, api) => {
+    const a_state = this.state;
+    const {searching, playlist} = a_state;
+    let index = t;
+    if (searching === true) {
+      playlist.filter((t, a) => {
+        if (t.id === item.id) {
+          index = a;
+        }
+      });
+    }
+    this.setState({
+      index,
+    });
+    events.toPlayer({
+      item,
+      data: playlist,
+      index,
+      api,
+    });
+  };
+  goBack = () => {
+    this.props.navigation.goBack();
+  };
+  state = {
+    title: locales.MIX,
+    playlistIndex: null,
+    playlist: [],
+    oriList: [],
+    loading: true,
+    searching: false,
+    showList: true,
+    showModal: false,
+    showRestore: false,
+    showHeader: false,
+    subscribed: false,
+    showMult: false,
+  };
+  componentDidMount() {
+    const params = this.props.route.params;
+    const {playlist, index} = params;
+    const playlist_tracks = playlist.tracks;
+    this.setState({
+      playlistIndex: index,
+      playlist: playlist_tracks,
+      oriList: playlist_tracks,
+      name: playlist.title,
+      loading: false,
+    });
+  }
+  render() {
+    const e = this;
+    const img = this.props.route.params.playlist.img;
+    return (
+      <ReactNative.View style={x.container}>
+        <components.Background />
+        <reactNativeLargelist.LargeList
+          ref={function (t) {
             return (e._list = t);
-          },
-          data: [
+          }}
+          data={[
             {
               items: this.state.playlist,
             },
-          ],
-          heightForIndexPath: function () {
+          ]}
+          heightForIndexPath={function () {
             return constants.ITEM_HEIGHT;
-          },
-          renderIndexPath: this._renderIndexPath,
-          renderHeader: function () {
-            return React.default.createElement(
-              ReactNative.View,
-              null,
-              React.default.createElement(components.PlaylistForeground, {
-                coverImgUrl: t,
-                onMult: function () {
-                  return e.setState({
-                    showMult: true,
-                  });
-                },
-                disabledLastPlayedSong: true,
-              }),
+          }}
+          renderIndexPath={this._renderIndexPath}
+          renderHeader={function () {
+            return (
+              <ReactNative.View>
+                <components.PlaylistForeground
+                  coverImgUrl={img}
+                  onMult={function () {
+                    return e.setState({
+                      showMult: true,
+                    });
+                  }}
+                  disabledLastPlayedSong={true}
+                />
+              </ReactNative.View>
             );
-          },
-          onScroll: this.onScroll,
-          onNativeContentOffsetExtract: this._nativeOffset,
-        }),
-        React.default.createElement(components.HeaderBar, {
-          headerStyle: x.header,
-          title: this.state.title,
-          goBack: this.goBack,
-          onTop: this.onTop,
-          textInput: !this.state.loading,
-          onChangeText: function (t) {
+          }}
+          onScroll={this.onScroll}
+          onNativeContentOffsetExtract={this._nativeOffset}
+        />
+        <components.HeaderBar
+          headerStyle={x.header}
+          title={this.state.title}
+          goBack={this.goBack}
+          onTop={this.onTop}
+          textInput={!this.state.loading}
+          onChangeText={function (t) {
             return e.searchSong(t);
-          },
-          opacity: this._nativeOffset.y.interpolate({
-            inputRange: [0, g - 100],
+          }}
+          opacity={this._nativeOffset.y.interpolate({
+            inputRange: [0, constants_DEVICE_WIDTH - 100],
             outputRange: [0, 1],
             extrapolate: 'clamp',
-          }),
-          blur: true,
-          bold: true,
-        }),
-        React.default.createElement(modals.MultiplySelectModal, {
-          visible: this.state.showMult,
-          onClose: function () {
+          })}
+          blur={true}
+          bold={true}
+        />
+        <modals.MultiplySelectModal
+          visible={this.state.showMult}
+          onClose={function () {
             return e.setState({
               showMult: false,
             });
-          },
-          data: this.state.playlist,
-          api: 'local',
-          isCustom: true,
-          onDeleteCustom: this.onDeleteCustom,
-        }),
-      );
-    }
+          }}
+          data={this.state.playlist}
+          api={'local'}
+          isCustom={true}
+          onDeleteCustom={this.onDeleteCustom}
+        />
+      </ReactNative.View>
+    );
+  }
+}
+var x = ReactNative.StyleSheet.create({
+  container: {
+    flex: 1,
   },
-  x = ReactNative.StyleSheet.create({
-    container: {
-      flex: 1,
-    },
-    header: {
-      position: 'absolute',
-      top: 0,
-    },
-  }),
-  b = v;
-exports.default = b;
+  header: {
+    position: 'absolute',
+    top: 0,
+  },
+});
+export default CustomPlaylist;

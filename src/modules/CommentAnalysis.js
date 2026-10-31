@@ -1,367 +1,308 @@
-const _default = require('./../components/Pager.js').default;
-const _default2 = require('./../components/Text.js').default;
-const _interopRequireWildcard = require('@babel/runtime/helpers/interopRequireWildcard');
-const _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
-Object.defineProperty(exports, '__esModule', {
-  value: true,
-});
-exports.default = void 0;
-var React = _interopRequireWildcard(require('react')),
-  ReactNative = require('react-native'),
-  reactNativeSpringScrollview = require('./../components/Scrolling.js'),
-  components = require('../components/index'),
-  constants = require('../theme/constants'),
-  utils = require('../utils/index'),
-  CommentBubble = _interopRequireDefault(require('./CommentBubble.js')),
-  m = class t extends React.Component {
-    constructor() {
-      var e, n, l;
-      for (var r = arguments.length, o = new Array(r), c = 0; c < r; c++) o[c] = arguments[c];
+import Pager from './../components/Pager.js';
+import _default2 from './../components/Text.js';
+import * as React from 'react';
+import * as ReactNative from 'react-native';
+import * as reactNativeSpringScrollview from './../components/Scrolling.js';
+import * as components from '../components/index';
+import * as constants from '../theme/constants';
+import * as utils from '../utils/index';
+import CommentBubble from './CommentBubble.js';
+class CommentAnalysis extends React.Component {
+  hash = {};
+  state = {
+    selectedComments: [],
+    showSelectedComments: false,
+    selectedIndex: 0,
+  };
+  filterHot = function (e, t) {
+    const n = e.content || e.rootcommentcontent;
+    return !!n && n.replace(/\s/gi, '').includes(t);
+  };
+  showHotComment = (e, selectedIndex) => {
+    const selectedComments = this.props.hotComments.filter((t) => this.filterHot(t, e));
+    this.setState({
+      selectedComments,
+      showSelectedComments: true,
+      selectedIndex,
+    });
+  };
+  getIndex = function (e, t, n) {
+    let l = e;
+    if (n === 'next') {
+      l = e + 1 >= t ? 0 : e + 1;
+    } else if (n === 'pre') {
+      l = e < 1 ? t - 1 : e - 1;
+    }
+    return l;
+  };
+  selectItem = (e = 'next') => {
+    const wordscloud = this.props.wordscloud;
+    const selectedIndex = this.state.selectedIndex;
+    const r = this.getIndex(selectedIndex, wordscloud.length, e);
+    this.showHotComment(wordscloud[r], r);
+  };
+  getSelectedText = (e = 'mid') => {
+    const wordscloud = this.props.wordscloud;
+    const selectedIndex = this.state.selectedIndex;
+    return wordscloud[this.getIndex(selectedIndex, wordscloud.length, e)];
+  };
+  useRandomValues = (e) => {
+    if (!this.hash[e]) {
+      const t = Math.random();
+      this.hash[e] = {
+        randomSize: utils.random.getInt(15, 30),
+        textOpacity: t >= 0.8 ? 0.8 : t + 0.2,
+      };
+    }
+    return {
+      randomSize: this.hash[e].randomSize,
+      textOpacity: this.hash[e].textOpacity,
+    };
+  };
+  renderSelectedItem = () => {
+    return (
+      <ReactNative.View
+        style={{
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <ReactNative.View
+          style={{
+            height: 80,
+            justifyContent: 'center',
+          }}
+        >
+          <Pager
+            style={{
+              width: constants.DEVICE_WIDTH,
+              flex: 1,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+            initialPage={1}
+            onPageSelected={this.onTitleSelected}
+            ref={(instance) => (this.titlePager = instance)}
+          >
+            {React.createElement(f, {
+              text: this.getSelectedText('pre'),
+            })}
+            {React.createElement(f, {
+              text: this.getSelectedText('mid'),
+            })}
+            {React.createElement(f, {
+              text: this.getSelectedText('next'),
+            })}
+          </Pager>
+        </ReactNative.View>
+        {this.renderCommentItems()}
+      </ReactNative.View>
+    );
+  };
+  renderCommentItems = () => {
+    const selectedComments = this.state.selectedComments;
+    if (selectedComments && !(selectedComments.length < 1)) {
+      if (selectedComments.length > 1) {
+        return selectedComments.map((e, key) => (
+          <ReactNative.View
+            key={key}
+            style={{
+              marginTop: 30,
+            }}
+          >
+            <CommentBubble item={e} title={this.getSelectedText('mid')} />
+            {e.beReplied.length > 0 ? <CommentBubble item={e.beReplied[0]} replied={true} /> : null}
+          </ReactNative.View>
+        ));
+      }
+      const n = selectedComments[0];
       return (
-        (n = l = super(...o)),
-        (l.hash = {}),
-        (l.state = {
-          selectedComments: [],
-          showSelectedComments: false,
-          selectedIndex: 0,
-        }),
-        (l.filterHot = function (e, t) {
-          var n = e.content || e.rootcommentcontent;
-          return !!n && n.replace(/\s/gi, '').includes(t);
-        }),
-        (l.showHotComment = function (e, t) {
-          var n = l.props.hotComments.filter(function (t) {
-            return l.filterHot(t, e);
-          });
-          l.setState({
-            selectedComments: n,
-            showSelectedComments: true,
-            selectedIndex: t,
-          });
-        }),
-        (l.getIndex = function (e, t, n) {
-          var l = e;
-          'next' === n ? (l = e + 1 >= t ? 0 : e + 1) : 'pre' === n && (l = e < 1 ? t - 1 : e - 1);
-          return l;
-        }),
-        (l.selectItem = function () {
-          var e = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : 'next',
-            t = l.props.wordscloud,
-            n = l.state.selectedIndex,
-            r = l.getIndex(n, t.length, e);
-          l.showHotComment(t[r], r);
-        }),
-        (l.getSelectedText = function () {
-          var e = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : 'mid',
-            t = l.props.wordscloud,
-            n = l.state.selectedIndex;
-          return t[l.getIndex(n, t.length, e)];
-        }),
-        (l.useRandomValues = function (e) {
-          if (!l.hash[e]) {
-            var t = Math.random();
-            l.hash[e] = {
-              randomSize: utils.random.getInt(15, 30),
-              textOpacity: t >= 0.8 ? 0.8 : t + 0.2,
-            };
-          }
-          return {
-            randomSize: l.hash[e].randomSize,
-            textOpacity: l.hash[e].textOpacity,
-          };
-        }),
-        (l.renderSelectedItem = function () {
-          return React.default.createElement(
-            ReactNative.View,
-            {
-              style: {
-                flex: 1,
-                alignItems: 'center',
-                justifyContent: 'center',
-              },
-            },
-            React.default.createElement(
-              ReactNative.View,
-              {
-                style: {
-                  height: 80,
-                  justifyContent: 'center',
-                },
-              },
-              React.default.createElement(
-                _default,
-                {
-                  style: {
-                    width: constants.DEVICE_WIDTH,
-                    flex: 1,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                  },
-                  initialPage: 1,
-                  onPageSelected: l.onTitleSelected,
-                  ref: (instance) => (this.titlePager = instance),
-                },
-                React.default.createElement(f, {
-                  text: l.getSelectedText('pre'),
-                }),
-                React.default.createElement(f, {
-                  text: l.getSelectedText('mid'),
-                }),
-                React.default.createElement(f, {
-                  text: l.getSelectedText('next'),
-                }),
-              ),
-            ),
-            l.renderCommentItems(),
-          );
-        }),
-        (l.renderCommentItems = function () {
-          var e,
-            t = l.state.selectedComments;
-          if (t && !(t.length < 1)) {
-            if (t.length > 1)
-              return t.map(function (e, t) {
-                return React.default.createElement(
-                  ReactNative.View,
-                  {
-                    key: t,
-                    style: {
-                      marginTop: 30,
-                    },
-                  },
-                  React.default.createElement(CommentBubble.default, {
-                    item: e,
-                    title: l.getSelectedText('mid'),
-                  }),
-                  e.beReplied.length > 0
-                    ? React.default.createElement(CommentBubble.default, {
-                        item: e.beReplied[0],
-                        replied: true,
-                      })
-                    : null,
-                );
-              });
-            var n = t[0];
-            return React.default.createElement(
-              ReactNative.View,
-              {
-                style: {
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                },
-              },
-              React.default.createElement(CommentBubble.default, {
-                item: n,
-                title: l.getSelectedText('mid'),
-              }),
-              (null === (e = n.beReplied) || void 0 === e ? void 0 : e.length) > 0
-                ? React.default.createElement(CommentBubble.default, {
-                    item: n.beReplied[0],
-                    replied: true,
-                  })
-                : null,
-            );
-          }
-        }),
-        (l.closeItem = function () {
-          l.setState({
-            showSelectedComments: false,
-          });
-        }),
-        (l.onTitleSelected = function (e) {
-          var t;
-          switch (e.nativeEvent.position) {
-            case 0:
-              l.selectItem('pre');
-              break;
-            case 2:
-              l.selectItem('next');
-          }
-          null === (t = l.titlePager) || void 0 === t || t.setPageWithoutAnimation(1);
-        }),
-        n
+        <ReactNative.View
+          style={{
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <CommentBubble item={n} title={this.getSelectedText('mid')} />
+          {n.beReplied?.length > 0 ? <CommentBubble item={n.beReplied[0]} replied={true} /> : null}
+        </ReactNative.View>
       );
     }
-    render() {
-      var e = this,
-        t = this.props,
-        n = t.wordscloud,
-        l = t.loadWordsCloudDone,
-        r = t.song;
-      return l
-        ? React.default.createElement(
-            ReactNative.View,
-            {
-              style: {
-                flex: 1,
-              },
-            },
-            React.default.createElement(
-              reactNativeSpringScrollview.SpringScrollView,
-              {
-                contentStyle: {
-                  paddingTop: '15%',
-                },
-              },
-              React.default.createElement(
-                ReactNative.View,
+  };
+  closeItem = () => {
+    this.setState({
+      showSelectedComments: false,
+    });
+  };
+  onTitleSelected = (e) => {
+    switch (e.nativeEvent.position) {
+      case 0:
+        this.selectItem('pre');
+        break;
+      case 2:
+        this.selectItem('next');
+    }
+    this.titlePager?.setPageWithoutAnimation(1);
+  };
+  render() {
+    const e = this;
+    const props = this.props;
+    const {wordscloud, loadWordsCloudDone, song} = props;
+    if (loadWordsCloudDone) {
+      return (
+        <ReactNative.View
+          style={{
+            flex: 1,
+          }}
+        >
+          <reactNativeSpringScrollview.SpringScrollView
+            contentStyle={{
+              paddingTop: '15%',
+            }}
+          >
+            <ReactNative.View
+              style={{
+                alignItems: 'center',
+                marginBottom: 20,
+              }}
+            >
+              {React.createElement(
+                _default2,
                 {
-                  style: {
-                    alignItems: 'center',
-                    marginBottom: 20,
-                  },
+                  style: [
+                    p.text,
+                    {
+                      fontSize: 25,
+                      textAlign: 'center',
+                      alignSelf: 'center',
+                      fontWeight: 'bold',
+                    },
+                  ],
                 },
-                React.default.createElement(
-                  _default2,
-                  {
-                    style: [
-                      p.text,
-                      {
-                        fontSize: 25,
-                        textAlign: 'center',
-                        alignSelf: 'center',
-                        fontWeight: 'bold',
-                      },
-                    ],
-                  },
-                  r.song,
-                ),
-                React.default.createElement(
-                  _default2,
-                  {
-                    style: [
-                      p.text,
-                      {
-                        fontSize: 15,
-                        alignSelf: 'center',
-                      },
-                    ],
-                  },
-                  (0, utils.parseArtist)(r.singer),
-                ),
-              ),
-              React.default.createElement(
-                ReactNative.View,
+                song.song,
+              )}
+              {React.createElement(
+                _default2,
                 {
-                  style: {
-                    flexDirection: 'row',
-                    flexWrap: 'wrap',
-                    padding: 20,
-                  },
+                  style: [
+                    p.text,
+                    {
+                      fontSize: 15,
+                      alignSelf: 'center',
+                    },
+                  ],
                 },
-                null === n || void 0 === n
-                  ? void 0
-                  : n.map(function (t, n) {
-                      var l = e.useRandomValues(n),
-                        r = l.textOpacity,
-                        o = l.randomSize;
-                      return React.default.createElement(
-                        ReactNative.View,
+                utils.parseArtist(song.singer),
+              )}
+            </ReactNative.View>
+            <ReactNative.View
+              style={{
+                flexDirection: 'row',
+                flexWrap: 'wrap',
+                padding: 20,
+              }}
+            >
+              {wordscloud?.map(function (t, n) {
+                const l = e.useRandomValues(n);
+                const {textOpacity, randomSize} = l;
+                return (
+                  <ReactNative.View
+                    key={n}
+                    style={[
+                      {
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                      },
+                    ]}
+                  >
+                    <ReactNative.TouchableOpacity
+                      onPress={function () {
+                        return e.showHotComment(t, n);
+                      }}
+                    >
+                      {React.createElement(
+                        _default2,
                         {
-                          key: n,
                           style: [
+                            p.text,
                             {
-                              justifyContent: 'center',
-                              alignItems: 'center',
+                              margin: 1,
+                              opacity: textOpacity,
+                              textAlignVertical: 'center',
+                              fontSize: randomSize,
                             },
                           ],
                         },
-                        React.default.createElement(
-                          ReactNative.TouchableOpacity,
-                          {
-                            onPress: function () {
-                              return e.showHotComment(t, n);
-                            },
-                          },
-                          React.default.createElement(
-                            _default2,
-                            {
-                              style: [
-                                p.text,
-                                {
-                                  margin: 1,
-                                  opacity: r,
-                                  textAlignVertical: 'center',
-                                  fontSize: o,
-                                },
-                              ],
-                            },
-                            t,
-                          ),
-                        ),
-                      );
-                    }),
-              ),
-            ),
-            React.default.createElement(
-              ReactNative.Modal,
-              {
-                visible: this.state.showSelectedComments,
-                onRequestClose: this.closeItem,
-                animationType: 'fade',
-                transparent: true,
-              },
-              React.default.createElement(
-                ReactNative.View,
-                {
-                  style: {
-                    flex: 1,
-                    backgroundColor: '#100f14',
-                  },
-                },
-                React.default.createElement(
-                  reactNativeSpringScrollview.SpringScrollView,
-                  {
-                    contentStyle: {
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      flexGrow: 1,
-                      paddingTop: constants.STATUS_BAR_HEIGHT + 100,
-                      padding: 20,
-                    },
-                  },
-                  this.renderSelectedItem(),
-                ),
-              ),
-            ),
-          )
-        : React.default.createElement(components.Spinkit, null);
+                        t,
+                      )}
+                    </ReactNative.TouchableOpacity>
+                  </ReactNative.View>
+                );
+              })}
+            </ReactNative.View>
+          </reactNativeSpringScrollview.SpringScrollView>
+          <ReactNative.Modal
+            visible={this.state.showSelectedComments}
+            onRequestClose={this.closeItem}
+            animationType={'fade'}
+            transparent={true}
+          >
+            <ReactNative.View
+              style={{
+                flex: 1,
+                backgroundColor: '#100f14',
+              }}
+            >
+              <reactNativeSpringScrollview.SpringScrollView
+                contentStyle={{
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexGrow: 1,
+                  paddingTop: constants.STATUS_BAR_HEIGHT + 100,
+                  padding: 20,
+                }}
+              >
+                {this.renderSelectedItem()}
+              </reactNativeSpringScrollview.SpringScrollView>
+            </ReactNative.View>
+          </ReactNative.Modal>
+        </ReactNative.View>
+      );
     }
-  },
-  f = function (e) {
-    var t = e.text;
-    return React.default.createElement(
-      ReactNative.View,
-      {
-        style: p.titleCon,
-      },
-      React.default.createElement(
+    return <components.Spinkit />;
+  }
+}
+var f = function ({text}) {
+  return (
+    <ReactNative.View style={p.titleCon}>
+      {React.createElement(
         _default2,
         {
           style: [p.text, p.title],
         },
         '“ ',
-        t,
+        text,
         ' ”',
-      ),
-    );
+      )}
+    </ReactNative.View>
+  );
+};
+var p = ReactNative.StyleSheet.create({
+  text: {
+    color: '#c99f63',
+    fontSize: 16,
   },
-  p = ReactNative.StyleSheet.create({
-    text: {
-      color: '#c99f63',
-      fontSize: 16,
-    },
-    titleCon: {
-      flex: 1,
-      height: '100%',
-      width: '100%',
-      alignItems: 'center',
-      justifyContent: 'center',
-      backgroundColor: 'rgba(0,0,0,0)',
-    },
-    title: {
-      fontSize: 30,
-    },
-  }),
-  g = m;
-exports.default = g;
+  titleCon: {
+    flex: 1,
+    height: '100%',
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0,0,0,0)',
+  },
+  title: {
+    fontSize: 30,
+  },
+});
+export default CommentAnalysis;

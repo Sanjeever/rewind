@@ -1,245 +1,215 @@
-const _interopRequireWildcard = require('@babel/runtime/helpers/interopRequireWildcard');
-const _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
-const _defineProperty = require('@babel/runtime/helpers/defineProperty');
-Object.defineProperty(exports, '__esModule', {
-  value: true,
-});
-exports.default = void 0;
-var l,
-  React = _interopRequireWildcard(require('react')),
-  ReactNative = require('react-native'),
-  reactNativeLargelist = require('./../components/Scrolling.js'),
-  components = require('../components/index'),
-  TabbedViewPager = _interopRequireDefault(require('../native/TabbedViewPager')),
-  providers = _interopRequireDefault(require('../services/providers')),
-  constants = require('../theme/constants'),
-  locales = _interopRequireDefault(require('../locales/index')),
-  services = require('../services/index'),
-  events = require('../events/index'),
-  trackInfo = require('../services/trackInfo'),
-  y = [locales.default.WEEKLY, locales.default.ALL],
-  g =
-    ((l = {}),
-    _defineProperty(l, locales.default.WEEKLY, '1'),
-    _defineProperty(l, locales.default.ALL, '2'),
-    l),
-  h = function (e) {
-    return e.map(function (e) {
-      e.song.playCount = e.playCount;
-      return e.song;
-    });
-  },
-  v = class t extends React.PureComponent {
-    constructor() {
-      var e, a, n;
-      for (var r = arguments.length, l = new Array(r), o = 0; o < r; o++) l[o] = arguments[o];
-      return (
-        (a = n = super(...l)),
-        (n.state = {
-          index: 0,
-          weekData: [],
-          allData: [],
-          profile: {},
-        }),
-        (n.init = function () {
-          var e = n.props.route.params;
-          if (e) {
-            var t = e.profile;
-            t &&
-              (n.setState({
-                profile: t,
-              }),
-              n.loadWeekData(t.userId),
-              n.loadAllData(t.userId));
-          }
-        }),
-        (n.loadWeekData = async function (id) {
-          const response = await services.Netease.listen_record(id, 1);
-          if (response?.code === 200)
-            n.setState({
-              weekData: h(response.weekData),
-            });
-        }),
-        (n.loadAllData = async function (id) {
-          const response = await services.Netease.listen_record(id, 0);
-          if (response?.code === 200)
-            n.setState({
-              allData: h(response.allData),
-            });
-        }),
-        (n.handlePageSelected = function (e) {
-          var t = e.nativeEvent.position;
-          n.setState({
-            index: t,
-          });
-        }),
-        (n.onTop = function () {
-          var e, t;
-          0 === n.state.index
-            ? null === (e = n._weekDataList) ||
-              void 0 === e ||
-              e.scrollTo({
-                x: 0,
-                y: 0,
-              })
-            : null === (t = n._allDataList) ||
-              void 0 === t ||
-              t.scrollTo({
-                x: 0,
-                y: 0,
-              });
-        }),
-        (n.renderScenes = function (e) {
-          var t = n.state,
-            a = t.weekData,
-            r = t.allData;
-          switch (e) {
-            case '1':
-              return React.default.createElement(reactNativeLargelist.LargeList, {
-                data: [
-                  {
-                    items: a,
-                  },
-                ],
-                heightForIndexPath: function () {
-                  return constants.ITEM_HEIGHT;
-                },
-                renderIndexPath: function (e) {
-                  var t = e.row;
-                  return n.renderItem({
-                    item: a[t],
-                    index: t,
-                    dataKey: 'weekData',
-                  });
-                },
-                ref: function (e) {
-                  return (n._weekDataList = e);
-                },
-              });
-            case '2':
-              return React.default.createElement(reactNativeLargelist.LargeList, {
-                data: [
-                  {
-                    items: r,
-                  },
-                ],
-                heightForIndexPath: function () {
-                  return constants.ITEM_HEIGHT;
-                },
-                renderIndexPath: function (e) {
-                  var t = e.row;
-                  return n.renderItem({
-                    item: r[t],
-                    index: t,
-                    dataKey: 'allData',
-                  });
-                },
-                ref: function (e) {
-                  return (n._allDataList = e);
-                },
-              });
-          }
-        }),
-        (n.renderItem = function (e) {
-          var t = e.item,
-            a = e.index,
-            r = e.dataKey,
-            l = (0, trackInfo.extractFullInfo)(t),
-            o = l.song,
-            u = l.singer,
-            d = l.alias,
-            f = t.playCount ? t.playCount + ' ' + locales.default.TIMES : l.album;
-          return React.default.createElement(components.SongRow, {
-            index: a,
-            song: o,
-            singer: u,
-            alias: d,
-            album: f,
-            onPress: function () {
-              return n.playMusic({
-                item: t,
-                index: a,
-                dataKey: r,
-              });
-            },
-            detail: function () {
-              return (0, events.toDetailModal)({
-                item: t,
-                index: a,
-                api: providers.default.netEase,
-              });
-            },
-            addToQueue: function () {
-              return (0, events.toInsertToList)({
-                data: t,
-                api: providers.default.netEase,
-              });
-            },
-            songItem: t,
-          });
-        }),
-        (n.playMusic = function (e) {
-          var t = e.item,
-            a = e.index,
-            r = e.dataKey,
-            l = n.state[r];
-          l.length > 0 &&
-            (0, events.toPlayer)({
-              item: t,
-              data: l,
-              index: a,
-              api: providers.default.netEase,
-            });
-        }),
-        a
-      );
-    }
-    componentDidMount() {
-      this.init();
-    }
-    render() {
-      var e = this;
-      return React.default.createElement(
-        ReactNative.View,
-        {
-          style: D.container,
-        },
-        React.default.createElement(components.Background, null),
-        React.default.createElement(components.HeaderBar, {
-          title: locales.default.LISTEN_RECORD,
-          goBack: this.props.navigation.goBack,
-          onTop: this.onTop,
-        }),
-        React.default.createElement(
-          ReactNative.View,
-          {
-            style: D.content,
-          },
-          React.default.createElement(
-            TabbedViewPager.default,
-            {
-              tabNames: y,
-              onPageSelected: this.handlePageSelected,
-            },
-            y.map(function (t, a) {
-              return React.default.createElement(
-                ReactNative.View,
-                {
-                  key: a,
-                  style: {
-                    flex: 1,
-                    paddingBottom: 50,
-                  },
-                },
-                e.renderScenes(g[t]),
-              );
-            }),
-          ),
-        ),
-      );
+import * as React from 'react';
+import * as ReactNative from 'react-native';
+import * as reactNativeLargelist from './../components/Scrolling.js';
+import * as components from '../components/index';
+import TabbedViewPager from '../native/TabbedViewPager';
+import providers from '../services/providers';
+import * as constants from '../theme/constants';
+import locales from '../locales/index';
+import * as services from '../services/index';
+import * as events from '../events/index';
+import * as trackInfo from '../services/trackInfo';
+let l;
+const tabNames = [locales.WEEKLY, locales.ALL];
+l = {};
+l[locales.WEEKLY] = '1';
+l[locales.ALL] = '2';
+const g = l;
+const h = (e) =>
+  e.map((e) => {
+    e.song.playCount = e.playCount;
+    return e.song;
+  });
+class ListenRecord extends React.PureComponent {
+  state = {
+    index: 0,
+    weekData: [],
+    allData: [],
+    profile: {},
+  };
+  init = () => {
+    const params = this.props.route.params;
+    if (params) {
+      const profile = params.profile;
+      if (profile) {
+        this.setState({
+          profile,
+        });
+        this.loadWeekData(profile.userId);
+        this.loadAllData(profile.userId);
+      }
     }
   };
-exports.default = v;
+  loadWeekData = async (id) => {
+    const response = await services.Netease.listen_record(id, 1);
+    if (response?.code === 200) {
+      this.setState({
+        weekData: h(response.weekData),
+      });
+    }
+  };
+  loadAllData = async (id) => {
+    const response = await services.Netease.listen_record(id, 0);
+    if (response?.code === 200) {
+      this.setState({
+        allData: h(response.allData),
+      });
+    }
+  };
+  handlePageSelected = (e) => {
+    const position = e.nativeEvent.position;
+    this.setState({
+      index: position,
+    });
+  };
+  onTop = () => {
+    let e;
+    let t;
+    if (this.state.index === 0) {
+      if (!((e = this._weekDataList) === null || e === undefined)) {
+        e.scrollTo({
+          x: 0,
+          y: 0,
+        });
+      }
+    } else if (!((t = this._allDataList) === null || t === undefined)) {
+      t.scrollTo({
+        x: 0,
+        y: 0,
+      });
+    }
+  };
+  renderScenes = (e) => {
+    const n_state = this.state;
+    const {weekData, allData} = n_state;
+    switch (e) {
+      case '1':
+        return (
+          <reactNativeLargelist.LargeList
+            data={[
+              {
+                items: weekData,
+              },
+            ]}
+            heightForIndexPath={function () {
+              return constants.ITEM_HEIGHT;
+            }}
+            renderIndexPath={({row}) => {
+              return this.renderItem({
+                item: weekData[row],
+                index: row,
+                dataKey: 'weekData',
+              });
+            }}
+            ref={(e) => {
+              return (this._weekDataList = e);
+            }}
+          />
+        );
+      case '2':
+        return (
+          <reactNativeLargelist.LargeList
+            data={[
+              {
+                items: allData,
+              },
+            ]}
+            heightForIndexPath={function () {
+              return constants.ITEM_HEIGHT;
+            }}
+            renderIndexPath={({row}) => {
+              return this.renderItem({
+                item: allData[row],
+                index: row,
+                dataKey: 'allData',
+              });
+            }}
+            ref={(e) => {
+              return (this._allDataList = e);
+            }}
+          />
+        );
+    }
+  };
+  renderItem = ({item, index, dataKey}) => {
+    const l = trackInfo.extractFullInfo(item);
+    const {song, singer, alias} = l;
+    const album = item.playCount ? `${item.playCount} ${locales.TIMES}` : l.album;
+    return (
+      <components.SongRow
+        index={index}
+        song={song}
+        singer={singer}
+        alias={alias}
+        album={album}
+        onPress={() => {
+          return this.playMusic({
+            item,
+            index,
+            dataKey,
+          });
+        }}
+        detail={function () {
+          return events.toDetailModal({
+            item,
+            index,
+            api: providers.netEase,
+          });
+        }}
+        addToQueue={function () {
+          return events.toInsertToList({
+            data: item,
+            api: providers.netEase,
+          });
+        }}
+        songItem={item}
+      />
+    );
+  };
+  playMusic = ({item, index, dataKey}) => {
+    const l = this.state[dataKey];
+    if (l.length > 0) {
+      events.toPlayer({
+        item,
+        data: l,
+        index,
+        api: providers.netEase,
+      });
+    }
+  };
+  componentDidMount() {
+    this.init();
+  }
+  render() {
+    const e = this;
+    return (
+      <ReactNative.View style={D.container}>
+        <components.Background />
+        <components.HeaderBar
+          title={locales.LISTEN_RECORD}
+          goBack={this.props.navigation.goBack}
+          onTop={this.onTop}
+        />
+        <ReactNative.View style={D.content}>
+          <TabbedViewPager tabNames={tabNames} onPageSelected={this.handlePageSelected}>
+            {tabNames.map((t, key) => (
+              <ReactNative.View
+                key={key}
+                style={{
+                  flex: 1,
+                  paddingBottom: 50,
+                }}
+              >
+                {e.renderScenes(g[t])}
+              </ReactNative.View>
+            ))}
+          </TabbedViewPager>
+        </ReactNative.View>
+      </ReactNative.View>
+    );
+  }
+}
+export default ListenRecord;
 var D = ReactNative.StyleSheet.create({
   container: {
     flex: 1,

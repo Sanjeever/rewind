@@ -1,14 +1,9 @@
-const _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
-Object.defineProperty(exports, '__esModule', {
-  value: true,
-});
-exports.default = exports.BOTTOM_BAR_HEIGHT = exports.SOFT_MENU_HEIGHT = void 0;
-var ReactNative = require('react-native'),
-  constants = require('../theme/constants'),
-  r = _interopRequireDefault(require('../native/dimensions')).default.get('SOFT_MENU_BAR_HEIGHT');
-exports.SOFT_MENU_HEIGHT = r;
-exports.BOTTOM_BAR_HEIGHT = 60;
-var d = ReactNative.StyleSheet.create({
+import * as ReactNative from 'react-native';
+import * as constants from '../theme/constants';
+import dimensions from '../native/dimensions';
+export const SOFT_MENU_HEIGHT = dimensions.get('SOFT_MENU_BAR_HEIGHT');
+export const BOTTOM_BAR_HEIGHT = 60;
+const d = ReactNative.StyleSheet.create({
   container: {
     height: 60,
     width: '100%',
@@ -24,7 +19,7 @@ var d = ReactNative.StyleSheet.create({
     bottom: 10,
     height: 150,
     justifyContent: 'center',
-    paddingBottom: 10 + r,
+    paddingBottom: 10 + SOFT_MENU_HEIGHT,
   },
   softKeyFooterHeight: {
     bottom: 20,
@@ -93,7 +88,7 @@ var d = ReactNative.StyleSheet.create({
   },
   blankLyric: {
     position: 'absolute',
-    bottom: r + 30,
+    bottom: SOFT_MENU_HEIGHT + 30,
     alignSelf: 'center',
     opacity: 1,
     alignItems: 'center',
@@ -103,13 +98,13 @@ var d = ReactNative.StyleSheet.create({
     top: null,
   },
   soft: {
-    bottom: r,
+    bottom: SOFT_MENU_HEIGHT,
   },
   softPadding: {
-    paddingBottom: r,
+    paddingBottom: SOFT_MENU_HEIGHT,
   },
   timeSoftPadding: {
-    bottom: r > 30 ? (r - 30) / 2 : 0,
+    bottom: SOFT_MENU_HEIGHT > 30 ? (SOFT_MENU_HEIGHT - 30) / 2 : 0,
   },
   vertical: {
     position: 'absolute',
@@ -120,4 +115,4 @@ var d = ReactNative.StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0)',
   },
 });
-exports.default = d;
+export default d;

@@ -1,99 +1,70 @@
-const _default = require('./../../components/Text.js').default;
-const _interopRequireWildcard = require('@babel/runtime/helpers/interopRequireWildcard');
-const _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
-Object.defineProperty(exports, '__esModule', {
-  value: true,
-});
-exports.default = void 0;
-var React = _interopRequireWildcard(require('react')),
-  ReactNative = require('react-native'),
-  components = require('../../components/index'),
-  constants = require('../../theme/constants'),
-  icons = _interopRequireDefault(require('../../theme/icons')),
-  d = class t extends React.PureComponent {
-    constructor() {
-      return super(...arguments);
-    }
-    render() {
-      var e = this.props,
-        t = e.showModal,
-        l = e.albumImg,
-        r = e.onClose,
-        a = e.company,
-        d = e.publishTime,
-        c = e.description;
-      return React.default.createElement(
-        ReactNative.Modal,
-        {
-          visible: t,
-          backdropOpacity: 0.8,
-          onRequestClose: r,
-          position: 'center',
-          animationType: 'fade',
-        },
-        React.default.createElement(
-          ReactNative.View,
-          {
-            style: {
+import Text from './../../components/Text.js';
+import * as React from 'react';
+import * as ReactNative from 'react-native';
+import * as components from '../../components/index';
+import * as constants from '../../theme/constants';
+import icons from '../../theme/icons';
+class Description extends React.PureComponent {
+  render() {
+    const props = this.props;
+    const {showModal, albumImg, onClose, company, publishTime, description} = props;
+    return (
+      <ReactNative.Modal
+        visible={showModal}
+        backdropOpacity={0.8}
+        onRequestClose={onClose}
+        position={'center'}
+        animationType={'fade'}
+      >
+        <ReactNative.View
+          style={{
+            flex: 1,
+            paddingTop: constants.STATUS_BAR_HEIGHT + 20,
+          }}
+        >
+          <components.Background coverUrl={albumImg} blur={true} />
+          <components.Icon name={icons.WINDOW_CLOSE} size={25} onPress={onClose} />
+          <ReactNative.ScrollView
+            overScrollMode={'never'}
+            style={{
+              marginTop: constants.STATUS_BAR_HEIGHT + 20,
+              height: '100%',
               flex: 1,
-              paddingTop: constants.STATUS_BAR_HEIGHT + 20,
-            },
-          },
-          React.default.createElement(components.Background, {
-            coverUrl: l,
-            blur: true,
-          }),
-          React.default.createElement(components.Icon, {
-            name: icons.default.WINDOW_CLOSE,
-            size: 25,
-            onPress: r,
-          }),
-          React.default.createElement(
-            ReactNative.ScrollView,
-            {
-              overScrollMode: 'never',
-              style: {
-                marginTop: constants.STATUS_BAR_HEIGHT + 20,
-                height: '100%',
+              paddingHorizontal: 20,
+            }}
+          >
+            <ReactNative.View
+              style={{
                 flex: 1,
-                paddingHorizontal: 20,
-              },
-            },
-            React.default.createElement(
-              ReactNative.View,
-              {
-                style: {
-                  flex: 1,
-                },
-              },
-              React.default.createElement(_default, null),
-              React.default.createElement(
-                _default,
-                {
-                  style: [
-                    {
-                      fontSize: 15,
-                      lineHeight: 30,
-                    },
-                  ],
-                },
-                '发行公司：',
-                a,
-                '\n',
-                '发行日期：',
-                d,
-                '\n\n',
-                c,
-              ),
-            ),
-            React.default.createElement(ReactNative.View, {
-              style: {
+              }}
+            >
+              <Text />
+              <Text
+                style={[
+                  {
+                    fontSize: 15,
+                    lineHeight: 30,
+                  },
+                ]}
+              >
+                {'发行公司：'}
+                {company}
+                {'\n'}
+                {'发行日期：'}
+                {publishTime}
+                {'\n\n'}
+                {description}
+              </Text>
+            </ReactNative.View>
+            <ReactNative.View
+              style={{
                 height: 200,
-              },
-            }),
-          ),
-        ),
-      );
-    }
-  };
-exports.default = d;
+              }}
+            />
+          </ReactNative.ScrollView>
+        </ReactNative.View>
+      </ReactNative.Modal>
+    );
+  }
+}
+export default Description;

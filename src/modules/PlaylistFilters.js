@@ -1,97 +1,76 @@
-const _interopRequireWildcard = require('@babel/runtime/helpers/interopRequireWildcard');
-const _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
-Object.defineProperty(exports, '__esModule', {
-  value: true,
-});
-exports.default = void 0;
-var React = _interopRequireWildcard(require('react')),
-  ReactNative = require('react-native'),
-  reactNativeSpringScrollview = require('./../components/Scrolling.js'),
-  components = require('../components/index'),
-  icons = _interopRequireDefault(require('../theme/icons')),
-  services = require('../services/index'),
-  utils = require('../utils/index'),
-  filterColors = require('../components/filterColors'),
-  filterStyles = _interopRequireDefault(require('../components/filterStyles')),
-  b = class r extends React.PureComponent {
-    constructor() {
-      var e, t, n;
-      for (var l = arguments.length, o = new Array(l), i = 0; i < l; i++) o[i] = arguments[i];
-      return (
-        (t = n = super(...o)),
-        (n.renderCategoryItem = function (e) {
-          var r = e.item,
-            t = e.index,
-            l = utils.random.getInt(20, 30);
-          return React.default.createElement(filterStyles.default, {
-            key: t,
-            name: r.name,
-            highlight: n.props.currentType === r.name,
-            onPress: function () {
-              return n.props.onType(r.name);
-            },
-            textStyle: {
-              fontSize: l,
-            },
-          });
-        }),
-        t
-      );
-    }
-    render() {
-      var e = this,
-        r = this.props,
-        t = r.visible,
-        n = r.onClose,
-        l = r.onSearch,
-        c = r.currentType;
-      return React.default.createElement(
-        ReactNative.Modal,
-        {
-          transparent: true,
-          animationType: 'fade',
-          visible: t,
-          onRequestClose: n,
-        },
-        React.default.createElement(
-          ReactNative.View,
-          {
-            style: {
-              backgroundColor: 'rgba(0,0,0,0.9)',
-              flex: 1,
-            },
-          },
-          React.default.createElement(
-            reactNativeSpringScrollview.SpringScrollView,
-            {
-              contentStyle: {
-                paddingTop: '25%',
-                flexDirection: 'row',
-                flexWrap: 'wrap',
-                padding: 20,
-              },
-            },
-            React.default.createElement(components.Icon, {
-              color: filterColors.highlightColor,
-              name: icons.default.WINDOW_CLOSE,
-              size: 40,
-              onPress: n,
-            }),
-            services.Netease.playlist_category_names.map(function (r, t) {
-              return e.renderCategoryItem({
-                item: r,
-                index: t,
-              });
-            }),
-            React.default.createElement(components.Icon, {
-              color: 'search' === c ? filterColors.highlightColor : filterColors.defaultColor,
-              name: icons.default.MAGNIFY,
-              size: 40,
-              onPress: l,
-            }),
-          ),
-        ),
-      );
-    }
+import * as React from 'react';
+import * as ReactNative from 'react-native';
+import * as reactNativeSpringScrollview from './../components/Scrolling.js';
+import * as components from '../components/index';
+import icons from '../theme/icons';
+import * as services from '../services/index';
+import * as utils from '../utils/index';
+import * as filterColors from '../components/filterColors';
+import filterStyles from '../components/filterStyles';
+class PlaylistFilters extends React.PureComponent {
+  renderCategoryItem = ({item, index}) => {
+    const fontSize = utils.random.getInt(20, 30);
+    return React.createElement(filterStyles, {
+      key: index,
+      name: item.name,
+      highlight: this.props.currentType === item.name,
+      onPress: () => {
+        return this.props.onType(item.name);
+      },
+      textStyle: {
+        fontSize,
+      },
+    });
   };
-exports.default = b;
+  render() {
+    const e = this;
+    const props = this.props;
+    const {visible, onClose, onSearch, currentType} = props;
+    return (
+      <ReactNative.Modal
+        transparent={true}
+        animationType={'fade'}
+        visible={visible}
+        onRequestClose={onClose}
+      >
+        <ReactNative.View
+          style={{
+            backgroundColor: 'rgba(0,0,0,0.9)',
+            flex: 1,
+          }}
+        >
+          <reactNativeSpringScrollview.SpringScrollView
+            contentStyle={{
+              paddingTop: '25%',
+              flexDirection: 'row',
+              flexWrap: 'wrap',
+              padding: 20,
+            }}
+          >
+            <components.Icon
+              color={filterColors.highlightColor}
+              name={icons.WINDOW_CLOSE}
+              size={40}
+              onPress={onClose}
+            />
+            {services.Netease.playlist_category_names.map((item, index) =>
+              e.renderCategoryItem({
+                item,
+                index,
+              }),
+            )}
+            <components.Icon
+              color={
+                currentType === 'search' ? filterColors.highlightColor : filterColors.defaultColor
+              }
+              name={icons.MAGNIFY}
+              size={40}
+              onPress={onSearch}
+            />
+          </reactNativeSpringScrollview.SpringScrollView>
+        </ReactNative.View>
+      </ReactNative.Modal>
+    );
+  }
+}
+export default PlaylistFilters;

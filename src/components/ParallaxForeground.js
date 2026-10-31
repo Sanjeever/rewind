@@ -1,171 +1,130 @@
-const _default = require('./Text.js').default;
-const _interopRequireWildcard = require('@babel/runtime/helpers/interopRequireWildcard');
-const _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
-Object.defineProperty(exports, '__esModule', {
-  value: true,
-});
-exports.default = void 0;
-var React = _interopRequireWildcard(require('react')),
-  ReactNative = require('react-native'),
-  reactNativeAnimatable = _interopRequireWildcard(require('react-native-animatable')),
-  constants = require('../theme/constants'),
-  icons = _interopRequireDefault(require('../theme/icons')),
-  components = require('./index'),
-  d = class t extends React.PureComponent {
-    constructor() {
-      var e, a, n;
-      for (var o = arguments.length, i = new Array(o), u = 0; u < o; u++) i[u] = arguments[u];
-      return (
-        (a = n = super(...i)),
-        (n.renderBottomMask = function () {
-          var e = n.props.animOffsetY;
-          return React.default.createElement(
-            ReactNative.Animated.View,
-            {
-              style: {
-                position: 'absolute',
-                width: '100%',
-                height: 150,
-                bottom: 0,
-                opacity: e.interpolate({
-                  inputRange: [-50, 0],
-                  outputRange: [0, 1],
-                  extrapolate: 'clamp',
-                }),
-              },
-            },
-            React.default.createElement(components.GradientMask, {
-              from: 'bottom',
-              style: {
-                width: '100%',
-                height: '100%',
-              },
-            }),
-          );
+import Text from './Text.js';
+import * as React from 'react';
+import * as ReactNative from 'react-native';
+import * as reactNativeAnimatable from 'react-native-animatable';
+import * as constants from '../theme/constants';
+import icons from '../theme/icons';
+import * as components from './index';
+class ParallaxForeground extends React.PureComponent {
+  renderBottomMask = () => {
+    const animOffsetY = this.props.animOffsetY;
+    return (
+      <ReactNative.Animated.View
+        style={{
+          position: 'absolute',
+          width: '100%',
+          height: 150,
+          bottom: 0,
+          opacity: animOffsetY.interpolate({
+            inputRange: [-50, 0],
+            outputRange: [0, 1],
+            extrapolate: 'clamp',
+          }),
+        }}
+      >
+        <components.GradientMask
+          from={'bottom'}
+          style={{
+            width: '100%',
+            height: '100%',
+          }}
+        />
+      </ReactNative.Animated.View>
+    );
+  };
+  render() {
+    const props = this.props;
+    const {img, subtitle, title, animOffsetY, alias, onInfo} = props;
+    const g = constants.STATUS_BAR_HEIGHT + 40;
+    const m = typeof subtitle === 'string' ? [subtitle] : subtitle;
+    const transform = [
+      {
+        translateY: animOffsetY.interpolate({
+          inputRange: [-constants.DEVICE_WIDTH, 0],
+          outputRange: [-constants.DEVICE_WIDTH / 2, 0],
+          extrapolate: 'clamp',
         }),
-        a
-      );
-    }
-    render() {
-      var e = this.props,
-        t = e.img,
-        a = e.subtitle,
-        n = e.title,
-        o = e.animOffsetY,
-        d = e.alias,
-        c = e.onInfo,
-        g = constants.STATUS_BAR_HEIGHT + 40,
-        m = 'string' == typeof a ? [a] : a,
-        b = [
+      },
+      {
+        scale: animOffsetY.interpolate({
+          inputRange: [-constants.DEVICE_WIDTH, 0],
+          outputRange: [2, 1],
+          extrapolate: 'clamp',
+        }),
+      },
+    ];
+    return (
+      <ReactNative.Animated.View
+        style={[
+          f.foreground,
           {
-            translateY: o.interpolate({
-              inputRange: [-constants.DEVICE_WIDTH, 0],
-              outputRange: [-constants.DEVICE_WIDTH / 2, 0],
+            opacity: animOffsetY.interpolate({
+              inputRange: [100, constants.DEVICE_WIDTH - g - 30],
+              outputRange: [1, 0],
               extrapolate: 'clamp',
             }),
           },
-          {
-            scale: o.interpolate({
-              inputRange: [-constants.DEVICE_WIDTH, 0],
-              outputRange: [2, 1],
-              extrapolate: 'clamp',
-            }),
-          },
-        ];
-      return React.default.createElement(
-        ReactNative.Animated.View,
-        {
-          style: [
-            f.foreground,
+        ]}
+      >
+        {typeof img === 'string' && img ? (
+          <reactNativeAnimatable.Image
+            animation={'fadeIn'}
+            useNativeDriver={true}
+            source={{
+              uri: img,
+            }}
+            style={[
+              f.foregroundImg,
+              {
+                transform,
+              },
+            ]}
+          />
+        ) : (
+          <ReactNative.View style={[f.foregroundImg, f.foregroundIconCon]}>
+            <components.Icon name={icons.ACCOUNT_MUSIC} size={70} />
+          </ReactNative.View>
+        )}
+        {this.renderBottomMask()}
+        <ReactNative.Animated.View
+          style={[
+            f.textCon,
             {
-              opacity: o.interpolate({
-                inputRange: [100, constants.DEVICE_WIDTH - g - 30],
-                outputRange: [1, 0],
+              opacity: animOffsetY.interpolate({
+                inputRange: [-constants.DEVICE_WIDTH / 3, 0],
+                outputRange: [0, 1],
                 extrapolate: 'clamp',
               }),
             },
-          ],
-        },
-        'string' == typeof t && t
-          ? React.default.createElement(reactNativeAnimatable.Image, {
-              animation: 'fadeIn',
-              useNativeDriver: true,
-              source: {
-                uri: t,
-              },
-              style: [
-                f.foregroundImg,
-                {
-                  transform: b,
-                },
-              ],
-            })
-          : React.default.createElement(
-              ReactNative.View,
-              {
-                style: [f.foregroundImg, f.foregroundIconCon],
-              },
-              React.default.createElement(components.Icon, {
-                name: icons.default.ACCOUNT_MUSIC,
-                size: 70,
-              }),
-            ),
-        this.renderBottomMask(),
-        React.default.createElement(
-          ReactNative.Animated.View,
-          {
-            style: [
-              f.textCon,
-              {
-                opacity: o.interpolate({
-                  inputRange: [-constants.DEVICE_WIDTH / 3, 0],
-                  outputRange: [0, 1],
-                  extrapolate: 'clamp',
-                }),
-              },
-            ],
-          },
-          React.default.createElement(
-            components.Selectable,
-            {
-              style: [f.bold],
-            },
-            n,
-            Boolean(d) &&
-              React.default.createElement(
-                _default,
-                {
-                  style: f.alias,
-                },
-                ' / ',
-                d,
-              ),
-          ),
-          (null === m || void 0 === m ? void 0 : m.length) > 0 &&
-            m.map(function (e, t) {
-              return (
-                'string' == typeof e &&
-                React.default.createElement(
-                  _default,
-                  {
-                    key: t,
-                    style: f.subtitle,
-                  },
-                  e,
-                )
-              );
-            }),
-          Boolean(c) &&
-            React.default.createElement(components.Icon, {
-              name: icons.default.INFORMATION_OUTLINE,
-              style: f.info,
-              onPress: c,
-            }),
-        ),
-      );
-    }
-  };
-exports.default = d;
+          ]}
+        >
+          <components.Selectable style={[f.bold]}>
+            {title}
+            {Boolean(alias) && (
+              <Text style={f.alias}>
+                {' / '}
+                {alias}
+              </Text>
+            )}
+          </components.Selectable>
+          {m?.length > 0 &&
+            m.map(
+              (e, key) =>
+                typeof e === 'string' && (
+                  <Text key={key} style={f.subtitle}>
+                    {e}
+                  </Text>
+                ),
+            )}
+          {Boolean(onInfo) && (
+            <components.Icon name={icons.INFORMATION_OUTLINE} style={f.info} onPress={onInfo} />
+          )}
+        </ReactNative.Animated.View>
+      </ReactNative.Animated.View>
+    );
+  }
+}
+export default ParallaxForeground;
 var f = ReactNative.StyleSheet.create({
   foreground: {
     height: constants.DEVICE_WIDTH,

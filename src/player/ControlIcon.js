@@ -1,51 +1,36 @@
-const _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
-Object.defineProperty(exports, '__esModule', {
-  value: true,
-});
-exports.default = void 0;
-var React = _interopRequireDefault(require('react')),
-  ReactNative = require('react-native'),
-  TouchableScale = _interopRequireDefault(require('../components/TouchableScale')),
-  components = require('../components/index'),
-  s = function (e) {
-    var t = e.name,
-      r = e.size,
-      a = void 0 === r ? 28 : r,
-      l = e.color,
-      s = e.disabled,
-      u = void 0 !== s && s,
-      c = e.style,
-      f = e.onPress,
-      b = e.onLongPress;
-    return React.default.createElement(
-      ReactNative.View,
-      {
-        style: [
-          {
-            height: a + 12,
-            width: a + 12,
-            borderRadius: (a + 12) / 2,
-            justifyContent: 'center',
-            alignItems: 'center',
-            backgroundColor: 'rgba(0,0,0,0)',
-          },
-          c,
-        ],
-      },
-      React.default.createElement(
-        TouchableScale.default,
+import 'react';
+import * as ReactNative from 'react-native';
+import TouchableScale from '../components/TouchableScale';
+import * as components from '../components/index';
+const SComponent = function (e) {
+  const {name, size} = e;
+  const size_1 = size === undefined ? 28 : size;
+  const {color, disabled} = e;
+  const disabled_1 = disabled !== undefined && disabled;
+  const {style, onPress, onLongPress} = e;
+  return (
+    <ReactNative.View
+      style={[
         {
-          activeScale: 0.8,
-          disabled: u,
-          onPress: f,
-          onLongPress: b,
+          height: size_1 + 12,
+          width: size_1 + 12,
+          borderRadius: (size_1 + 12) / 2,
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: 'rgba(0,0,0,0)',
         },
-        React.default.createElement(components.Icon, {
-          size: a,
-          name: t,
-          color: l,
-        }),
-      ),
-    );
-  };
-exports.default = s;
+        style,
+      ]}
+    >
+      <TouchableScale
+        activeScale={0.8}
+        disabled={disabled_1}
+        onPress={onPress}
+        onLongPress={onLongPress}
+      >
+        <components.Icon size={size_1} name={name} color={color} />
+      </TouchableScale>
+    </ReactNative.View>
+  );
+};
+export default SComponent;

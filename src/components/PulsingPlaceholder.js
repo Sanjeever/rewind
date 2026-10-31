@@ -1,82 +1,59 @@
-const _interopRequireWildcard = require('@babel/runtime/helpers/interopRequireWildcard');
-const _objectWithoutProperties = require('@babel/runtime/helpers/objectWithoutProperties');
-const _extends = require('@babel/runtime/helpers/extends');
-Object.defineProperty(exports, '__esModule', {
-  value: true,
-});
-exports.default = void 0;
-var React = _interopRequireWildcard(require('react')),
-  ReactNative = require('react-native'),
-  o = 1e3,
-  s = 500,
-  u = class t extends React.PureComponent {
-    constructor() {
-      var e, a, n;
-      for (var i = arguments.length, l = new Array(i), u = 0; u < i; u++) l[u] = arguments[u];
+import * as React from 'react';
+import * as ReactNative from 'react-native';
+const o = 1000;
+const s = 500;
+class PulsingPlaceholder extends React.PureComponent {
+  _animValue = new ReactNative.Animated.Value(0.3);
+  start = () => {
+    this._animation = ReactNative.Animated.timing(this._animValue, {
+      toValue: 1,
+      easing: ReactNative.Easing.easeIn,
+      useNativeDriver: true,
+      duration: o,
+    });
+    this._animation.start(() => {
+      this._animation = ReactNative.Animated.timing(this._animValue, {
+        toValue: 0.3,
+        useNativeDriver: true,
+        duration: s,
+      });
+      this._animation.start(this.start);
+    });
+  };
+  componentDidMount() {
+    this.start();
+  }
+  componentWillUnmount() {
+    this._animation.stop?.();
+  }
+  render() {
+    const props = this.props;
+    const {style, textMode, ...rest} = props;
+    if (textMode) {
       return (
-        (a = n = super(...l)),
-        (n._animValue = new ReactNative.Animated.Value(0.3)),
-        (n.start = function () {
-          n._animation = ReactNative.Animated.timing(n._animValue, {
-            toValue: 1,
-            easing: ReactNative.Easing.easeIn,
-            useNativeDriver: true,
-            duration: o,
-          });
-          n._animation.start(function () {
-            n._animation = ReactNative.Animated.timing(n._animValue, {
-              toValue: 0.3,
-              useNativeDriver: true,
-              duration: s,
-            });
-            n._animation.start(n.start);
-          });
-        }),
-        a
+        <ReactNative.Animated.Text
+          style={[
+            {
+              opacity: this._animValue,
+            },
+            style,
+          ]}
+          {...rest}
+        />
       );
     }
-    componentDidMount() {
-      this.start();
-    }
-    componentWillUnmount() {
-      var e, t;
-      null === (e = (t = this._animation).stop) || void 0 === e || e.call(t);
-    }
-    render() {
-      var e = this.props,
-        t = e.style,
-        a = e.textMode,
-        n = _objectWithoutProperties(e, ['style', 'textMode']);
-      return a
-        ? React.default.createElement(
-            ReactNative.Animated.Text,
-            _extends(
-              {
-                style: [
-                  {
-                    opacity: this._animValue,
-                  },
-                  t,
-                ],
-              },
-              n,
-            ),
-          )
-        : React.default.createElement(
-            ReactNative.Animated.View,
-            _extends(
-              {
-                style: [
-                  {
-                    backgroundColor: '#eee',
-                    opacity: this._animValue,
-                  },
-                  t,
-                ],
-              },
-              n,
-            ),
-          );
-    }
-  };
-exports.default = u;
+    return (
+      <ReactNative.Animated.View
+        style={[
+          {
+            backgroundColor: '#eee',
+            opacity: this._animValue,
+          },
+          style,
+        ]}
+        {...rest}
+      />
+    );
+  }
+}
+export default PulsingPlaceholder;

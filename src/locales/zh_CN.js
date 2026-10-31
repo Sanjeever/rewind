@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   ABOUT: '关于',
   ACTION_NEXT: '下一首',
   ACTION_PLAY_PAUSE: '播放/暂停',

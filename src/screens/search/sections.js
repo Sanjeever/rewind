@@ -1,21 +1,14 @@
-const _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
-Object.defineProperty(exports, '__esModule', {
-  value: true,
-});
-exports.SECTIONS = exports.SECTION_KEYS = exports.SECTION_NAMES = void 0;
-var locales = _interopRequireDefault(require('../../locales/index')),
-  T = {
-    songs: locales.default.ARTIST_SONGS,
-    albums: locales.default.ARTIST_ALBUM,
-    artists: locales.default.ARTIST,
-    history: locales.default.HISTORY,
-  };
-exports.SECTION_NAMES = T;
-exports.SECTION_KEYS = {
+import locales from '../../locales/index';
+export const SECTION_NAMES = {
+  songs: locales.ARTIST_SONGS,
+  albums: locales.ARTIST_ALBUM,
+  artists: locales.ARTIST,
+  history: locales.HISTORY,
+};
+export const SECTION_KEYS = {
   songs: 'songs',
   albums: 'albums',
   artists: 'artists',
   history: 'history',
 };
-var l = Object.keys(T);
-exports.SECTIONS = l;
+export const SECTIONS = Object.keys(SECTION_NAMES);

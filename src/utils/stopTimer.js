@@ -1,16 +1,13 @@
-const _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
-Object.defineProperty(exports, '__esModule', {
-  value: true,
-});
-exports.default = void 0;
-var names = _interopRequireDefault(require('../events/names')),
-  utils = require('./index'),
-  types = require('./types'),
-  events = require('../events/index'),
-  l = {
-    open: async function () {
-      const minutes = await utils.dialogs.showTimePicker();
-      if (types.isNumber(minutes)) events.emitter.emit(names.default.CloseTimerEvent, minutes);
-    },
-  };
-exports.default = l;
+import names from '../events/names';
+import * as utils from './index';
+import * as types from './types';
+import * as events from '../events/index';
+const l = {
+  open: async function () {
+    const minutes = await utils.dialogs.showTimePicker();
+    if (types.isNumber(minutes)) {
+      events.emitter.emit(names.CloseTimerEvent, minutes);
+    }
+  },
+};
+export default l;

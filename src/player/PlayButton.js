@@ -1,66 +1,59 @@
-const _interopRequireWildcard = require('@babel/runtime/helpers/interopRequireWildcard');
-const _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
-Object.defineProperty(exports, '__esModule', {
-  value: true,
-});
-exports.default = void 0;
-var React = _interopRequireWildcard(require('react')),
-  ReactNative = require('react-native'),
-  components = require('../components/index'),
-  buttons = _interopRequireDefault(require('./buttons')),
-  ControlIcon = _interopRequireDefault(require('./ControlIcon')),
-  u = {
-    playing: {
-      name: buttons.default.PAUSE.name,
-      type: buttons.default.PAUSE.type,
-    },
-    paused: {
-      name: buttons.default.PLAY.name,
-      type: buttons.default.PLAY.type,
-    },
+import * as React from 'react';
+import * as ReactNative from 'react-native';
+import * as components from '../components/index';
+import buttons from './buttons';
+import ControlIcon from './ControlIcon';
+const u = {
+  playing: {
+    name: buttons.PAUSE.name,
+    type: buttons.PAUSE.type,
   },
-  d = class t extends React.PureComponent {
-    constructor() {
-      return super(...arguments);
-    }
-    render() {
-      var e = this.props,
-        t = e.playState,
-        l = e.disabled,
-        a = e.loaded,
-        r = e.color,
-        o = e.onPress,
-        d = e.onLongPress,
-        b = e.size,
-        f = void 0 === b ? 55 : b,
-        c = e.spinSize,
-        y = void 0 === c ? 50 : c;
-      return true === a
-        ? React.default.createElement(ControlIcon.default, {
-            color: r,
-            name: u[t].name,
-            type: u[t].type,
-            size: f,
-            onPress: o,
-            onLongPress: d,
-            disabled: l,
-            style: !f && {
+  paused: {
+    name: buttons.PLAY.name,
+    type: buttons.PLAY.type,
+  },
+};
+class PlayButton extends React.PureComponent {
+  render() {
+    const {
+      playState,
+      disabled,
+      loaded,
+      color,
+      onPress,
+      onLongPress,
+      size = 55,
+      spinSize = 50,
+    } = this.props;
+    if (loaded === true) {
+      return (
+        <ControlIcon
+          color={color}
+          name={u[playState].name}
+          type={u[playState].type}
+          size={size}
+          onPress={onPress}
+          onLongPress={onLongPress}
+          disabled={disabled}
+          style={
+            !size && {
               padding: 0,
-            },
-          })
-        : React.default.createElement(
-            ReactNative.View,
-            {
-              style: {
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: f + 12,
-              },
-            },
-            React.default.createElement(components.Spinkit, {
-              size: y,
-            }),
-          );
+            }
+          }
+        />
+      );
     }
-  };
-exports.default = d;
+    return (
+      <ReactNative.View
+        style={{
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: size + 12,
+        }}
+      >
+        <components.Spinkit size={spinSize} />
+      </ReactNative.View>
+    );
+  }
+}
+export default PlayButton;

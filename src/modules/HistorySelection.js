@@ -1,374 +1,317 @@
-const _default = require('./../components/Text.js').default;
-const _interopRequireWildcard = require('@babel/runtime/helpers/interopRequireWildcard');
-const _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
-const _appStorage = require('./../storage/index.js');
-Object.defineProperty(exports, '__esModule', {
-  value: true,
-});
-exports.default = void 0;
-var React = _interopRequireWildcard(require('react')),
-  ReactNative = require('react-native'),
-  FadingEdge = _interopRequireDefault(require('../components/FadingEdge')),
-  reactNativeLargelist = require('./../components/Scrolling.js'),
-  components = require('../components/index'),
-  providers = _interopRequireDefault(require('../services/providers')),
-  constants = require('../theme/constants'),
-  names = _interopRequireDefault(require('../events/names')),
-  icons = _interopRequireDefault(require('../theme/icons')),
-  keysModule = _interopRequireDefault(require('../storage/keys')),
-  locales = _interopRequireDefault(require('../locales/index')),
-  events = require('../events/index'),
-  trackInfo = require('../services/trackInfo'),
-  dimensions = _interopRequireDefault(require('../native/dimensions')),
-  sectionsModule = require('../screens/history/sections'),
-  L = dimensions.default.get('SOFT_MENU_BAR_HEIGHT'),
-  T = class t extends React.Component {
-    constructor() {
-      var e, n, a;
-      for (var l = arguments.length, s = new Array(l), o = 0; o < l; o++) s[o] = arguments[o];
-      return (
-        (n = a = super(...s)),
-        (a.state = {
-          checkedList: {
-            netEase: [],
-            qqMusic: [],
-            local: [],
-          },
-          selectedAll: false,
-          show_netEase: true,
-          show_qqMusic: true,
-          show_local: true,
-          needBottomPadding: false,
-        }),
-        (a.loadSetting = function () {
-          _appStorage.storage
-            .load({
-              key: keysModule.default.settings,
-            })
-            .then(function (e) {
-              (null === e || void 0 === e ? void 0 : e.navbarPadding.on) &&
-                a.setState({
-                  needBottomPadding: true,
-                });
-            });
-        }),
-        (a.clean = function () {
-          a.setState({
-            checkedList: {
-              netEase: [],
-              qqMusic: [],
-              local: [],
-            },
-            selectedAll: false,
+import Text from './../components/Text.js';
+import * as _appStorage from './../storage/index.js';
+import * as React from 'react';
+import * as ReactNative from 'react-native';
+import FadingEdge from '../components/FadingEdge';
+import * as reactNativeLargelist from './../components/Scrolling.js';
+import * as components from '../components/index';
+import providers from '../services/providers';
+import * as constants from '../theme/constants';
+import names from '../events/names';
+import icons from '../theme/icons';
+import keysModule from '../storage/keys';
+import locales from '../locales/index';
+import * as events from '../events/index';
+import * as trackInfo from '../services/trackInfo';
+import dimensions from '../native/dimensions';
+import * as sectionsModule from '../screens/history/sections';
+const L = dimensions.get('SOFT_MENU_BAR_HEIGHT');
+class HistorySelection extends React.Component {
+  state = {
+    checkedList: {
+      netEase: [],
+      qqMusic: [],
+      local: [],
+    },
+    selectedAll: false,
+    show_netEase: true,
+    show_qqMusic: true,
+    show_local: true,
+    needBottomPadding: false,
+  };
+  loadSetting = () => {
+    _appStorage.storage
+      .load({
+        key: keysModule.settings,
+      })
+      .then((e) => {
+        if (e?.navbarPadding.on) {
+          this.setState({
+            needBottomPadding: true,
           });
-        }),
-        (a.onTop = function () {
-          var e;
-          null === (e = a._list) ||
-            void 0 === e ||
-            e.scrollTo({
-              x: 0,
-              y: 0,
-            });
-        }),
-        (a.getData = function () {
-          return sectionsModule.sections.map(function (e) {
-            return {
-              items: a.props[e].length > 0 ? a.props[e] : [],
-            };
-          });
-        }),
-        (a._heightForIndexPath = function () {
-          return constants.ITEM_HEIGHT;
-        }),
-        (a._heightForSection = function (e) {
-          var t = sectionsModule.sections[e];
-          return 0 === a.sectionDataLength(t) ? 0 : sectionsModule.SECTION_HEIGHT;
-        }),
-        (a._renderSection = function (e) {
-          var t = sectionsModule.sections[e],
-            n = sectionsModule.sectionTitleMap[t],
-            l = a.sectionDataLength(t);
-          return React.default.createElement(
-            ReactNative.View,
-            {
-              style: sectionsModule.sectionStyle.container,
-            },
-            React.default.createElement(
-              components.Title,
-              {
-                style: [sectionsModule.sectionStyle.numbers],
-              },
-              l,
-            ),
-            React.default.createElement(components.Title, null, n),
-          );
-        }),
-        (a._renderIndexPath = function (e) {
-          var t = e.section,
-            n = e.row,
-            l = sectionsModule.sections[t],
-            s = n,
-            o = a.props[l][s],
-            u = (0, trackInfo.extractFullInfo)(o),
-            d = a.isCheck(s, l);
-          return React.default.createElement(
-            ReactNative.View,
-            null,
-            React.default.createElement(components.SongRow, {
-              song: u.song,
-              singer: u.singer,
-              album: u.album,
-              isChecked: d,
-              index: s,
-              onPress: function () {
-                return a.onChecked(s, l);
-              },
-            }),
-          );
-        }),
-        (a.sectionDataLength = function (e) {
-          var t,
-            n = a.props,
-            l = n.netEase,
-            r = n.qqMusic,
-            i = n.local;
-          switch (e) {
-            case providers.default.netEase:
-              t = l.length;
-              break;
-            case providers.default.qqMusic:
-              t = r.length;
-              break;
-            case providers.default.local:
-              t = i.length;
-          }
-          return t;
-        }),
-        (a.addToPlay = function () {
-          var e = a.mostChecked();
-          events.emitter.emit(names.default.InsertToList, {
-            data: e.data,
-            type: 'array',
-            api: e.api,
-          });
-          a.clean();
-        }),
-        (a.mostChecked = function () {
-          var e = a.props,
-            t = e.qqMusic,
-            n = e.netEase,
-            l = e.local,
-            r = a.state.checkedList,
-            i = r.netEase.length,
-            s = r.qqMusic.length,
-            o = r.local.length,
-            c = {
-              data: null,
-              api: null,
-            };
-          i > s &&
-            i > o &&
-            ((c.data = n.filter(function (e, t) {
-              return r.netEase.includes(t);
-            })),
-            (c.api = providers.default.netEase));
-          s > i &&
-            s > o &&
-            ((c.data = t.filter(function (e, t) {
-              return r.qqMusic.includes(t);
-            })),
-            (c.api = providers.default.qqMusic));
-          o > i &&
-            o > s &&
-            ((c.data = l.filter(function (e, t) {
-              return r.local.includes(t);
-            })),
-            (c.api = providers.default.local));
-          return c;
-        }),
-        (a.selectAll = function () {
-          var e = a.props,
-            t = e.qqMusic,
-            n = e.netEase,
-            l = e.local;
-          n.map(function (e, t) {
-            a.checkedAll(t, providers.default.netEase);
-          });
-          t.map(function (e, t) {
-            a.checkedAll(t, providers.default.qqMusic);
-          });
-          l.map(function (e, t) {
-            a.checkedAll(t, providers.default.local);
-          });
-        }),
-        (a.checkedAll = function (e, t) {
-          var n = a.state.selectedAll,
-            l = a.state.checkedList,
-            r = l[t];
-          n ? (l[t] = []) : (r.push(e), (l[t] = r));
-          a.setState({
-            checkedList: l,
-            selectedAll: !n,
-          });
-        }),
-        (a.onDelete = function () {
-          var e = a.state.checkedList;
-          (0, a.props.onDelete)(e);
-          a.clean();
-        }),
-        (a.pickedNum = function () {
-          for (var e = a.state.checkedList, t = 0, n = Object.keys(e), l = 0; l < n.length; l++)
-            t += e[n[l]].length;
-          return t;
-        }),
-        (a.onChecked = function (e, t) {
-          var n = a.state.checkedList,
-            l = n[t];
-          a.isCheck(e, t)
-            ? (l = l.filter(function (t) {
-                return t !== e;
-              }))
-            : l.push(e);
-          n[t] = l;
-          a.setState({
-            checkedList: n,
-          });
-        }),
-        (a.isCheck = function (e, t) {
-          return a.state.checkedList[t].some(function (t) {
-            return t === e;
-          });
-        }),
-        n
-      );
-    }
-    componentDidMount() {
-      this.loadSetting();
-    }
-    render() {
-      var e = this,
-        t = this.props,
-        n = t.isOpen,
-        a = t.onClosed,
-        l = this.state,
-        u = l.selectedAll,
-        d = l.needBottomPadding,
-        f = this.getData();
-      return React.default.createElement(
-        ReactNative.Modal,
-        {
-          ref: (instance) => (this.modal = instance),
-          style: {
-            flex: 1,
-          },
-          animationType: 'fade',
-          visible: n,
-          onRequestClose: function () {
-            e.clean();
-            a();
-          },
-        },
-        React.default.createElement(
-          ReactNative.View,
-          {
-            style: [
-              _.container,
-              {
-                paddingBottom: d ? 5 + L : 5,
-              },
-            ],
-          },
-          React.default.createElement(components.Background, null),
-          React.default.createElement(components.HeaderBar, {
-            headerStyle: _.header,
-            title: this.pickedNum() + ' ' + locales.default.SELECTED,
-            goBack: a,
-            onTop: this.onTop,
-            backIcon: {
-              name: icons.default.WINDOW_CLOSE,
-            },
-          }),
-          React.default.createElement(
-            FadingEdge.default,
-            {
-              top: 30,
-              bottom: 30,
-            },
-            React.default.createElement(reactNativeLargelist.LargeList, {
-              ref: function (t) {
-                return (e._list = t);
-              },
-              data: f,
-              heightForIndexPath: this._heightForIndexPath,
-              heightForSection: this._heightForSection,
-              renderIndexPath: this._renderIndexPath,
-              renderSection: this._renderSection,
-            }),
-          ),
-          React.default.createElement(
-            ReactNative.View,
-            {
-              style: _.btns,
-            },
-            React.default.createElement(q, {
-              text: locales.default.PLAY,
-              name: icons.default.PLUS,
-              onPress: this.addToPlay,
-            }),
-            React.default.createElement(q, {
-              text: u ? locales.default.CANCEL : locales.default.SELECT_ALL,
-              name: u ? icons.default.CANCEL : icons.default.CHECK_ALL,
-              onPress: this.selectAll,
-            }),
-            React.default.createElement(q, {
-              text: locales.default.DELETE,
-              name: icons.default.DELETE,
-              onPress: this.onDelete,
-            }),
-          ),
-        ),
-      );
-    }
-  },
-  q = function (e) {
-    var t = e.onPress,
-      n = e.name,
-      a = e.text,
-      l = e.style;
-    return React.default.createElement(
-      ReactNative.TouchableOpacity,
-      {
-        onPress: t,
+        }
+      });
+  };
+  clean = () => {
+    this.setState({
+      checkedList: {
+        netEase: [],
+        qqMusic: [],
+        local: [],
       },
-      React.default.createElement(
-        ReactNative.View,
-        {
-          style: [_.btn, l],
-        },
-        React.default.createElement(components.Icon, {
-          name: n || icons.default.FORMAT_LIST_BULLETED,
-        }),
-        React.default.createElement(_default, null, a || locales.default.MULT_SELECT),
-      ),
+      selectedAll: false,
+    });
+  };
+  onTop = () => {
+    this._list?.scrollTo({
+      x: 0,
+      y: 0,
+    });
+  };
+  getData = () => {
+    return sectionsModule.sections.map((e) => ({
+      items: this.props[e].length > 0 ? this.props[e] : [],
+    }));
+  };
+  _heightForIndexPath = function () {
+    return constants.ITEM_HEIGHT;
+  };
+  _heightForSection = (e) => {
+    const t = sectionsModule.sections[e];
+    if (this.sectionDataLength(t) === 0) {
+      return 0;
+    }
+    return sectionsModule.SECTION_HEIGHT;
+  };
+  _renderSection = (e) => {
+    const t = sectionsModule.sections[e];
+    const n = sectionsModule.sectionTitleMap[t];
+    const l = this.sectionDataLength(t);
+    return (
+      <ReactNative.View style={sectionsModule.sectionStyle.container}>
+        <components.Title style={[sectionsModule.sectionStyle.numbers]}>{l}</components.Title>
+        <components.Title>{n}</components.Title>
+      </ReactNative.View>
     );
+  };
+  _renderIndexPath = ({section, row}) => {
+    const l = sectionsModule.sections[section];
+    const index = row;
+    const o = this.props[l][index];
+    const u = trackInfo.extractFullInfo(o);
+    const isChecked = this.isCheck(index, l);
+    return (
+      <ReactNative.View>
+        <components.SongRow
+          song={u.song}
+          singer={u.singer}
+          album={u.album}
+          isChecked={isChecked}
+          index={index}
+          onPress={() => {
+            return this.onChecked(index, l);
+          }}
+        />
+      </ReactNative.View>
+    );
+  };
+  sectionDataLength = (e) => {
+    let t;
+    const a_props = this.props;
+    const {netEase, qqMusic, local} = a_props;
+    switch (e) {
+      case providers.netEase:
+        t = netEase.length;
+        break;
+      case providers.qqMusic:
+        t = qqMusic.length;
+        break;
+      case providers.local:
+        t = local.length;
+    }
+    return t;
+  };
+  addToPlay = () => {
+    const e = this.mostChecked();
+    events.emitter.emit(names.InsertToList, {
+      data: e.data,
+      type: 'array',
+      api: e.api,
+    });
+    this.clean();
+  };
+  mostChecked = () => {
+    const a_props = this.props;
+    const {qqMusic, netEase, local} = a_props;
+    const checkedList = this.state.checkedList;
+    const length = checkedList.netEase.length;
+    const length_1 = checkedList.qqMusic.length;
+    const length_2 = checkedList.local.length;
+    const c = {
+      data: null,
+      api: null,
+    };
+    if (length > length_1 && length > length_2) {
+      c.data = netEase.filter((e, t) => checkedList.netEase.includes(t));
+      c.api = providers.netEase;
+    }
+    if (length_1 > length && length_1 > length_2) {
+      c.data = qqMusic.filter((e, t) => checkedList.qqMusic.includes(t));
+      c.api = providers.qqMusic;
+    }
+    if (length_2 > length && length_2 > length_1) {
+      c.data = local.filter((e, t) => checkedList.local.includes(t));
+      c.api = providers.local;
+    }
+    return c;
+  };
+  selectAll = () => {
+    const a_props = this.props;
+    const {qqMusic, netEase, local} = a_props;
+    netEase.map((e, t) => {
+      this.checkedAll(t, providers.netEase);
+    });
+    qqMusic.map((e, t) => {
+      this.checkedAll(t, providers.qqMusic);
+    });
+    local.map((e, t) => {
+      this.checkedAll(t, providers.local);
+    });
+  };
+  checkedAll = (e, t) => {
+    const selectedAll = this.state.selectedAll;
+    const checkedList = this.state.checkedList;
+    const r = checkedList[t];
+    if (selectedAll) {
+      checkedList[t] = [];
+    } else {
+      r.push(e);
+      checkedList[t] = r;
+    }
+    this.setState({
+      checkedList,
+      selectedAll: !selectedAll,
+    });
+  };
+  onDelete = () => {
+    const checkedList = this.state.checkedList;
+    this.props.onDelete(checkedList);
+    this.clean();
+  };
+  pickedNum = () => {
+    const checkedList = this.state.checkedList;
+    let t = 0;
+    for (let n = Object.keys(checkedList), l = 0; l < n.length; l++) {
+      t += checkedList[n[l]].length;
+    }
+    return t;
+  };
+  onChecked = (e, t) => {
+    const checkedList = this.state.checkedList;
+    let l = checkedList[t];
+    if (this.isCheck(e, t)) {
+      l = l.filter((t) => t !== e);
+    } else {
+      l.push(e);
+    }
+    checkedList[t] = l;
+    this.setState({
+      checkedList,
+    });
+  };
+  isCheck = (e, t) => {
+    return this.state.checkedList[t].some((t) => t === e);
+  };
+  componentDidMount() {
+    this.loadSetting();
+  }
+  render() {
+    const e = this;
+    const props = this.props;
+    const {isOpen, onClosed} = props;
+    const state = this.state;
+    const {selectedAll, needBottomPadding} = state;
+    const data = this.getData();
+    return (
+      <ReactNative.Modal
+        ref={(instance) => (this.modal = instance)}
+        style={{
+          flex: 1,
+        }}
+        animationType={'fade'}
+        visible={isOpen}
+        onRequestClose={function () {
+          e.clean();
+          onClosed();
+        }}
+      >
+        <ReactNative.View
+          style={[
+            _.container,
+            {
+              paddingBottom: needBottomPadding ? 5 + L : 5,
+            },
+          ]}
+        >
+          <components.Background />
+          <components.HeaderBar
+            headerStyle={_.header}
+            title={`${this.pickedNum()} ${locales.SELECTED}`}
+            goBack={onClosed}
+            onTop={this.onTop}
+            backIcon={{
+              name: icons.WINDOW_CLOSE,
+            }}
+          />
+          <FadingEdge top={30} bottom={30}>
+            <reactNativeLargelist.LargeList
+              ref={function (t) {
+                return (e._list = t);
+              }}
+              data={data}
+              heightForIndexPath={this._heightForIndexPath}
+              heightForSection={this._heightForSection}
+              renderIndexPath={this._renderIndexPath}
+              renderSection={this._renderSection}
+            />
+          </FadingEdge>
+          <ReactNative.View style={_.btns}>
+            {React.createElement(q, {
+              text: locales.PLAY,
+              name: icons.PLUS,
+              onPress: this.addToPlay,
+            })}
+            {React.createElement(q, {
+              text: selectedAll ? locales.CANCEL : locales.SELECT_ALL,
+              name: selectedAll ? icons.CANCEL : icons.CHECK_ALL,
+              onPress: this.selectAll,
+            })}
+            {React.createElement(q, {
+              text: locales.DELETE,
+              name: icons.DELETE,
+              onPress: this.onDelete,
+            })}
+          </ReactNative.View>
+        </ReactNative.View>
+      </ReactNative.Modal>
+    );
+  }
+}
+var q = function ({onPress, name, text, style}) {
+  return (
+    <ReactNative.TouchableOpacity onPress={onPress}>
+      <ReactNative.View style={[_.btn, style]}>
+        <components.Icon name={name || icons.FORMAT_LIST_BULLETED} />
+        <Text>{text || locales.MULT_SELECT}</Text>
+      </ReactNative.View>
+    </ReactNative.TouchableOpacity>
+  );
+};
+var _ = ReactNative.StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingTop: 40 + constants.STATUS_BAR_HEIGHT,
   },
-  _ = ReactNative.StyleSheet.create({
-    container: {
-      flex: 1,
-      paddingTop: 40 + constants.STATUS_BAR_HEIGHT,
-    },
-    header: {
-      position: 'absolute',
-      top: 0,
-      zIndex: 10,
-    },
-    btns: {
-      padding: 10,
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-around',
-    },
-  }),
-  C = T;
-exports.default = C;
+  header: {
+    position: 'absolute',
+    top: 0,
+    zIndex: 10,
+  },
+  btns: {
+    padding: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+  },
+});
+export default HistorySelection;

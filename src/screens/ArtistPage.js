@@ -1,454 +1,424 @@
-const _default = require('@react-native-clipboard/clipboard').default;
-const _interopRequireWildcard = require('@babel/runtime/helpers/interopRequireWildcard');
-const _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
-Object.defineProperty(exports, '__esModule', {
-  value: true,
-});
-exports.default = exports.RELEASE_MODE = void 0;
-var React = _interopRequireWildcard(require('react')),
-  ReactNative = require('react-native'),
-  components = require('../components/index'),
-  OverflowMenu = _interopRequireDefault(require('./../modules/OverflowMenu.js')),
-  providers = _interopRequireDefault(require('../services/providers')),
-  constants = require('../theme/constants'),
-  icons = _interopRequireDefault(require('../theme/icons')),
-  locales = _interopRequireDefault(require('../locales/index')),
-  services = require('../services/index'),
-  utils = require('../utils/index'),
-  types = _interopRequireWildcard(require('../utils/types')),
-  sharedUrlsModule = require('../services/sharedUrls'),
-  users = _interopRequireDefault(require('../storage/users')),
-  ArtistAlbums = _interopRequireDefault(require('./../modules/ArtistAlbums.js')),
-  ArtistVideos = _interopRequireDefault(require('./../modules/ArtistVideos.js')),
-  albumPagination = _interopRequireDefault(require('./../modules/albumPagination.js')),
-  artistAliases = _interopRequireDefault(require('./../modules/artistAliases.js')),
-  ArtistSongs = _interopRequireDefault(require('./../modules/ArtistSongs.js')),
-  styles = _interopRequireDefault(require('./artist/styles')),
-  R = {
-    all: 'all',
-    albums: 'albums',
-    singlesAndEps: 'singlesAndEps',
+import Clipboard from '@react-native-clipboard/clipboard';
+import * as React from 'react';
+import * as ReactNative from 'react-native';
+import * as components from '../components/index';
+import OverflowMenu from './../modules/OverflowMenu.js';
+import providers from '../services/providers';
+import * as constants from '../theme/constants';
+import icons from '../theme/icons';
+import locales from '../locales/index';
+import * as services from '../services/index';
+import * as utils from '../utils/index';
+import * as types from '../utils/types';
+import * as sharedUrlsModule from '../services/sharedUrls';
+import users from '../storage/users';
+import ArtistAlbums from './../modules/ArtistAlbums.js';
+import ArtistVideos from './../modules/ArtistVideos.js';
+import albumPagination from './../modules/albumPagination.js';
+import artistAliases from './../modules/artistAliases.js';
+import ArtistSongs from './../modules/ArtistSongs.js';
+import styles from './artist/styles';
+export const RELEASE_MODE = {
+  all: 'all',
+  albums: 'albums',
+  singlesAndEps: 'singlesAndEps',
+};
+const x = {
+  all: '作品',
+  albums: '专辑',
+  singlesAndEps: '单曲 & EPs',
+};
+class ArtistPage extends React.PureComponent {
+  _nativeOffset = {
+    x: new ReactNative.Animated.Value(0),
+    y: new ReactNative.Animated.Value(0),
   };
-exports.RELEASE_MODE = R;
-var x = {
-    all: '作品',
-    albums: '专辑',
-    singlesAndEps: '单曲 & EPs',
-  },
-  k = class t extends React.PureComponent {
-    constructor() {
-      var e, n, a;
-      for (var r = arguments.length, i = new Array(r), o = 0; o < r; o++) i[o] = arguments[o];
-      return (
-        (n = a = super(...i)),
-        (a._nativeOffset = {
-          x: new ReactNative.Animated.Value(0),
-          y: new ReactNative.Animated.Value(0),
-        }),
-        (a.state = {
-          artistName: '',
-          artistImg: '',
-          subtitle: '',
-          index: 0,
-          api: providers.default.netEase,
-          id: null,
-          hotSongs: [],
-          albums: [],
-          mvs: [],
-          followed: null,
-          releaseMode: R.all,
-          albumsGroup: [],
-          singlesAndEpsGroup: [],
-        }),
-        (a.getNeteaseArtistSongs = async function (id) {
-          const response = await services.Netease.artist(id);
-          if (!response?.artist) return;
-          const artist = response.artist;
-          a.setState({
-            hotSongs: response.hotSongs,
-            followed: artist.followed || false,
-            subtitle: artistAliases.default(artist),
-          });
-          a.setImgUrl(artist.img1v1Url ? artist.img1v1Url + '?param=500y500' : null);
-        }),
-        (a.getQQmusicArtistSongs = function (e) {
-          services.QQMusic.artist_song(e)
-            .then(function (e) {
-              (null === e || void 0 === e ? void 0 : e.length) > 0 &&
-                a.setState({
-                  hotSongs: e.map(function (e) {
-                    return e.songInfo;
-                  }),
-                });
-            })
-            .catch(function () {
-              return null;
-            });
-        }),
-        (a.getArtistInfo = function (e, t) {
-          if (e)
-            switch (t) {
-              case providers.default.netEase:
-                a.setState({
-                  artistName: e.name,
-                  id: e.id,
-                });
-                a.getNeteaseArtistSongs(e.id);
-                a.getAlbums(e.id, t);
-                a.getMVs(e.id, t);
-                break;
-              case providers.default.qqMusic:
-                var n = e.singerMID || e.mid,
-                  r = 'http://y.gtimg.cn/music/photo_new/T001R500x500M000' + n + '.jpg',
-                  s = e.singerName || e.name;
-                a.setState({
-                  artistName: s,
-                  id: n,
-                });
-                a.setImgUrl(r);
-                a.getQQmusicArtistSongs(n);
-                a.getAlbums(n, t);
-                a.getMVs(n, t);
-            }
-        }),
-        (a.getAlbums = async function (id, api) {
-          const albums = await albumPagination.default.albums({
-            id,
-            api,
-          });
-          const albumsGroup = [],
-            singlesAndEpsGroup = [];
-          for (const album of albums) {
-            const full =
-              api === providers.default.qqMusic
-                ? album.albumtype.includes('专辑')
-                : album.type === '专辑';
-            (full ? albumsGroup : singlesAndEpsGroup).push(album);
-          }
-          a.setState({
-            albums,
-            albumsGroup,
-            singlesAndEpsGroup,
-          });
-        }),
-        (a.getMVs = async function (id, api) {
-          a.setState({
-            mvs: await albumPagination.default.mvs({
-              id,
-              api,
-            }),
-          });
-        }),
-        (a.setImgUrl = function (e) {
-          e &&
-            a.setState({
-              artistImg: e,
-            });
-        }),
-        (a.onLikeArtistImpl = function () {
-          var e = a.state,
-            t = e.api,
-            n = e.followed,
-            r = e.id;
-          switch (t) {
-            case providers.default.netEase:
-              a.netEaseLikeArtist(r, !n);
-              break;
-            case providers.default.qqMusic:
-              a.qqMusicLikeArtist(r, !n);
-          }
-          a.setState({
-            followed: !n,
-          });
-          toast(true == !n ? '已收藏。' : '取消收藏。');
-        }),
-        (a.onLikeArtist = function () {
-          var e = a.state,
-            t = (e.api, e.followed);
-          e.id;
-          t
-            ? ReactNative.Alert.alert(null, '取消收藏？', [
-                {
-                  text: locales.default.CANCEL,
-                  onPress: function () {
-                    return null;
-                  },
-                  style: 'cancel',
-                },
-                {
-                  text: locales.default.CONFIRM,
-                  onPress: function () {
-                    a.onLikeArtistImpl();
-                  },
-                },
-              ])
-            : a.onLikeArtistImpl();
-        }),
-        (a.qqMusicLikeArtist = async function (mid, isLike) {
-          const account = (await users.default.getUserInfo())?.qqMusic;
-          if (account)
-            await services.QQMusic.like_artist({
-              mid,
-              cookies: account.cookies,
-              userId: account.userId,
-              isLike,
-            });
-        }),
-        (a.netEaseLikeArtist = async function (id, like) {
-          const response = await services.Netease.sublist_artist_add({
-            id,
-            op: like === true ? 'sub' : 'unsub',
-          });
-          if (utils.usable(response) && response.code !== 200) toast(locales.default.ERROR);
-        }),
-        (a.onTop = function () {
-          var e, t;
-          null === (e = (t = a._list).scrollToBegin) || void 0 === e || e.call(t);
-        }),
-        (a.onReleaseTab = function () {
-          var e,
-            t = a.state,
-            n = t.index,
-            r = t.releaseMode;
-          1 !== n
-            ? a.setState({
-                index: 1,
-              })
-            : (r === R.albums
-                ? (e = R.singlesAndEps)
-                : r === R.singlesAndEps
-                  ? (e = R.all)
-                  : r === R.all && (e = R.albums),
-              a.setState({
-                releaseMode: e,
-              }));
-        }),
-        (a.onCopy = function () {
-          var e = a.state.artistName;
-          _default.setString(e);
-          toast(locales.default.COPIED + ' ' + e);
-        }),
-        (a.onWebview = function () {
-          var e = a.getSharedLink();
-          a.props.navigation.navigate('WebViewPage', {
-            url: e,
-          });
-        }),
-        (a.onOpenUrl = function () {
-          var e = a.getSharedLink();
-          ReactNative.Linking.openURL(e);
-        }),
-        (a.onShare = function () {
-          var e = a.getSharedLink();
-          ReactNative.Share.share({
-            message: e,
-          });
-        }),
-        (a.getSharedLink = function () {
-          var e = a.state,
-            t = e.api,
-            n = e.id;
-          return sharedUrlsModule.sharedUrls[t].artist + n;
-        }),
-        (a.getAlbumData = function (e, t, n) {
-          var r = a.state,
-            s = r.albumsGroup,
-            l = r.singlesAndEpsGroup;
-          return n === R.all ? e : n === R.albums ? s : l;
-        }),
-        (a.renderTabs = function () {
-          var e = a.props.navigation,
-            t = a.state,
-            n = t.index,
-            r = t.hotSongs,
-            l = t.albums,
-            i = t.mvs,
-            o = t.api,
-            u = t.releaseMode;
-          switch (n) {
-            case 0:
-              return r.length > 0
-                ? React.default.createElement(ArtistSongs.default, {
-                    hotSongs: r,
-                    api: o,
-                    navigation: e,
-                  })
-                : null;
-            case 1:
-              return l.length > 0
-                ? React.default.createElement(ArtistAlbums.default, {
-                    albums: a.getAlbumData(l, o, u),
-                    api: o,
-                    navigation: e,
-                    releaseMode: u,
-                  })
-                : null;
-            case 2:
-              return i.length > 0
-                ? React.default.createElement(ArtistVideos.default, {
-                    api: o,
-                    mvs: i,
-                    navigation: e,
-                  })
-                : null;
-          }
-        }),
-        (a.goBack = function () {
-          a.props.navigation.goBack();
-        }),
-        n
-      );
+  state = {
+    artistName: '',
+    artistImg: '',
+    subtitle: '',
+    index: 0,
+    api: providers.netEase,
+    id: null,
+    hotSongs: [],
+    albums: [],
+    mvs: [],
+    followed: null,
+    releaseMode: RELEASE_MODE.all,
+    albumsGroup: [],
+    singlesAndEpsGroup: [],
+  };
+  getNeteaseArtistSongs = async (id) => {
+    const response = await services.Netease.artist(id);
+    if (!response?.artist) {
+      return;
     }
-    componentDidMount() {
-      var e = this.props.route.params;
-      if (e) {
-        var t = e.item,
-          n = e.api;
-        n &&
-          (this.getArtistInfo(t, n),
+    const artist = response.artist;
+    this.setState({
+      hotSongs: response.hotSongs,
+      followed: artist.followed || false,
+      subtitle: artistAliases(artist),
+    });
+    this.setImgUrl(artist.img1v1Url ? `${artist.img1v1Url}?param=500y500` : null);
+  };
+  getQQmusicArtistSongs = (e) => {
+    services.QQMusic.artist_song(e)
+      .then((e) => {
+        if (e?.length > 0) {
           this.setState({
-            api: n,
-            followed: 1 === t.is_follow,
-          }));
+            hotSongs: e.map((e) => e.songInfo),
+          });
+        }
+      })
+      .catch(() => null);
+  };
+  getArtistInfo = (e, t) => {
+    if (e) {
+      switch (t) {
+        case providers.netEase:
+          this.setState({
+            artistName: e.name,
+            id: e.id,
+          });
+          this.getNeteaseArtistSongs(e.id);
+          this.getAlbums(e.id, t);
+          this.getMVs(e.id, t);
+          break;
+        case providers.qqMusic:
+          const id = e.singerMID || e.mid;
+          const r = `http://y.gtimg.cn/music/photo_new/T001R500x500M000${id}.jpg`;
+          const artistName = e.singerName || e.name;
+          this.setState({
+            artistName,
+            id,
+          });
+          this.setImgUrl(r);
+          this.getQQmusicArtistSongs(id);
+          this.getAlbums(id, t);
+          this.getMVs(id, t);
       }
     }
-    render() {
-      var e = this,
-        t = this.state,
-        n = t.index,
-        a = t.hotSongs,
-        r = t.followed,
-        u = t.artistImg,
-        p = t.artistName,
-        b = t.subtitle,
-        h = t.albums,
-        v = t.mvs,
-        E = t.releaseMode;
-      return React.default.createElement(
-        ReactNative.View,
+  };
+  getAlbums = async (id, api) => {
+    const albums = await albumPagination.albums({
+      id,
+      api,
+    });
+    const albumsGroup = [];
+    const singlesAndEpsGroup = [];
+    for (const album of albums) {
+      const full =
+        api === providers.qqMusic ? album.albumtype.includes('专辑') : album.type === '专辑';
+      (full ? albumsGroup : singlesAndEpsGroup).push(album);
+    }
+    this.setState({
+      albums,
+      albumsGroup,
+      singlesAndEpsGroup,
+    });
+  };
+  getMVs = async (id, api) => {
+    this.setState({
+      mvs: await albumPagination.mvs({
+        id,
+        api,
+      }),
+    });
+  };
+  setImgUrl = (artistImg) => {
+    if (artistImg) {
+      this.setState({
+        artistImg,
+      });
+    }
+  };
+  onLikeArtistImpl = () => {
+    const a_state = this.state;
+    const {api, followed, id} = a_state;
+    switch (api) {
+      case providers.netEase:
+        this.netEaseLikeArtist(id, !followed);
+        break;
+      case providers.qqMusic:
+        this.qqMusicLikeArtist(id, !followed);
+    }
+    this.setState({
+      followed: !followed,
+    });
+    toast(!followed == true ? '已收藏。' : '取消收藏。');
+  };
+  onLikeArtist = () => {
+    const a_state = this.state;
+    a_state.api;
+    const e_followed = a_state.followed;
+    a_state.id;
+    if (e_followed) {
+      ReactNative.Alert.alert(null, '取消收藏？', [
         {
-          style: styles.default.container,
-        },
-        React.default.createElement(components.Background, null),
-        React.default.createElement(
-          components.ParallaxScrollView,
-          {
-            onNativeContentOffsetExtract: this._nativeOffset,
-            onRef: function (t) {
-              return (e._list = t);
-            },
+          text: locales.CANCEL,
+          onPress: function () {
+            return null;
           },
-          React.default.createElement(components.ParallaxForeground, {
-            img: u,
-            title: p,
-            alias: b,
-            subtitle: [
-              types.isArray(h) && h.length + ' ' + locales.default.ALBUM_COUNT,
-              types.isArray(v) && v.length + ' ' + locales.default.MV_COUNT,
-            ],
-            animOffsetY: this._nativeOffset.y,
-          }),
-          React.default.createElement(
-            ReactNative.View,
-            {
-              style: {
-                margin: 15,
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-around',
-              },
-            },
-            React.default.createElement(components.TextButton, {
-              text: locales.default.ARTIST_SONGS,
-              style: styles.default.btnCon,
-              textStyle: 0 === n && styles.default.strong,
-              onPress: function () {
+          style: 'cancel',
+        },
+        {
+          text: locales.CONFIRM,
+          onPress: () => {
+            this.onLikeArtistImpl();
+          },
+        },
+      ]);
+    } else {
+      this.onLikeArtistImpl();
+    }
+  };
+  qqMusicLikeArtist = async (mid, isLike) => {
+    const account = (await users.getUserInfo())?.qqMusic;
+    if (account) {
+      await services.QQMusic.like_artist({
+        mid,
+        cookies: account.cookies,
+        userId: account.userId,
+        isLike,
+      });
+    }
+  };
+  netEaseLikeArtist = async (id, like) => {
+    const response = await services.Netease.sublist_artist_add({
+      id,
+      op: like === true ? 'sub' : 'unsub',
+    });
+    if (utils.usable(response) && response.code !== 200) {
+      toast(locales.ERROR);
+    }
+  };
+  onTop = () => {
+    this._list.scrollToBegin?.();
+  };
+  onReleaseTab = () => {
+    let releaseMode_1;
+    const a_state = this.state;
+    const {index, releaseMode} = a_state;
+    if (index !== 1) {
+      this.setState({
+        index: 1,
+      });
+    } else {
+      if (releaseMode === RELEASE_MODE.albums) {
+        releaseMode_1 = RELEASE_MODE.singlesAndEps;
+      } else if (releaseMode === RELEASE_MODE.singlesAndEps) {
+        releaseMode_1 = RELEASE_MODE.all;
+      } else if (releaseMode === RELEASE_MODE.all) {
+        releaseMode_1 = RELEASE_MODE.albums;
+      }
+      this.setState({
+        releaseMode: releaseMode_1,
+      });
+    }
+  };
+  onCopy = () => {
+    const artistName = this.state.artistName;
+    Clipboard.setString(artistName);
+    toast(`${locales.COPIED} ${artistName}`);
+  };
+  onWebview = () => {
+    const url = this.getSharedLink();
+    this.props.navigation.navigate('WebViewPage', {
+      url,
+    });
+  };
+  onOpenUrl = () => {
+    const e = this.getSharedLink();
+    ReactNative.Linking.openURL(e);
+  };
+  onShare = () => {
+    const message = this.getSharedLink();
+    ReactNative.Share.share({
+      message,
+    });
+  };
+  getSharedLink = () => {
+    const a_state = this.state;
+    const {api, id} = a_state;
+    return sharedUrlsModule.sharedUrls[api].artist + id;
+  };
+  getAlbumData = (e, t, n) => {
+    const a_state = this.state;
+    const {albumsGroup, singlesAndEpsGroup} = a_state;
+    if (n === RELEASE_MODE.all) {
+      return e;
+    }
+    if (n === RELEASE_MODE.albums) {
+      return albumsGroup;
+    }
+    return singlesAndEpsGroup;
+  };
+  renderTabs = () => {
+    const navigation = this.props.navigation;
+    const a_state = this.state;
+    const {index, hotSongs, albums, mvs, api, releaseMode} = a_state;
+    switch (index) {
+      case 0:
+        if (hotSongs.length > 0) {
+          return <ArtistSongs hotSongs={hotSongs} api={api} navigation={navigation} />;
+        }
+        return null;
+      case 1:
+        if (albums.length > 0) {
+          return (
+            <ArtistAlbums
+              albums={this.getAlbumData(albums, api, releaseMode)}
+              api={api}
+              navigation={navigation}
+              releaseMode={releaseMode}
+            />
+          );
+        }
+        return null;
+      case 2:
+        if (mvs.length > 0) {
+          return <ArtistVideos api={api} mvs={mvs} navigation={navigation} />;
+        }
+        return null;
+    }
+  };
+  goBack = () => {
+    this.props.navigation.goBack();
+  };
+  componentDidMount() {
+    const params = this.props.route.params;
+    if (params) {
+      const {item, api} = params;
+      if (api) {
+        this.getArtistInfo(item, api);
+        this.setState({
+          api,
+          followed: item.is_follow === 1,
+        });
+      }
+    }
+  }
+  render() {
+    const e = this;
+    const state = this.state;
+    const {index, hotSongs, followed, artistImg, artistName, subtitle, albums, mvs, releaseMode} =
+      state;
+    return (
+      <ReactNative.View style={styles.container}>
+        <components.Background />
+        <components.ParallaxScrollView
+          onNativeContentOffsetExtract={this._nativeOffset}
+          onRef={function (t) {
+            return (e._list = t);
+          }}
+        >
+          <components.ParallaxForeground
+            img={artistImg}
+            title={artistName}
+            alias={subtitle}
+            subtitle={[
+              types.isArray(albums) && `${albums.length} ${locales.ALBUM_COUNT}`,
+              types.isArray(mvs) && `${mvs.length} ${locales.MV_COUNT}`,
+            ]}
+            animOffsetY={this._nativeOffset.y}
+          />
+          <ReactNative.View
+            style={{
+              margin: 15,
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-around',
+            }}
+          >
+            <components.TextButton
+              text={locales.ARTIST_SONGS}
+              style={styles.btnCon}
+              textStyle={index === 0 && styles.strong}
+              onPress={function () {
                 return e.setState({
                   index: 0,
                 });
-              },
-            }),
-            React.default.createElement(
-              ReactNative.View,
-              {
-                style: {
-                  alignItems: 'center',
-                },
-              },
-              React.default.createElement(components.TextButton, {
-                text: x[E],
-                style: styles.default.btnCon,
-                textStyle: 1 === n && styles.default.strong,
-                onPress: this.onReleaseTab,
-              }),
-              React.default.createElement(
-                ReactNative.View,
-                {
-                  style: styles.default.dotContainer,
-                },
-                [R.all, R.albums, R.singlesAndEps].map(function (e, t) {
-                  return React.default.createElement(ReactNative.View, {
-                    key: t,
-                    style: [
-                      styles.default.dot,
-                      e !== E && {
-                        opacity: 0.4,
-                      },
-                    ],
-                  });
-                }),
-              ),
-            ),
-            React.default.createElement(components.TextButton, {
-              text: locales.default.ARTIST_MV,
-              style: styles.default.btnCon,
-              textStyle: 2 === n && styles.default.strong,
-              onPress: function () {
+              }}
+            />
+            <ReactNative.View
+              style={{
+                alignItems: 'center',
+              }}
+            >
+              <components.TextButton
+                text={x[releaseMode]}
+                style={styles.btnCon}
+                textStyle={index === 1 && styles.strong}
+                onPress={this.onReleaseTab}
+              />
+              <ReactNative.View style={styles.dotContainer}>
+                {[RELEASE_MODE.all, RELEASE_MODE.albums, RELEASE_MODE.singlesAndEps].map(
+                  (e, key) => (
+                    <ReactNative.View
+                      key={key}
+                      style={[
+                        styles.dot,
+                        e !== releaseMode && {
+                          opacity: 0.4,
+                        },
+                      ]}
+                    />
+                  ),
+                )}
+              </ReactNative.View>
+            </ReactNative.View>
+            <components.TextButton
+              text={locales.ARTIST_MV}
+              style={styles.btnCon}
+              textStyle={index === 2 && styles.strong}
+              onPress={function () {
                 return e.setState({
                   index: 2,
                 });
-              },
-            }),
-          ),
-          (null === a || void 0 === a ? void 0 : a.length) > 0
-            ? this.renderTabs()
-            : React.default.createElement(components.Spinkit, {
-                style: [
-                  ReactNative.StyleSheet.absoluteFill,
-                  {
-                    paddingTop: constants.DEVICE_WIDTH + 200,
-                  },
-                ],
-              }),
-          React.default.createElement(components.EmptyFooter, null),
-        ),
-        React.default.createElement(components.HeaderBar, {
-          headerStyle: [
-            styles.default.header,
-            utils.animInterpolate.forHeader(this._nativeOffset.y),
-          ],
-          title: p,
-          goBack: this.goBack,
-          onTop: this.onTop,
-          iconColor: '#eee',
-          fontColor: '#fff',
-          rightIcon: function () {
-            return React.default.createElement(OverflowMenu.default, {
-              followed: r,
-              onLike: e.onLikeArtist,
-              onWebview: e.onWebview,
-              onCopy: e.onCopy,
-              onOpenUrl: e.onOpenUrl,
-              onShare: e.onShare,
-            });
-          },
-          backIcon: {
-            name: icons.default.WINDOW_CLOSE,
-          },
-          blur: true,
-          bold: true,
-        }),
-      );
-    }
-  };
-exports.default = k;
+              }}
+            />
+          </ReactNative.View>
+          {hotSongs?.length > 0 ? (
+            this.renderTabs()
+          ) : (
+            <components.Spinkit
+              style={[
+                ReactNative.StyleSheet.absoluteFill,
+                {
+                  paddingTop: constants.DEVICE_WIDTH + 200,
+                },
+              ]}
+            />
+          )}
+          <components.EmptyFooter />
+        </components.ParallaxScrollView>
+        <components.HeaderBar
+          headerStyle={[styles.header, utils.animInterpolate.forHeader(this._nativeOffset.y)]}
+          title={artistName}
+          goBack={this.goBack}
+          onTop={this.onTop}
+          iconColor={'#eee'}
+          fontColor={'#fff'}
+          rightIcon={function () {
+            return (
+              <OverflowMenu
+                followed={followed}
+                onLike={e.onLikeArtist}
+                onWebview={e.onWebview}
+                onCopy={e.onCopy}
+                onOpenUrl={e.onOpenUrl}
+                onShare={e.onShare}
+              />
+            );
+          }}
+          backIcon={{
+            name: icons.WINDOW_CLOSE,
+          }}
+          blur={true}
+          bold={true}
+        />
+      </ReactNative.View>
+    );
+  }
+}
+export default ArtistPage;

@@ -1,179 +1,159 @@
-const _interopRequireWildcard = require('@babel/runtime/helpers/interopRequireWildcard');
-const _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
-Object.defineProperty(exports, '__esModule', {
-  value: true,
-});
-exports.default = void 0;
-var React = _interopRequireWildcard(require('react')),
-  components = require('../components/index'),
-  providers = _interopRequireDefault(require('../services/providers')),
-  names = _interopRequireDefault(require('../events/names')),
-  icons = _interopRequireDefault(require('../theme/icons')),
-  locales = _interopRequireDefault(require('../locales/index')),
-  events = require('../events/index'),
-  utils = require('../utils/index'),
-  mediaStore = _interopRequireDefault(require('../native/mediaStore')),
-  LocalMusicList = _interopRequireDefault(require('./../modules/LocalMusicList.js')),
-  h = {
-    time: 'random',
-    random: 'song',
-    song: 'artist',
-    artist: 'album',
-    album: 'time',
-  },
-  v = class t extends React.Component {
-    constructor() {
-      var e, a, r;
-      for (var n = arguments.length, i = new Array(n), l = 0; l < n; l++) i[l] = arguments[l];
-      return (
-        (a = r = super(...i)),
-        (r.state = {
-          playList: null,
-          oriList: [],
-          sortMode: 'time',
-        }),
-        (r.loadPlayList = function () {
-          mediaStore.default.getPlayList().then(function (e) {
-            if (e) {
-              var t = e.data.filter(function (e) {
-                return e.duration / 1e3 > 30 && !e.path.includes('record');
-              });
-              t.reverse();
-              r.setState({
-                oriList: t,
-                playList: t,
-              });
-            }
-          });
-        }),
-        (r.goBack = function () {
-          return r.props.navigation.goBack();
-        }),
-        (r.onSort = function () {
-          var e,
-            t = r.state,
-            a = t.sortMode,
-            n = t.oriList,
-            i = h[a];
-          switch (i) {
-            case 'time':
-              e = locales.default.DEFAULT_ORDER;
-              r.setState({
-                playList: n,
-              });
-              break;
-            case 'song':
-              e = locales.default.SONG_ORDER;
-              r.searchSong(':1', false, false);
-              break;
-            case 'artist':
-              e = locales.default.ARTIST_ORDER;
-              r.searchSong(':2', false, false);
-              break;
-            case 'album':
-              e = locales.default.ALBUM_ORDER;
-              r.searchSong(':3', false, false);
-              break;
-            case 'random':
-              e = locales.default.RANDOM_ORDER;
-              r.searchSong(':4', false, false);
-          }
-          toast(e);
-          r.setState({
-            sortMode: i,
-          });
-        }),
-        (r.searchSong = function (e) {
-          var t = r.state.oriList;
-          if (t) {
-            var a = utils.filterHelper.search(t, e);
-            r.setState({
-              playList: a,
-            });
-          }
-        }),
-        (r.onTop = function () {
-          var e, t;
-          null === (e = (t = r.listParent).onTop) || void 0 === e || e.call(t);
-        }),
-        a
-      );
+import * as React from 'react';
+import * as components from '../components/index';
+import providers from '../services/providers';
+import names from '../events/names';
+import icons from '../theme/icons';
+import locales from '../locales/index';
+import * as events from '../events/index';
+import * as utils from '../utils/index';
+import mediaStore from '../native/mediaStore';
+import LocalMusicList from './../modules/LocalMusicList.js';
+const h = {
+  time: 'random',
+  random: 'song',
+  song: 'artist',
+  artist: 'album',
+  album: 'time',
+};
+class LocalMusic extends React.Component {
+  state = {
+    playList: null,
+    oriList: [],
+    sortMode: 'time',
+  };
+  loadPlayList = () => {
+    mediaStore.getPlayList().then((e) => {
+      if (e) {
+        const t = e.data.filter((e) => e.duration / 1000 > 30 && !e.path.includes('record'));
+        t.reverse();
+        this.setState({
+          oriList: t,
+          playList: t,
+        });
+      }
+    });
+  };
+  goBack = () => {
+    return this.props.navigation.goBack();
+  };
+  onSort = () => {
+    let e;
+    const r_state = this.state;
+    const {sortMode, oriList} = r_state;
+    const sortMode_1 = h[sortMode];
+    switch (sortMode_1) {
+      case 'time':
+        e = locales.DEFAULT_ORDER;
+        this.setState({
+          playList: oriList,
+        });
+        break;
+      case 'song':
+        e = locales.SONG_ORDER;
+        this.searchSong(':1', false, false);
+        break;
+      case 'artist':
+        e = locales.ARTIST_ORDER;
+        this.searchSong(':2', false, false);
+        break;
+      case 'album':
+        e = locales.ALBUM_ORDER;
+        this.searchSong(':3', false, false);
+        break;
+      case 'random':
+        e = locales.RANDOM_ORDER;
+        this.searchSong(':4', false, false);
     }
-    componentDidMount() {
-      var e = this;
-      this.deleteReciver = events.emitter.addListener(names.default.DeleteFromLocal, function (t) {
-        var a = t.deleteIndex,
-          r = e.state.playList;
-        if (r) {
-          var n = r.filter(function (e, t) {
-            return a !== t;
-          });
+    toast(e);
+    this.setState({
+      sortMode: sortMode_1,
+    });
+  };
+  searchSong = (e) => {
+    const oriList = this.state.oriList;
+    if (oriList) {
+      const a = utils.filterHelper.search(oriList, e);
+      this.setState({
+        playList: a,
+      });
+    }
+  };
+  onTop = () => {
+    this.listParent.onTop?.();
+  };
+  componentDidMount() {
+    const e = this;
+    this.deleteReciver = events.emitter.addListener(
+      names.DeleteFromLocal,
+      function ({deleteIndex}) {
+        const playList = e.state.playList;
+        if (playList) {
+          const n = playList.filter((e, t) => deleteIndex !== t);
           e.setState({
             playList: n,
           });
         }
-      });
-      this.loadPlayList();
-    }
-    componentWillUnmount() {
-      this.deleteReciver.remove();
-    }
-    render() {
-      var e = this;
-      return React.default.createElement(
-        components.PageContainer,
-        {
-          title: locales.default.LOCAL_MUSIC,
-          goBack: this.goBack,
-          opacity: this.opacity,
-          onTop: this.onTop,
-          onChangeText: function (t) {
-            return e.searchSong(t);
+      },
+    );
+    this.loadPlayList();
+  }
+  componentWillUnmount() {
+    this.deleteReciver.remove();
+  }
+  render() {
+    const e = this;
+    return (
+      <components.PageContainer
+        title={locales.LOCAL_MUSIC}
+        goBack={this.goBack}
+        opacity={this.opacity}
+        onTop={this.onTop}
+        onChangeText={function (t) {
+          return e.searchSong(t);
+        }}
+        rightIcon={[
+          {
+            name: icons.SORT_VARIANT,
+            onPress: this.onSort,
           },
-          rightIcon: [
-            {
-              name: icons.default.SORT_VARIANT,
-              onPress: this.onSort,
-            },
-            {
-              name: icons.default.MAGNIFY,
-            },
-          ],
-        },
-        React.default.createElement(LocalMusicList.default, {
-          data: this.state.playList,
-          playMusic: function (t, a) {
+          {
+            name: icons.MAGNIFY,
+          },
+        ]}
+      >
+        <LocalMusicList
+          data={this.state.playList}
+          playMusic={function (t, a) {
             return e.playMusic(t, a);
-          },
-          onDetail: function (e, t) {
-            return (0, events.toDetailModal)({
-              item: e,
+          }}
+          onDetail={function (item, t) {
+            return events.toDetailModal({
+              item,
               index: t,
-              api: providers.default.local,
+              api: providers.local,
             });
-          },
-          addToQueue: function (e) {
-            return (0, events.toInsertToList)({
+          }}
+          addToQueue={function (e) {
+            return events.toInsertToList({
               data: e,
-              api: providers.default.local,
+              api: providers.local,
             });
-          },
-          ref: (instance) => (this.listParent = instance),
-        }),
-      );
-    }
-    playMusic(e) {
-      var t = this.state.playList,
-        a = t,
-        r = t.findIndex(function (t) {
-          return t.title === e.title;
-        });
-      (0, events.toPlayer)({
-        item: e,
-        data: a,
-        index: r,
-        api: providers.default.local,
-      });
-    }
-  };
-exports.default = v;
+          }}
+          ref={(instance) => (this.listParent = instance)}
+        />
+      </components.PageContainer>
+    );
+  }
+  playMusic(item) {
+    const playList = this.state.playList;
+    const a = playList;
+    const r = playList.findIndex((t) => t.title === item.title);
+    events.toPlayer({
+      item,
+      data: a,
+      index: r,
+      api: providers.local,
+    });
+  }
+}
+export default LocalMusic;

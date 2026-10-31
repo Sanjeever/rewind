@@ -1,360 +1,306 @@
-const _default = require('./../components/Text.js').default;
-const _interopRequireWildcard = require('@babel/runtime/helpers/interopRequireWildcard');
-const _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
-Object.defineProperty(exports, '__esModule', {
-  value: true,
-});
-exports.default = void 0;
-var React = _interopRequireWildcard(require('react')),
-  ReactNative = require('react-native'),
-  LyricList = _interopRequireWildcard(require('./LyricList.js')),
-  constants = require('../theme/constants'),
-  locales = _interopRequireDefault(require('../locales/index')),
-  u = 'Nothing is true',
-  p = '万物皆虚',
-  d = class t extends React.PureComponent {
-    constructor() {
-      var e, n, r;
-      for (var l = arguments.length, o = new Array(l), s = 0; s < l; s++) o[s] = arguments[s];
-      return (
-        (n = r = super(...o)),
-        (r.dragged = false),
-        (r.state = {
-          index: null,
-        }),
-        (r.scroll = function (e, t) {
-          var n = r.props.getIndex(e, t);
-          if (n !== r.state.index) {
-            if (r._list && n && false === r.dragged) {
-              var l = r.getVelocity(n);
-              r._list.scrollToIndex({
-                animated: true,
-                index: n,
-                velocity: l,
-              });
-            }
-            r.setState({
-              index: n,
-            });
-          }
-        }),
-        (r.scrollToCurrentLine = function () {
-          var e = r.props,
-            t = e.currentTime,
-            n = e.lyric,
-            l = e.getIndex;
-          if (n && !(n.length < 2)) {
-            var i = l(n, t);
-            r._list &&
-              i &&
-              r._list.scrollToIndex({
-                animated: false,
-                index: i,
-              });
-          }
-        }),
-        (r.getTrans = function (e) {
-          return false === r.props.showTrans ? null : e.trans;
-        }),
-        (r.scrollDragBegin = function () {
-          r.timer && clearTimeout(r.timer);
-          r.dragged = true;
-        }),
-        (r.scrollEndDrag = function () {
-          r.timer = setTimeout(function () {
-            r.dragged = false;
-          }, 2e3);
-        }),
-        (r.onVisibleItemsChange = function (e) {
-          r.visibleIndex = ((e.firstIndex + e.lastIndex + 1) / 2) | 0;
-        }),
-        (r.getVelocity = function (e) {
-          if (!r.visibleIndex) return 1e3;
-          var t = r.visibleIndex < e - 4,
-            n = r.visibleIndex > e + 4;
-          return t || n ? 100 : 1e3;
-        }),
-        (r.btns = function () {
-          return React.default.createElement(
-            ReactNative.View,
-            {
-              style: {
-                height: 200,
-                paddingTop: 100,
-                alignItems: 'center',
-                justifyContent: 'center',
-              },
-            },
-            r.props.hasTrans &&
-              React.default.createElement(
-                ReactNative.TouchableOpacity,
-                {
-                  onPress: r.props.changeShowTrans,
-                },
-                React.default.createElement(
-                  _default,
-                  {
-                    style: h.text,
-                  },
-                  r.props.showTrans ? locales.default.HIDE_TRANS : locales.default.SHOW_TRANS,
-                ),
-              ),
-            React.default.createElement(
-              ReactNative.View,
-              {
-                style: {
-                  flexDirection: 'row',
-                  justifyContent: 'space-around',
-                  alignItems: 'center',
-                },
-              },
-              React.default.createElement(
-                ReactNative.TouchableOpacity,
-                {
-                  onPress: function () {
-                    return r.props.changeFontSize(r.props.fontSize > 1 ? r.props.fontSize - 1 : 0);
-                  },
-                },
-                React.default.createElement(
-                  _default,
-                  {
-                    style: [
-                      h.text,
-                      {
-                        padding: 5,
-                      },
-                    ],
-                  },
-                  '-',
-                ),
-              ),
-              React.default.createElement(
-                ReactNative.View,
-                {
-                  style: {
-                    padding: 20,
-                  },
-                },
-                React.default.createElement(
-                  _default,
-                  {
-                    style: h.text,
-                  },
-                  r.props.fontSize - 15,
-                ),
-              ),
-              React.default.createElement(
-                ReactNative.TouchableOpacity,
-                {
-                  onPress: function () {
-                    return r.props.changeFontSize(
-                      r.props.fontSize < 25 ? r.props.fontSize + 1 : 25,
-                    );
-                  },
-                },
-                React.default.createElement(
-                  _default,
-                  {
-                    style: [
-                      h.text,
-                      {
-                        padding: 5,
-                      },
-                    ],
-                  },
-                  '+',
-                ),
-              ),
-            ),
-          );
-        }),
-        (r.emptyComp = function () {
-          return React.default.createElement(ReactNative.View, {
-            style: h.space,
-          });
-        }),
-        (r._renderItem = function (e) {
-          var t = e.item,
-            n = e.index,
-            l = r.getTrans(t),
-            a = !r.props.showTrans && t.txt.match('翻译贡献者');
-          return React.default.createElement(f, {
-            highlight: r.state.index === n,
-            lyric: !a && r.renderTxt(t.txt),
-            trans: l && r.renderTxt(l.txt),
-            onPress: function () {
-              return r.seekTo(t);
-            },
-            fontSize: r.props.fontSize,
-          });
-        }),
-        (r.seekTo = function (e) {
-          var t = e.total - 0.5;
-          r.props.seekTo(t);
-          r.dragged = false;
-        }),
-        (r.renderTxt = function (e) {
-          return e
-            .replace(/&apos;/gm, "'")
-            .replace(/\/\//g, '')
-            .replace(/&quot;/g, '"')
-            .replace(/\[.+\]/gi, '');
-        }),
-        n
-      );
-    }
-    componentDidMount() {
-      this.scrollToCurrentLine();
-    }
-    componentDidUpdate(e) {
-      var t = this.props,
-        n = t.currentTime,
-        r = t.lyric;
-      n !== e.currentTime &&
-        (!r || r.length < 2 || (n !== e.currentTime && r.length > 0 && this.scroll(r, n)));
-    }
-    render() {
-      var e = this,
-        t = this.props.lyric,
-        n = new LyricList.DataSource(t, function (e, t) {
-          return String(t);
+import Text from './../components/Text.js';
+import * as React from 'react';
+import * as ReactNative from 'react-native';
+import * as LyricList from './LyricList.js';
+import * as constants from '../theme/constants';
+import locales from '../locales/index';
+const lyric_1 = 'Nothing is true';
+const trans = '万物皆虚';
+class LyricLine extends React.PureComponent {
+  dragged = false;
+  state = {
+    index: null,
+  };
+  scroll = (e, t) => {
+    const n = this.props.getIndex(e, t);
+    if (n !== this.state.index) {
+      if (this._list && n && this.dragged === false) {
+        const velocity = this.getVelocity(n);
+        this._list.scrollToIndex({
+          animated: true,
+          index: n,
+          velocity,
         });
-      return React.default.createElement(
-        ReactNative.View,
-        {
-          style: [h.container, this.props.viewStyle],
-        },
-        React.default.createElement(ReactNative.View, {
-          style: [ReactNative.StyleSheet.absoluteFill, h.overlay],
-          onTouchStart: this.props.onTap,
-        }),
-        t && t.length > 0 && n
-          ? React.default.createElement(LyricList.default, {
-              style: {
-                flex: 1,
-                width: '80%',
-                height: '100%',
-              },
-              dataSource: n,
-              renderItem: this._renderItem,
-              ref: function (t) {
-                return (e._list = t);
-              },
-              showVerticalScrollBar: false,
-              isScrollOverMode: false,
-              ListHeaderComponent: this.btns,
-              ListFooterComponent: this.emptyComp,
-              onTouchStart: this.scrollDragBegin,
-              onScrollEndDrag: this.scrollEndDrag,
-              onVisibleItemsChange: this.onVisibleItemsChange,
-            })
-          : React.default.createElement(
-              ReactNative.View,
-              {
-                style: h.empty,
-                onTouchStart: function () {
-                  return e.props.onTap();
-                },
-              },
-              React.default.createElement(f, {
-                fontSize: 16,
-                lyric: u,
-                trans: p,
-                highlight: true,
-              }),
-            ),
-      );
+      }
+      this.setState({
+        index: n,
+      });
     }
-  },
-  f = class t extends React.PureComponent {
-    constructor() {
-      return super(...arguments);
+  };
+  scrollToCurrentLine = () => {
+    const r_props = this.props;
+    const {currentTime, lyric, getIndex} = r_props;
+    if (lyric && !(lyric.length < 2)) {
+      const i = getIndex(lyric, currentTime);
+      if (this._list && i) {
+        this._list.scrollToIndex({
+          animated: false,
+          index: i,
+        });
+      }
     }
-    render() {
-      var e = this.props,
-        t = e.lyric,
-        n = void 0 === t ? '' : t,
-        r = e.trans,
-        l = void 0 === r ? '' : r,
-        o = e.highlight,
-        s = e.onPress,
-        c = e.style,
-        u = e.fontSize;
-      return React.default.createElement(
-        ReactNative.TouchableOpacity,
-        {
-          onLongPress: s,
-          activeOpacity: 0.6,
-        },
-        React.default.createElement(
-          ReactNative.View,
-          {
-            style: [h.textCon, c],
-          },
-          React.default.createElement(
-            _default,
-            {
-              style: [
+  };
+  getTrans = (e) => {
+    if (this.props.showTrans === false) {
+      return null;
+    }
+    return e.trans;
+  };
+  scrollDragBegin = () => {
+    if (this.timer) {
+      clearTimeout(this.timer);
+    }
+    this.dragged = true;
+  };
+  scrollEndDrag = () => {
+    this.timer = setTimeout(() => {
+      this.dragged = false;
+    }, 2000);
+  };
+  onVisibleItemsChange = (e) => {
+    this.visibleIndex = ((e.firstIndex + e.lastIndex + 1) / 2) | 0;
+  };
+  getVelocity = (e) => {
+    if (!this.visibleIndex) {
+      return 1000;
+    }
+    const t = this.visibleIndex < e - 4;
+    const n = this.visibleIndex > e + 4;
+    if (t || n) {
+      return 100;
+    }
+    return 1000;
+  };
+  btns = () => {
+    return (
+      <ReactNative.View
+        style={{
+          height: 200,
+          paddingTop: 100,
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        {this.props.hasTrans && (
+          <ReactNative.TouchableOpacity onPress={this.props.changeShowTrans}>
+            <Text style={h.text}>
+              {this.props.showTrans ? locales.HIDE_TRANS : locales.SHOW_TRANS}
+            </Text>
+          </ReactNative.TouchableOpacity>
+        )}
+        <ReactNative.View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-around',
+            alignItems: 'center',
+          }}
+        >
+          <ReactNative.TouchableOpacity
+            onPress={() => {
+              return this.props.changeFontSize(
+                this.props.fontSize > 1 ? this.props.fontSize - 1 : 0,
+              );
+            }}
+          >
+            <Text
+              style={[
                 h.text,
                 {
-                  opacity: o ? 1 : 0.6,
-                  fontSize: u,
+                  padding: 5,
                 },
-                l && {
-                  fontSize: u - 2,
-                },
-              ],
-            },
-            l &&
-              React.default.createElement(
-                _default,
+              ]}
+            >
+              {'-'}
+            </Text>
+          </ReactNative.TouchableOpacity>
+          <ReactNative.View
+            style={{
+              padding: 20,
+            }}
+          >
+            <Text style={h.text}>{this.props.fontSize - 15}</Text>
+          </ReactNative.View>
+          <ReactNative.TouchableOpacity
+            onPress={() => {
+              return this.props.changeFontSize(
+                this.props.fontSize < 25 ? this.props.fontSize + 1 : 25,
+              );
+            }}
+          >
+            <Text
+              style={[
+                h.text,
                 {
-                  style: [
-                    h.text,
-                    {
-                      opacity: o ? 1 : 0.6,
-                      fontSize: u,
-                    },
-                  ],
+                  padding: 5,
                 },
-                l + '\n',
-              ),
-            n,
-          ),
-        ),
-      );
+              ]}
+            >
+              {'+'}
+            </Text>
+          </ReactNative.TouchableOpacity>
+        </ReactNative.View>
+      </ReactNative.View>
+    );
+  };
+  emptyComp = function () {
+    return <ReactNative.View style={h.space} />;
+  };
+  _renderItem = ({item, index}) => {
+    const l = this.getTrans(item);
+    const a = !this.props.showTrans && item.txt.match('翻译贡献者');
+    return React.createElement(LyricLineScreen, {
+      highlight: this.state.index === index,
+      lyric: !a && this.renderTxt(item.txt),
+      trans: l && this.renderTxt(l.txt),
+      onPress: () => {
+        return this.seekTo(item);
+      },
+      fontSize: this.props.fontSize,
+    });
+  };
+  seekTo = (e) => {
+    const t = e.total - 0.5;
+    this.props.seekTo(t);
+    this.dragged = false;
+  };
+  renderTxt = function (e) {
+    return e
+      .replace(/&apos;/gm, "'")
+      .replace(/\/\//g, '')
+      .replace(/&quot;/g, '"')
+      .replace(/\[.+\]/gi, '');
+  };
+  componentDidMount() {
+    this.scrollToCurrentLine();
+  }
+  componentDidUpdate(e) {
+    const props = this.props;
+    const {currentTime, lyric} = props;
+    if (currentTime !== e.currentTime) {
+      if (!(!lyric || lyric.length < 2)) {
+        if (currentTime !== e.currentTime && lyric.length > 0) {
+          this.scroll(lyric, currentTime);
+        }
+      }
     }
+  }
+  render() {
+    const e = this;
+    const lyric = this.props.lyric;
+    const dataSource = new LyricList.DataSource(lyric, function (e, t) {
+      return String(t);
+    });
+    return (
+      <ReactNative.View style={[h.container, this.props.viewStyle]}>
+        <ReactNative.View
+          style={[ReactNative.StyleSheet.absoluteFill, h.overlay]}
+          onTouchStart={this.props.onTap}
+        />
+        {lyric && lyric.length > 0 && dataSource ? (
+          <LyricList.default
+            style={{
+              flex: 1,
+              width: '80%',
+              height: '100%',
+            }}
+            dataSource={dataSource}
+            renderItem={this._renderItem}
+            ref={function (t) {
+              return (e._list = t);
+            }}
+            showVerticalScrollBar={false}
+            isScrollOverMode={false}
+            ListHeaderComponent={this.btns}
+            ListFooterComponent={this.emptyComp}
+            onTouchStart={this.scrollDragBegin}
+            onScrollEndDrag={this.scrollEndDrag}
+            onVisibleItemsChange={this.onVisibleItemsChange}
+          />
+        ) : (
+          <ReactNative.View
+            style={h.empty}
+            onTouchStart={function () {
+              return e.props.onTap();
+            }}
+          >
+            {React.createElement(LyricLineScreen, {
+              fontSize: 16,
+              lyric: lyric_1,
+              trans,
+              highlight: true,
+            })}
+          </ReactNative.View>
+        )}
+      </ReactNative.View>
+    );
+  }
+}
+class LyricLineScreen extends React.PureComponent {
+  render() {
+    const {lyric = '', trans = '', highlight, onPress, style, fontSize} = this.props;
+    return (
+      <ReactNative.TouchableOpacity onLongPress={onPress} activeOpacity={0.6}>
+        <ReactNative.View style={[h.textCon, style]}>
+          <Text
+            style={[
+              h.text,
+              {
+                opacity: highlight ? 1 : 0.6,
+                fontSize,
+              },
+              trans && {
+                fontSize: fontSize - 2,
+              },
+            ]}
+          >
+            {trans && (
+              <Text
+                style={[
+                  h.text,
+                  {
+                    opacity: highlight ? 1 : 0.6,
+                    fontSize,
+                  },
+                ]}
+              >{`${trans}
+`}</Text>
+            )}
+            {lyric}
+          </Text>
+        </ReactNative.View>
+      </ReactNative.TouchableOpacity>
+    );
+  }
+}
+var h = ReactNative.StyleSheet.create({
+  container: {
+    height: '100%',
+    width: constants.DEVICE_WIDTH,
+    alignItems: 'center',
   },
-  h = ReactNative.StyleSheet.create({
-    container: {
-      height: '100%',
-      width: constants.DEVICE_WIDTH,
-      alignItems: 'center',
-    },
-    textCon: {
-      width: '100%',
-      justifyContent: 'center',
-      alignContent: 'center',
-      padding: 10,
-      paddingVertical: 20,
-    },
-    text: {
-      fontSize: 15,
-      opacity: 0.6,
-      textAlign: 'center',
-    },
-    empty: {
-      flex: 1,
-      justifyContent: 'center',
-      width: constants.DEVICE_WIDTH,
-    },
-    space: {
-      height: 180,
-    },
-    overlay: {
-      top: ReactNative.StatusBar.currentHeight + 50,
-      backgroundColor: 0,
-    },
-  }),
-  g = d;
-exports.default = g;
+  textCon: {
+    width: '100%',
+    justifyContent: 'center',
+    alignContent: 'center',
+    padding: 10,
+    paddingVertical: 20,
+  },
+  text: {
+    fontSize: 15,
+    opacity: 0.6,
+    textAlign: 'center',
+  },
+  empty: {
+    flex: 1,
+    justifyContent: 'center',
+    width: constants.DEVICE_WIDTH,
+  },
+  space: {
+    height: 180,
+  },
+  overlay: {
+    top: ReactNative.StatusBar.currentHeight + 50,
+    backgroundColor: 0,
+  },
+});
+export default LyricLine;

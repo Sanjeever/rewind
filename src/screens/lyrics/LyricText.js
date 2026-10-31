@@ -1,62 +1,29 @@
-const _default = require('./../../components/Text.js').default;
-const _interopRequireWildcard = require('@babel/runtime/helpers/interopRequireWildcard');
-Object.defineProperty(exports, '__esModule', {
-  value: true,
-});
-exports.default = void 0;
-var React = _interopRequireWildcard(require('react')),
-  ReactNative = require('react-native'),
-  o = class t extends React.PureComponent {
-    constructor() {
-      return super(...arguments);
-    }
-    render() {
-      var e = this.props,
-        t = e.lyric,
-        l = e.trans,
-        n = e.onPress,
-        r = e.style,
-        o = e.hidden;
-      return React.default.createElement(
-        ReactNative.TouchableOpacity,
-        {
-          onPress: n,
-          activeOpacity: 0.6,
-        },
-        React.default.createElement(
-          ReactNative.View,
-          {
-            style: [
-              s.textCon,
-              r,
-              o && {
-                opacity: 0,
-              },
-            ],
-          },
-          (null === t || void 0 === t ? void 0 : t.length) > 0
-            ? React.default.createElement(
-                _default,
-                {
-                  style: [s.text],
-                },
-                t,
-              )
-            : null,
-          (null === l || void 0 === l ? void 0 : l.length) > 0
-            ? React.default.createElement(
-                _default,
-                {
-                  style: [s.text],
-                },
-                l || '',
-              )
-            : null,
-        ),
-      );
-    }
-  };
-exports.default = o;
+import Text from './../../components/Text.js';
+import * as React from 'react';
+import * as ReactNative from 'react-native';
+class LyricText extends React.PureComponent {
+  render() {
+    const props = this.props;
+    const {lyric, trans, onPress, style, hidden} = props;
+    return (
+      <ReactNative.TouchableOpacity onPress={onPress} activeOpacity={0.6}>
+        <ReactNative.View
+          style={[
+            s.textCon,
+            style,
+            hidden && {
+              opacity: 0,
+            },
+          ]}
+        >
+          {lyric?.length > 0 ? <Text style={[s.text]}>{lyric}</Text> : null}
+          {trans?.length > 0 ? <Text style={[s.text]}>{trans || ''}</Text> : null}
+        </ReactNative.View>
+      </ReactNative.TouchableOpacity>
+    );
+  }
+}
+export default LyricText;
 var s = ReactNative.StyleSheet.create({
   textCon: {
     flex: 1,

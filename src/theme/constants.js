@@ -1,24 +1,11 @@
-Object.defineProperty(exports, '__esModule', {
-  value: true,
-});
-exports.STATUS_BAR_HEIGHT =
-  exports.SPINKIT_SIZE =
-  exports.ITEM_HEIGHT =
-  exports.DEVICE_WIDTH =
-  exports.DEVICE_HEIGHT =
-  exports.COLORS =
-    void 0;
-var ReactNative = require('react-native'),
-  _ = ReactNative.Dimensions.get('screen'),
-  H = _.width,
-  i = _.height;
-exports.DEVICE_HEIGHT = i;
-exports.DEVICE_WIDTH = H;
-var S = ReactNative.StatusBar.currentHeight;
-exports.STATUS_BAR_HEIGHT = S;
-exports.ITEM_HEIGHT = 70;
-exports.SPINKIT_SIZE = 60;
-exports.COLORS = {
+import * as ReactNative from 'react-native';
+const _ = ReactNative.Dimensions.get('screen');
+export const DEVICE_WIDTH = _.width;
+export const DEVICE_HEIGHT = _.height;
+export const STATUS_BAR_HEIGHT = ReactNative.StatusBar.currentHeight;
+export const ITEM_HEIGHT = 70;
+export const SPINKIT_SIZE = 60;
+export const COLORS = {
   primary: '#fff',
   primaryAlpha70: 'rgba(255,255,255,0.7)',
   primaryAlpha50: 'rgba(255,255,255,0.5)',

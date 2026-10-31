@@ -1,194 +1,170 @@
-const _default = require('./../components/Pager.js').default;
-const _interopRequireWildcard = require('@babel/runtime/helpers/interopRequireWildcard');
-const _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
-Object.defineProperty(exports, '__esModule', {
-  value: true,
-});
-exports.default = void 0;
-var React = _interopRequireWildcard(require('react')),
-  ReactNative = require('react-native'),
-  TouchableScale = _interopRequireDefault(require('../components/TouchableScale')),
-  components = require('../components/index'),
-  constants = require('../theme/constants'),
-  icons = _interopRequireDefault(require('../theme/icons')),
-  utils = require('../utils/index'),
-  types = require('../utils/types'),
-  trackInfo = require('../services/trackInfo'),
-  playOrder = require('./playOrder'),
-  TrackTitle = _interopRequireDefault(require('./TrackTitle')),
-  m = 50,
-  b = 60,
-  y = class t extends React.PureComponent {
-    constructor() {
-      var e, r, n;
-      for (var a = arguments.length, u = new Array(a), y = 0; y < a; y++) u[y] = arguments[y];
-      return (
-        (r = n = super(...u)),
-        (n.scrollState = 'idle'),
-        (n.triggerImage = false),
-        (n.onTouchEnd = function () {
-          'idle' === n.scrollState && false === n.triggerImage && n.props.playerOpen();
-        }),
-        (n.onImage = function () {
-          n.triggerImage = true;
-          n.props.togglePlay();
-          (0, types.debounce)(function () {
-            n.triggerImage = false;
-          }, 99)();
-        }),
-        (n.renderCovers = function () {
-          return [0, 1, 2].map(function (e) {
-            return n.renderItem(e);
-          });
-        }),
-        (n.onPageScrollStateChanged = function (e) {
-          n.scrollState = e;
-        }),
-        (n.onPageSelected = function (e) {
-          var t = e.nativeEvent.position;
-          if (1 !== t) {
-            var r = n.props,
-              a = r.prev,
-              l = r.next;
-            0 === t ? a() : l();
-            n.pager.setPageWithoutAnimation(1);
-          }
-        }),
-        (n.renderItem = function (e) {
-          var t = n.props,
-            r = t.index,
-            a = t.data,
-            u = t.unknown,
-            g = t.playMode,
-            y = t.isRound,
-            S = t.currentMiniLyric,
-            I = t.randomArray,
-            v = (0, playOrder.getNextPlayIndexByPagerPos)({
-              pos: e,
-              playMode: g,
-              playingIndex: r,
-              len: a.length,
-              randomArray: I,
-            }),
-            P =
-              u && 2 === e
-                ? {
-                    song: '？？？',
-                  }
-                : (0, trackInfo.extractFullInfo)(a[v]);
-          return React.default.createElement(
-            ReactNative.View,
-            {
-              key: e,
-              style: {
-                height: b,
-                flexDirection: 'row',
-                alignItems: 'center',
-                paddingLeft: 10,
-              },
-            },
-            React.default.createElement(
-              ReactNative.View,
-              {
-                style: [
-                  n.props.coverStyle,
-                  {
-                    height: m,
-                    width: m,
-                  },
-                ],
-              },
-              u && 2 === e
-                ? React.default.createElement(
-                    ReactNative.View,
-                    {
-                      style: {
-                        width: '95%',
-                        height: '95%',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      },
-                    },
-                    React.default.createElement(components.Icon, {
-                      name: icons.default.CROSSHAIRS_QUESTION,
-                      color: '#fff',
-                    }),
-                  )
-                : React.default.createElement(
-                    TouchableScale.default,
-                    {
-                      activeScale: 0.95,
-                      onPress: n.onImage,
-                      style: {
-                        height: '100%',
-                        width: '100%',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      },
-                    },
-                    React.default.createElement(ReactNative.Image, {
-                      ref: (instance) => (this.img = instance),
-                      style: [
-                        {
-                          width: '90%',
-                          height: '90%',
-                          borderRadius: 5,
-                        },
-                        y && {
-                          width: '95%',
-                          height: '95%',
-                          borderRadius: 25,
-                        },
-                      ],
-                      source: {
-                        uri: P.img,
-                      },
-                    }),
-                  ),
-            ),
-            React.default.createElement(TrackTitle.default, {
-              viewStyle: {
-                marginLeft: 7,
-                flex: 1,
-              },
-              titleStyle: {
-                fontSize: 14,
-                fontWeight: 'bold',
-              },
-              authorStyle: {
-                fontSize: 12,
-              },
-              dashline: false,
-              title: P.song,
-              subtitle: 1 === e && S ? S : (0, utils.parseArtist)(P.singer),
-              numberOfLines: 1,
-              alias: P.alias,
-            }),
-          );
-        }),
-        r
-      );
-    }
-    render() {
-      var e = this;
-      return React.default.createElement(
-        _default,
-        {
-          ref: function (t) {
-            return (e.pager = t);
-          },
-          onPageSelected: this.onPageSelected,
-          initialPage: 1,
-          style: {
-            flex: 1,
-            width: constants.DEVICE_WIDTH - 50,
-            height: b,
-          },
-          onPageScrollStateChanged: this.onPageScrollStateChanged,
-          onTouchEnd: this.onTouchEnd,
-        },
-        this.renderCovers(),
-      );
+import Pager from './../components/Pager.js';
+import * as React from 'react';
+import * as ReactNative from 'react-native';
+import TouchableScale from '../components/TouchableScale';
+import * as components from '../components/index';
+import * as constants from '../theme/constants';
+import icons from '../theme/icons';
+import * as utils from '../utils/index';
+import * as types from '../utils/types';
+import * as trackInfo from '../services/trackInfo';
+import * as playOrder from './playOrder';
+import TrackTitle from './TrackTitle';
+const m = 50;
+const height = 60;
+class MiniPlayerContent extends React.PureComponent {
+  scrollState = 'idle';
+  triggerImage = false;
+  onTouchEnd = () => {
+    if (this.scrollState === 'idle' && this.triggerImage === false) {
+      this.props.playerOpen();
     }
   };
-exports.default = y;
+  onImage = () => {
+    this.triggerImage = true;
+    this.props.togglePlay();
+    types.debounce(() => {
+      this.triggerImage = false;
+    }, 99)();
+  };
+  renderCovers = () => {
+    return [0, 1, 2].map((e) => this.renderItem(e));
+  };
+  onPageScrollStateChanged = (e) => {
+    this.scrollState = e;
+  };
+  onPageSelected = (e) => {
+    const position = e.nativeEvent.position;
+    if (position !== 1) {
+      const r = this.props;
+      const {prev, next} = r;
+      if (position === 0) {
+        prev();
+      } else {
+        next();
+      }
+      this.pager.setPageWithoutAnimation(1);
+    }
+  };
+  renderItem = (e) => {
+    const n_props = this.props;
+    const {index, data, unknown, playMode, isRound, currentMiniLyric, randomArray} = n_props;
+    const v = playOrder.getNextPlayIndexByPagerPos({
+      pos: e,
+      playMode,
+      playingIndex: index,
+      len: data.length,
+      randomArray,
+    });
+    const P =
+      unknown && e === 2
+        ? {
+            song: '？？？',
+          }
+        : trackInfo.extractFullInfo(data[v]);
+    return (
+      <ReactNative.View
+        key={e}
+        style={{
+          height,
+          flexDirection: 'row',
+          alignItems: 'center',
+          paddingLeft: 10,
+        }}
+      >
+        <ReactNative.View
+          style={[
+            this.props.coverStyle,
+            {
+              height: m,
+              width: m,
+            },
+          ]}
+        >
+          {unknown && e === 2 ? (
+            <ReactNative.View
+              style={{
+                width: '95%',
+                height: '95%',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <components.Icon name={icons.CROSSHAIRS_QUESTION} color={'#fff'} />
+            </ReactNative.View>
+          ) : (
+            <TouchableScale
+              activeScale={0.95}
+              onPress={this.onImage}
+              style={{
+                height: '100%',
+                width: '100%',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <ReactNative.Image
+                ref={(instance) => (this.img = instance)}
+                style={[
+                  {
+                    width: '90%',
+                    height: '90%',
+                    borderRadius: 5,
+                  },
+                  isRound && {
+                    width: '95%',
+                    height: '95%',
+                    borderRadius: 25,
+                  },
+                ]}
+                source={{
+                  uri: P.img,
+                }}
+              />
+            </TouchableScale>
+          )}
+        </ReactNative.View>
+        <TrackTitle
+          viewStyle={{
+            marginLeft: 7,
+            flex: 1,
+          }}
+          titleStyle={{
+            fontSize: 14,
+            fontWeight: 'bold',
+          }}
+          authorStyle={{
+            fontSize: 12,
+          }}
+          dashline={false}
+          title={P.song}
+          subtitle={e === 1 && currentMiniLyric ? currentMiniLyric : utils.parseArtist(P.singer)}
+          numberOfLines={1}
+          alias={P.alias}
+        />
+      </ReactNative.View>
+    );
+  };
+  render() {
+    const e = this;
+    return (
+      <Pager
+        ref={function (t) {
+          return (e.pager = t);
+        }}
+        onPageSelected={this.onPageSelected}
+        initialPage={1}
+        style={{
+          flex: 1,
+          width: constants.DEVICE_WIDTH - 50,
+          height,
+        }}
+        onPageScrollStateChanged={this.onPageScrollStateChanged}
+        onTouchEnd={this.onTouchEnd}
+      >
+        {this.renderCovers()}
+      </Pager>
+    );
+  }
+}
+export default MiniPlayerContent;

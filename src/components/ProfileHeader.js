@@ -1,191 +1,169 @@
-const _interopRequireWildcard = require('@babel/runtime/helpers/interopRequireWildcard');
-const _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
-Object.defineProperty(exports, '__esModule', {
-  value: true,
-});
-exports.default = void 0;
-var React = _interopRequireWildcard(require('react')),
-  ReactNative = require('react-native'),
-  components = require('./index'),
-  constants = require('../theme/constants'),
-  names = _interopRequireDefault(require('../events/names')),
-  icons = _interopRequireDefault(require('../theme/icons')),
-  events = require('../events/index'),
-  types = _interopRequireWildcard(require('../utils/types')),
-  users = _interopRequireDefault(require('../storage/users')),
-  g = class t extends React.PureComponent {
-    constructor() {
-      var e, a, n;
-      for (var r = arguments.length, o = new Array(r), u = 0; u < r; u++) o[u] = arguments[u];
-      return (
-        (a = n = super(...o)),
-        (n.state = {
-          data: [],
-        }),
-        (n.getUserInfo = async function () {
-          const accounts = await users.default.getUserInfo();
-          const data = [];
-          if (typeof accounts?.netEase?.avatarUrl === 'string')
-            data.push({
-              avatarUrl: accounts.netEase.avatarUrl + '?param=200y200',
-              nickname: accounts.netEase.nickname,
-              page: 'NeteaseLogin',
-            });
-          if (typeof accounts?.qqMusic?.avatarUrl === 'string')
-            data.push({
-              avatarUrl: accounts.qqMusic.avatarUrl,
-              nickname: accounts.qqMusic.nickname,
-              page: 'QQMusicLogin',
-            });
-          n.setState({
-            data,
-          });
-        }),
-        (n.easterEgg = function (e) {
-          toast('你好啊，' + e);
-        }),
-        (n.renderAvatars = function () {
-          var e = n.props,
-            t = e.onNavigate,
-            a = e.nativeOffset;
-          return n.state.data.map(function (e, r) {
-            if (e)
-              return React.default.createElement(
-                ReactNative.TouchableNativeFeedback,
-                {
-                  key: r,
-                  onPress: function () {
-                    return t(e.page);
-                  },
-                  onLongPress: function () {
-                    return n.easterEgg(e.nickname);
-                  },
-                },
-                React.default.createElement(
-                  ReactNative.View,
-                  {
-                    style: m.con,
-                  },
-                  e.avatarUrl &&
-                    React.default.createElement(ReactNative.Animated.Image, {
-                      style: [
-                        m.avatar,
-                        {
-                          transform: [
-                            {
-                              translateY: a.y.interpolate({
-                                inputRange: [-constants.DEVICE_WIDTH, 0],
-                                outputRange: [-constants.DEVICE_WIDTH / 2 + 100 * r, 0],
-                                extrapolate: 'clamp',
-                              }),
-                              translateX: a.y.interpolate({
-                                inputRange: [-constants.DEVICE_WIDTH, 0],
-                                outputRange: [0.35 * constants.DEVICE_WIDTH - 30, 0],
-                                extrapolate: 'clamp',
-                              }),
-                              scale: a.y.interpolate({
-                                inputRange: [-constants.DEVICE_WIDTH, 0],
-                                outputRange: [2, 1],
-                                extrapolate: 'clamp',
-                              }),
-                            },
-                          ],
-                        },
-                      ],
-                      source: {
-                        uri: e.avatarUrl,
-                      },
-                    }),
-                  Boolean(e.nickname) &&
-                    React.default.createElement(
-                      ReactNative.Animated.Text,
-                      {
-                        style: [
-                          m.nickname,
-                          {
-                            opacity: a.y.interpolate({
-                              inputRange: [-60, 0],
-                              outputRange: [0, 1],
-                              extrapolate: 'clamp',
-                            }),
-                          },
-                        ],
-                      },
-                      e.nickname,
-                    ),
-                ),
-              );
-          });
-        }),
-        a
-      );
-    }
-    componentDidMount() {
-      var e = this;
-      this.getUserInfo();
-      this.sub = events.emitter.addListener(names.default.UserLogined, function () {
-        setTimeout(function () {
-          e.getUserInfo();
-        }, 500);
+import * as React from 'react';
+import * as ReactNative from 'react-native';
+import * as components from './index';
+import * as constants from '../theme/constants';
+import names from '../events/names';
+import icons from '../theme/icons';
+import * as events from '../events/index';
+import '../utils/types';
+import users from '../storage/users';
+class ProfileHeader extends React.PureComponent {
+  state = {
+    data: [],
+  };
+  getUserInfo = async () => {
+    const accounts = await users.getUserInfo();
+    const data = [];
+    if (typeof accounts?.netEase?.avatarUrl === 'string') {
+      data.push({
+        avatarUrl: `${accounts.netEase.avatarUrl}?param=200y200`,
+        nickname: accounts.netEase.nickname,
+        page: 'NeteaseLogin',
       });
     }
-    componentWillUnmount() {
-      var e, t;
-      null === (e = (t = this.sub).remove) || void 0 === e || e.call(t);
+    if (typeof accounts?.qqMusic?.avatarUrl === 'string') {
+      data.push({
+        avatarUrl: accounts.qqMusic.avatarUrl,
+        nickname: accounts.qqMusic.nickname,
+        page: 'QQMusicLogin',
+      });
     }
-    render() {
-      var e = this.props.onNavigate,
-        t = this.state.data;
-      return React.default.createElement(
-        ReactNative.Animated.View,
-        {
-          style: m.container,
-        },
-        t.length > 0
-          ? this.renderAvatars()
-          : React.default.createElement(
-              ReactNative.View,
-              {
-                style: m.con,
-              },
-              React.default.createElement(components.Icon, {
-                name: icons.default.ACCOUNT,
-                size: 40,
-                onPress: function () {
-                  return e('InitialLogin');
-                },
-                style: {
-                  marginLeft: 10,
-                },
-              }),
-            ),
-      );
-    }
+    this.setState({
+      data,
+    });
+  };
+  easterEgg = function (e) {
+    toast(`你好啊，${e}`);
+  };
+  renderAvatars = () => {
+    const n_props = this.props;
+    const {onNavigate, nativeOffset} = n_props;
+    return this.state.data.map((e, r) => {
+      if (e) {
+        return (
+          <ReactNative.TouchableNativeFeedback
+            key={r}
+            onPress={function () {
+              return onNavigate(e.page);
+            }}
+            onLongPress={() => {
+              return this.easterEgg(e.nickname);
+            }}
+          >
+            <ReactNative.View style={m.con}>
+              {e.avatarUrl && (
+                <ReactNative.Animated.Image
+                  style={[
+                    m.avatar,
+                    {
+                      transform: [
+                        {
+                          translateY: nativeOffset.y.interpolate({
+                            inputRange: [-constants.DEVICE_WIDTH, 0],
+                            outputRange: [-constants.DEVICE_WIDTH / 2 + 100 * r, 0],
+                            extrapolate: 'clamp',
+                          }),
+                          translateX: nativeOffset.y.interpolate({
+                            inputRange: [-constants.DEVICE_WIDTH, 0],
+                            outputRange: [0.35 * constants.DEVICE_WIDTH - 30, 0],
+                            extrapolate: 'clamp',
+                          }),
+                          scale: nativeOffset.y.interpolate({
+                            inputRange: [-constants.DEVICE_WIDTH, 0],
+                            outputRange: [2, 1],
+                            extrapolate: 'clamp',
+                          }),
+                        },
+                      ],
+                    },
+                  ]}
+                  source={{
+                    uri: e.avatarUrl,
+                  }}
+                />
+              )}
+              {Boolean(e.nickname) && (
+                <ReactNative.Animated.Text
+                  style={[
+                    m.nickname,
+                    {
+                      opacity: nativeOffset.y.interpolate({
+                        inputRange: [-60, 0],
+                        outputRange: [0, 1],
+                        extrapolate: 'clamp',
+                      }),
+                    },
+                  ]}
+                >
+                  {e.nickname}
+                </ReactNative.Animated.Text>
+              )}
+            </ReactNative.View>
+          </ReactNative.TouchableNativeFeedback>
+        );
+      }
+    });
+  };
+  componentDidMount() {
+    const e = this;
+    this.getUserInfo();
+    this.sub = events.emitter.addListener(names.UserLogined, function () {
+      setTimeout(() => {
+        e.getUserInfo();
+      }, 500);
+    });
+  }
+  componentWillUnmount() {
+    this.sub.remove?.();
+  }
+  render() {
+    const onNavigate = this.props.onNavigate;
+    const data = this.state.data;
+    return (
+      <ReactNative.Animated.View style={m.container}>
+        {data.length > 0 ? (
+          this.renderAvatars()
+        ) : (
+          <ReactNative.View style={m.con}>
+            <components.Icon
+              name={icons.ACCOUNT}
+              size={40}
+              onPress={function () {
+                return onNavigate('InitialLogin');
+              }}
+              style={{
+                marginLeft: 10,
+              }}
+            />
+          </ReactNative.View>
+        )}
+      </ReactNative.Animated.View>
+    );
+  }
+}
+var m = ReactNative.StyleSheet.create({
+  container: {
+    width: '100%',
+    marginTop: 50,
+    marginBottom: 15,
+    alignItems: 'flex-start',
   },
-  m = ReactNative.StyleSheet.create({
-    container: {
-      width: '100%',
-      marginTop: 50,
-      marginBottom: 15,
-      alignItems: 'flex-start',
-    },
-    con: {
-      width: '100%',
-      paddingHorizontal: 20,
-      paddingVertical: 15,
-      flexDirection: 'row',
-      alignItems: 'center',
-    },
-    nickname: {
-      marginLeft: 10,
-      fontSize: 16,
-      fontWeight: 'bold',
-    },
-    avatar: {
-      width: 60,
-      height: 60,
-      borderRadius: 30,
-    },
-  }),
-  b = g;
-exports.default = b;
+  con: {
+    width: '100%',
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  nickname: {
+    marginLeft: 10,
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  avatar: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+  },
+});
+export default ProfileHeader;

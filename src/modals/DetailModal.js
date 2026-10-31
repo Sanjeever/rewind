@@ -1,536 +1,460 @@
-const _interopRequireWildcard = require('@babel/runtime/helpers/interopRequireWildcard');
-const _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
-Object.defineProperty(exports, '__esModule', {
-  value: true,
-});
-exports.default = void 0;
-var React = _interopRequireWildcard(require('react')),
-  ReactNative = require('react-native'),
-  reactNativeSpringScrollview = require('./../components/Scrolling.js'),
-  rnFetchBlob = _interopRequireDefault(require('react-native-blob-util')),
-  components = require('../components/index'),
-  providers = _interopRequireDefault(require('../services/providers')),
-  constants = require('../theme/constants'),
-  TrackActions = _interopRequireDefault(require('./../modules/TrackActions.js')),
-  names = _interopRequireDefault(require('../events/names')),
-  icons = _interopRequireDefault(require('../theme/icons')),
-  locales = _interopRequireDefault(require('../locales/index')),
-  downloadModule = _interopRequireDefault(require('../services/download')),
-  events = require('../events/index'),
-  utils = require('../utils/index'),
-  trackInfo = require('../services/trackInfo'),
-  queue = _interopRequireDefault(require('../events/queue')),
-  ActionRow = _interopRequireDefault(require('./../modules/ActionRow.js')),
-  CloseButton = _interopRequireDefault(require('./../modules/CloseButton.js')),
-  C = {
-    title: locales.default.DELETE_FROM_LOCAL,
-    icon: {
-      name: icons.default.DELETE,
-      color: constants.COLORS.secondary,
-    },
+import * as React from 'react';
+import * as ReactNative from 'react-native';
+import * as Scrolling from './../components/Scrolling.js';
+import rnFetchBlob from 'react-native-blob-util';
+import * as Index from '../components/index';
+import providers from '../services/providers';
+import * as constants from '../theme/constants';
+import TrackActions from './../modules/TrackActions.js';
+import names from '../events/names';
+import icons from '../theme/icons';
+import locales from '../locales/index';
+import downloadModule from '../services/download';
+import * as events from '../events/index';
+import * as utils from '../utils/index';
+import * as trackInfo from '../services/trackInfo';
+import queue from '../events/queue';
+import ActionRow from './../modules/ActionRow.js';
+import CloseButton from './../modules/CloseButton.js';
+import _mediaStore from '../native/mediaStore';
+const C = {
+  title: locales.DELETE_FROM_LOCAL,
+  icon: {
+    name: icons.DELETE,
+    color: constants.COLORS.secondary,
   },
-  D = {
-    title: locales.default.DELETE_FROM_PLAYLIST,
-    icon: {
-      name: icons.default.DELETE,
-      color: constants.COLORS.secondary,
-    },
+};
+const D = {
+  title: locales.DELETE_FROM_PLAYLIST,
+  icon: {
+    name: icons.DELETE,
+    color: constants.COLORS.secondary,
   },
-  T = class t extends React.PureComponent {
-    constructor() {
-      var e, a, l;
-      for (var n = arguments.length, r = new Array(n), u = 0; u < n; u++) r[u] = arguments[u];
-      return (
-        (a = l = super(...r)),
-        (l.actionsMap = null),
-        (l.state = {
-          song: null,
-          api: '',
-          tools: TrackActions.default,
-          artists: [],
-          mainModalShow: false,
-          sonModalShow: false,
-          mvid: null,
-        }),
-        (l.getData = function (e) {
-          var t;
-          if ('local' !== e.api) {
-            var a = l.state.tools,
-              n = (0, trackInfo.extractSingerItem)(e.song, e.api);
-            a[2].value = (0, trackInfo.extractSingerName)(e.song, e.api);
-            a[3].value = (0, trackInfo.extractAlbumName)(e.song, e.api);
-            var o =
-                (null === (t = e.song.mv) || void 0 === t ? void 0 : t.vid) ||
-                e.song.vid ||
-                e.song.mvid ||
-                e.song.mv,
-              i = (0, trackInfo.extractFullInfo)(e.song, 'big');
-            l.setState({
-              song: i,
-              songItem: e.song,
-              index: e.index,
-              api: e.api,
-              tools: a,
-              artists: n,
-              playlistId: e.playlistId,
-              mvid: o,
-            });
-          } else
-            l.setState({
-              api: e.api,
-              song: (0, trackInfo.extractFullInfo)(e.song, 'small'),
-              songItem: e.song,
-              index: e.index,
-              tools: [TrackActions.default[0], C],
-            });
-        }),
-        (l.onClose = function () {
-          l.setState({
-            song: null,
-            tools: TrackActions.default,
-            artists: [],
-            api: '',
-            mainModalShow: false,
-            sonModalShow: false,
-          });
-        }),
-        (l.renderTools = function (e) {
-          return e.map(function (e, t) {
-            return e.needCheck && !Boolean(e.value)
-              ? null
-              : React.default.createElement(ActionRow.default, {
-                  key: t,
-                  title: e.title,
-                  value: e.value,
-                  onPress: function () {
-                    return l.onListItem(t);
-                  },
-                });
-          });
-        }),
-        (l.deleteFromLocalAlert = function () {
-          ReactNative.Alert.alert(
-            locales.default.DELETE_THIS_SONG,
-            locales.default.CAN_NOT_RECOVER,
-            [
-              {
-                text: locales.default.CANCEL,
-                onPress: function () {
-                  return null;
-                },
-                style: 'cancel',
-              },
-              {
-                text: locales.default.CONFIRM,
-                onPress: l.deleteFromLocal,
-              },
-            ],
-          );
-        }),
-        (l.deleteFromLocal = async function () {
-          var e = l.state,
-            t = e.songItem,
-            a = e.index,
-            n = t.path;
-          try {
-            const removed = await require('../native/mediaStore').default.deleteAudio(t.id);
-            if (removed) {
-              events.emitter.emit(names.default.DeleteFromLocal, {deleteIndex: a});
-              l.onClose();
-            }
-          } catch (error) {
-            toast(locales.default.DELETE_FAILED + '：' + error.message);
-          }
-        }),
-        (l.alertDeleteFromPlaylist = function () {
-          ReactNative.Alert.alert(
-            locales.default.WARN,
-            locales.default.CONFIRM_DELETE_FROM_PLAYLIST,
-            [
-              {
-                text: locales.default.CANCEL,
-                onPress: function () {
-                  return null;
-                },
-                style: 'cancel',
-              },
-              {
-                text: locales.default.CONFIRM,
-                onPress: function () {
-                  return l.deleteFromPlaylist();
-                },
-              },
-            ],
-          );
-        }),
-        (l.deleteFromPlaylist = function () {
-          var e,
-            t = l.state,
-            a = t.api,
-            n = t.songItem;
-          switch (a) {
-            case providers.default.netEase:
-              e = n.id;
-              events.emitter.emit(names.default.DeleteFromPlaylist, {
-                api: a,
-                trackid: e,
-              });
-              break;
-            case providers.default.qqMusic:
-              e = n.songid;
-              events.emitter.emit(names.default.DeleteFromPlaylist, {
-                api: a,
-                trackid: e,
-              });
-          }
-        }),
-        (l.onListItem = function (e) {
-          var t,
-            a = l.state.api,
-            n = {
-              0: l.insertToQueue,
-              1: 'local' === a ? l.deleteFromLocalAlert : l.onCollect,
-              2: l.onArtist,
-              3: l.onAlbum,
-              4: l.onComment,
-              5: l.onShare,
-              6: l.onLyric,
-              7: l.onDownload,
-              8: l.onMV,
-            };
-          null === (t = n[e]) || void 0 === t || t.call(n);
-        }),
-        (l.onCollect = function () {
-          var e = l.state,
-            t = e.api,
-            a = e.songItem;
-          events.emitter.emit(names.default.CollectModal, {
-            api: t,
-            song: a,
-          });
-        }),
-        (l.onMV = function () {
-          var e = l.state,
-            t = e.mvid,
-            a = e.api;
-          t && (queue.default.playMV(t, a), l.onClose());
-        }),
-        (l.onLyric = function () {
-          var e = l.state,
-            t = e.api,
-            a = e.songItem,
-            n = (0, trackInfo.extractFullInfo)(a).uid;
-          l.navigateTo('LyricPage', {
-            id: n,
-            item: a,
-            api: t,
-          });
-        }),
-        (l.onShare = function () {
-          var e,
-            t = l.state,
-            a = t.api,
-            n = t.songItem,
-            o = (0, trackInfo.extractFullInfo)(n),
-            r = (0, utils.parseArtist)(o.singer),
-            s = o.uid;
-          switch (a) {
-            case providers.default.netEase:
-              e = r + ' - ' + o.song + ' : http://music.163.com/song?id=' + s + ' (@网易云音乐)';
-              break;
-            case providers.default.qqMusic:
-              e = r + ' - ' + o.song + ' : https://y.qq.com/n/yqq/song/' + s + '.html (@QQ音乐)';
-          }
-          ReactNative.Share.share({
-            message: e,
-          });
-        }),
-        (l.navigateTo = function (e, t) {
-          utils.universalNavigator.navigate(e, t);
-          events.emitter.emit(names.default.PlayerClose);
-          events.emitter.emit(names.default.NowPlayingModal, {
-            forceClose: true,
-          });
-          l.onClose();
-        }),
-        (l.onArtist = function () {
-          var e = l.state.artists;
-          e.length > 1
-            ? l.setState({
-                sonModalShow: true,
-              })
-            : e.length > 0 && l.onSingleArtist(e[0]);
-        }),
-        (l.onSingleArtist = function (e) {
-          if (e) {
-            var t = l.state.api;
-            l.navigateTo('ArtistPage', {
-              item: e,
-              api: t,
-            });
-          }
-        }),
-        (l.onAlbum = function () {
-          var e = l.state,
-            t = e.api,
-            a = e.songItem,
-            n = (0, trackInfo.extractAlbumItem)(a, t);
-          l.navigateTo('AlbumPage', {
-            item: n,
-            api: t,
-          });
-        }),
-        (l.onComment = function () {
-          var e = l.state,
-            t = e.songItem,
-            a = e.api;
-          l.navigateTo('CommentPage', {
-            api: a,
-            song: t,
-          });
-          l.onClose();
-        }),
-        (l.insertToQueue = function () {
-          var e = l.state,
-            t = e.songItem,
-            a = e.api;
-          t &&
-            events.emitter.emit(names.default.InsertToList, {
-              data: t,
-              type: 'item',
-              api: a,
-            });
-        }),
-        (l.onDownload = function () {
-          var e = l.state,
-            t = e.songItem,
-            a = e.api,
-            n = l.props.cloneThroughLinking,
-            o = (0, trackInfo.extractFullInfo)(t.mainSong ? t.mainSong : t),
-            i = l.songName(o.song, o.singer),
-            r = o.uid;
-          downloadModule.default.download(i, r, a, o, n);
-        }),
-        (l.saveCover = function () {
-          var e = l.state,
-            t = e.song,
-            a = e.songItem;
-          events.emitter.emit(names.default.SavePicModal, {
-            img: t.img,
-            song: a.name,
-          });
-        }),
-        (l.songName = function (e, t) {
-          return (t[0].name + ' - ' + e).replace(/\//gi, 'x');
-        }),
-        a
-      );
-    }
-    componentDidMount() {
-      var e = this;
-      this.sub = events.emitter.addListener(names.default.DetailModal, function (t) {
-        e.setState({
-          mainModalShow: true,
-        });
-        e.getData(t);
+};
+class DetailModal extends React.PureComponent {
+  actionsMap = null;
+  state = {
+    song: null,
+    api: '',
+    tools: TrackActions,
+    artists: [],
+    mainModalShow: false,
+    sonModalShow: false,
+    mvid: null,
+  };
+  getData = (e) => {
+    if (e.api !== 'local') {
+      const tools = this.state.tools;
+      const artists = trackInfo.extractSingerItem(e.song, e.api);
+      tools[2].value = trackInfo.extractSingerName(e.song, e.api);
+      tools[3].value = trackInfo.extractAlbumName(e.song, e.api);
+      const mvid = e.song.mv?.vid || e.song.vid || e.song.mvid || e.song.mv;
+      const song = trackInfo.extractFullInfo(e.song, 'big');
+      this.setState({
+        song,
+        songItem: e.song,
+        index: e.index,
+        api: e.api,
+        tools,
+        artists,
+        playlistId: e.playlistId,
+        mvid,
+      });
+    } else {
+      this.setState({
+        api: e.api,
+        song: trackInfo.extractFullInfo(e.song, 'small'),
+        songItem: e.song,
+        index: e.index,
+        tools: [TrackActions[0], C],
       });
     }
-    componentWillUnmount() {
-      var e, t;
-      null === (e = (t = this.sub).remove) || void 0 === e || e.call(t);
-    }
-    render() {
-      var e = this,
-        t = this.state,
-        a = t.song,
-        l = t.playlistId,
-        n = t.mvid,
-        s = t.mainModalShow,
-        d = t.sonModalShow,
-        f = t.tools,
-        m = t.artists,
-        g = this.props.isRound;
-      return React.default.createElement(
-        ReactNative.Modal,
-        {
-          animationType: 'fade',
-          onRequestClose: this.onClose,
-          visible: s,
-          style: s && {
-            height: constants.DEVICE_HEIGHT,
-            width: constants.DEVICE_WIDTH,
-          },
-        },
-        React.default.createElement(
-          ReactNative.View,
-          {
-            style: w.container,
-          },
-          React.default.createElement(components.Background, {
-            imageStyle: {
-              opacity: 0.5,
-            },
-            coverUrl: null === a || void 0 === a ? void 0 : a.img,
-            blur: true,
-          }),
-          React.default.createElement(
-            reactNativeSpringScrollview.SpringScrollView,
-            {
-              style: {
-                padding: 10,
-                flex: 1,
-                width: '100%',
-                paddingBottom: 0,
-              },
-              showsVerticalScrollIndicator: false,
-              overScrollMode: 'never',
-            },
-            React.default.createElement(
-              ReactNative.TouchableWithoutFeedback,
-              {
-                onPress: this.onClose,
-              },
-              React.default.createElement(ReactNative.View, {
-                style: [ReactNative.StyleSheet.absoluteFill],
-              }),
-            ),
-            React.default.createElement(ReactNative.View, {
-              style: {
-                height: 0.1 * constants.DEVICE_HEIGHT,
-                width: '100%',
-              },
-            }),
-            a
-              ? React.default.createElement(
-                  ReactNative.View,
-                  {
-                    style: w.songAvatar,
-                  },
-                  React.default.createElement(
-                    ReactNative.TouchableOpacity,
-                    {
-                      onPress: this.saveCover,
-                    },
-                    React.default.createElement(ReactNative.Image, {
-                      source: {
-                        uri: a.img,
-                      },
-                      style: {
-                        height: 150,
-                        width: 150,
-                        borderRadius: g ? 75 : 5,
-                      },
-                    }),
-                  ),
-                  n
-                    ? React.default.createElement(CloseButton.default, {
-                        onPress: this.onMV,
-                        isRound: g,
-                      })
-                    : null,
-                  React.default.createElement(
-                    components.Selectable,
-                    {
-                      numberOfLines: 3,
-                      style: [
-                        w.text,
-                        {
-                          flex: 1,
-                          fontSize: 18,
-                          fontWeight: 'bold',
-                          marginTop: 10,
-                        },
-                      ],
-                    },
-                    a.song,
-                  ),
-                  React.default.createElement(
-                    components.Selectable,
-                    {
-                      style: [
-                        w.text,
-                        {
-                          fontSize: 13,
-                        },
-                      ],
-                    },
-                    a.album,
-                  ),
-                )
-              : null,
-            React.default.createElement(
-              ReactNative.View,
-              {
-                style: w.tool,
-              },
-              l &&
-                React.default.createElement(ActionRow.default, {
-                  title: D.title,
-                  onPress: this.alertDeleteFromPlaylist,
-                }),
-              this.renderTools(f),
-            ),
-            React.default.createElement(ReactNative.View, {
-              style: {
-                height: 0.1 * constants.DEVICE_HEIGHT,
-                width: '100%',
-              },
-            }),
-          ),
-          React.default.createElement(
-            ReactNative.Modal,
-            {
-              animationType: 'fade',
-              transparent: true,
-              onRequestClose: function () {
-                return e.setState({
-                  sonModalShow: false,
-                });
-              },
-              visible: d,
-            },
-            React.default.createElement(
-              ReactNative.View,
-              {
-                style: [
-                  w.container,
-                  {
-                    paddingTop: '80%',
-                  },
-                ],
-              },
-              React.default.createElement(
-                ReactNative.TouchableWithoutFeedback,
-                {
-                  onPress: function () {
-                    return e.setState({
-                      sonModalShow: false,
-                    });
-                  },
-                },
-                React.default.createElement(ReactNative.View, {
-                  style: [ReactNative.StyleSheet.absoluteFill],
-                }),
-              ),
-              null === m || void 0 === m
-                ? void 0
-                : m.map(function (t, a) {
-                    return React.default.createElement(ActionRow.default, {
-                      key: a,
-                      value: t.name,
-                      title: a + 1,
-                      onPress: function () {
-                        return e.onSingleArtist(t);
-                      },
-                    });
-                  }),
-            ),
-          ),
-        ),
+  };
+  onClose = () => {
+    this.setState({
+      song: null,
+      tools: TrackActions,
+      artists: [],
+      api: '',
+      mainModalShow: false,
+      sonModalShow: false,
+    });
+  };
+  renderTools = (e) => {
+    return e.map((e, t) => {
+      if (e.needCheck && !Boolean(e.value)) {
+        return null;
+      }
+      return (
+        <ActionRow
+          key={t}
+          title={e.title}
+          value={e.value}
+          onPress={() => {
+            return this.onListItem(t);
+          }}
+        />
       );
+    });
+  };
+  deleteFromLocalAlert = () => {
+    ReactNative.Alert.alert(locales.DELETE_THIS_SONG, locales.CAN_NOT_RECOVER, [
+      {
+        text: locales.CANCEL,
+        onPress: function () {
+          return null;
+        },
+        style: 'cancel',
+      },
+      {
+        text: locales.CONFIRM,
+        onPress: this.deleteFromLocal,
+      },
+    ]);
+  };
+  deleteFromLocal = async () => {
+    const l_state = this.state;
+    const {songItem, index} = l_state;
+    const songItem_path = songItem.path;
+    try {
+      const removed = await _mediaStore.deleteAudio(songItem.id);
+      if (removed) {
+        events.emitter.emit(names.DeleteFromLocal, {
+          deleteIndex: index,
+        });
+        this.onClose();
+      }
+    } catch (error) {
+      toast(`${locales.DELETE_FAILED}：${error.message}`);
     }
   };
-exports.default = T;
+  alertDeleteFromPlaylist = () => {
+    ReactNative.Alert.alert(locales.WARN, locales.CONFIRM_DELETE_FROM_PLAYLIST, [
+      {
+        text: locales.CANCEL,
+        onPress: function () {
+          return null;
+        },
+        style: 'cancel',
+      },
+      {
+        text: locales.CONFIRM,
+        onPress: () => {
+          return this.deleteFromPlaylist();
+        },
+      },
+    ]);
+  };
+  deleteFromPlaylist = () => {
+    let trackid;
+    const l_state = this.state;
+    const {api, songItem} = l_state;
+    switch (api) {
+      case providers.netEase:
+        trackid = songItem.id;
+        events.emitter.emit(names.DeleteFromPlaylist, {
+          api,
+          trackid,
+        });
+        break;
+      case providers.qqMusic:
+        trackid = songItem.songid;
+        events.emitter.emit(names.DeleteFromPlaylist, {
+          api,
+          trackid,
+        });
+    }
+  };
+  onListItem = (e) => {
+    const api = this.state.api;
+    const n = {
+      0: this.insertToQueue,
+      1: api === 'local' ? this.deleteFromLocalAlert : this.onCollect,
+      2: this.onArtist,
+      3: this.onAlbum,
+      4: this.onComment,
+      5: this.onShare,
+      6: this.onLyric,
+      7: this.onDownload,
+      8: this.onMV,
+    };
+    n[e]?.();
+  };
+  onCollect = () => {
+    const l_state = this.state;
+    const {api, songItem} = l_state;
+    events.emitter.emit(names.CollectModal, {
+      api,
+      song: songItem,
+    });
+  };
+  onMV = () => {
+    const l_state = this.state;
+    const {mvid, api} = l_state;
+    if (mvid) {
+      queue.playMV(mvid, api);
+      this.onClose();
+    }
+  };
+  onLyric = () => {
+    const l_state = this.state;
+    const {api, songItem} = l_state;
+    const uid = trackInfo.extractFullInfo(songItem).uid;
+    this.navigateTo('LyricPage', {
+      id: uid,
+      item: songItem,
+      api,
+    });
+  };
+  onShare = () => {
+    let message;
+    const l_state = this.state;
+    const {api, songItem} = l_state;
+    const o = trackInfo.extractFullInfo(songItem);
+    const r = utils.parseArtist(o.singer);
+    const o_uid = o.uid;
+    switch (api) {
+      case providers.netEase:
+        message = `${r} - ${o.song} : http://music.163.com/song?id=${o_uid} (@网易云音乐)`;
+        break;
+      case providers.qqMusic:
+        message = `${r} - ${o.song} : https://y.qq.com/n/yqq/song/${o_uid}.html (@QQ音乐)`;
+    }
+    ReactNative.Share.share({
+      message,
+    });
+  };
+  navigateTo = (e, t) => {
+    utils.universalNavigator.navigate(e, t);
+    events.emitter.emit(names.PlayerClose);
+    events.emitter.emit(names.NowPlayingModal, {
+      forceClose: true,
+    });
+    this.onClose();
+  };
+  onArtist = () => {
+    const artists = this.state.artists;
+    if (artists.length > 1) {
+      this.setState({
+        sonModalShow: true,
+      });
+    } else if (artists.length > 0) {
+      this.onSingleArtist(artists[0]);
+    }
+  };
+  onSingleArtist = (item) => {
+    if (item) {
+      const api = this.state.api;
+      this.navigateTo('ArtistPage', {
+        item,
+        api,
+      });
+    }
+  };
+  onAlbum = () => {
+    const l_state = this.state;
+    const {api, songItem} = l_state;
+    const item = trackInfo.extractAlbumItem(songItem, api);
+    this.navigateTo('AlbumPage', {
+      item,
+      api,
+    });
+  };
+  onComment = () => {
+    const l_state = this.state;
+    const {songItem, api} = l_state;
+    this.navigateTo('CommentPage', {
+      api,
+      song: songItem,
+    });
+    this.onClose();
+  };
+  insertToQueue = () => {
+    const l_state = this.state;
+    const {songItem, api} = l_state;
+    if (songItem) {
+      events.emitter.emit(names.InsertToList, {
+        data: songItem,
+        type: 'item',
+        api,
+      });
+    }
+  };
+  onDownload = () => {
+    const l_state = this.state;
+    const {songItem, api} = l_state;
+    const cloneThroughLinking = this.props.cloneThroughLinking;
+    const o = trackInfo.extractFullInfo(songItem.mainSong ? songItem.mainSong : songItem);
+    const i = this.songName(o.song, o.singer);
+    const o_uid = o.uid;
+    downloadModule.download(i, o_uid, api, o, cloneThroughLinking);
+  };
+  saveCover = () => {
+    const l_state = this.state;
+    const {song, songItem} = l_state;
+    events.emitter.emit(names.SavePicModal, {
+      img: song.img,
+      song: songItem.name,
+    });
+  };
+  songName = function (e, t) {
+    return `${t[0].name} - ${e}`.replace(/\//gi, 'x');
+  };
+  componentDidMount() {
+    const e = this;
+    this.sub = events.emitter.addListener(names.DetailModal, function (t) {
+      e.setState({
+        mainModalShow: true,
+      });
+      e.getData(t);
+    });
+  }
+  componentWillUnmount() {
+    this.sub.remove?.();
+  }
+  render() {
+    const e = this;
+    const state = this.state;
+    const {song, playlistId, mvid, mainModalShow, sonModalShow, tools, artists} = state;
+    const isRound = this.props.isRound;
+    return (
+      <ReactNative.Modal
+        animationType={'fade'}
+        onRequestClose={this.onClose}
+        visible={mainModalShow}
+        style={
+          mainModalShow && {
+            height: constants.DEVICE_HEIGHT,
+            width: constants.DEVICE_WIDTH,
+          }
+        }
+      >
+        <ReactNative.View style={w.container}>
+          <Index.Background
+            imageStyle={{
+              opacity: 0.5,
+            }}
+            coverUrl={song?.img}
+            blur={true}
+          />
+          <Scrolling.SpringScrollView
+            style={{
+              padding: 10,
+              flex: 1,
+              width: '100%',
+              paddingBottom: 0,
+            }}
+            showsVerticalScrollIndicator={false}
+            overScrollMode={'never'}
+          >
+            <ReactNative.TouchableWithoutFeedback onPress={this.onClose}>
+              <ReactNative.View style={[ReactNative.StyleSheet.absoluteFill]} />
+            </ReactNative.TouchableWithoutFeedback>
+            <ReactNative.View
+              style={{
+                height: 0.1 * constants.DEVICE_HEIGHT,
+                width: '100%',
+              }}
+            />
+            {song ? (
+              <ReactNative.View style={w.songAvatar}>
+                <ReactNative.TouchableOpacity onPress={this.saveCover}>
+                  <ReactNative.Image
+                    source={{
+                      uri: song.img,
+                    }}
+                    style={{
+                      height: 150,
+                      width: 150,
+                      borderRadius: isRound ? 75 : 5,
+                    }}
+                  />
+                </ReactNative.TouchableOpacity>
+                {mvid ? <CloseButton onPress={this.onMV} isRound={isRound} /> : null}
+                <Index.Selectable
+                  numberOfLines={3}
+                  style={[
+                    w.text,
+                    {
+                      flex: 1,
+                      fontSize: 18,
+                      fontWeight: 'bold',
+                      marginTop: 10,
+                    },
+                  ]}
+                >
+                  {song.song}
+                </Index.Selectable>
+                <Index.Selectable
+                  style={[
+                    w.text,
+                    {
+                      fontSize: 13,
+                    },
+                  ]}
+                >
+                  {song.album}
+                </Index.Selectable>
+              </ReactNative.View>
+            ) : null}
+            <ReactNative.View style={w.tool}>
+              {playlistId && <ActionRow title={D.title} onPress={this.alertDeleteFromPlaylist} />}
+              {this.renderTools(tools)}
+            </ReactNative.View>
+            <ReactNative.View
+              style={{
+                height: 0.1 * constants.DEVICE_HEIGHT,
+                width: '100%',
+              }}
+            />
+          </Scrolling.SpringScrollView>
+          <ReactNative.Modal
+            animationType={'fade'}
+            transparent={true}
+            onRequestClose={function () {
+              return e.setState({
+                sonModalShow: false,
+              });
+            }}
+            visible={sonModalShow}
+          >
+            <ReactNative.View
+              style={[
+                w.container,
+                {
+                  paddingTop: '80%',
+                },
+              ]}
+            >
+              <ReactNative.TouchableWithoutFeedback
+                onPress={function () {
+                  return e.setState({
+                    sonModalShow: false,
+                  });
+                }}
+              >
+                <ReactNative.View style={[ReactNative.StyleSheet.absoluteFill]} />
+              </ReactNative.TouchableWithoutFeedback>
+              {artists?.map(function (t, a) {
+                return (
+                  <ActionRow
+                    key={a}
+                    value={t.name}
+                    title={a + 1}
+                    onPress={function () {
+                      return e.onSingleArtist(t);
+                    }}
+                  />
+                );
+              })}
+            </ReactNative.View>
+          </ReactNative.Modal>
+        </ReactNative.View>
+      </ReactNative.Modal>
+    );
+  }
+}
+export default DetailModal;
 var w = ReactNative.StyleSheet.create({
   container: {
     height: constants.DEVICE_HEIGHT,

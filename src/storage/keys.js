@@ -1,8 +1,4 @@
-Object.defineProperty(exports, '__esModule', {
-  value: true,
-});
-exports.default = void 0;
-exports.default = {
+export default {
   showTrans: 'showTrans',
   showToolBtnStatus: 'showToolBtnStatus',
   autoSetPlaylistOrder: 'autoSetPlaylistOrder',

@@ -1,20 +1,18 @@
-const _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
-const _appStorage = require('./../storage/index.js');
-Object.defineProperty(exports, '__esModule', {
-  value: true,
-});
-exports.initBackgroundState = exports.getBackground = void 0;
-var keys = _interopRequireDefault(require('../storage/keys')),
-  files = require('../storage/files'),
-  o = {},
-  i = false;
-exports.getBackground = function () {
-  return i ? o : s();
+import * as _appStorage from './../storage/index.js';
+import keys from '../storage/keys';
+import * as files from '../storage/files';
+let o = {};
+let i = false;
+export const getBackground = function () {
+  if (i) {
+    return o;
+  }
+  return initBackgroundState();
 };
-var s = async function () {
+export var initBackgroundState = async () => {
   try {
     const background = await _appStorage.storage.load({
-      key: keys.default.background,
+      key: keys.background,
     });
     o =
       typeof background.path === 'string'
@@ -27,7 +25,9 @@ var s = async function () {
         : await p();
     return o;
   } catch (error) {
-    if (error.name !== 'NotFoundError') throw error;
+    if (error.name !== 'NotFoundError') {
+      throw error;
+    }
     o = {
       error: true,
     };
@@ -36,16 +36,15 @@ var s = async function () {
     i = true;
   }
 };
-exports.initBackgroundState = s;
-var p = function () {
-  return (0, files.getBackgroundCache)().then(function (e) {
-    return e
-      ? {
-          url: e,
-          opacity: 0.7,
-        }
-      : {
-          error: true,
-        };
+var p = () =>
+  files.getBackgroundCache().then((url) => {
+    if (url) {
+      return {
+        url,
+        opacity: 0.7,
+      };
+    }
+    return {
+      error: true,
+    };
   });
-};

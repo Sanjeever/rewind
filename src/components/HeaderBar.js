@@ -1,301 +1,257 @@
-const _default = require('./Text.js').default;
-const _interopRequireWildcard = require('@babel/runtime/helpers/interopRequireWildcard');
-const _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
-Object.defineProperty(exports, '__esModule', {
-  value: true,
-});
-exports.default = void 0;
-var React = _interopRequireWildcard(require('react')),
-  ReactNative = require('react-native'),
-  reactNativeAnimatable = _interopRequireWildcard(require('react-native-animatable')),
-  constants = require('../theme/constants'),
-  icons = _interopRequireDefault(require('../theme/icons')),
-  locales = _interopRequireDefault(require('../locales/index')),
-  components = require('./index'),
-  Input = _interopRequireDefault(require('./Input')),
-  f = class t extends React.PureComponent {
-    constructor() {
-      var e, n, r;
-      for (var o = arguments.length, u = new Array(o), d = 0; d < o; d++) u[d] = arguments[d];
+import Text from './Text.js';
+import * as React from 'react';
+import * as ReactNative from 'react-native';
+import * as reactNativeAnimatable from 'react-native-animatable';
+import * as constants from '../theme/constants';
+import icons from '../theme/icons';
+import locales from '../locales/index';
+import * as components from './index';
+import Input from './Input';
+class HeaderBar extends React.PureComponent {
+  state = {
+    showTextInput: false,
+    hideStatusBar: false,
+  };
+  titleOrTextInput = () => {
+    const showTextInput = this.state.showTextInput;
+    const r_props = this.props;
+    const {bold, onTop, fontColor, title, onSubmitEditing, onChangeText, searchText} = r_props;
+    if (r_props.forceShowTextInput || showTextInput === true) {
       return (
-        (n = r = super(...u)),
-        (r.state = {
-          showTextInput: false,
-          hideStatusBar: false,
-        }),
-        (r.titleOrTextInput = function () {
-          var e = r.state.showTextInput,
-            t = r.props,
-            n = t.bold,
-            o = t.onTop,
-            u = t.fontColor,
-            s = t.title,
-            d = t.onSubmitEditing,
-            f = t.onChangeText,
-            h = t.searchText;
-          return t.forceShowTextInput || true === e
-            ? React.default.createElement(
-                reactNativeAnimatable.View,
-                {
-                  useNativeDriver: true,
-                  animation: 'fadeIn',
-                  style: {
-                    flex: 1,
-                    marginBottom: -2,
-                  },
-                },
-                React.default.createElement(Input.default, {
-                  autoFocus: true,
-                  style: b.textInput,
-                  placeholder: locales.default.SEARCH,
-                  onChangeText: function (e) {
-                    return f(e);
-                  },
-                  onSubmitEditing: d,
-                  value: h,
-                }),
-              )
-            : React.default.createElement(
-                ReactNative.TouchableOpacity,
-                {
-                  disabled: !Boolean(o),
-                  onPress: r._onTop,
-                },
-                React.default.createElement(
-                  ReactNative.View,
-                  {
-                    style: {
-                      flex: 1,
-                      justifyContent: 'center',
-                    },
-                  },
-                  React.default.createElement(
-                    _default,
-                    {
-                      numberOfLines: 1,
-                      style: [
-                        b.text,
-                        {
-                          paddingLeft: 5,
-                          paddingRight: 5,
-                        },
-                        u && {
-                          color: u,
-                        },
-                        n && b.bold,
-                      ],
-                    },
-                    s,
-                  ),
-                ),
-              );
-        }),
-        (r.renderRightIcon = function () {
-          var e = r.props.rightIcon;
-          return e
-            ? 'function' == typeof e
-              ? React.default.createElement(
-                  ReactNative.View,
-                  {
-                    style: b.rightIcon,
-                  },
-                  e(),
-                )
-              : 'object' != typeof e || e.length
-                ? React.default.createElement(
-                    ReactNative.View,
-                    {
-                      style: [
-                        {
-                          right: 10,
-                          top: ReactNative.StatusBar.currentHeight,
-                          position: 'absolute',
-                          justifyContent: 'center',
-                          alignItems: 'center',
-                          flexDirection: 'row',
-                        },
-                      ],
-                    },
-                    e.map(function (e, t) {
-                      return React.default.createElement(h, {
-                        key: t,
-                        onPress: function () {
-                          return r.onRightIcon(e);
-                        },
-                        size: e.size,
-                        name: e.name,
-                      });
-                    }),
-                  )
-                : React.default.createElement(
-                    ReactNative.View,
-                    {
-                      style: b.rightIcon,
-                    },
-                    React.default.createElement(h, {
-                      onPress: function () {
-                        return e.onPress();
-                      },
-                      size: e.size,
-                      name: e.name,
-                    }),
-                  )
-            : null;
-        }),
-        (r._onTop = function () {
-          var e, t;
-          null === (e = (t = r.props).onTop) || void 0 === e || e.call(t);
-        }),
-        (r.onRightIcon = function (e) {
-          'magnify' === e.name ? r.switchTextInput() : e.onPress && e.onPress();
-        }),
-        (r.textInputBtn = function () {
-          return React.default.createElement(
-            ReactNative.View,
-            {
-              style: b.rightIcon,
-            },
-            React.default.createElement(h, {
-              onPress: r.switchTextInput,
-              name: icons.default.MAGNIFY,
-            }),
-          );
-        }),
-        (r.switchTextInput = function () {
-          r.setState({
-            showTextInput: !r.state.showTextInput,
-          });
-        }),
-        n
+        <reactNativeAnimatable.View
+          useNativeDriver={true}
+          animation={'fadeIn'}
+          style={{
+            flex: 1,
+            marginBottom: -2,
+          }}
+        >
+          <Input
+            autoFocus={true}
+            style={b.textInput}
+            placeholder={locales.SEARCH}
+            onChangeText={function (e) {
+              return onChangeText(e);
+            }}
+            onSubmitEditing={onSubmitEditing}
+            value={searchText}
+          />
+        </reactNativeAnimatable.View>
       );
     }
-    render() {
-      var e = this.props,
-        t = e.opacity,
-        n = e.goBack,
-        r = e.blur,
-        o = e.rightIcon,
-        a = e.headerStyle,
-        u = e.toolStyle,
-        c = e.textInput,
-        p = e.backIcon,
-        f = e.iconColor,
-        g = e.disabledTextInputBtn;
-      return React.default.createElement(
-        ReactNative.Animated.View,
-        {
-          style: [b.container, b.borderline, ReactNative.StyleSheet.flatten(a)],
-        },
-        r &&
-          React.default.createElement(
-            ReactNative.Animated.View,
-            {
-              style: [
-                {
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  opacity: t,
-                },
-                b.borderline,
-              ],
-            },
-            React.default.createElement(components.Background, {
-              blur: true,
-            }),
-          ),
-        React.default.createElement(
-          ReactNative.View,
-          {
-            style: [
-              b.tool,
-              u,
-              (c || o) && {
-                paddingRight: 70,
+    return (
+      <ReactNative.TouchableOpacity disabled={!Boolean(onTop)} onPress={this._onTop}>
+        <ReactNative.View
+          style={{
+            flex: 1,
+            justifyContent: 'center',
+          }}
+        >
+          <Text
+            numberOfLines={1}
+            style={[
+              b.text,
+              {
+                paddingLeft: 5,
+                paddingRight: 5,
               },
-            ],
-          },
-          React.default.createElement(h, {
-            onPress: n,
-            name: (null === p || void 0 === p ? void 0 : p.name) || icons.default.ARROW_LEFT,
-            color: f,
-          }),
-          this.titleOrTextInput(),
-        ),
-        this.renderRightIcon(),
-        true === c && !g && this.textInputBtn(),
+              fontColor && {
+                color: fontColor,
+              },
+              bold && b.bold,
+            ]}
+          >
+            {title}
+          </Text>
+        </ReactNative.View>
+      </ReactNative.TouchableOpacity>
+    );
+  };
+  renderRightIcon = () => {
+    const rightIcon = this.props.rightIcon;
+    if (rightIcon) {
+      if (typeof rightIcon === 'function') {
+        return <ReactNative.View style={b.rightIcon}>{rightIcon()}</ReactNative.View>;
+      }
+      if (typeof rightIcon !== 'object' || rightIcon.length) {
+        return (
+          <ReactNative.View
+            style={[
+              {
+                right: 10,
+                top: ReactNative.StatusBar.currentHeight,
+                position: 'absolute',
+                justifyContent: 'center',
+                alignItems: 'center',
+                flexDirection: 'row',
+              },
+            ]}
+          >
+            {rightIcon.map((e, key) =>
+              React.createElement(h, {
+                key,
+                onPress: () => {
+                  return this.onRightIcon(e);
+                },
+                size: e.size,
+                name: e.name,
+              }),
+            )}
+          </ReactNative.View>
+        );
+      }
+      return (
+        <ReactNative.View style={b.rightIcon}>
+          {React.createElement(h, {
+            onPress: function () {
+              return rightIcon.onPress();
+            },
+            size: rightIcon.size,
+            name: rightIcon.name,
+          })}
+        </ReactNative.View>
       );
     }
-  },
-  h = function (e) {
-    var t = e.onPress,
-      n = e.name,
-      r = e.size;
-    return React.default.createElement(
-      components.TouchableBorderless,
-      {
-        style: b.padding,
-        onPress: t,
-      },
-      React.default.createElement(components.Icon, {
-        style: b.iconStyle,
-        name: n,
-        size: r,
-      }),
+    return null;
+  };
+  _onTop = () => {
+    this.props.onTop?.();
+  };
+  onRightIcon = (e) => {
+    if (e.name === 'magnify') {
+      this.switchTextInput();
+    } else if (e.onPress) {
+      e.onPress();
+    }
+  };
+  textInputBtn = () => {
+    return (
+      <ReactNative.View style={b.rightIcon}>
+        {React.createElement(h, {
+          onPress: this.switchTextInput,
+          name: icons.MAGNIFY,
+        })}
+      </ReactNative.View>
     );
+  };
+  switchTextInput = () => {
+    this.setState({
+      showTextInput: !this.state.showTextInput,
+    });
+  };
+  render() {
+    const props = this.props;
+    const {
+      opacity,
+      goBack,
+      blur,
+      rightIcon,
+      headerStyle,
+      toolStyle,
+      textInput,
+      backIcon,
+      iconColor,
+      disabledTextInputBtn,
+    } = props;
+    return (
+      <ReactNative.Animated.View
+        style={[b.container, b.borderline, ReactNative.StyleSheet.flatten(headerStyle)]}
+      >
+        {blur && (
+          <ReactNative.Animated.View
+            style={[
+              {
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                opacity,
+              },
+              b.borderline,
+            ]}
+          >
+            <components.Background blur={true} />
+          </ReactNative.Animated.View>
+        )}
+        <ReactNative.View
+          style={[
+            b.tool,
+            toolStyle,
+            (textInput || rightIcon) && {
+              paddingRight: 70,
+            },
+          ]}
+        >
+          {React.createElement(h, {
+            onPress: goBack,
+            name: backIcon?.name || icons.ARROW_LEFT,
+            color: iconColor,
+          })}
+          {this.titleOrTextInput()}
+        </ReactNative.View>
+        {this.renderRightIcon()}
+        {textInput === true && !disabledTextInputBtn && this.textInputBtn()}
+      </ReactNative.Animated.View>
+    );
+  }
+}
+var h = function ({onPress, name, size}) {
+  return (
+    <components.TouchableBorderless style={b.padding} onPress={onPress}>
+      <components.Icon style={b.iconStyle} name={name} size={size} />
+    </components.TouchableBorderless>
+  );
+};
+var b = ReactNative.StyleSheet.create({
+  container: {
+    height: 40 + ReactNative.StatusBar.currentHeight,
+    width: '100%',
   },
-  b = ReactNative.StyleSheet.create({
-    container: {
-      height: 40 + ReactNative.StatusBar.currentHeight,
-      width: '100%',
-    },
-    borderline: {
-      borderBottomColor: constants.COLORS.primaryAlpha10,
-      borderBottomWidth: ReactNative.StyleSheet.hairlineWidth,
-    },
-    padding: {
-      padding: 6,
-    },
-    tool: {
-      position: 'absolute',
-      top: ReactNative.StatusBar.currentHeight,
-      alignItems: 'center',
-      flexDirection: 'row',
-      height: 40,
-      paddingHorizontal: 10,
-      width: '100%',
-    },
-    textInput: {
-      flex: 1,
-      fontSize: 16,
-      paddingHorizontal: 5,
-    },
-    text: {
-      fontSize: 16,
-    },
-    rightIcon: {
-      position: 'absolute',
-      right: 10,
-      top: ReactNative.StatusBar.currentHeight,
-      height: 40,
-      width: 40,
-      borderRadius: 20,
-      justifyContent: 'center',
-      alignItems: 'center',
-      backgroundColor: 'rgba(0,0,0,0)',
-    },
-    iconStyle: {
-      height: '100%',
-      width: '100%',
-      alignItems: 'center',
-      justifyContent: 'center',
-      flex: 1,
-    },
-    bold: {
-      fontWeight: 'bold',
-    },
-  }),
-  g = f;
-exports.default = g;
+  borderline: {
+    borderBottomColor: constants.COLORS.primaryAlpha10,
+    borderBottomWidth: ReactNative.StyleSheet.hairlineWidth,
+  },
+  padding: {
+    padding: 6,
+  },
+  tool: {
+    position: 'absolute',
+    top: ReactNative.StatusBar.currentHeight,
+    alignItems: 'center',
+    flexDirection: 'row',
+    height: 40,
+    paddingHorizontal: 10,
+    width: '100%',
+  },
+  textInput: {
+    flex: 1,
+    fontSize: 16,
+    paddingHorizontal: 5,
+  },
+  text: {
+    fontSize: 16,
+  },
+  rightIcon: {
+    position: 'absolute',
+    right: 10,
+    top: ReactNative.StatusBar.currentHeight,
+    height: 40,
+    width: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0)',
+  },
+  iconStyle: {
+    height: '100%',
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: 1,
+  },
+  bold: {
+    fontWeight: 'bold',
+  },
+});
+export default HeaderBar;

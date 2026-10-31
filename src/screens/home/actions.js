@@ -1,58 +1,53 @@
-const _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
-Object.defineProperty(exports, '__esModule', {
-  value: true,
-});
-exports.default = void 0;
-var icons = _interopRequireDefault(require('../../theme/icons')),
-  locales = _interopRequireDefault(require('../../locales/index')),
-  f = [
-    {
-      name: locales.default.INBOX,
-      icon: {
-        name: icons.default.EMAIL_OUTLINE,
-      },
+import icons from '../../theme/icons';
+import locales from '../../locales/index';
+const f = [
+  {
+    name: locales.INBOX,
+    icon: {
+      name: icons.EMAIL_OUTLINE,
     },
-    {
-      name: locales.default.CLOUD_DRIVE,
-      icon: {
-        name: icons.default.CLOUD_OUTLINE,
-      },
+  },
+  {
+    name: locales.CLOUD_DRIVE,
+    icon: {
+      name: icons.CLOUD_OUTLINE,
     },
-    {
-      name: locales.default.COUNTDOWN,
-      icon: {
-        name: icons.default.TIMER,
-      },
+  },
+  {
+    name: locales.COUNTDOWN,
+    icon: {
+      name: icons.TIMER,
     },
-    {
-      name: locales.default.FEATURE,
-      icon: {
-        name: icons.default.FLASK_EMPTY_OUTLINE,
-      },
+  },
+  {
+    name: locales.FEATURE,
+    icon: {
+      name: icons.FLASK_EMPTY_OUTLINE,
     },
-    {
-      name: locales.default.SETTING,
-      icon: {
-        name: icons.default.COG_OUTLINE,
-      },
+  },
+  {
+    name: locales.SETTING,
+    icon: {
+      name: icons.COG_OUTLINE,
     },
-    {
-      name: locales.default.UPDATE,
-      icon: {
-        name: icons.default.UPDATE,
-      },
+  },
+  {
+    name: locales.UPDATE,
+    icon: {
+      name: icons.UPDATE,
     },
-    {
-      name: locales.default.ABOUT,
-      icon: {
-        name: icons.default.INFORMATION_OUTLINE,
-      },
+  },
+  {
+    name: locales.ABOUT,
+    icon: {
+      name: icons.INFORMATION_OUTLINE,
     },
-    {
-      name: locales.default.SPONSOR,
-      icon: {
-        name: icons.default.THUMB_UP_OUTLINE,
-      },
+  },
+  {
+    name: locales.SPONSOR,
+    icon: {
+      name: icons.THUMB_UP_OUTLINE,
     },
-  ];
-exports.default = f;
+  },
+];
+export default f;

@@ -1,6 +1,6 @@
 const assert = require('node:assert/strict');
 const {createHash} = require('node:crypto');
-const md5 = require('./md5');
+const md5 = require('./md5').default;
 
 test('服务签名与封面 ID 保持旧八位字符摘要语义', () => {
   for (const value of ['', 'password', '中文', 'café', '🎵', '{"songmid":"abc","offset":0}']) {

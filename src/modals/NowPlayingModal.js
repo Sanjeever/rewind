@@ -1,490 +1,438 @@
-const _interopRequireWildcard = require('@babel/runtime/helpers/interopRequireWildcard');
-const _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
-const _extends = require('@babel/runtime/helpers/extends');
-Object.defineProperty(exports, '__esModule', {
-  value: true,
-});
-exports.default = void 0;
-var React = _interopRequireWildcard(require('react')),
-  ReactNative = require('react-native'),
-  FadingEdge = _interopRequireDefault(require('../components/FadingEdge')),
-  reactNativeLargelist = require('./../components/Scrolling.js'),
-  components = require('../components/index'),
-  constants = require('../theme/constants'),
-  names = _interopRequireDefault(require('../events/names')),
-  icons = _interopRequireDefault(require('../theme/icons')),
-  tabIcons = _interopRequireDefault(require('../theme/tabIcons')),
-  locales = _interopRequireDefault(require('../locales/index')),
-  events = require('../events/index'),
-  utils = require('../utils/index'),
-  b = (require('../utils/types'), require('../services/trackInfo')),
-  x = {
-    normal: 'normal',
-    deleting: 'deleting',
-    filtering: 'filtering',
-  },
-  y = class t extends React.PureComponent {
-    constructor() {
-      var e, n, a;
-      for (var r = arguments.length, o = new Array(r), i = 0; i < r; i++) o[i] = arguments[i];
-      return (
-        (n = a = super(...o)),
-        (a.state = {
-          filterText: '',
-          filterList: [],
-          mode: x.normal,
-        }),
-        (a.handledBack = function () {
-          return (
-            a.state.mode !== x.normal &&
-            (a.setState({
-              mode: x.normal,
-            }),
-            true)
-          );
-        }),
-        (a.onClose = function () {
-          a.handledBack() || a.forceClose();
-        }),
-        (a.forceClose = function () {
-          var e = a.props,
-            t = e.setDisplayNowPlaying;
-          false !== e.show &&
-            (t(false),
-            a.setState({
-              filterText: '',
-              filterList: [],
-              mode: x.normal,
-            }));
-        }),
-        (a.onSubmitEditing = function () {
-          var e = a.state.filterText,
-            t = a.props.data;
-          if (e.length > 0) {
-            var n = utils.filterHelper.quickSearch(t, e);
-            a.setState({
-              filterList: n,
-            });
-          } else
-            a.setState({
-              filterList: [],
-            });
-        }),
-        (a.onChangeText = function (e) {
-          a.onSubmitEditing();
-          a.setState({
-            filterText: e,
-          });
-        }),
-        (a.changePlaylist = function () {
-          events.emitter.emit(names.default.ChangePlaylist);
-        }),
-        (a.onMode = function (e) {
-          a.setState({
-            mode: e,
-          });
-        }),
-        (a.renderTools = function () {
-          switch (a.state.mode) {
-            case x.normal:
-              return React.default.createElement(
-                React.default.Fragment,
-                null,
-                React.default.createElement(components.Icon, {
-                  name: icons.default.MAGNIFY,
-                  onPress: function () {
-                    return a.onMode(x.filtering);
-                  },
-                }),
-                React.default.createElement(components.Icon, {
-                  name: tabIcons.default.DISC.name,
-                  onPress: a.changePlaylist,
-                }),
-                React.default.createElement(components.Icon, {
-                  name: icons.default.DELETE_OUTLINE,
-                  onPress: function () {
-                    return a.onMode(x.deleting);
-                  },
-                  containerStyle: {
-                    marginRight: 3,
-                  },
-                }),
-              );
-            case x.deleting:
-              return React.default.createElement(
-                React.default.Fragment,
-                null,
-                React.default.createElement(components.Icon, {
-                  name: icons.default.ARROW_LEFT,
-                  onPress: function () {
-                    return a.onMode(x.normal);
-                  },
-                }),
-                React.default.createElement(components.Icon, {
-                  name: icons.default.NOTIFICATION_CLEAR_ALL,
-                  onPress: a.onClear,
-                  containerStyle: {
-                    marginRight: 3,
-                  },
-                }),
-              );
-            case x.filtering:
-              return React.default.createElement(
-                React.default.Fragment,
-                null,
-                React.default.createElement(components.Icon, {
-                  name: icons.default.ARROW_LEFT,
-                  onPress: function () {
-                    return a.onMode(x.normal);
-                  },
-                  style: {
-                    paddding: 5,
-                  },
-                }),
-                React.default.createElement(components.Input, {
-                  autoFocus: true,
-                  style: E.textInput,
-                  onChangeText: a.onChangeText,
-                  onSubmitEditing: a.onSubmitEditing,
-                  placeholder: locales.default.FILTER,
-                }),
-              );
-          }
-        }),
-        (a.onClear = function () {
-          (0, events.toPlayer)({
-            type: 'clearPlayingList',
-          });
-          a.forceClose();
-        }),
-        (a._renderIndexPath = function (e) {
-          var t = e.row,
-            n = a.state.filterList;
-          if (0 !== a.props.data.length) {
-            var r = a.props.data,
-              l = true;
-            n.length > 0 && ((r = n), (l = false));
-            return a.renderItem({
-              item: r[t],
-              index: t,
-              showPlaying: l,
-            });
-          }
-        }),
-        (a.onCover = function () {
-          var e = a.props.songItem,
-            t = (0, b.extractFullInfo)(e, 'big');
-          events.emitter.emit(names.default.SavePicModal, {
-            img: t.img,
-            song: e.name,
-          });
-        }),
-        (a.scrollTo = function () {
-          var e,
-            t,
-            n = a.props.index;
-          null === (e = a._list) ||
-            void 0 === e ||
-            null === (t = e.scrollToIndexPath) ||
-            void 0 === t ||
-            t.call(e, {
-              section: 0,
-              row: n,
-            });
-        }),
-        (a.renderItem = function (e) {
-          var t = e.item,
-            n = e.index,
-            r = e.showPlaying,
-            o = (0, b.extractFullInfo)(t),
-            i = a.getSongRowExtra(t, n),
-            u = a.props.api;
-          return React.default.createElement(
-            components.SongRow,
-            _extends(
-              {
-                song: o.song,
-                singer: o.singer,
-                album: o.album,
-                index: n,
-                playing: r && a.props.index === n,
-                onPress: function () {
-                  return a.playFiltedMusic(t, n, u, t.api);
-                },
-                addToQueue: function () {
-                  return a.addToQueue(t, null, false);
-                },
-                alias: o.alias,
-              },
-              i,
-            ),
-          );
-        }),
-        (a.getSongRowExtra = function (e, t) {
-          var n = a.props.api;
-          return a.state.mode === x.deleting
-            ? {
-                deleteBtn: function () {
-                  return a.deleteFromQueue(e, t);
-                },
-              }
-            : {
-                detail: function () {
-                  return (0, events.toDetailModal)({
-                    item: e,
-                    index: t,
-                    api: n,
-                  });
-                },
-              };
-        }),
-        (a.playFiltedMusic = function (e, t, n, r) {
-          var l = a.props.data,
-            o = l.findIndex(function (t) {
-              return (0, b.extractFullInfo)(e).song === (0, b.extractFullInfo)(t).song;
-            }),
-            i = n;
-          r && r !== n && (i = n);
-          (0, events.toPlayer)({
-            item: e,
-            data: l,
-            index: o,
-            api: i,
-          });
-        }),
-        (a.deleteFromQueue = function (e, t) {
-          var n = a.props,
-            r = n.api;
-          n.index !== t &&
-            (a.refreshList(e, 'delete'),
-            events.emitter.emit(names.default.DeleteFromQueue, {
-              item: e,
-              api: r,
-            }));
-        }),
-        (a.addToQueue = function (e, t) {
-          var n = a.props,
-            r = n.api;
-          n.index !== t &&
-            (a.refreshList(e, 'add'),
-            (0, events.toInsertToList)({
-              data: e,
-              api: r,
-            }));
-        }),
-        (a.refreshList = function (e, t) {
-          var n = null;
-          switch (t) {
-            case 'add':
-              (n = a.props.data.filter(function (t) {
-                return (0, b.extractFullInfo)(t).song !== (0, b.extractFullInfo)(e).song;
-              })).splice(a.props.index + 1, 0, e);
-              break;
-            case 'delete':
-              n = a.props.data.filter(function (t) {
-                return (0, b.extractFullInfo)(t).song !== (0, b.extractFullInfo)(e).song;
-              });
-          }
-          a.setState({
-            data: n,
-          });
-        }),
-        (a.playMusic = function (e, t, n) {
-          var r = a.props.data;
-          (0, events.toPlayer)({
-            item: e,
-            data: r,
-            index: t,
-            api: n,
-          });
-        }),
-        n
-      );
+import * as React from 'react';
+import * as ReactNative from 'react-native';
+import FadingEdge from '../components/FadingEdge';
+import * as reactNativeLargelist from './../components/Scrolling.js';
+import * as components from '../components/index';
+import * as constants from '../theme/constants';
+import names from '../events/names';
+import icons from '../theme/icons';
+import tabIcons from '../theme/tabIcons';
+import locales from '../locales/index';
+import * as events from '../events/index';
+import * as utils from '../utils/index';
+import '../utils/types';
+import * as b from '../services/trackInfo';
+const x = {
+  normal: 'normal',
+  deleting: 'deleting',
+  filtering: 'filtering',
+};
+class NowPlayingModal extends React.PureComponent {
+  state = {
+    filterText: '',
+    filterList: [],
+    mode: x.normal,
+  };
+  handledBack = () => {
+    return (
+      this.state.mode !== x.normal &&
+      (this.setState({
+        mode: x.normal,
+      }),
+      true)
+    );
+  };
+  onClose = () => {
+    if (!this.handledBack()) {
+      this.forceClose();
     }
-    componentDidMount() {
-      var e = this;
-      this.sub = events.emitter.addListener(names.default.NowPlayingModal, function (t) {
-        true === t.forceClose && e.forceClose();
+  };
+  forceClose = () => {
+    const a_props = this.props;
+    const e_setDisplayNowPlaying = a_props.setDisplayNowPlaying;
+    if (a_props.show !== false) {
+      e_setDisplayNowPlaying(false);
+      this.setState({
+        filterText: '',
+        filterList: [],
+        mode: x.normal,
       });
     }
-    componentWillUnmount() {
-      var e, t;
-      null === (e = (t = this.sub).remove) || void 0 === e || e.call(t);
+  };
+  onSubmitEditing = () => {
+    const filterText = this.state.filterText;
+    const data = this.props.data;
+    if (filterText.length > 0) {
+      const filterList = utils.filterHelper.quickSearch(data, filterText);
+      this.setState({
+        filterList,
+      });
+    } else {
+      this.setState({
+        filterList: [],
+      });
     }
-    render() {
-      var e = this,
-        t = this.props,
-        n = t.show,
-        a = t.songItem,
-        r = t.data,
-        c = t.isRound,
-        f = this.state,
-        m = f.filterList,
-        p = f.filterText;
-      if (!a) return null;
-      var g = (0, b.extractFullInfo)(a, 'big'),
-        h = p.length > 0;
-      return React.default.createElement(
-        ReactNative.Modal,
-        {
-          animationType: 'fade',
-          transparent: true,
-          onRequestClose: this.onClose,
-          visible: n,
+  };
+  onChangeText = (filterText) => {
+    this.onSubmitEditing();
+    this.setState({
+      filterText,
+    });
+  };
+  changePlaylist = function () {
+    events.emitter.emit(names.ChangePlaylist);
+  };
+  onMode = (mode) => {
+    this.setState({
+      mode,
+    });
+  };
+  renderTools = () => {
+    switch (this.state.mode) {
+      case x.normal:
+        return (
+          <React.Fragment>
+            <components.Icon
+              name={icons.MAGNIFY}
+              onPress={() => {
+                return this.onMode(x.filtering);
+              }}
+            />
+            <components.Icon name={tabIcons.DISC.name} onPress={this.changePlaylist} />
+            <components.Icon
+              name={icons.DELETE_OUTLINE}
+              onPress={() => {
+                return this.onMode(x.deleting);
+              }}
+              containerStyle={{
+                marginRight: 3,
+              }}
+            />
+          </React.Fragment>
+        );
+      case x.deleting:
+        return (
+          <React.Fragment>
+            <components.Icon
+              name={icons.ARROW_LEFT}
+              onPress={() => {
+                return this.onMode(x.normal);
+              }}
+            />
+            <components.Icon
+              name={icons.NOTIFICATION_CLEAR_ALL}
+              onPress={this.onClear}
+              containerStyle={{
+                marginRight: 3,
+              }}
+            />
+          </React.Fragment>
+        );
+      case x.filtering:
+        return (
+          <React.Fragment>
+            <components.Icon
+              name={icons.ARROW_LEFT}
+              onPress={() => {
+                return this.onMode(x.normal);
+              }}
+              style={{
+                paddding: 5,
+              }}
+            />
+            <components.Input
+              autoFocus={true}
+              style={E.textInput}
+              onChangeText={this.onChangeText}
+              onSubmitEditing={this.onSubmitEditing}
+              placeholder={locales.FILTER}
+            />
+          </React.Fragment>
+        );
+    }
+  };
+  onClear = () => {
+    events.toPlayer({
+      type: 'clearPlayingList',
+    });
+    this.forceClose();
+  };
+  _renderIndexPath = ({row}) => {
+    const filterList = this.state.filterList;
+    if (this.props.data.length !== 0) {
+      let r = this.props.data;
+      let showPlaying = true;
+      if (filterList.length > 0) {
+        r = filterList;
+        showPlaying = false;
+      }
+      return this.renderItem({
+        item: r[row],
+        index: row,
+        showPlaying,
+      });
+    }
+  };
+  onCover = () => {
+    const songItem = this.props.songItem;
+    const t = b.extractFullInfo(songItem, 'big');
+    events.emitter.emit(names.SavePicModal, {
+      img: t.img,
+      song: songItem.name,
+    });
+  };
+  scrollTo = () => {
+    const index = this.props.index;
+    this._list?.scrollToIndexPath?.({
+      section: 0,
+      row: index,
+    });
+  };
+  renderItem = ({item, index, showPlaying}) => {
+    const o = b.extractFullInfo(item);
+    const i = this.getSongRowExtra(item, index);
+    const api = this.props.api;
+    return (
+      <components.SongRow
+        song={o.song}
+        singer={o.singer}
+        album={o.album}
+        index={index}
+        playing={showPlaying && this.props.index === index}
+        onPress={() => {
+          return this.playFiltedMusic(item, index, api, item.api);
+        }}
+        addToQueue={() => {
+          return this.addToQueue(item, null, false);
+        }}
+        alias={o.alias}
+        {...i}
+      />
+    );
+  };
+  getSongRowExtra = (e, t) => {
+    const api = this.props.api;
+    if (this.state.mode === x.deleting) {
+      return {
+        deleteBtn: () => {
+          return this.deleteFromQueue(e, t);
         },
-        React.default.createElement(
-          ReactNative.View,
-          {
-            style: [
-              E.container,
-              {
-                backgroundColor: '#000',
-              },
-            ],
-          },
-          g &&
-            React.default.createElement(components.Background, {
-              imageStyle: {
-                opacity: 0.5,
-              },
-              coverUrl: g.img,
-              blur: true,
-            }),
-          React.default.createElement(
-            ReactNative.TouchableWithoutFeedback,
+      };
+    }
+    return {
+      detail: function () {
+        return events.toDetailModal({
+          item: e,
+          index: t,
+          api,
+        });
+      },
+    };
+  };
+  playFiltedMusic = (e, t, n, r) => {
+    const data = this.props.data;
+    const o = data.findIndex((t) => b.extractFullInfo(e).song === b.extractFullInfo(t).song);
+    let api = n;
+    if (r && r !== n) {
+      api = n;
+    }
+    events.toPlayer({
+      item: e,
+      data,
+      index: o,
+      api,
+    });
+  };
+  deleteFromQueue = (e, t) => {
+    const a_props = this.props;
+    const n_api = a_props.api;
+    if (a_props.index !== t) {
+      this.refreshList(e, 'delete');
+      events.emitter.emit(names.DeleteFromQueue, {
+        item: e,
+        api: n_api,
+      });
+    }
+  };
+  addToQueue = (e, t) => {
+    const a_props = this.props;
+    const n_api = a_props.api;
+    if (a_props.index !== t) {
+      this.refreshList(e, 'add');
+      events.toInsertToList({
+        data: e,
+        api: n_api,
+      });
+    }
+  };
+  refreshList = (e, t) => {
+    let n = null;
+    switch (t) {
+      case 'add':
+        (n = this.props.data.filter(
+          (t) => b.extractFullInfo(t).song !== b.extractFullInfo(e).song,
+        )).splice(this.props.index + 1, 0, e);
+        break;
+      case 'delete':
+        n = this.props.data.filter((t) => b.extractFullInfo(t).song !== b.extractFullInfo(e).song);
+    }
+    this.setState({
+      data: n,
+    });
+  };
+  playMusic = (item, t, api) => {
+    const data = this.props.data;
+    events.toPlayer({
+      item,
+      data,
+      index: t,
+      api,
+    });
+  };
+  componentDidMount() {
+    const e = this;
+    this.sub = events.emitter.addListener(names.NowPlayingModal, function (t) {
+      if (t.forceClose === true) {
+        e.forceClose();
+      }
+    });
+  }
+  componentWillUnmount() {
+    this.sub.remove?.();
+  }
+  render() {
+    const e = this;
+    const props = this.props;
+    const {show, songItem, data, isRound} = props;
+    const state = this.state;
+    const {filterList, filterText} = state;
+    if (!songItem) {
+      return null;
+    }
+    const g = b.extractFullInfo(songItem, 'big');
+    const h = filterText.length > 0;
+    return (
+      <ReactNative.Modal
+        animationType={'fade'}
+        transparent={true}
+        onRequestClose={this.onClose}
+        visible={show}
+      >
+        <ReactNative.View
+          style={[
+            E.container,
             {
-              onPress: this.forceClose,
+              backgroundColor: '#000',
             },
-            React.default.createElement(ReactNative.View, {
-              style: {
+          ]}
+        >
+          {g && (
+            <components.Background
+              imageStyle={{
+                opacity: 0.5,
+              }}
+              coverUrl={g.img}
+              blur={true}
+            />
+          )}
+          <ReactNative.TouchableWithoutFeedback onPress={this.forceClose}>
+            <ReactNative.View
+              style={{
                 width: '100%',
                 height: '35%',
                 position: 'absolute',
-              },
-            }),
-          ),
-          g &&
-            React.default.createElement(
-              ReactNative.View,
-              {
-                style: E.title,
-              },
-              React.default.createElement(
-                ReactNative.TouchableOpacity,
-                {
-                  onPress: this.onCover,
-                },
-                React.default.createElement(ReactNative.Image, {
-                  source: {
+              }}
+            />
+          </ReactNative.TouchableWithoutFeedback>
+          {g && (
+            <ReactNative.View style={E.title}>
+              <ReactNative.TouchableOpacity onPress={this.onCover}>
+                <ReactNative.Image
+                  source={{
                     uri: g.img,
-                  },
-                  style: {
+                  }}
+                  style={{
                     height: 150,
                     width: 150,
-                    borderRadius: c ? 75 : 5,
-                  },
-                }),
-              ),
-              React.default.createElement(
-                ReactNative.TouchableOpacity,
-                {
-                  onPress: function () {
-                    return e.scrollTo();
-                  },
-                  style: {
-                    alignItems: 'center',
-                  },
-                },
-                React.default.createElement(
-                  components.Selectable,
-                  {
-                    numberOfLines: 3,
-                    style: [
-                      E.text,
-                      {
-                        fontSize: 18,
-                        fontWeight: 'bold',
-                        marginTop: 5,
-                        textAlign: 'center',
-                      },
-                    ],
-                  },
-                  g.song,
-                ),
-                React.default.createElement(
-                  components.Selectable,
-                  {
-                    style: [
-                      E.text,
-                      {
-                        fontSize: 13,
-                        textAlign: 'center',
-                      },
-                    ],
-                  },
-                  g.album,
-                ),
-              ),
-            ),
-          React.default.createElement(
-            ReactNative.View,
-            {
-              style: E.btnsBar,
-            },
-            this.renderTools(),
-          ),
-          React.default.createElement(
-            FadingEdge.default,
-            {
-              top: 30,
-            },
-            React.default.createElement(reactNativeLargelist.LargeList, {
-              ref: function (t) {
+                    borderRadius: isRound ? 75 : 5,
+                  }}
+                />
+              </ReactNative.TouchableOpacity>
+              <ReactNative.TouchableOpacity
+                onPress={function () {
+                  return e.scrollTo();
+                }}
+                style={{
+                  alignItems: 'center',
+                }}
+              >
+                <components.Selectable
+                  numberOfLines={3}
+                  style={[
+                    E.text,
+                    {
+                      fontSize: 18,
+                      fontWeight: 'bold',
+                      marginTop: 5,
+                      textAlign: 'center',
+                    },
+                  ]}
+                >
+                  {g.song}
+                </components.Selectable>
+                <components.Selectable
+                  style={[
+                    E.text,
+                    {
+                      fontSize: 13,
+                      textAlign: 'center',
+                    },
+                  ]}
+                >
+                  {g.album}
+                </components.Selectable>
+              </ReactNative.TouchableOpacity>
+            </ReactNative.View>
+          )}
+          <ReactNative.View style={E.btnsBar}>{this.renderTools()}</ReactNative.View>
+          <FadingEdge top={30}>
+            <reactNativeLargelist.LargeList
+              ref={function (t) {
                 return (e._list = t);
-              },
-              data: [
+              }}
+              data={[
                 {
-                  items: h ? m : r,
+                  items: h ? filterList : data,
                 },
-              ],
-              heightForIndexPath: function () {
+              ]}
+              heightForIndexPath={function () {
                 return constants.ITEM_HEIGHT;
-              },
-              renderIndexPath: this._renderIndexPath,
-              renderEmpty: function () {
-                return React.default.createElement(components.Spinkit, null);
-              },
-            }),
-          ),
-        ),
-      );
-    }
+              }}
+              renderIndexPath={this._renderIndexPath}
+              renderEmpty={function () {
+                return <components.Spinkit />;
+              }}
+            />
+          </FadingEdge>
+        </ReactNative.View>
+      </ReactNative.Modal>
+    );
+  }
+}
+var E = ReactNative.StyleSheet.create({
+  container: {
+    flex: 1,
   },
-  E = ReactNative.StyleSheet.create({
-    container: {
-      flex: 1,
-    },
-    text: {
-      fontSize: 15,
-    },
-    title: {
-      marginTop: '15%',
-      alignItems: 'center',
-    },
-    btnsBar: {
-      height: 40,
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      flexDirection: 'row',
-      paddingHorizontal: 15,
-      marginTop: 15,
-      marginBottom: 10,
-    },
-    textInput: {
-      height: '100%',
-      width: '100%',
-      fontSize: 16,
-    },
-  }),
-  I = y;
-exports.default = I;
+  text: {
+    fontSize: 15,
+  },
+  title: {
+    marginTop: '15%',
+    alignItems: 'center',
+  },
+  btnsBar: {
+    height: 40,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    flexDirection: 'row',
+    paddingHorizontal: 15,
+    marginTop: 15,
+    marginBottom: 10,
+  },
+  textInput: {
+    height: '100%',
+    width: '100%',
+    fontSize: 16,
+  },
+});
+export default NowPlayingModal;

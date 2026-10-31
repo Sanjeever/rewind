@@ -1,18 +1,13 @@
-const _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
-Object.defineProperty(exports, '__esModule', {
-  value: true,
-});
-exports.default = void 0;
-var names = _interopRequireDefault(require('./names')),
-  events = require('./index'),
-  utils = require('../utils/index'),
-  o = {
-    playMV: function (id, api) {
-      events.emitter.emit(names.default.AUDIO_NOISY);
-      utils.universalNavigator.navigate('Video', {
-        mvid: id,
-        api,
-      });
-    },
-  };
-exports.default = o;
+import names from './names';
+import * as events from './index';
+import * as utils from '../utils/index';
+const o = {
+  playMV: function (mvid, api) {
+    events.emitter.emit(names.AUDIO_NOISY);
+    utils.universalNavigator.navigate('Video', {
+      mvid,
+      api,
+    });
+  },
+};
+export default o;

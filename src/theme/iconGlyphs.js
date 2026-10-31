@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   account: 983044,
   'account-music': 985091,
   disc: 984558,

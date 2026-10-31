@@ -1,241 +1,214 @@
-const _interopRequireWildcard = require('@babel/runtime/helpers/interopRequireWildcard');
-const _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
-Object.defineProperty(exports, '__esModule', {
-  value: true,
-});
-exports.default = void 0;
-var React = _interopRequireWildcard(require('react')),
-  reactNativeLargelist = require('./../components/Scrolling.js'),
-  components = require('../components/index'),
-  ParallaxList = _interopRequireDefault(require('../components/ParallaxList')),
-  providers = _interopRequireDefault(require('../services/providers')),
-  constants = require('../theme/constants'),
-  icons = _interopRequireDefault(require('../theme/icons')),
-  PlaylistSearchResults = _interopRequireDefault(require('./../modules/PlaylistSearchResults.js')),
-  services = require('../services/index'),
-  PlaylistFilters = _interopRequireDefault(require('./../modules/PlaylistFilters.js')),
-  g = '全部歌单',
-  m = class t extends React.PureComponent {
-    constructor() {
-      var e, a, n;
-      for (var i = arguments.length, o = new Array(i), s = 0; s < i; s++) o[s] = arguments[s];
-      return (
-        (a = n = super(...o)),
-        (n._savedType = null),
-        (n.onTop = function () {
-          var e;
-          null === (e = n._list) ||
-            void 0 === e ||
-            e.scrollTo({
-              x: 0,
-              y: 0,
+import * as React from 'react';
+import * as reactNativeLargelist from './../components/Scrolling.js';
+import * as components from '../components/index';
+import ParallaxList from '../components/ParallaxList';
+import providers from '../services/providers';
+import * as constants from '../theme/constants';
+import icons from '../theme/icons';
+import PlaylistSearchResults from './../modules/PlaylistSearchResults.js';
+import * as services from '../services/index';
+import PlaylistFilters from './../modules/PlaylistFilters.js';
+const type = '全部歌单';
+class HotPlaylist extends React.PureComponent {
+  _savedType = null;
+  onTop = () => {
+    this._list?.scrollTo({
+      x: 0,
+      y: 0,
+    });
+  };
+  state = {
+    data: [],
+    loading: true,
+    mainModalShow: false,
+    type,
+    page: 0,
+    search: '',
+  };
+  getPlaylists = (e) => {
+    services.Netease.topPlaylist({
+      category: e,
+    }).then(({code, playlists}) => {
+      if (code === 200 && playlists.length > 0) {
+        this.setState({
+          data: playlists,
+          loading: false,
+        });
+      }
+      this._list.endLoading?.();
+    });
+  };
+  getMore = () => {
+    this.setState(
+      {
+        page: this.state.page + 1,
+      },
+      () => {
+        const page = this.state.page;
+        this.morePlaylists(this.state.type, page);
+      },
+    );
+  };
+  morePlaylists = (e, t) => {
+    services.Netease.topPlaylist({
+      category: e,
+      offset: 30 * t,
+    }).then(({code, playlists}) => {
+      if (code === 200 && playlists) {
+        this.setState({
+          data: this.state.data.concat(playlists),
+          loading: false,
+        });
+      }
+      this._list.endLoading?.();
+    });
+  };
+  onType = (e) => {
+    this.setState({
+      type: e,
+      mainModalShow: false,
+      loading: true,
+      data: [],
+      search: '',
+    });
+    this.getPlaylists(e);
+    this.onTop();
+  };
+  Playlist = (playlist) => {
+    this.props.navigation.navigate('Playlist', {
+      api: providers.netEase,
+      playlist,
+    });
+  };
+  onChangeText = (search) => {
+    this.setState({
+      search,
+    });
+  };
+  onSubmitEditing = () => {
+    const search = this.state.search;
+    if (search?.length > 0) {
+      if (!this._searcher) {
+        return;
+      }
+      this._searcher.fetchData(search);
+    }
+  };
+  onSearch = () => {
+    this._savedType = this.state.type;
+    this.setState({
+      type: 'search',
+      mainModalShow: false,
+    });
+  };
+  formatItem = function (e) {
+    const a = {};
+    a.title = e.name;
+    a.subtitle = `${e.creator?.nickname} | ${e.playCount}`;
+    a.img = `${e.coverImgUrl}?param=150y150`;
+    return a;
+  };
+  _renderIndexPath = ({row}) => {
+    const data = this.state.data;
+    return this._renderItem({
+      item: data[row],
+      index: row,
+    });
+  };
+  _renderItem = ({item, index}) => {
+    const i = this.formatItem(item);
+    return (
+      <components.ListItem
+        key={index}
+        title={i.title}
+        subtitle={i.subtitle}
+        img={i.img}
+        onPress={() => {
+          return this.Playlist(item, providers.netEase);
+        }}
+      />
+    );
+  };
+  componentDidMount() {
+    this.getPlaylists();
+  }
+  render() {
+    const e = this;
+    const state = this.state;
+    const {loading, type, data, mainModalShow, search} = state;
+    return (
+      <components.PageContainer
+        goBack={function () {
+          return e.props.navigation.goBack();
+        }}
+        onTop={this.onTop}
+        title={type}
+        rightIcon={{
+          name: icons.TAG_OUTLINE,
+          onPress: function () {
+            return e.setState({
+              mainModalShow: !mainModalShow,
             });
-        }),
-        (n.state = {
-          data: [],
-          loading: true,
-          mainModalShow: false,
-          type: g,
-          page: 0,
-          search: '',
-        }),
-        (n.getPlaylists = function (e) {
-          services.Netease.topPlaylist({
-            category: e,
-          }).then(function (e) {
-            var t,
-              a,
-              i = e.code,
-              r = e.playlists;
-            200 === i &&
-              r.length > 0 &&
-              n.setState({
-                data: r,
-                loading: false,
-              });
-            null === (t = (a = n._list).endLoading) || void 0 === t || t.call(a);
-          });
-        }),
-        (n.getMore = function () {
-          n.setState(
-            {
-              page: n.state.page + 1,
-            },
-            function () {
-              var e = n.state.page;
-              n.morePlaylists(n.state.type, e);
-            },
-          );
-        }),
-        (n.morePlaylists = function (e, t) {
-          services.Netease.topPlaylist({
-            category: e,
-            offset: 30 * t,
-          }).then(function (e) {
-            var t,
-              a,
-              i = e.code,
-              r = e.playlists;
-            200 === i &&
-              r &&
-              n.setState({
-                data: n.state.data.concat(r),
-                loading: false,
-              });
-            null === (t = (a = n._list).endLoading) || void 0 === t || t.call(a);
-          });
-        }),
-        (n.onType = function (e) {
-          n.setState({
-            type: e,
-            mainModalShow: false,
-            loading: true,
-            data: [],
-            search: '',
-          });
-          n.getPlaylists(e);
-          n.onTop();
-        }),
-        (n.Playlist = function (e) {
-          n.props.navigation.navigate('Playlist', {
-            api: providers.default.netEase,
-            playlist: e,
-          });
-        }),
-        (n.onChangeText = function (e) {
-          n.setState({
-            search: e,
-          });
-        }),
-        (n.onSubmitEditing = function () {
-          var e = n.state.search;
-          if ((null === e || void 0 === e ? void 0 : e.length) > 0) {
-            if (!n._searcher) return;
-            n._searcher.fetchData(e);
-          }
-        }),
-        (n.onSearch = function () {
-          n._savedType = n.state.type;
-          n.setState({
-            type: 'search',
-            mainModalShow: false,
-          });
-        }),
-        (n.formatItem = function (e) {
-          var t,
-            a = {};
-          a.title = e.name;
-          a.subtitle =
-            (null === (t = e.creator) || void 0 === t ? void 0 : t.nickname) + ' | ' + e.playCount;
-          a.img = e.coverImgUrl + '?param=150y150';
-          return a;
-        }),
-        (n._renderIndexPath = function (e) {
-          var t = e.row,
-            a = n.state.data;
-          return n._renderItem({
-            item: a[t],
-            index: t,
-          });
-        }),
-        (n._renderItem = function (e) {
-          var t = e.item,
-            a = e.index,
-            i = n.formatItem(t);
-          return React.default.createElement(components.ListItem, {
-            key: a,
-            title: i.title,
-            subtitle: i.subtitle,
-            img: i.img,
-            onPress: function () {
-              return n.Playlist(t, providers.default.netEase);
-            },
-          });
-        }),
-        a
-      );
-    }
-    componentDidMount() {
-      this.getPlaylists();
-    }
-    render() {
-      var e = this,
-        t = this.state,
-        a = t.loading,
-        n = t.type,
-        i = t.data,
-        f = t.mainModalShow,
-        g = t.search;
-      return React.default.createElement(
-        components.PageContainer,
-        {
-          goBack: function () {
-            return e.props.navigation.goBack();
           },
-          onTop: this.onTop,
-          title: n,
-          rightIcon: {
-            name: icons.default.TAG_OUTLINE,
-            onPress: function () {
-              return e.setState({
-                mainModalShow: !f,
-              });
-            },
-          },
-          textInput: 'search' === n,
-          onChangeText: this.onChangeText,
-          onSubmitEditing: this.onSubmitEditing,
-          searchText: g,
-          forceShowTextInput: 'search' === n,
-          disabledTextInputBtn: true,
-          headerBlur: true,
-        },
-        a &&
-          React.default.createElement(components.Spinkit, {
-            style: {
+        }}
+        textInput={type === 'search'}
+        onChangeText={this.onChangeText}
+        onSubmitEditing={this.onSubmitEditing}
+        searchText={search}
+        forceShowTextInput={type === 'search'}
+        disabledTextInputBtn={true}
+        headerBlur={true}
+      >
+        {loading && (
+          <components.Spinkit
+            style={{
               position: 'absolute',
               top: 100,
               bottom: 0,
               left: 0,
               right: 0,
-            },
-          }),
-        'search' === n
-          ? React.default.createElement(PlaylistSearchResults.default, {
-              api: providers.default.netEase,
-              onRef: function (t) {
-                return (e._searcher = t);
+            }}
+          />
+        )}
+        {type === 'search' ? (
+          <PlaylistSearchResults
+            api={providers.netEase}
+            onRef={function (t) {
+              return (e._searcher = t);
+            }}
+            navigation={this.props.navigation}
+          />
+        ) : (
+          <reactNativeLargelist.LargeList
+            ref={function (t) {
+              return (e._list = t);
+            }}
+            data={[
+              {
+                items: data,
               },
-              navigation: this.props.navigation,
-            })
-          : React.default.createElement(reactNativeLargelist.LargeList, {
-              ref: function (t) {
-                return (e._list = t);
-              },
-              data: [
-                {
-                  items: i,
-                },
-              ],
-              onLoading: this.getMore,
-              loadingFooter: ParallaxList.default,
-              renderIndexPath: this._renderIndexPath,
-              heightForIndexPath: function () {
-                return constants.ITEM_HEIGHT;
-              },
-            }),
-        React.default.createElement(PlaylistFilters.default, {
-          visible: f,
-          onClose: function () {
+            ]}
+            onLoading={this.getMore}
+            loadingFooter={ParallaxList}
+            renderIndexPath={this._renderIndexPath}
+            heightForIndexPath={function () {
+              return constants.ITEM_HEIGHT;
+            }}
+          />
+        )}
+        <PlaylistFilters
+          visible={mainModalShow}
+          onClose={function () {
             return e.setState({
               mainModalShow: false,
             });
-          },
-          onType: this.onType,
-          currentType: n,
-          onSearch: this.onSearch,
-        }),
-      );
-    }
-  };
-exports.default = m;
+          }}
+          onType={this.onType}
+          currentType={type}
+          onSearch={this.onSearch}
+        />
+      </components.PageContainer>
+    );
+  }
+}
+export default HotPlaylist;

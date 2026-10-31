@@ -1,90 +1,57 @@
-const _default = require('./../components/Text.js').default;
-const _interopRequireWildcard = require('@babel/runtime/helpers/interopRequireWildcard');
-const _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
-Object.defineProperty(exports, '__esModule', {
-  value: true,
-});
-exports.default = void 0;
-var React = _interopRequireWildcard(require('react')),
-  ReactNative = require('react-native'),
-  components = require('../components/index'),
-  icons = _interopRequireDefault(require('../theme/icons')),
-  u = class t extends React.PureComponent {
-    constructor() {
-      return super(...arguments);
-    }
-    render() {
-      var e = this.props,
-        t = e.onPress,
-        l = e.title,
-        r = e.img,
-        n = e.trackCount;
-      return React.default.createElement(
-        ReactNative.TouchableOpacity,
-        {
-          onPress: t,
-        },
-        React.default.createElement(
-          ReactNative.View,
-          {
-            style: {
-              marginTop: 15,
-              alignItems: 'center',
-            },
-          },
-          r
-            ? React.default.createElement(ReactNative.Image, {
-                style: c.cover,
-                source: {
-                  uri: r,
-                },
-              })
-            : React.default.createElement(
-                ReactNative.View,
+import Text from './../components/Text.js';
+import * as React from 'react';
+import * as ReactNative from 'react-native';
+import * as components from '../components/index';
+import icons from '../theme/icons';
+class CustomPlaylistHeader extends React.PureComponent {
+  render() {
+    const props = this.props;
+    const {onPress, title, img, trackCount} = props;
+    return (
+      <ReactNative.TouchableOpacity onPress={onPress}>
+        <ReactNative.View
+          style={{
+            marginTop: 15,
+            alignItems: 'center',
+          }}
+        >
+          {img ? (
+            <ReactNative.Image
+              style={c.cover}
+              source={{
+                uri: img,
+              }}
+            />
+          ) : (
+            <ReactNative.View
+              style={[
+                c.cover,
                 {
-                  style: [
-                    c.cover,
-                    {
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      backgroundColor: '#fff',
-                    },
-                  ],
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundColor: '#fff',
                 },
-                React.default.createElement(components.Icon, {
-                  name: icons.default.DISC,
-                  size: 35,
-                  color: '#111',
-                }),
-              ),
-          React.default.createElement(
-            ReactNative.View,
-            {
-              style: c.textCon,
-            },
-            React.default.createElement(
-              _default,
-              {
-                style: [c.title],
-                numberOfLines: 2,
-              },
-              l,
-            ),
-            React.default.createElement(
-              _default,
-              {
-                style: [c.subtitle],
-              },
-              '- ',
-              n,
-              ' -',
-            ),
-          ),
-        ),
-      );
-    }
-  };
-exports.default = u;
+              ]}
+            >
+              <components.Icon name={icons.DISC} size={35} color={'#111'} />
+            </ReactNative.View>
+          )}
+          <ReactNative.View style={c.textCon}>
+            <Text style={[c.title]} numberOfLines={2}>
+              {title}
+            </Text>
+            <Text style={[c.subtitle]}>
+              {'- '}
+              {trackCount}
+              {' -'}
+            </Text>
+          </ReactNative.View>
+        </ReactNative.View>
+      </ReactNative.TouchableOpacity>
+    );
+  }
+}
+export default CustomPlaylistHeader;
 var c = ReactNative.StyleSheet.create({
   cover: {
     height: 80,

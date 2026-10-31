@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   ABOUT: 'About',
   ACTION_NEXT: 'Next',
   ACTION_PLAY_PAUSE: 'Play/Pause',

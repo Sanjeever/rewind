@@ -1,56 +1,47 @@
-const _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
-Object.defineProperty(exports, '__esModule', {
-  value: true,
-});
-exports.default = void 0;
-var lottieReactNative = _interopRequireDefault(require('lottie-react-native')),
-  React = _interopRequireDefault(require('react')),
-  ReactNative = require('react-native'),
-  reactNativeSpringScrollview = require('./Scrolling.js'),
-  components = require('./index'),
-  constants = require('../theme/constants'),
-  p = {
-    flex: 1,
-    justifyContent: 'center',
-  },
-  b = class l extends reactNativeSpringScrollview.RefreshHeader {
-    constructor() {
-      return super(...arguments);
+import lottieReactNative from 'lottie-react-native';
+import React from 'react';
+import * as ReactNative from 'react-native';
+import * as reactNativeSpringScrollview from './Scrolling.js';
+import * as Index from './index';
+import * as constants from '../theme/constants';
+import _layout from '../theme/layout';
+const style = {
+  flex: 1,
+  justifyContent: 'center',
+};
+class ParallaxList extends reactNativeSpringScrollview.RefreshHeader {
+  render() {
+    const status = this.state.status;
+    if (status === 'allLoaded') {
+      return null;
     }
-    render() {
-      var e = this.state.status;
-      if ('allLoaded' === e) return null;
-      if ('loading' === e)
-        return React.default.createElement(
-          ReactNative.View,
-          {
-            style: p,
-          },
-          React.default.createElement(components.Spinkit, null),
-        );
-      var l = this.props,
-        r = l.offset,
-        i = l.bottomOffset,
-        b = r.interpolate({
-          inputRange: [i + 50, i + 100],
-          outputRange: [0, 1],
-        });
-      return React.default.createElement(
-        ReactNative.View,
-        {
-          style: p,
-        },
-        React.default.createElement(lottieReactNative.default, {
-          source: require('../theme/layout'),
-          progress: b,
-          style: {
+    if (status === 'loading') {
+      return (
+        <ReactNative.View style={style}>
+          <Index.Spinkit />
+        </ReactNative.View>
+      );
+    }
+    const props = this.props;
+    const {offset, bottomOffset} = props;
+    const progress = offset.interpolate({
+      inputRange: [bottomOffset + 50, bottomOffset + 100],
+      outputRange: [0, 1],
+    });
+    return (
+      <ReactNative.View style={style}>
+        <lottieReactNative
+          source={_layout}
+          progress={progress}
+          style={{
             height: constants.SPINKIT_SIZE,
             width: constants.SPINKIT_SIZE,
             alignSelf: 'center',
-          },
-        }),
-      );
-    }
-  };
-exports.default = b;
-b.height = constants.SPINKIT_SIZE + 80;
+          }}
+        />
+      </ReactNative.View>
+    );
+  }
+}
+export default ParallaxList;
+ParallaxList.height = constants.SPINKIT_SIZE + 80;

@@ -16,6 +16,7 @@ test('QQ 音源明确拒绝后下载仍可使用原有备用来源', async () =>
     '../utils/index': {},
     '../native/audioTagger': {},
     '../native/mediaStore': {},
+    '../storage/paths': {cache_dir: '/cache/'},
     './index': {
       QQMusic: {
         getMusicUrl: async () => {

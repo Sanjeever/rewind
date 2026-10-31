@@ -1,107 +1,83 @@
-const _interopRequireWildcard = require('@babel/runtime/helpers/interopRequireWildcard');
-const _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
-Object.defineProperty(exports, '__esModule', {
-  value: true,
-});
-exports.default = void 0;
-var React = _interopRequireWildcard(require('react')),
-  ReactNative = require('react-native'),
-  reactNativeSpringScrollview = require('./../components/Scrolling.js'),
-  components = require('../components/index'),
-  icons = _interopRequireDefault(require('../theme/icons')),
-  services = require('../services/index'),
-  p = class t extends React.PureComponent {
-    constructor() {
-      var e, r, n;
-      for (var a = arguments.length, s = new Array(a), i = 0; i < a; i++) s[i] = arguments[i];
-      return (
-        (r = n = super(...s)),
-        (n.state = {
-          data: [],
-          search: '',
-        }),
-        (n.searchUser = function (e) {
-          var t = {
-            keywords: e,
-            type: 1002,
-          };
-          services.Netease.search(t).then(function (e) {
-            var t = e.result;
-            if (t) {
-              var r = t.userprofiles;
-              if (r) {
-                var a = r;
-                n.setState({
-                  data: a,
-                });
-              }
-            }
-          });
-        }),
-        (n._renderItem = function (e) {
-          var t = e.item,
-            r = e.index;
-          return React.default.createElement(components.ListItem, {
-            key: r,
-            title: t.nickname,
-            subtitle: t.signature,
-            img: t.avatarUrl,
-            onPress: function () {
-              return n.onSelect(t);
-            },
-          });
-        }),
-        (n.onSelect = function (e) {
-          n.props.onSelected(e);
-        }),
-        r
-      );
-    }
-    render() {
-      var e = this,
-        t = this.props,
-        r = t.isOpen,
-        n = t.onModalClose,
-        a = this.state.search;
-      return React.default.createElement(
-        ReactNative.Modal,
-        {
-          visible: r,
-          onRequestClose: n,
-          animationType: 'fade',
-        },
-        React.default.createElement(
-          components.PageContainer,
-          {
-            goBack: n,
-            searchText: a,
-            onChangeText: function (t) {
-              return e.setState({
-                search: t,
-              });
-            },
-            onSubmitEditing: function () {
-              return e.searchUser(a);
-            },
-            backIcon: {
-              name: icons.default.WINDOW_CLOSE,
-            },
-            textInput: true,
-            forceShowTextInput: true,
-            disabledTextInputBtn: true,
-          },
-          React.default.createElement(
-            reactNativeSpringScrollview.SpringScrollView,
-            null,
-            this.state.data.map(function (t, r) {
-              return e._renderItem({
-                item: t,
-                index: r,
-              });
-            }),
-          ),
-        ),
-      );
-    }
+import * as React from 'react';
+import * as ReactNative from 'react-native';
+import * as reactNativeSpringScrollview from './../components/Scrolling.js';
+import * as components from '../components/index';
+import icons from '../theme/icons';
+import * as services from '../services/index';
+class SearchUser extends React.PureComponent {
+  state = {
+    data: [],
+    search: '',
   };
-exports.default = p;
+  searchUser = (keywords) => {
+    const t = {
+      keywords,
+      type: 1002,
+    };
+    services.Netease.search(t).then(({result}) => {
+      if (result) {
+        const r = result.userprofiles;
+        if (r) {
+          const data = r;
+          this.setState({
+            data,
+          });
+        }
+      }
+    });
+  };
+  _renderItem = ({item, index}) => {
+    return (
+      <components.ListItem
+        key={index}
+        title={item.nickname}
+        subtitle={item.signature}
+        img={item.avatarUrl}
+        onPress={() => {
+          return this.onSelect(item);
+        }}
+      />
+    );
+  };
+  onSelect = (e) => {
+    this.props.onSelected(e);
+  };
+  render() {
+    const e = this;
+    const props = this.props;
+    const {isOpen, onModalClose} = props;
+    const search = this.state.search;
+    return (
+      <ReactNative.Modal visible={isOpen} onRequestClose={onModalClose} animationType={'fade'}>
+        <components.PageContainer
+          goBack={onModalClose}
+          searchText={search}
+          onChangeText={function (search_1) {
+            return e.setState({
+              search: search_1,
+            });
+          }}
+          onSubmitEditing={function () {
+            return e.searchUser(search);
+          }}
+          backIcon={{
+            name: icons.WINDOW_CLOSE,
+          }}
+          textInput={true}
+          forceShowTextInput={true}
+          disabledTextInputBtn={true}
+        >
+          <reactNativeSpringScrollview.SpringScrollView>
+            {this.state.data.map((item, index) =>
+              e._renderItem({
+                item,
+                index,
+              }),
+            )}
+          </reactNativeSpringScrollview.SpringScrollView>
+        </components.PageContainer>
+      </ReactNative.Modal>
+    );
+  }
+}
+export default SearchUser;

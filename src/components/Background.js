@@ -1,129 +1,101 @@
-const _interopRequireWildcard = require('@babel/runtime/helpers/interopRequireWildcard');
-const _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
-const _appStorage = require('./../storage/index.js');
-Object.defineProperty(exports, '__esModule', {
-  value: true,
-});
-exports.default = void 0;
-var React = _interopRequireWildcard(require('react')),
-  ReactNative = require('react-native'),
-  constants = require('../theme/constants'),
-  names = _interopRequireDefault(require('../events/names')),
-  keys = _interopRequireDefault(require('../storage/keys')),
-  events = require('../events/index'),
-  backgroundModule = require('../theme/background'),
-  d = class t extends React.PureComponent {
-    constructor() {
-      var e, r, a;
-      for (var l = arguments.length, n = new Array(l), o = 0; o < l; o++) n[o] = arguments[o];
-      return (
-        (r = a = super(...n)),
-        (a.state = {
-          url: null,
-          error: false,
-          blur: false,
-        }),
-        (a.changeBackgroundEmitter = function (e) {
-          (null === e || void 0 === e ? void 0 : e.path) &&
-            (_appStorage.storage
-              .save({
-                key: keys.default.background,
-                data: e,
-              })
-              .catch(function (e) {
-                return e;
-              }),
-            a.setState({
-              url: e.path,
-              opacity: e.opacity,
-              blur: e.blur,
-              error: false,
-            }),
-            (0, backgroundModule.initBackgroundState)());
-        }),
-        (a.loadBackground = async function () {
-          a.setState({
-            ...(await backgroundModule.getBackground()),
-          });
-        }),
-        r
-      );
+import * as _appStorage from './../storage/index.js';
+import * as React from 'react';
+import * as ReactNative from 'react-native';
+import * as constants from '../theme/constants';
+import names from '../events/names';
+import keys from '../storage/keys';
+import * as events from '../events/index';
+import * as backgroundModule from '../theme/background';
+class Background extends React.PureComponent {
+  state = {
+    url: null,
+    error: false,
+    blur: false,
+  };
+  changeBackgroundEmitter = (e) => {
+    if (e?.path) {
+      _appStorage.storage
+        .save({
+          key: keys.background,
+          data: e,
+        })
+        .catch((e) => e);
+      this.setState({
+        url: e.path,
+        opacity: e.opacity,
+        blur: e.blur,
+        error: false,
+      });
+      backgroundModule.initBackgroundState();
     }
-    componentDidMount() {
-      this.loadBackground();
-      this.sub = events.emitter.addListener(
-        names.default.ChangeBackground,
-        this.changeBackgroundEmitter,
-      );
-    }
-    componentWillUnmount() {
-      var e, t;
-      null === (e = (t = this.sub).remove) || void 0 === e || e.call(t);
-    }
-    render() {
-      var e = this.props,
-        t = e.coverUrl,
-        r = e.bgStyle,
-        a = e.hideMask,
-        l = e.imageStyle,
-        u = this.state,
-        i = u.url,
-        s = u.opacity,
-        c = u.error,
-        b = u.blur,
-        d = t || i,
-        h = void 0 == this.props.blur ? b : this.props.blur;
-      return React.default.createElement(
-        ReactNative.View,
-        {
-          style: [p.background, r],
-        },
-        d &&
-          (!c || t) &&
-          React.default.createElement(ReactNative.Image, {
-            style: [
+  };
+  loadBackground = async () => {
+    this.setState({
+      ...(await backgroundModule.getBackground()),
+    });
+  };
+  componentDidMount() {
+    this.loadBackground();
+    this.sub = events.emitter.addListener(names.ChangeBackground, this.changeBackgroundEmitter);
+  }
+  componentWillUnmount() {
+    this.sub.remove?.();
+  }
+  render() {
+    const props = this.props;
+    const {coverUrl, bgStyle, hideMask, imageStyle} = props;
+    const state = this.state;
+    const {url, opacity, error, blur} = state;
+    const uri = coverUrl || url;
+    const h = this.props.blur ?? blur;
+    return (
+      <ReactNative.View style={[p.background, bgStyle]}>
+        {uri && (!error || coverUrl) && (
+          <ReactNative.Image
+            style={[
               {
                 width: '100%',
                 height: '100%',
                 position: 'absolute',
                 top: 0,
               },
-              l,
-            ],
-            source: {
-              uri: d,
-            },
-            blurRadius: h ? 10 : 0,
-          }),
-        d && !a
-          ? React.default.createElement(ReactNative.View, {
-              style: [
-                p.msk,
-                {
-                  opacity: t ? 0.3 : 1 - s,
-                },
-              ],
-            })
-          : null,
-      );
-    }
+              imageStyle,
+            ]}
+            source={{
+              uri,
+            }}
+            blurRadius={h ? 10 : 0}
+          />
+        )}
+        {uri && !hideMask ? (
+          <ReactNative.View
+            style={[
+              p.msk,
+              {
+                opacity: coverUrl ? 0.3 : 1 - opacity,
+              },
+            ]}
+          />
+        ) : null}
+      </ReactNative.View>
+    );
+  }
+}
+var p = ReactNative.StyleSheet.create({
+  background: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    width: '100%',
+    height: constants.DEVICE_HEIGHT,
+    backgroundColor: '#000',
   },
-  p = ReactNative.StyleSheet.create({
-    background: {
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      right: 0,
-      width: '100%',
-      height: constants.DEVICE_HEIGHT,
-      backgroundColor: '#000',
-    },
-    msk: {
-      position: 'absolute',
-      width: '100%',
-      height: constants.DEVICE_HEIGHT,
-      backgroundColor: 'rgba(0,0,0,1)',
-    },
-  }),
-  h = d;
-exports.default = h;
+  msk: {
+    position: 'absolute',
+    width: '100%',
+    height: constants.DEVICE_HEIGHT,
+    backgroundColor: 'rgba(0,0,0,1)',
+  },
+});
+export default Background;

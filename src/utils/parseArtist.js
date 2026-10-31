@@ -1,15 +1,9 @@
-Object.defineProperty(exports, '__esModule', {
-  value: true,
-});
-exports.default = void 0;
-var a = function (e) {
-  if (e)
-    return Array.isArray(e)
-      ? e
-          .map(function (e) {
-            return e.name;
-          })
-          .join('/')
-      : e;
+const a = function (e) {
+  if (e) {
+    if (Array.isArray(e)) {
+      return e.map((e) => e.name).join('/');
+    }
+    return e;
+  }
 };
-exports.default = a;
+export default a;

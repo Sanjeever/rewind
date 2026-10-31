@@ -1,47 +1,35 @@
-const _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
-const _interopRequireWildcard = require('@babel/runtime/helpers/interopRequireWildcard');
-Object.defineProperty(exports, '__esModule', {
-  value: true,
-});
-exports.default = void 0;
-var lottieReactNative = _interopRequireDefault(require('lottie-react-native')),
-  React = _interopRequireWildcard(require('react')),
-  ReactNative = require('react-native'),
-  constants = require('../theme/constants'),
-  loading = require('../../assets/animations/loading'),
-  p = class t extends React.PureComponent {
-    constructor() {
-      return super(...arguments);
-    }
-    render() {
-      var e = this.props,
-        t = e.size,
-        l = void 0 === t ? constants.SPINKIT_SIZE : t,
-        r = e.style;
-      return React.default.createElement(
-        ReactNative.View,
-        {
-          style: [
-            {
-              flex: 1,
-              alignItems: 'center',
-              justifyContent: 'center',
-            },
-            r,
-          ],
-        },
-        React.default.createElement(lottieReactNative.default, {
+import lottieReactNative from 'lottie-react-native';
+import * as React from 'react';
+import * as ReactNative from 'react-native';
+import * as constants from '../theme/constants';
+import loading from '../../assets/animations/loading';
+class Spinkit extends React.PureComponent {
+  render() {
+    const {size = constants.SPINKIT_SIZE, style} = this.props;
+    return (
+      <ReactNative.View
+        style={[
+          {
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center',
+          },
+          style,
+        ]}
+      >
+        {React.createElement(lottieReactNative, {
           loop: true,
           autoPlay: true,
           source: loading,
           style: {
-            height: l,
-            width: l,
+            height: size,
+            width: size,
             alignItems: 'center',
           },
-          duration: 2e3,
-        }),
-      );
-    }
-  };
-exports.default = p;
+          duration: 2000,
+        })}
+      </ReactNative.View>
+    );
+  }
+}
+export default Spinkit;

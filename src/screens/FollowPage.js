@@ -1,269 +1,244 @@
-const _interopRequireWildcard = require('@babel/runtime/helpers/interopRequireWildcard');
-const _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
-const _extends = require('@babel/runtime/helpers/extends');
-Object.defineProperty(exports, '__esModule', {
-  value: true,
-});
-exports.default = void 0;
-var React = _interopRequireWildcard(require('react')),
-  ReactNative = require('react-native'),
-  reactNativeTabView = require('react-native-tab-view'),
-  components = require('../components/index'),
-  ParallaxList = _interopRequireDefault(require('../components/ParallaxList')),
-  constants = require('../theme/constants'),
-  names = _interopRequireDefault(require('../events/names')),
-  locales = _interopRequireDefault(require('../locales/index')),
-  services = require('../services/index'),
-  events = require('../events/index'),
-  types = _interopRequireWildcard(require('../utils/types')),
-  UserHeader = _interopRequireDefault(require('./../modules/UserHeader.js')),
-  h = constants.DEVICE_HEIGHT - constants.DEVICE_WIDTH - constants.ITEM_HEIGHT,
-  v = class t extends React.PureComponent {
-    constructor() {
-      var e, n, r;
-      for (var a = arguments.length, u = new Array(a), g = 0; g < a; g++) u[g] = arguments[g];
-      return (
-        (n = r = super(...u)),
-        (r._nativeOffset = {
-          x: new ReactNative.Animated.Value(0),
-          y: new ReactNative.Animated.Value(0),
-        }),
-        (r._tabViewHeights = [0, 0]),
-        (r.state = {
-          profile: {},
-          follows: [],
-          followeds: [],
-          userId: null,
-          followed: true,
-          tabViewHeight: h,
-          index: 0,
-          routes: [
-            {
-              key: '1',
-              title: locales.default.FOLLOWS,
-            },
-            {
-              key: '2',
-              title: locales.default.FOLLOWER,
-            },
-          ],
-        }),
-        (r.getFollows = async function (id, offset) {
-          const response = await services.Netease.user_follows(id, offset);
-          if (response?.code === 200) {
-            r.setState((previous) => ({
-              follows: [...previous.follows, ...response.follow],
-            }));
-            r._list?.endLoading?.();
-          }
-        }),
-        (r.getFolloweds = async function (id, offset) {
-          const response = await services.Netease.user_followeds(id, offset);
-          if (response?.code === 200) {
-            r.setState((previous) => ({
-              followeds: [...previous.followeds, ...response.followeds],
-            }));
-            r._list?.endLoading?.();
-          }
-        }),
-        (r.getMore = function () {
-          var e = r.state,
-            t = e.follows,
-            n = e.followeds,
-            a = e.userId,
-            l = e.index;
-          if (0 === l) {
-            var o = t.length;
-            r.getFollows(a, o);
-          } else if (1 === l) {
-            var i = n.length;
-            r.getFolloweds(a, i);
-          }
-        }),
-        (r._handleIndexChange = function (e) {
-          return r.setState({
-            index: e,
-            tabViewHeight: r._tabViewHeights[e],
-          });
-        }),
-        (r._renderHeader = function (e) {
-          return React.default.createElement(
-            reactNativeTabView.TabBar,
-            _extends(
-              {
-                pressColor: 'rgba(0,0,0,0.3)',
-                renderText: r._renderText,
-                tabStyle: {
-                  backgroundColor: 'rgba(0,0,0,0)',
-                },
-                labelStyle: {
-                  backgroundColor: 'rgba(0,0,0,0)',
-                },
-                indicatorStyle: {
-                  backgroundColor: constants.COLORS.primary,
-                },
-                style: {
-                  marginTop: 0,
-                  backgroundColor: 0,
-                  elevation: 0,
-                },
-              },
-              e,
-            ),
-          );
-        }),
-        (r._renderScene = function (e) {
-          var t = e.route,
-            n = r.state,
-            a = n.follows,
-            i = n.followeds;
-          switch (t.key) {
-            case '1':
-              return (null === a || void 0 === a ? void 0 : a.length) > 0
-                ? React.default.createElement(
-                    ReactNative.View,
-                    {
-                      onLayout: function (e) {
-                        return r.onTabViewLayout(e, 0);
-                      },
-                    },
-                    a.map(function (e, t) {
-                      return r.renderItem({
-                        item: e,
-                        index: t,
-                      });
-                    }),
-                  )
-                : React.default.createElement(components.Spinkit, null);
-            case '2':
-              return (null === i || void 0 === i ? void 0 : i.length) > 0
-                ? React.default.createElement(
-                    ReactNative.View,
-                    {
-                      onLayout: function (e) {
-                        return r.onTabViewLayout(e, 1);
-                      },
-                    },
-                    i.map(function (e, t) {
-                      return r.renderItem({
-                        item: e,
-                        index: t,
-                      });
-                    }),
-                  )
-                : React.default.createElement(components.Spinkit, null);
-            default:
-              return null;
-          }
-        }),
-        (r.onTabViewLayout = function (e, t) {
-          var n = e.nativeEvent.layout.height;
-          n &&
-            (0 === t &&
-              r.setState({
-                tabViewHeight: n,
-              }),
-            (r._tabViewHeights[t] = n));
-        }),
-        (r.onHeart = async function () {
-          const {followed, userId} = r.state;
-          const response = await services.Netease.follow_user({
-            uid: userId,
-            type: followed ? 0 : 1,
-          });
-          if (response?.code !== 200) {
-            toast(locales.default.ERROR);
-            return;
-          }
-          r.setState({
-            followed: !followed,
-          });
-        }),
-        (r.onUserInfo = function (e) {
-          r.props.navigation.navigate('UserInfo', {
-            userId: e.userId,
-          });
-        }),
-        (r.onSelectedUser = function (e) {
-          events.emitter.emit(names.default.SelectedUser, e);
-        }),
-        (r.renderItem = function (e) {
-          var t = e.item;
-          return React.default.createElement(components.ListItem, {
-            img: t.avatarUrl + '?param=200y200',
-            title: t.nickname,
-            subtitle: t.signature,
-            vip: 0 !== t.userType,
-            onPress: function () {
-              return r.onUserInfo(t);
-            },
-            onLongPress: function () {
-              return r.onSelectedUser(t);
-            },
-          });
-        }),
-        n
-      );
-    }
-    componentDidMount() {
-      var e = this.props.route.params;
-      if (types.isObject(e)) {
-        var t = e.profile;
-        if (types.isObject(t)) {
-          var n = t.userId,
-            r = t.followed;
-          this.setState({
-            profile: t,
-            userId: n,
-            followed: r,
-          });
-          this.getFollows(n);
-          this.getFolloweds(n);
-        }
-      }
-    }
-    render() {
-      var e = this,
-        t = this.state,
-        n = t.profile,
-        r = t.followed,
-        a = t.tabViewHeight;
-      return React.default.createElement(
-        ReactNative.View,
-        {
-          style: m.container,
-        },
-        React.default.createElement(components.Background, null),
-        React.default.createElement(
-          components.ParallaxScrollView,
-          {
-            onRef: function (t) {
-              return (e._list = t);
-            },
-            onLoading: this.getMore,
-            onNativeContentOffsetExtract: this._nativeOffset,
-            loadingFooter: ParallaxList.default,
-          },
-          React.default.createElement(UserHeader.default, {
-            nativeOffset: this._nativeOffset,
-            profile: n,
-            followed: r,
-            onHeart: this.onHeart,
-          }),
-          React.default.createElement(reactNativeTabView.TabView, {
-            style: {
-              height: a + 50,
-            },
-            navigationState: this.state,
-            renderScene: this._renderScene,
-            renderTabBar: this._renderHeader,
-            onIndexChange: this._handleIndexChange,
-          }),
-        ),
-      );
+import * as React from 'react';
+import * as ReactNative from 'react-native';
+import reactNativeTabView from 'react-native-tab-view';
+import * as components from '../components/index';
+import ParallaxList from '../components/ParallaxList';
+import * as constants from '../theme/constants';
+import names from '../events/names';
+import locales from '../locales/index';
+import * as services from '../services/index';
+import * as events from '../events/index';
+import * as types from '../utils/types';
+import UserHeader from './../modules/UserHeader.js';
+const tabViewHeight = constants.DEVICE_HEIGHT - constants.DEVICE_WIDTH - constants.ITEM_HEIGHT;
+class FollowPage extends React.PureComponent {
+  _nativeOffset = {
+    x: new ReactNative.Animated.Value(0),
+    y: new ReactNative.Animated.Value(0),
+  };
+  _tabViewHeights = [0, 0];
+  state = {
+    profile: {},
+    follows: [],
+    followeds: [],
+    userId: null,
+    followed: true,
+    tabViewHeight,
+    index: 0,
+    routes: [
+      {
+        key: '1',
+        title: locales.FOLLOWS,
+      },
+      {
+        key: '2',
+        title: locales.FOLLOWER,
+      },
+    ],
+  };
+  getFollows = async (id, offset) => {
+    const response = await services.Netease.user_follows(id, offset);
+    if (response?.code === 200) {
+      this.setState((previous) => ({
+        follows: [...previous.follows, ...response.follow],
+      }));
+      this._list?.endLoading?.();
     }
   };
-exports.default = v;
+  getFolloweds = async (id, offset) => {
+    const response = await services.Netease.user_followeds(id, offset);
+    if (response?.code === 200) {
+      this.setState((previous) => ({
+        followeds: [...previous.followeds, ...response.followeds],
+      }));
+      this._list?.endLoading?.();
+    }
+  };
+  getMore = () => {
+    const r_state = this.state;
+    const {follows, followeds, userId, index} = r_state;
+    if (index === 0) {
+      const o = follows.length;
+      this.getFollows(userId, o);
+    } else if (index === 1) {
+      const i = followeds.length;
+      this.getFolloweds(userId, i);
+    }
+  };
+  _handleIndexChange = (e) => {
+    return this.setState({
+      index: e,
+      tabViewHeight: this._tabViewHeights[e],
+    });
+  };
+  _renderHeader = (e) => {
+    return (
+      <reactNativeTabView.TabBar
+        pressColor={'rgba(0,0,0,0.3)'}
+        renderText={this._renderText}
+        tabStyle={{
+          backgroundColor: 'rgba(0,0,0,0)',
+        }}
+        labelStyle={{
+          backgroundColor: 'rgba(0,0,0,0)',
+        }}
+        indicatorStyle={{
+          backgroundColor: constants.COLORS.primary,
+        }}
+        style={{
+          marginTop: 0,
+          backgroundColor: 0,
+          elevation: 0,
+        }}
+        {...e}
+      />
+    );
+  };
+  _renderScene = ({route}) => {
+    const r_state = this.state;
+    const {follows, followeds} = r_state;
+    switch (route.key) {
+      case '1':
+        if (follows?.length > 0) {
+          return (
+            <ReactNative.View
+              onLayout={(e) => {
+                return this.onTabViewLayout(e, 0);
+              }}
+            >
+              {follows.map((e, t) =>
+                this.renderItem({
+                  item: e,
+                  index: t,
+                }),
+              )}
+            </ReactNative.View>
+          );
+        }
+        return <components.Spinkit />;
+      case '2':
+        if (followeds?.length > 0) {
+          return (
+            <ReactNative.View
+              onLayout={(e) => {
+                return this.onTabViewLayout(e, 1);
+              }}
+            >
+              {followeds.map((e, t) =>
+                this.renderItem({
+                  item: e,
+                  index: t,
+                }),
+              )}
+            </ReactNative.View>
+          );
+        }
+        return <components.Spinkit />;
+      default:
+        return null;
+    }
+  };
+  onTabViewLayout = (e, t) => {
+    const height = e.nativeEvent.layout.height;
+    if (height) {
+      if (t === 0) {
+        this.setState({
+          tabViewHeight: height,
+        });
+      }
+      this._tabViewHeights[t] = height;
+    }
+  };
+  onHeart = async () => {
+    const {followed, userId} = this.state;
+    const response = await services.Netease.follow_user({
+      uid: userId,
+      type: followed ? 0 : 1,
+    });
+    if (response?.code !== 200) {
+      toast(locales.ERROR);
+      return;
+    }
+    this.setState({
+      followed: !followed,
+    });
+  };
+  onUserInfo = (e) => {
+    this.props.navigation.navigate('UserInfo', {
+      userId: e.userId,
+    });
+  };
+  onSelectedUser = function (e) {
+    events.emitter.emit(names.SelectedUser, e);
+  };
+  renderItem = ({item}) => {
+    return (
+      <components.ListItem
+        img={`${item.avatarUrl}?param=200y200`}
+        title={item.nickname}
+        subtitle={item.signature}
+        vip={item.userType !== 0}
+        onPress={() => {
+          return this.onUserInfo(item);
+        }}
+        onLongPress={() => {
+          return this.onSelectedUser(item);
+        }}
+      />
+    );
+  };
+  componentDidMount() {
+    const params = this.props.route.params;
+    if (types.isObject(params)) {
+      const profile = params.profile;
+      if (types.isObject(profile)) {
+        const {userId, followed} = profile;
+        this.setState({
+          profile,
+          userId,
+          followed,
+        });
+        this.getFollows(userId);
+        this.getFolloweds(userId);
+      }
+    }
+  }
+  render() {
+    const e = this;
+    const state = this.state;
+    const {profile, followed, tabViewHeight} = state;
+    return (
+      <ReactNative.View style={m.container}>
+        <components.Background />
+        <components.ParallaxScrollView
+          onRef={function (t) {
+            return (e._list = t);
+          }}
+          onLoading={this.getMore}
+          onNativeContentOffsetExtract={this._nativeOffset}
+          loadingFooter={ParallaxList}
+        >
+          <UserHeader
+            nativeOffset={this._nativeOffset}
+            profile={profile}
+            followed={followed}
+            onHeart={this.onHeart}
+          />
+          <reactNativeTabView.TabView
+            style={{
+              height: tabViewHeight + 50,
+            }}
+            navigationState={this.state}
+            renderScene={this._renderScene}
+            renderTabBar={this._renderHeader}
+            onIndexChange={this._handleIndexChange}
+          />
+        </components.ParallaxScrollView>
+      </ReactNative.View>
+    );
+  }
+}
+export default FollowPage;
 var m = ReactNative.StyleSheet.create({
   container: {
     flex: 1,

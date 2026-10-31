@@ -1,18 +1,14 @@
-Object.defineProperty(exports, '__esModule', {
-  value: true,
-});
-exports.default = void 0;
-var u = {
-  isOverEdge: function (e) {
-    var t = e.gestureState,
-      r = e.DEVICE_WIDTH,
-      a = t.moveX;
-    return a > 65 && a < r - 65;
+const u = {
+  isOverEdge: function ({gestureState, DEVICE_WIDTH}) {
+    const gestureState_moveX = gestureState.moveX;
+    return gestureState_moveX > 65 && gestureState_moveX < DEVICE_WIDTH - 65;
   },
-  stepMap: function (e) {
-    var t = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : 10,
-      r = -e;
-    return Math.abs(e) >= t ? (r >= 0 ? t : -t) : r;
+  stepMap: function (e, t = 10) {
+    const r = -e;
+    if (Math.abs(e) >= t) {
+      return r >= 0 ? t : -t;
+    }
+    return r;
   },
 };
-exports.default = u;
+export default u;

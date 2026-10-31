@@ -1,9 +1,7 @@
 export default class LyricDataSource {
-  constructor(data = [], keyExtractor = (item, index) => JSON.stringify(item) + '_' + index) {
-    this.data = data;
-    this.keyExtractor = keyExtractor;
-    this.listeners = new Set();
-  }
+  data = data;
+  keyExtractor = keyExtractor;
+  listeners = new Set();
   notify(method, ...args) {
     for (const listener of this.listeners) listener[method]?.(...args);
   }

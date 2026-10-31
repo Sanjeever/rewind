@@ -1,60 +1,16 @@
-const _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
-Object.defineProperty(exports, '__esModule', {
-  value: true,
-});
-Object.defineProperty(exports, 'ChangePlaylistModal', {
-  enumerable: true,
-  get: function () {
-    return ChangePlaylistModal.default;
-  },
-});
-Object.defineProperty(exports, 'CollectModal', {
-  enumerable: true,
-  get: function () {
-    return CollectModal.default;
-  },
-});
-Object.defineProperty(exports, 'DetailModal', {
-  enumerable: true,
-  get: function () {
-    return DetailModal.default;
-  },
-});
-Object.defineProperty(exports, 'LongPressModal', {
-  enumerable: true,
-  get: function () {
-    return LongPressModal.default;
-  },
-});
-Object.defineProperty(exports, 'MultiplySelectModal', {
-  enumerable: true,
-  get: function () {
-    return MultiplySelectModal.default;
-  },
-});
-Object.defineProperty(exports, 'NowPlayingModal', {
-  enumerable: true,
-  get: function () {
-    return NowPlayingModal.default;
-  },
-});
-Object.defineProperty(exports, 'SavePicModal', {
-  enumerable: true,
-  get: function () {
-    return SavePicModal.default;
-  },
-});
-Object.defineProperty(exports, 'SearchUser', {
-  enumerable: true,
-  get: function () {
-    return SearchUser.default;
-  },
-});
-var ChangePlaylistModal = _interopRequireDefault(require('./ChangePlaylistModal')),
-  CollectModal = _interopRequireDefault(require('./CollectModal')),
-  DetailModal = _interopRequireDefault(require('./DetailModal')),
-  LongPressModal = _interopRequireDefault(require('./LongPressModal')),
-  MultiplySelectModal = _interopRequireDefault(require('./MultiplySelectModal')),
-  NowPlayingModal = _interopRequireDefault(require('./NowPlayingModal')),
-  SavePicModal = _interopRequireDefault(require('./SavePicModal')),
-  SearchUser = _interopRequireDefault(require('./SearchUser'));
+import ChangePlaylistModal from './ChangePlaylistModal';
+import CollectModal from './CollectModal';
+import DetailModal from './DetailModal';
+import LongPressModal from './LongPressModal';
+import MultiplySelectModal from './MultiplySelectModal';
+import NowPlayingModal from './NowPlayingModal';
+import SavePicModal from './SavePicModal';
+import SearchUser from './SearchUser';
+export {ChangePlaylistModal};
+export {CollectModal};
+export {DetailModal};
+export {LongPressModal};
+export {MultiplySelectModal};
+export {NowPlayingModal};
+export {SavePicModal};
+export {SearchUser};

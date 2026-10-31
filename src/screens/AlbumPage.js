@@ -1,422 +1,388 @@
-const _default = require('@react-native-clipboard/clipboard').default;
-const _default2 = require('./../components/Text.js').default;
-const _interopRequireWildcard = require('@babel/runtime/helpers/interopRequireWildcard');
-const _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
-Object.defineProperty(exports, '__esModule', {
-  value: true,
-});
-exports.default = void 0;
-var React = _interopRequireWildcard(require('react')),
-  ReactNative = require('react-native'),
-  components = require('../components/index'),
-  OverflowMenu = _interopRequireDefault(require('./../modules/OverflowMenu.js')),
-  providers = _interopRequireDefault(require('../services/providers')),
-  constants = require('../theme/constants'),
-  icons = _interopRequireDefault(require('../theme/icons')),
-  locales = _interopRequireDefault(require('../locales/index')),
-  services = require('../services/index'),
-  events = require('../events/index'),
-  utils = require('../utils/index'),
-  queue = _interopRequireDefault(require('../events/queue')),
-  sharedUrlsModule = require('../services/sharedUrls'),
-  Description = _interopRequireDefault(require('./album/Description')),
-  y = constants.DEVICE_WIDTH,
-  w = class t extends React.PureComponent {
-    constructor(e) {
-      var a;
-      (a = super(e))._nativeOffset = {
-        x: new ReactNative.Animated.Value(0),
-        y: new ReactNative.Animated.Value(0),
-      };
-      a.getDurationSum = function (e) {
-        var t = a.state.api;
-        return t == providers.default.netEase
-          ? e.reduce(function (e, t) {
-              return e + t.duration;
-            }, 0) / 1e3
-          : t === providers.default.duration
-            ? e.reduce(function (e, t) {
-                return e + t.interval;
-              }, 0)
-            : void 0;
-      };
-      a.netEaseAlbum = async function (id) {
-        const response = await services.Netease.album(id);
-        if (!utils.usable(response)) return;
-        if (response.code !== 200) {
-          toast(locales.default.ERROR + ' -> ' + response.code);
-          return;
-        }
-        const album = response.album;
-        const songs = response.songs || album.songs;
-        if (songs) {
-          a.setState({
-            data: songs,
-            loaded: true,
-            id,
-            publishTime: utils.timeFormatter.localeString(album.publishTime),
-            company: album.company,
-            description: album.description,
-            duration: a.getDurationSum(songs),
-          });
-          await a.netEaseIsLikedAlbum();
-        }
-      };
-      a.qqMusicAlbum = function (e) {
-        services.QQMusic.album_song(e).then(function (t) {
-          var n = t.aDate,
-            i = t.company,
-            o = t.desc,
-            l = t.list;
-          l &&
-            a.setState({
-              data: l,
-              loaded: true,
-              id: e,
-              publishTime: n,
-              company: i,
-              description: o,
-              duration: a.getDurationSum(l),
-            });
-        });
-      };
-      a.getAlbum = function (e, t) {
-        if (e)
-          switch (t) {
-            case providers.default.netEase:
-              var n = e.picUrl + '?param=500y500';
-              a.setState({
-                title: e.name,
-                albumImg: n,
-              });
-              a.netEaseAlbum(e.id);
-              break;
-            case providers.default.qqMusic:
-              var i = e.albumMID || e.mid || e.albummid,
-                o = e.albumName || e.name || e.albumname,
-                l = 'http://y.gtimg.cn/music/photo_new/T002R500x500M000' + i + '.jpg';
-              a.setState({
-                title: o,
-                albumImg: l,
-              });
-              a.qqMusicAlbum(i);
-          }
-      };
-      a.goBack = function () {
-        a.props.navigation.goBack();
-      };
-      a.onDesc = function () {
-        a.setState({
-          showModal: true,
-        });
-      };
-      a.onPlayAll = function () {
-        var e = a.state,
-          t = e.api,
-          n = e.data,
-          i = n[0];
-        (0, events.toPlayer)({
-          item: i,
-          data: n,
-          index: 0,
-          api: t,
-        });
-      };
-      a.addToPlaylist = function () {
-        var e = a.state,
-          t = e.api,
-          n = e.data;
-        (0, events.toInsertToList)({
-          data: n,
-          api: t,
-          type: 'array',
-        });
-      };
-      a.onWebview = function () {
-        var e = a.getSharedLink();
-        a.props.navigation.navigate('WebViewPage', {
-          url: e,
-        });
-      };
-      a.onCopy = function () {
-        var e = a.state.title;
-        _default.setString(e);
-        toast(locales.default.COPIED + ' ' + e);
-      };
-      a.onOpenUrl = function () {
-        var e = a.getSharedLink();
-        ReactNative.Linking.openURL(e);
-      };
-      a.onShare = function () {
-        var e = a.getSharedLink();
-        ReactNative.Share.share({
-          message: e,
-        });
-      };
-      a.getSharedLink = function () {
-        var e = a.state,
-          t = e.api,
-          n = e.id;
-        return sharedUrlsModule.sharedUrls[t].album + n;
-      };
-      a.onLikeAlbumImpl = function () {
-        var e = a.state,
-          t = e.api,
-          n = e.followed,
-          i = e.id;
-        switch (t) {
-          case providers.default.netEase:
-            a.setState({
-              followed: !n,
-            });
-            a.netEaseLikeAlbum(i, !n);
-        }
-        toast(true == !n ? '已收藏。' : '取消收藏。');
-      };
-      a.onLikeAlbum = function () {
-        a.state.followed
-          ? ReactNative.Alert.alert(null, '取消收藏？', [
-              {
-                text: locales.default.CANCEL,
-                onPress: function () {
-                  return null;
-                },
-                style: 'cancel',
-              },
-              {
-                text: locales.default.CONFIRM,
-                onPress: function () {
-                  a.onLikeAlbumImpl();
-                },
-              },
-            ])
-          : a.onLikeAlbumImpl();
-      };
-      a.netEaseIsLikedAlbum = async function () {
-        const response = await services.Netease.sublist_album({
-          limit: 1000,
-        });
-        if (response?.code === 200 && Array.isArray(response.data))
-          a.setState({
-            followed: response.data.some((album) => album.id === a.state.id),
-          });
-      };
-      a.netEaseLikeAlbum = async function (id, like) {
-        const response = await services.Netease.sublist_album_add({
-          id,
-          op: like === true ? 'sub' : 'unsub',
-        });
-        if (utils.usable(response) && response.code !== 200)
-          toast(locales.default.ERROR + ' -> ' + response.code);
-      };
-      a.onTop = function () {
-        var e;
-        null === (e = a._list) ||
-          void 0 === e ||
-          e.scrollTo({
-            x: 0,
-            y: 0,
-          });
-      };
-      a.formatListItem = function (e) {
-        var t = {},
-          n = a.state.api;
-        if (n === providers.default.netEase) {
-          t.song = e.name;
-          t.singer = e.artists;
-          t.duration = utils.timeFormatter.parseTime(e.duration / 1e3);
-          t.alias = (0, utils.delve)(e, 'transNames.0');
-          t.showMV = e.mvid || e.mv;
-        } else if (n === providers.default.qqMusic) {
-          var i;
-          t.song = e.songname;
-          t.singer = e.singer;
-          t.duration = utils.timeFormatter.parseTime(e.interval);
-          var o = (null === (i = e.mv) || void 0 === i ? void 0 : i.vid) || e.vid;
-          o = 'string' == typeof o && o.length > 0;
-          t.showMV = o;
-        }
-        return t;
-      };
-      a.onMV = function (e) {
-        var t,
-          n = a.state.api;
-        if (n === providers.default.netEase) t = e.mv || e.mvid;
-        else if (n === providers.default.qqMusic) {
-          var i;
-          t = (null === (i = e.mv) || void 0 === i ? void 0 : i.vid) || e.vid;
-        }
-        queue.default.playMV(t, n);
-      };
-      a._renderItem = function (e) {
-        var t = e.item,
-          n = e.index,
-          i = a.state,
-          l = i.api,
-          u = i.data,
-          s = a.formatListItem(t);
-        return React.default.createElement(components.SongRow, {
-          textStyle: E.songRow,
-          curIndex: null,
-          index: n,
-          song: s.song,
-          album: s.duration,
-          singer: s.singer,
-          onPress: function () {
-            return (0, events.toPlayer)({
-              item: t,
-              data: u,
-              index: n,
-              api: l,
-            });
-          },
-          addToQueue: function () {
-            return (0, events.toInsertToList)({
-              data: t,
-              api: l,
-            });
-          },
-          detail: function () {
-            return (0, events.toDetailModal)({
-              item: t,
-              index: n,
-              api: l,
-            });
-          },
-          alias: s.alias,
-          showMV: s.showMV,
-          onMV: function () {
-            return a.onMV(t);
-          },
-          songItem: t,
-        });
-      };
-      a.state = {
-        albumImg: '',
-        api: providers.default.netEase,
-        id: null,
-        data: [],
-        loaded: false,
-        followed: null,
-        title: '',
-        publishTime: null,
-        company: null,
-        description: null,
-        showModal: false,
-        showElevation: true,
-        duration: 0,
-      };
-      return a;
+import Clipboard from '@react-native-clipboard/clipboard';
+import _default2 from './../components/Text.js';
+import * as React from 'react';
+import * as ReactNative from 'react-native';
+import * as components from '../components/index';
+import OverflowMenu from './../modules/OverflowMenu.js';
+import providers from '../services/providers';
+import * as constants from '../theme/constants';
+import icons from '../theme/icons';
+import locales from '../locales/index';
+import * as services from '../services/index';
+import * as events from '../events/index';
+import * as utils from '../utils/index';
+import queue from '../events/queue';
+import * as sharedUrlsModule from '../services/sharedUrls';
+import Description from './album/Description';
+const constants_DEVICE_WIDTH = constants.DEVICE_WIDTH;
+class AlbumPage extends React.PureComponent {
+  _nativeOffset = {
+    x: new ReactNative.Animated.Value(0),
+    y: new ReactNative.Animated.Value(0),
+  };
+  getDurationSum = (e) => {
+    const api = this.state.api;
+    if (api == providers.netEase) {
+      return e.reduce((acc, item) => acc + item.duration, 0) / 1000;
     }
-    componentDidMount() {
-      var e = this.props.route.params;
-      if (e) {
-        var t = e.item,
-          a = e.api;
-        a &&
-          (this.setState({
-            api: a,
-          }),
-          this.getAlbum(t, a));
+    if (api === providers.duration) {
+      return e.reduce((acc, item) => acc + item.interval, 0);
+    }
+  };
+  netEaseAlbum = async (id) => {
+    const response = await services.Netease.album(id);
+    if (!utils.usable(response)) {
+      return;
+    }
+    if (response.code !== 200) {
+      toast(`${locales.ERROR} -> ${response.code}`);
+      return;
+    }
+    const album = response.album;
+    const songs = response.songs || album.songs;
+    if (songs) {
+      this.setState({
+        data: songs,
+        loaded: true,
+        id,
+        publishTime: utils.timeFormatter.localeString(album.publishTime),
+        company: album.company,
+        description: album.description,
+        duration: this.getDurationSum(songs),
+      });
+      await this.netEaseIsLikedAlbum();
+    }
+  };
+  qqMusicAlbum = (id) => {
+    services.QQMusic.album_song(id).then(({aDate, company, desc, list}) => {
+      if (list) {
+        this.setState({
+          data: list,
+          loaded: true,
+          id,
+          publishTime: aDate,
+          company,
+          description: desc,
+          duration: this.getDurationSum(list),
+        });
+      }
+    });
+  };
+  getAlbum = (e, t) => {
+    if (e) {
+      switch (t) {
+        case providers.netEase:
+          const n = `${e.picUrl}?param=500y500`;
+          this.setState({
+            title: e.name,
+            albumImg: n,
+          });
+          this.netEaseAlbum(e.id);
+          break;
+        case providers.qqMusic:
+          const i = e.albumMID || e.mid || e.albummid;
+          const title = e.albumName || e.name || e.albumname;
+          const l = `http://y.gtimg.cn/music/photo_new/T002R500x500M000${i}.jpg`;
+          this.setState({
+            title,
+            albumImg: l,
+          });
+          this.qqMusicAlbum(i);
       }
     }
-    componentWillUnmount() {
+  };
+  goBack = () => {
+    this.props.navigation.goBack();
+  };
+  onDesc = () => {
+    this.setState({
+      showModal: true,
+    });
+  };
+  onPlayAll = () => {
+    const a_state = this.state;
+    const {api, data} = a_state;
+    const item = data[0];
+    events.toPlayer({
+      item,
+      data,
+      index: 0,
+      api,
+    });
+  };
+  addToPlaylist = () => {
+    const a_state = this.state;
+    const {api, data} = a_state;
+    events.toInsertToList({
+      data,
+      api,
+      type: 'array',
+    });
+  };
+  onWebview = () => {
+    const url = this.getSharedLink();
+    this.props.navigation.navigate('WebViewPage', {
+      url,
+    });
+  };
+  onCopy = () => {
+    const title = this.state.title;
+    Clipboard.setString(title);
+    toast(`${locales.COPIED} ${title}`);
+  };
+  onOpenUrl = () => {
+    const e = this.getSharedLink();
+    ReactNative.Linking.openURL(e);
+  };
+  onShare = () => {
+    const message = this.getSharedLink();
+    ReactNative.Share.share({
+      message,
+    });
+  };
+  getSharedLink = () => {
+    const a_state = this.state;
+    const {api, id} = a_state;
+    return sharedUrlsModule.sharedUrls[api].album + id;
+  };
+  onLikeAlbumImpl = () => {
+    const a_state = this.state;
+    const {api, followed, id} = a_state;
+    switch (api) {
+      case providers.netEase:
+        this.setState({
+          followed: !followed,
+        });
+        this.netEaseLikeAlbum(id, !followed);
+    }
+    toast(!followed == true ? '已收藏。' : '取消收藏。');
+  };
+  onLikeAlbum = () => {
+    if (this.state.followed) {
+      ReactNative.Alert.alert(null, '取消收藏？', [
+        {
+          text: locales.CANCEL,
+          onPress: function () {
+            return null;
+          },
+          style: 'cancel',
+        },
+        {
+          text: locales.CONFIRM,
+          onPress: () => {
+            this.onLikeAlbumImpl();
+          },
+        },
+      ]);
+    } else {
+      this.onLikeAlbumImpl();
+    }
+  };
+  netEaseIsLikedAlbum = async () => {
+    const response = await services.Netease.sublist_album({
+      limit: 1000,
+    });
+    if (response?.code === 200 && Array.isArray(response.data)) {
       this.setState({
-        showElevation: false,
+        followed: response.data.some((album) => album.id === this.state.id),
       });
     }
-    render() {
-      var e = this,
-        t = this.state,
-        a = t.followed,
-        n = t.data,
-        i = t.albumImg,
-        s = t.publishTime,
-        d = t.company,
-        f = t.title,
-        p = t.loaded,
-        h = t.showModal,
-        g = t.description,
-        w = t.duration;
-      return React.default.createElement(
-        ReactNative.View,
-        {
-          style: E.container,
-        },
-        React.default.createElement(components.Background, null),
-        false === p &&
-          React.default.createElement(components.Spinkit, {
-            style: {
-              paddingTop: y,
+  };
+  netEaseLikeAlbum = async (id, like) => {
+    const response = await services.Netease.sublist_album_add({
+      id,
+      op: like === true ? 'sub' : 'unsub',
+    });
+    if (utils.usable(response) && response.code !== 200) {
+      toast(`${locales.ERROR} -> ${response.code}`);
+    }
+  };
+  onTop = () => {
+    this._list?.scrollTo({
+      x: 0,
+      y: 0,
+    });
+  };
+  formatListItem = (e) => {
+    const t = {};
+    const api = this.state.api;
+    if (api === providers.netEase) {
+      t.song = e.name;
+      t.singer = e.artists;
+      t.duration = utils.timeFormatter.parseTime(e.duration / 1000);
+      t.alias = utils.delve(e, 'transNames.0');
+      t.showMV = e.mvid || e.mv;
+    } else if (api === providers.qqMusic) {
+      t.song = e.songname;
+      t.singer = e.singer;
+      t.duration = utils.timeFormatter.parseTime(e.interval);
+      let o = e.mv?.vid || e.vid;
+      o = typeof o === 'string' && o.length > 0;
+      t.showMV = o;
+    }
+    return t;
+  };
+  onMV = (e) => {
+    let t;
+    const api = this.state.api;
+    if (api === providers.netEase) {
+      t = e.mv || e.mvid;
+    } else if (api === providers.qqMusic) {
+      t = e.mv?.vid || e.vid;
+    }
+    queue.playMV(t, api);
+  };
+  _renderItem = ({item, index}) => {
+    const a_state = this.state;
+    const {api, data} = a_state;
+    const s = this.formatListItem(item);
+    return (
+      <components.SongRow
+        textStyle={E.songRow}
+        curIndex={null}
+        index={index}
+        song={s.song}
+        album={s.duration}
+        singer={s.singer}
+        onPress={function () {
+          return events.toPlayer({
+            item,
+            data,
+            index,
+            api,
+          });
+        }}
+        addToQueue={function () {
+          return events.toInsertToList({
+            data: item,
+            api,
+          });
+        }}
+        detail={function () {
+          return events.toDetailModal({
+            item,
+            index,
+            api,
+          });
+        }}
+        alias={s.alias}
+        showMV={s.showMV}
+        onMV={() => {
+          return this.onMV(item);
+        }}
+        songItem={item}
+      />
+    );
+  };
+  state = {
+    albumImg: '',
+    api: providers.netEase,
+    id: null,
+    data: [],
+    loaded: false,
+    followed: null,
+    title: '',
+    publishTime: null,
+    company: null,
+    description: null,
+    showModal: false,
+    showElevation: true,
+    duration: 0,
+  };
+  componentDidMount() {
+    const params = this.props.route.params;
+    if (params) {
+      const {item, api} = params;
+      if (api) {
+        this.setState({
+          api,
+        });
+        this.getAlbum(item, api);
+      }
+    }
+  }
+  componentWillUnmount() {
+    this.setState({
+      showElevation: false,
+    });
+  }
+  render() {
+    const e = this;
+    const state = this.state;
+    const {
+      followed,
+      data,
+      albumImg,
+      publishTime,
+      company,
+      title,
+      loaded,
+      showModal,
+      description,
+      duration,
+    } = state;
+    return (
+      <ReactNative.View style={E.container}>
+        <components.Background />
+        {loaded === false && (
+          <components.Spinkit
+            style={{
+              paddingTop: constants_DEVICE_WIDTH,
               position: 'absolute',
               top: 0,
               bottom: 0,
               left: 0,
               right: 0,
-            },
-          }),
-        React.default.createElement(
-          components.ParallaxScrollView,
-          {
-            onNativeContentOffsetExtract: this._nativeOffset,
-            onRef: function (t) {
-              return (e._list = t);
-            },
-          },
-          React.default.createElement(components.ParallaxForeground, {
-            img: i,
-            title: f,
-            subtitle: [
-              n.length +
-                ' ' +
-                locales.default.SONG_COUNT +
-                ' ｜ ' +
-                utils.timeFormatter.parseTime(w),
-              '' + s,
-            ],
-            animOffsetY: this._nativeOffset.y,
-            onInfo: this.onDesc,
-          }),
-          n.map(function (t, a) {
-            return React.default.cloneElement(
+            }}
+          />
+        )}
+        <components.ParallaxScrollView
+          onNativeContentOffsetExtract={this._nativeOffset}
+          onRef={function (t) {
+            return (e._list = t);
+          }}
+        >
+          <components.ParallaxForeground
+            img={albumImg}
+            title={title}
+            subtitle={[
+              `${data.length} ${locales.SONG_COUNT} ｜ ${utils.timeFormatter.parseTime(duration)}`,
+              `${publishTime}`,
+            ]}
+            animOffsetY={this._nativeOffset.y}
+            onInfo={this.onDesc}
+          />
+          {data.map((item, index) =>
+            React.cloneElement(
               e._renderItem({
-                item: t,
-                index: a,
+                item,
+                index,
               }),
-              {key: t.id || a},
-            );
-          }),
-          React.default.createElement(components.EmptyFooter, null),
-        ),
-        !!h &&
-          React.default.createElement(Description.default, {
-            showModal: h,
-            albumImg: i,
-            onClose: function () {
+              {
+                key: item.id || index,
+              },
+            ),
+          )}
+          <components.EmptyFooter />
+        </components.ParallaxScrollView>
+        {!!showModal && (
+          <Description
+            showModal={showModal}
+            albumImg={albumImg}
+            onClose={function () {
               return e.setState({
                 showModal: false,
               });
-            },
-            company: d,
-            publishTime: s,
-            description: g,
-          }),
-        React.default.createElement(
-          ReactNative.View,
-          {
-            style: E.hoverArea,
-          },
-          React.default.createElement(
-            ReactNative.View,
-            {
-              style: E.hoverCon,
-            },
-            React.default.createElement(
-              ReactNative.TouchableOpacity,
-              {
-                onPress: this.onPlayAll,
-              },
-              React.default.createElement(
+            }}
+            company={company}
+            publishTime={publishTime}
+            description={description}
+          />
+        )}
+        <ReactNative.View style={E.hoverArea}>
+          <ReactNative.View style={E.hoverCon}>
+            <ReactNative.TouchableOpacity onPress={this.onPlayAll}>
+              {React.createElement(
                 _default2,
                 {
                   style: {
@@ -426,80 +392,80 @@ var React = _interopRequireWildcard(require('react')),
                   },
                 },
                 '播放全部',
-              ),
-            ),
-            React.default.createElement(ReactNative.View, {
-              style: {
+              )}
+            </ReactNative.TouchableOpacity>
+            <ReactNative.View
+              style={{
                 width: 1,
                 height: 18,
                 backgroundColor: '#000',
-              },
-            }),
-            React.default.createElement(
-              ReactNative.TouchableOpacity,
-              {
-                style: {
-                  padding: 5,
-                },
-                onPress: this.addToPlaylist,
-              },
-              React.default.createElement(components.Icon, {
-                name: icons.default.PLUS,
-                color: '#000',
-                style: {
+              }}
+            />
+            <ReactNative.TouchableOpacity
+              style={{
+                padding: 5,
+              }}
+              onPress={this.addToPlaylist}
+            >
+              <components.Icon
+                name={icons.PLUS}
+                color={'#000'}
+                style={{
                   fontWeight: 'bold',
-                },
-              }),
-            ),
-          ),
-        ),
-        React.default.createElement(components.HeaderBar, {
-          headerStyle: [E.header, utils.animInterpolate.forHeader(this._nativeOffset.y)],
-          title: f,
-          goBack: this.goBack,
-          onTop: this.onTop,
-          rightIcon: function () {
-            return React.default.createElement(OverflowMenu.default, {
-              followed: a,
-              onLike: e.onLikeAlbum,
-              onWebview: e.onWebview,
-              onCopy: e.onCopy,
-              onOpenUrl: e.onOpenUrl,
-              onShare: e.onShare,
-            });
-          },
-          backIcon: {
-            name: icons.default.WINDOW_CLOSE,
-          },
-          bold: true,
-          blur: true,
-        }),
-      );
-    }
+                }}
+              />
+            </ReactNative.TouchableOpacity>
+          </ReactNative.View>
+        </ReactNative.View>
+        <components.HeaderBar
+          headerStyle={[E.header, utils.animInterpolate.forHeader(this._nativeOffset.y)]}
+          title={title}
+          goBack={this.goBack}
+          onTop={this.onTop}
+          rightIcon={function () {
+            return (
+              <OverflowMenu
+                followed={followed}
+                onLike={e.onLikeAlbum}
+                onWebview={e.onWebview}
+                onCopy={e.onCopy}
+                onOpenUrl={e.onOpenUrl}
+                onShare={e.onShare}
+              />
+            );
+          }}
+          backIcon={{
+            name: icons.WINDOW_CLOSE,
+          }}
+          bold={true}
+          blur={true}
+        />
+      </ReactNative.View>
+    );
+  }
+}
+var E = ReactNative.StyleSheet.create({
+  container: {
+    flex: 1,
   },
-  E = ReactNative.StyleSheet.create({
-    container: {
-      flex: 1,
-    },
-    header: {
-      position: 'absolute',
-      top: 0,
-      zIndex: 10,
-      paddingRight: 20,
-    },
-    hoverArea: {
-      position: 'absolute',
-      bottom: 36,
-      alignSelf: 'center',
-    },
-    hoverCon: {
-      alignItems: 'center',
-      justifyContent: 'center',
-      flexDirection: 'row',
-      backgroundColor: '#fff',
-      borderRadius: 100,
-      elevation: 2,
-    },
-  }),
-  S = w;
-exports.default = S;
+  header: {
+    position: 'absolute',
+    top: 0,
+    zIndex: 10,
+    paddingRight: 20,
+  },
+  hoverArea: {
+    position: 'absolute',
+    bottom: 36,
+    alignSelf: 'center',
+  },
+  hoverCon: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    backgroundColor: '#fff',
+    borderRadius: 100,
+    elevation: 2,
+  },
+});
+export default AlbumPage;

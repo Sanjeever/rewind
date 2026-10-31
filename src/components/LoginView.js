@@ -1,267 +1,214 @@
-const _default = require('./Text.js').default;
-const _interopRequireWildcard = require('@babel/runtime/helpers/interopRequireWildcard');
-const _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
-Object.defineProperty(exports, '__esModule', {
-  value: true,
-});
-exports.default = void 0;
-var React = _interopRequireWildcard(require('react')),
-  ReactNative = require('react-native'),
-  reactNativeAnimatable = _interopRequireWildcard(require('react-native-animatable')),
-  components = require('./index'),
-  providers = _interopRequireDefault(require('../services/providers')),
-  constants = require('../theme/constants'),
-  icons = _interopRequireDefault(require('../theme/icons')),
-  locales = _interopRequireDefault(require('../locales/index')),
-  p = 0.05 * constants.DEVICE_HEIGHT,
-  m = class t extends React.PureComponent {
-    constructor() {
-      var e, n, r;
-      for (var a = arguments.length, o = new Array(a), s = 0; s < a; s++) o[s] = arguments[s];
-      return (
-        (n = r = super(...o)),
-        (r.renderQQMusic = function () {
-          var e = r.props,
-            t = e._Login,
-            n = e.onChangeText,
-            a = e.onWebview;
-          return React.default.createElement(
-            ReactNative.View,
+import Text from './Text.js';
+import * as React from 'react';
+import * as ReactNative from 'react-native';
+import * as reactNativeAnimatable from 'react-native-animatable';
+import * as components from './index';
+import providers from '../services/providers';
+import * as constants from '../theme/constants';
+import icons from '../theme/icons';
+import locales from '../locales/index';
+const p = 0.05 * constants.DEVICE_HEIGHT;
+class LoginView extends React.PureComponent {
+  renderQQMusic = () => {
+    const r_props = this.props;
+    const {_Login, onChangeText, onWebview} = r_props;
+    return (
+      <ReactNative.View style={y.container}>
+        <ReactNative.View style={y.inputCon}>
+          <components.Input
+            style={[
+              {
+                fontSize: 18,
+              },
+              y.inputText,
+            ]}
+            placeholder={locales.INPUT_QQ_FETCH_PUBLIC_MIX}
+            onChangeText={function (e) {
+              return onChangeText(e);
+            }}
+            keyboardType={'numeric'}
+          />
+        </ReactNative.View>
+        <components.TextButton
+          onPress={_Login}
+          style={y.btnCon}
+          text={locales.CONFIRM}
+          textStyle={{
+            opacity: 1,
+          }}
+        />
+        <ReactNative.View
+          style={[
+            y.other,
             {
-              style: y.container,
+              width: '40%',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              flexDirection: 'row',
             },
-            React.default.createElement(
-              ReactNative.View,
-              {
-                style: y.inputCon,
-              },
-              React.default.createElement(components.Input, {
-                style: [
-                  {
-                    fontSize: 18,
-                  },
-                  y.inputText,
-                ],
-                placeholder: locales.default.INPUT_QQ_FETCH_PUBLIC_MIX,
-                onChangeText: function (e) {
-                  return n(e);
-                },
-                keyboardType: 'numeric',
-              }),
-            ),
-            React.default.createElement(components.TextButton, {
-              onPress: t,
-              style: y.btnCon,
-              text: locales.default.CONFIRM,
-              textStyle: {
-                opacity: 1,
-              },
-            }),
-            React.default.createElement(
-              ReactNative.View,
-              {
-                style: [
-                  y.other,
-                  {
-                    width: '40%',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    flexDirection: 'row',
-                  },
-                ],
-              },
-              React.default.createElement(components.Icon, {
-                style: y.textBtn,
-                name: icons.default.QQCHAT,
-                size: 30,
-                onPress: function () {
-                  return a('qqmusic_qq');
-                },
-              }),
-              React.default.createElement(components.Icon, {
-                style: y.textBtn,
-                name: icons.default.WECHAT,
-                size: 30,
-                onPress: function () {
-                  return a('qqmusic_wechat');
-                },
-              }),
-            ),
-          );
-        }),
-        (r.renderNetease = function () {
-          var e = r.props,
-            t = e._Login,
-            n = e.otherWay,
-            a = e.onChangeText,
-            o = e.loginOut,
-            s = e.onWebview;
-          return React.default.createElement(
-            ReactNative.View,
-            {
-              style: y.container,
-            },
-            React.default.createElement(
-              ReactNative.View,
-              {
-                style: y.inputCon,
-              },
-              React.default.createElement(components.Input, {
-                style: [
-                  {
-                    fontSize: 18,
-                  },
-                  y.inputText,
-                ],
-                placeholder: locales.default.EMAIL_OR_PHONE,
-                onChangeText: function (e) {
-                  return a(e, 'account');
-                },
-              }),
-            ),
-            React.default.createElement(
-              ReactNative.View,
-              {
-                style: y.inputCon,
-              },
-              React.default.createElement(components.Input, {
-                style: [
-                  {
-                    fontSize: 18,
-                  },
-                  y.inputText,
-                ],
-                underlineColorAndroid: 0,
-                placeholder: locales.default.PASSWORD,
-                onChangeText: function (e) {
-                  return a(e, 'password');
-                },
-                secureTextEntry: true,
-              }),
-            ),
-            React.default.createElement(components.TextButton, {
-              onPress: t,
-              style: [y.btnCon, y.textBtn],
-              text: locales.default.LOG_IN,
-              textStyle: {
-                opacity: 1,
-              },
-            }),
-            React.default.createElement(components.TextButton, {
-              onPress: n,
-              text: locales.default.FETCH_PLAYLIST,
-              style: {
-                marginTop: 20,
-              },
-            }),
-            React.default.createElement(components.TextButton, {
-              onPress: o,
-              text: locales.default.LOG_OUT,
-              style: {
-                marginTop: 15,
-              },
-            }),
-            React.default.createElement(
-              ReactNative.View,
-              {
-                style: [
-                  y.other,
-                  {
-                    width: '40%',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    flexDirection: 'row',
-                  },
-                ],
-              },
-              React.default.createElement(components.Icon, {
-                style: [
-                  y.textBtn,
-                  {
-                    marginTop: 0,
-                  },
-                ],
-                name: icons.default.QQCHAT,
-                size: 30,
-                onPress: function () {
-                  return s('netease_qq');
-                },
-              }),
-              React.default.createElement(components.Icon, {
-                style: [
-                  y.textBtn,
-                  {
-                    marginTop: 0,
-                  },
-                ],
-                name: icons.default.SINA_WEIBO,
-                size: 30,
-                onPress: function () {
-                  return s('netease_weibo');
-                },
-              }),
-            ),
-          );
-        }),
-        n
-      );
-    }
-    render() {
-      var e = this.props,
-        t = e.avatar,
-        n = e.nickname,
-        r = e.api;
-      return React.default.createElement(
-        reactNativeAnimatable.View,
-        {
-          animation: 'fadeIn',
-          useNativeDriver: true,
-          style: {
-            flex: 1,
-            paddingTop: 60,
-            alignItems: 'center',
-          },
-        },
-        React.default.createElement(
-          ReactNative.TouchableOpacity,
-          {
-            onPress: this.props.onUserManager,
-          },
-          React.default.createElement(
-            ReactNative.View,
-            {
-              style: y.avatarView,
-            },
-            t
-              ? React.default.createElement(ReactNative.Image, {
-                  source: {
-                    uri: t,
-                  },
-                  style: y.avatar,
-                })
-              : React.default.createElement(components.Icon, {
-                  name: icons.default.ACCOUNT,
-                  size: 50,
-                }),
-            React.default.createElement(
-              _default,
-              {
-                style: [
-                  {
-                    fontSize: 18,
-                    marginTop: 10,
-                  },
-                ],
-              },
-              n,
-            ),
-          ),
-        ),
-        r === providers.default.netEase ? this.renderNetease() : this.renderQQMusic(),
-      );
-    }
+          ]}
+        >
+          <components.Icon
+            style={y.textBtn}
+            name={icons.QQCHAT}
+            size={30}
+            onPress={function () {
+              return onWebview('qqmusic_qq');
+            }}
+          />
+          <components.Icon
+            style={y.textBtn}
+            name={icons.WECHAT}
+            size={30}
+            onPress={function () {
+              return onWebview('qqmusic_wechat');
+            }}
+          />
+        </ReactNative.View>
+      </ReactNative.View>
+    );
   };
-exports.default = m;
+  renderNetease = () => {
+    const r_props = this.props;
+    const {_Login, otherWay, onChangeText, loginOut, onWebview} = r_props;
+    return (
+      <ReactNative.View style={y.container}>
+        <ReactNative.View style={y.inputCon}>
+          <components.Input
+            style={[
+              {
+                fontSize: 18,
+              },
+              y.inputText,
+            ]}
+            placeholder={locales.EMAIL_OR_PHONE}
+            onChangeText={function (e) {
+              return onChangeText(e, 'account');
+            }}
+          />
+        </ReactNative.View>
+        <ReactNative.View style={y.inputCon}>
+          <components.Input
+            style={[
+              {
+                fontSize: 18,
+              },
+              y.inputText,
+            ]}
+            underlineColorAndroid={0}
+            placeholder={locales.PASSWORD}
+            onChangeText={function (e) {
+              return onChangeText(e, 'password');
+            }}
+            secureTextEntry={true}
+          />
+        </ReactNative.View>
+        <components.TextButton
+          onPress={_Login}
+          style={[y.btnCon, y.textBtn]}
+          text={locales.LOG_IN}
+          textStyle={{
+            opacity: 1,
+          }}
+        />
+        <components.TextButton
+          onPress={otherWay}
+          text={locales.FETCH_PLAYLIST}
+          style={{
+            marginTop: 20,
+          }}
+        />
+        <components.TextButton
+          onPress={loginOut}
+          text={locales.LOG_OUT}
+          style={{
+            marginTop: 15,
+          }}
+        />
+        <ReactNative.View
+          style={[
+            y.other,
+            {
+              width: '40%',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              flexDirection: 'row',
+            },
+          ]}
+        >
+          <components.Icon
+            style={[
+              y.textBtn,
+              {
+                marginTop: 0,
+              },
+            ]}
+            name={icons.QQCHAT}
+            size={30}
+            onPress={function () {
+              return onWebview('netease_qq');
+            }}
+          />
+          <components.Icon
+            style={[
+              y.textBtn,
+              {
+                marginTop: 0,
+              },
+            ]}
+            name={icons.SINA_WEIBO}
+            size={30}
+            onPress={function () {
+              return onWebview('netease_weibo');
+            }}
+          />
+        </ReactNative.View>
+      </ReactNative.View>
+    );
+  };
+  render() {
+    const props = this.props;
+    const {avatar, nickname, api} = props;
+    return (
+      <reactNativeAnimatable.View
+        animation={'fadeIn'}
+        useNativeDriver={true}
+        style={{
+          flex: 1,
+          paddingTop: 60,
+          alignItems: 'center',
+        }}
+      >
+        <ReactNative.TouchableOpacity onPress={this.props.onUserManager}>
+          <ReactNative.View style={y.avatarView}>
+            {avatar ? (
+              <ReactNative.Image
+                source={{
+                  uri: avatar,
+                }}
+                style={y.avatar}
+              />
+            ) : (
+              <components.Icon name={icons.ACCOUNT} size={50} />
+            )}
+            <Text
+              style={[
+                {
+                  fontSize: 18,
+                  marginTop: 10,
+                },
+              ]}
+            >
+              {nickname}
+            </Text>
+          </ReactNative.View>
+        </ReactNative.TouchableOpacity>
+        {api === providers.netEase ? this.renderNetease() : this.renderQQMusic()}
+      </reactNativeAnimatable.View>
+    );
+  }
+}
+export default LoginView;
 var y = ReactNative.StyleSheet.create({
   container: {
     flex: 1,

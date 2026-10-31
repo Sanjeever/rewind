@@ -1,7 +1,5 @@
-const {Lrc} = require('lrc-kit');
-
-Object.defineProperty(exports, '__esModule', {value: true});
-exports.default = function parseLyric(text) {
+import {Lrc} from 'lrc-kit';
+export default (function parseLyric(text) {
   return Lrc.parse(text)
     .lyrics.filter((line) => line.content.trim().length > 0)
     .sort((left, right) => left.timestamp - right.timestamp)
@@ -13,4 +11,4 @@ exports.default = function parseLyric(text) {
       dis: false,
       total: timestamp,
     }));
-};
+});

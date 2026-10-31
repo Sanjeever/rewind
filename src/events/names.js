@@ -1,8 +1,4 @@
-Object.defineProperty(exports, '__esModule', {
-  value: true,
-});
-exports.default = void 0;
-var d = {
+const d = {
   LongPressModal: 'LongPressModal',
   SavePicModal: 'SavePicModal',
   PlayerClose: 'PlayerClose',
@@ -32,4 +28,4 @@ var d = {
   NATIVE_AUDIO_FOCUS: 'AUDIO_FOCUS',
   NATIVE_NOTIFICATION_ACTION_EVENT: 'NOTIFICATION_ACTION_EVENT',
 };
-exports.default = d;
+export default d;

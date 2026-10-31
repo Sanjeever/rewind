@@ -1,142 +1,81 @@
-const _default = require('./../components/Text.js').default;
-const _interopRequireWildcard = require('@babel/runtime/helpers/interopRequireWildcard');
-Object.defineProperty(exports, '__esModule', {
-  value: true,
-});
-exports.default = void 0;
-var React = _interopRequireWildcard(require('react')),
-  ReactNative = require('react-native'),
-  components = require('../components/index'),
-  s = class t extends React.PureComponent {
-    constructor() {
-      return super(...arguments);
-    }
-    render() {
-      var e = this,
-        t = this.props,
-        r = t.content,
-        l = t.time,
-        a = t.userName,
-        s = t.userAvatar,
-        u = t.beReplieds,
-        d = t.onUserInfo,
-        m = t.item;
-      return React.default.createElement(
-        ReactNative.View,
-        {
-          style: c.comment,
-        },
-        React.default.createElement(
-          ReactNative.View,
-          {
-            style: {
-              flexDirection: 'row',
-              alignItems: 'center',
-            },
-          },
-          React.default.createElement(
-            ReactNative.TouchableOpacity,
-            {
-              onPress: function () {
-                return d(m);
-              },
-            },
-            React.default.createElement(
-              ReactNative.View,
-              {
-                style: {
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                },
-              },
-              React.default.createElement(ReactNative.Image, {
-                source: {
-                  uri: s,
-                },
-                style: c.userAvatar,
-              }),
-            ),
-          ),
-          React.default.createElement(
-            ReactNative.View,
-            {
-              style: c.nickItem,
-            },
-            React.default.createElement(
-              components.Selectable,
-              {
-                onCopy: function () {
-                  return e.copy(a);
-                },
-                style: c.nickname,
-              },
-              a,
-            ),
-            React.default.createElement(
-              _default,
-              {
-                style: c.timestamp,
-              },
-              l,
-            ),
-          ),
-        ),
-        React.default.createElement(
-          ReactNative.View,
-          {
-            style: c.content,
-          },
-          React.default.createElement(
-            components.Selectable,
-            {
-              style: c.subtitle,
-            },
-            r,
-          ),
-          u
-            ? u.map(function (e, t) {
-                return React.default.createElement(
-                  ReactNative.View,
-                  {
-                    style: c.replied,
-                    key: t,
-                  },
-                  React.default.createElement(
-                    ReactNative.View,
-                    {
-                      style: c.repliedUser,
-                    },
-                    React.default.createElement(
-                      ReactNative.TouchableOpacity,
-                      {
-                        onPress: function () {
-                          return d(e);
-                        },
-                      },
-                      React.default.createElement(ReactNative.Image, {
-                        source: {
-                          uri: e.user.avatarUrl + '?param=100y100',
-                        },
-                        style: c.repliedAvatar,
-                      }),
-                    ),
-                    React.default.createElement(components.Selectable, null, e.user.nickname),
-                  ),
-                  React.default.createElement(
-                    components.Selectable,
-                    {
-                      style: c.subtitle,
-                    },
-                    e.content,
-                  ),
-                );
-              })
-            : null,
-        ),
-      );
-    }
-  };
-exports.default = s;
+import Text from './../components/Text.js';
+import * as React from 'react';
+import * as ReactNative from 'react-native';
+import * as components from '../components/index';
+class CommentCard extends React.PureComponent {
+  render() {
+    const e = this;
+    const props = this.props;
+    const {content, time, userName, userAvatar, beReplieds, onUserInfo, item} = props;
+    return (
+      <ReactNative.View style={c.comment}>
+        <ReactNative.View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+          }}
+        >
+          <ReactNative.TouchableOpacity
+            onPress={function () {
+              return onUserInfo(item);
+            }}
+          >
+            <ReactNative.View
+              style={{
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <ReactNative.Image
+                source={{
+                  uri: userAvatar,
+                }}
+                style={c.userAvatar}
+              />
+            </ReactNative.View>
+          </ReactNative.TouchableOpacity>
+          <ReactNative.View style={c.nickItem}>
+            <components.Selectable
+              onCopy={function () {
+                return e.copy(userName);
+              }}
+              style={c.nickname}
+            >
+              {userName}
+            </components.Selectable>
+            <Text style={c.timestamp}>{time}</Text>
+          </ReactNative.View>
+        </ReactNative.View>
+        <ReactNative.View style={c.content}>
+          <components.Selectable style={c.subtitle}>{content}</components.Selectable>
+          {beReplieds
+            ? beReplieds.map((e, key) => (
+                <ReactNative.View style={c.replied} key={key}>
+                  <ReactNative.View style={c.repliedUser}>
+                    <ReactNative.TouchableOpacity
+                      onPress={function () {
+                        return onUserInfo(e);
+                      }}
+                    >
+                      <ReactNative.Image
+                        source={{
+                          uri: `${e.user.avatarUrl}?param=100y100`,
+                        }}
+                        style={c.repliedAvatar}
+                      />
+                    </ReactNative.TouchableOpacity>
+                    <components.Selectable>{e.user.nickname}</components.Selectable>
+                  </ReactNative.View>
+                  <components.Selectable style={c.subtitle}>{e.content}</components.Selectable>
+                </ReactNative.View>
+              ))
+            : null}
+        </ReactNative.View>
+      </ReactNative.View>
+    );
+  }
+}
+export default CommentCard;
 var c = ReactNative.StyleSheet.create({
   comment: {
     paddingHorizontal: 20,
