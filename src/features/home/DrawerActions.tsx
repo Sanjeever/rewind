@@ -29,10 +29,12 @@ class DrawerActions extends React.PureComponent<Props, {netEaseLogined: boolean}
   };
   checkNetEaseLogined = async () => {
     try {
-      const result = await services.Netease.cloud(1);
-      if (result && this.mounted) {
+      const result = await services.Netease.login_status();
+      if (result.code !== 200 && result.code !== 301)
+        throw new Error(result.message || '网易云账号状态检查失败（' + result.code + '）');
+      if (this.mounted) {
         this.setState({
-          netEaseLogined: result.code !== 301,
+          netEaseLogined: result.code === 200 && result.profile != null,
         });
       }
     } catch (error) {
