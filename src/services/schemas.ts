@@ -94,7 +94,7 @@ export const playlist = z.looseObject({
   coverImgUrl: string,
   trackCount: number,
   creator: z.optional(profile),
-  tracks: z.optional(z.array(track)),
+  tracks: z.optional(z.nullable(z.array(track))),
   trackIds: z.optional(z.array(z.looseObject({id, lr: number}))),
   subscribed: boolean,
   description: z.optional(z.nullable(z.string())),
@@ -157,7 +157,12 @@ export const userMessage = z.looseObject({
 });
 
 export function response<T extends z.core.$ZodLooseShape>(shape: T) {
-  return z.looseObject({code: z.number(), message: string, msg: string, ...shape});
+  return z.looseObject({
+    code: z.number(),
+    message: z.optional(z.nullable(z.string())),
+    msg: z.optional(z.nullable(z.string())),
+    ...shape,
+  });
 }
 export const status = response({});
 export function parseResponse<S extends z.ZodMiniType>(schema: S, value: unknown): z.output<S> {

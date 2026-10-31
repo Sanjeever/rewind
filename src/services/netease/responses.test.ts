@@ -46,3 +46,12 @@ test('网易云 MV 搜索零结果允许原始 null 列表', () => {
   const value = {code: 200, result: {hlWords: null, mvCount: 0, mvs: null}};
   expect(responses.search.parse(value)).toEqual(value);
 });
+test('保留平台返回的空消息与歌单摘要中的空 tracks，业务拒绝仍保留状态码', () => {
+  expect(responses.login_refresh.parse({code: 400, message: null, msg: null})).toEqual({
+    code: 400,
+    message: null,
+    msg: null,
+  });
+  const response = {code: 200, playlist: [{id: 1, name: '歌单', tracks: null}]};
+  expect(responses.user_playlist.parse(response)).toEqual(response);
+});

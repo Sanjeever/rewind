@@ -36,7 +36,7 @@ export interface Playlist extends SearchEntity {
   picurl?: string;
   songnum?: number;
   logo?: string;
-  tracks?: TrackFields[];
+  tracks?: TrackFields[] | null;
 }
 export type ProviderPlaylists = Partial<Record<Provider, Playlist[]>>;
 export interface PlaylistCache {
