@@ -44,7 +44,7 @@ var React = _interopRequireDefault(require('react')),
         _extends({}, l, {
           textMode: true,
         }),
-        '\u25a0'.repeat(r).split('').join(' '),
+        '■'.repeat(r).split('').join(' '),
       );
     },
   };

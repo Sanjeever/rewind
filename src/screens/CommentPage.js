@@ -208,7 +208,7 @@ var React = _interopRequireWildcard(require('react')),
               o &&
                 React.default.createElement(components.SongRow, {
                   song: o.song,
-                  album: '\u7a7a' === o.album ? '' : o.album,
+                  album: '空' === o.album ? '' : o.album,
                   singer: o.singer,
                   img: o.img,
                   containerStyle: {
@@ -222,7 +222,7 @@ var React = _interopRequireWildcard(require('react')),
                   {
                     style: E.section,
                   },
-                  '\u70ed\u95e8\u8bc4\u8bba ',
+                  '热门评论 ',
                   t.length,
                 ),
               t.map(function (e, t) {
@@ -248,7 +248,7 @@ var React = _interopRequireWildcard(require('react')),
                     },
                   ],
                 },
-                '\u6240\u6709\u8bc4\u8bba ',
+                '所有评论 ',
                 a,
               ),
             );

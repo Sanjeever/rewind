@@ -20,7 +20,7 @@ var React = _interopRequireWildcard(require('react')),
         }),
         (n.onCake = function () {
           n.props.navigation.navigate('SearchPage', {
-            text: '\u751f\u65e5\u5feb\u4e50',
+            text: '生日快乐',
           });
         }),
         a
@@ -83,9 +83,9 @@ var React = _interopRequireWildcard(require('react')),
                 },
               ],
             },
-            '\u751f\u65e5\u5feb\u4e50',
+            '生日快乐',
             '\n',
-            '\ud83c\udf82',
+            '🎂',
           ),
         ),
         n &&
@@ -99,9 +99,9 @@ var React = _interopRequireWildcard(require('react')),
                 },
               ],
             },
-            '\u4f60\u5df2\u5b58\u5728 ',
+            '你已存在 ',
             n,
-            ' \u5929',
+            ' 天',
           ),
       );
     }

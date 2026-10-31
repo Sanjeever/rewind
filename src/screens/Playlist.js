@@ -152,7 +152,7 @@ var React = _interopRequireWildcard(require('react')),
           var t = e.name,
             a = e.title,
             r = e.dissname;
-          return (t || a || r).includes('\u699c');
+          return (t || a || r).includes('榜');
         }),
         (r.getIsCreatedByMe = function (e, t) {
           return !!e && e === t.creator.userId;

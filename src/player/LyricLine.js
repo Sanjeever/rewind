@@ -11,7 +11,7 @@ var React = _interopRequireWildcard(require('react')),
   constants = require('../theme/constants'),
   locales = _interopRequireDefault(require('../locales/index')),
   u = 'Nothing is true',
-  p = '\u4e07\u7269\u7686\u865a',
+  p = '万物皆虚',
   d = class t extends React.PureComponent {
     constructor() {
       var e, n, r;
@@ -177,7 +177,7 @@ var React = _interopRequireWildcard(require('react')),
           var t = e.item,
             n = e.index,
             l = r.getTrans(t),
-            a = !r.props.showTrans && t.txt.match('\u7ffb\u8bd1\u8d21\u732e\u8005');
+            a = !r.props.showTrans && t.txt.match('翻译贡献者');
           return React.default.createElement(f, {
             highlight: r.state.index === n,
             lyric: !a && r.renderTxt(t.txt),

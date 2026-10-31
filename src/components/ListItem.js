@@ -62,7 +62,7 @@ var React = _interopRequireWildcard(require('react')),
             r = e.trans,
             l = e.vip,
             o = e.numberOfLines;
-          return '\u2661' === t
+          return '♡' === t
             ? React.default.createElement(components.Icon, {
                 name: icons.default.HEART_OUTLINE,
                 style: {

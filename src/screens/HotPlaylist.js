@@ -14,7 +14,7 @@ var React = _interopRequireWildcard(require('react')),
   PlaylistSearchResults = _interopRequireDefault(require('./../modules/PlaylistSearchResults.js')),
   services = require('../services/index'),
   PlaylistFilters = _interopRequireDefault(require('./../modules/PlaylistFilters.js')),
-  g = '\u5168\u90e8\u6b4c\u5355',
+  g = '全部歌单',
   m = class t extends React.PureComponent {
     constructor() {
       var e, a, n;

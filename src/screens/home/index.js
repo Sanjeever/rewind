@@ -89,31 +89,27 @@ var immer = require('immer'),
             });
         }),
         (r.alertOpenTip = function () {
-          ReactNative.Alert.alert(
-            '\u9996\u6b21\u542f\u52a8',
-            '\u9700\u8981\u67e5\u770b\u64cd\u4f5c\u6307\u5357\u5417\uff1f',
-            [
-              {
-                text: '\u4e0d\u7528\u4e86',
-                onPress: function () {
-                  return null;
-                },
-                style: 'cancel',
+          ReactNative.Alert.alert('首次启动', '需要查看操作指南吗？', [
+            {
+              text: '不用了',
+              onPress: function () {
+                return null;
               },
-              {
-                text: '\u5e94\u7528\u5185\u67e5\u770b',
-                onPress: function () {
-                  return r.props.navigation.navigate('Tip');
-                },
+              style: 'cancel',
+            },
+            {
+              text: '应用内查看',
+              onPress: function () {
+                return r.props.navigation.navigate('Tip');
               },
-              {
-                text: '\u7528\u6d4f\u89c8\u5668\u6253\u5f00',
-                onPress: function () {
-                  return ReactNative.Linking.openURL(endpoints.HOST_PAGE + '/tutorial');
-                },
+            },
+            {
+              text: '用浏览器打开',
+              onPress: function () {
+                return ReactNative.Linking.openURL(endpoints.HOST_PAGE + '/tutorial');
               },
-            ],
-          );
+            },
+          ]);
         }),
         (r.isValid = function (e, t) {
           return e && e[t] && types.isObject(e[t]);

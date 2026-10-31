@@ -55,7 +55,7 @@ var immer = require('immer'),
                   e.tlyric.lyric && (r = (0, utils.parseLyric)(e.tlyric.lyric));
                   e.transUser &&
                     t.push({
-                      txt: '\u7ffb\u8bd1\u8d21\u732e\u8005\uff1a' + e.transUser.nickname,
+                      txt: '翻译贡献者：' + e.transUser.nickname,
                     });
                   n.setState({
                     lyric: t,
@@ -204,7 +204,7 @@ var immer = require('immer'),
                 {
                   style: [h.text, h.songName],
                 },
-                '\u2014\u2014 ',
+                '—— ',
                 a,
               ),
             ),

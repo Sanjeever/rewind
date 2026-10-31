@@ -21,9 +21,9 @@ var immer = require('immer'),
   netease = require('../../../assets/images/netease.png'),
   qqmusic = require('../../../assets/images/qqmusic.png'),
   b = {
-    custom: '\u65e0\u672c\u5730\u6b4c\u5355\uff0c\u70b9\u51fb\u521b\u5efa\u3002',
-    netEase: '\u65e0\u7f51\u6613\u4e91\u6b4c\u5355\uff0c\u70b9\u51fb\u83b7\u53d6',
-    qqMusic: '\u65e0QQ\u97f3\u4e50\u6b4c\u5355\uff0c\u70b9\u51fb\u83b7\u53d6',
+    custom: '无本地歌单，点击创建。',
+    netEase: '无网易云歌单，点击获取',
+    qqMusic: '无QQ音乐歌单，点击获取',
   },
   E = class t extends React.PureComponent {
     constructor() {
@@ -318,11 +318,10 @@ var immer = require('immer'),
             a = e.index,
             l =
               (null === (t = n.name) || void 0 === t ? void 0 : t.length) > 0 && 0 === a
-                ? '\u2661'
+                ? '♡'
                 : n.name;
-          (l = l.replace(/\s\u6700\u61c2\u4f60.+\u9996$/, '')).includes(
-            '\u79c1\u4eba\u96f7\u8fbe',
-          ) && (l = '[\u79c1\u4eba\u96f7\u8fbe]');
+          (l = l.replace(/\s\u6700\u61c2\u4f60.+\u9996$/, '')).includes('私人雷达') &&
+            (l = '[私人雷达]');
           return React.default.createElement(components.ListItem, {
             img: n.coverImgUrl + '?param=200y200',
             title: l,
@@ -351,7 +350,7 @@ var immer = require('immer'),
           e.title
             ? ((r.title =
                 (null === (n = e.title) || void 0 === n ? void 0 : n.length) > 0 && 0 === t
-                  ? '\u2661'
+                  ? '♡'
                   : e.title),
               (r.picurl = '' !== e.picurl ? e.picurl : null),
               (r.num = '' !== e.subtitle ? e.subtitle.replace(/\u9996.+/, '') : null),

@@ -14,15 +14,15 @@ var React = _interopRequireWildcard(require('react')),
   languageModule = _interopRequireDefault(require('../native/language')),
   f = [
     {
-      name: '\u4e2d\u6587/\u5927\u9646',
+      name: '中文/大陆',
       code: 'zh_CN',
     },
     {
-      name: '\u4e2d\u6587/\u81fa\u7063',
+      name: '中文/臺灣',
       code: 'zh_TW',
     },
     {
-      name: '\u4e2d\u6587/\u9999\u6e2f',
+      name: '中文/香港',
       code: 'zh_HK',
     },
     {

@@ -117,7 +117,7 @@ var immer = require('immer'),
           });
           usersModule.default.saveUserStorage(e, providers.default.netEase);
           events.emitter.emit(names.default.UserLogined);
-          toast('\u5df2\u5207\u6362\u5230 ' + e.nickname);
+          toast('已切换到 ' + e.nickname);
         }),
         (n.renderItem = function (e) {
           var t = e.item,

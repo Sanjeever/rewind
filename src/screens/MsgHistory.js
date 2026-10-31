@@ -22,7 +22,7 @@ var React = _interopRequireWildcard(require('react')),
       return (
         (a = r = super(...l)),
         (r.state = {
-          title: '\u2026\u2026',
+          title: '……',
           data: [],
           loaded: false,
         }),

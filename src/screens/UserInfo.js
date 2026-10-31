@@ -205,7 +205,7 @@ var React = _interopRequireWildcard(require('react')),
           return React.default.createElement(components.ListItem, {
             key: n,
             img: t.coverImgUrl + '?param=200y200',
-            title: 0 === n ? '\u2661' : t.name,
+            title: 0 === n ? '♡' : t.name,
             subtitle: t.trackCount + ' ' + locales.default.SONG_COUNT,
             onPress: function () {
               return a.onPlaylist(t);

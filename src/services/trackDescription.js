@@ -17,7 +17,7 @@ var providers = _interopRequireDefault(require('./providers')),
         n = a.img1v1Url;
       i.title = l;
       i.trans = (0, utils.delve)(a, 'alias.0');
-      i.subtitle = u ? '\u4e13\u8f91\uff1a' + u : null;
+      i.subtitle = u ? '专辑：' + u : null;
       i.img = n ? n + '?param=500y500' : null;
     } else if (t === providers.default.qqMusic) {
       var s = a.singerPic,
@@ -25,7 +25,7 @@ var providers = _interopRequireDefault(require('./providers')),
         c = a.albumNum,
         d = s ? s.replace(/150x150/g, '500x500') : s;
       i.title = f;
-      i.subtitle = c ? '\u4e13\u8f91\uff1a' + c : null;
+      i.subtitle = c ? '专辑：' + c : null;
       i.img = d;
     }
     return i;

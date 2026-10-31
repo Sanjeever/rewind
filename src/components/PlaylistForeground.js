@@ -342,7 +342,7 @@ var h = function (e) {
                 marginLeft: 7,
               },
             },
-            '\u64ad\u653e\u5168\u90e8',
+            '播放全部',
           ),
         ),
       );

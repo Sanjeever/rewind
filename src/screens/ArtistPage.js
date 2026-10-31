@@ -31,9 +31,9 @@ var React = _interopRequireWildcard(require('react')),
   };
 exports.RELEASE_MODE = R;
 var x = {
-    all: '\u4f5c\u54c1',
-    albums: '\u4e13\u8f91',
-    singlesAndEps: '\u5355\u66f2 & EPs',
+    all: '作品',
+    albums: '专辑',
+    singlesAndEps: '单曲 & EPs',
   },
   k = class t extends React.PureComponent {
     constructor() {
@@ -160,14 +160,14 @@ var x = {
           a.setState({
             followed: !n,
           });
-          toast(true == !n ? '\u5df2\u6536\u85cf\u3002' : '\u53d6\u6d88\u6536\u85cf\u3002');
+          toast(true == !n ? '已收藏。' : '取消收藏。');
         }),
         (a.onLikeArtist = function () {
           var e = a.state,
             t = (e.api, e.followed);
           e.id;
           t
-            ? ReactNative.Alert.alert(null, '\u53d6\u6d88\u6536\u85cf\uff1f', [
+            ? ReactNative.Alert.alert(null, '取消收藏？', [
                 {
                   text: locales.default.CANCEL,
                   onPress: function () {

@@ -42,7 +42,7 @@ var React = _interopRequireWildcard(require('react')),
           });
         }),
         (n.easterEgg = function (e) {
-          toast('\u4f60\u597d\u554a\uff0c' + e);
+          toast('你好啊，' + e);
         }),
         (n.renderAvatars = function () {
           var e = n.props,

@@ -236,22 +236,10 @@ var React = _interopRequireWildcard(require('react')),
             s = o.uid;
           switch (a) {
             case providers.default.netEase:
-              e =
-                r +
-                ' - ' +
-                o.song +
-                ' : http://music.163.com/song?id=' +
-                s +
-                ' (@\u7f51\u6613\u4e91\u97f3\u4e50)';
+              e = r + ' - ' + o.song + ' : http://music.163.com/song?id=' + s + ' (@网易云音乐)';
               break;
             case providers.default.qqMusic:
-              e =
-                r +
-                ' - ' +
-                o.song +
-                ' : https://y.qq.com/n/yqq/song/' +
-                s +
-                '.html (@QQ\u97f3\u4e50)';
+              e = r + ' - ' + o.song + ' : https://y.qq.com/n/yqq/song/' + s + '.html (@QQ音乐)';
           }
           ReactNative.Share.share({
             message: e,

@@ -35,7 +35,7 @@ module.exports = {
   CLONE: 'Clone',
   CLONE_DONE: 'Cloned to',
   CLONE_FAILED: 'Clone failed',
-  CLONING: 'Cloning\u2026\u2026',
+  CLONING: 'Cloning……',
   CLOUD_DRIVE: 'Cloud Drive',
   COLLECT_DONE: 'Added',
   COLLECT_DUPLICATE: 'Existed',

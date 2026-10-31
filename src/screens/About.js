@@ -59,7 +59,7 @@ var lottieReactNative = _interopRequireDefault(require('lottie-react-native')),
         (a.onSpeedUp = function () {
           var e = a.state.speed + 1,
             t = a.state.ended;
-          e % 5 == 0 && toast(e + 'x\u2026\u2026');
+          e % 5 == 0 && toast(e + 'x……');
           e >= 100 ? ((e = 1), (t = false)) : e >= 50 && (t = true);
           a.setState({
             speed: e,
@@ -81,7 +81,7 @@ var lottieReactNative = _interopRequireDefault(require('lottie-react-native')),
                 ],
               },
               '\t\t',
-              '\u672c\u5e94\u7528\u53ea\u5728\u76f8\u5173\u7fa4\u7ec4/\u9891\u9053\u53d1\u5e03\u66f4\u65b0\uff0c\u5176\u4ed6\u5730\u65b9\u4e0b\u8f7d\u7684\u65e0\u6cd5\u4fdd\u8bc1\u53ef\u7528\u6027\u3002',
+              '本应用只在相关群组/频道发布更新，其他地方下载的无法保证可用性。',
             ),
             linkData.default.sites.map(function (e, t) {
               return React.default.createElement(CreditsSection.default, {
@@ -105,7 +105,7 @@ var lottieReactNative = _interopRequireDefault(require('lottie-react-native')),
               {
                 style: [styles.default.title],
               },
-              '\u76f8\u5173\u7684\u4eba',
+              '相关的人',
             ),
             a.renderPersons(),
             React.default.createElement(
@@ -113,7 +113,7 @@ var lottieReactNative = _interopRequireDefault(require('lottie-react-native')),
               {
                 style: [styles.default.title],
               },
-              '\u5f00\u6e90\u5e93',
+              '开源库',
             ),
             React.default.createElement(CreditsSection.default, {
               onPress: a.onThanks,
@@ -124,7 +124,7 @@ var lottieReactNative = _interopRequireDefault(require('lottie-react-native')),
                   style: styles.default.avatar,
                 });
               },
-              title: '\u70b9\u51fb\u67e5\u770b',
+              title: '点击查看',
               subtitle: endpoints.HOST_PAGE + '/thanks',
             }),
             React.default.createElement(components.EmptyFooter, null),
@@ -176,7 +176,7 @@ var lottieReactNative = _interopRequireDefault(require('lottie-react-native')),
       return React.default.createElement(
         components.PageContainer,
         {
-          title: a ? '\u25a0 \u25a0 \u25a0' : locales.default.ABOUT,
+          title: a ? '■ ■ ■' : locales.default.ABOUT,
           goBack: this.goBack,
           onTop: this.onTop,
           rightIcon: {

@@ -171,11 +171,11 @@ var React = _interopRequireWildcard(require('react')),
             });
             a.netEaseLikeAlbum(i, !n);
         }
-        toast(true == !n ? '\u5df2\u6536\u85cf\u3002' : '\u53d6\u6d88\u6536\u85cf\u3002');
+        toast(true == !n ? '已收藏。' : '取消收藏。');
       };
       a.onLikeAlbum = function () {
         a.state.followed
-          ? ReactNative.Alert.alert(null, '\u53d6\u6d88\u6536\u85cf\uff1f', [
+          ? ReactNative.Alert.alert(null, '取消收藏？', [
               {
                 text: locales.default.CANCEL,
                 onPress: function () {
@@ -370,7 +370,7 @@ var React = _interopRequireWildcard(require('react')),
               n.length +
                 ' ' +
                 locales.default.SONG_COUNT +
-                ' \uff5c ' +
+                ' ｜ ' +
                 utils.timeFormatter.parseTime(w),
               '' + s,
             ],
@@ -425,7 +425,7 @@ var React = _interopRequireWildcard(require('react')),
                     fontWeight: 'bold',
                   },
                 },
-                '\u64ad\u653e\u5168\u90e8',
+                '播放全部',
               ),
             ),
             React.default.createElement(ReactNative.View, {

@@ -340,9 +340,9 @@ var React = _interopRequireWildcard(require('react')),
         {
           style: [p.text, p.title],
         },
-        '\u201c ',
+        '“ ',
         t,
-        ' \u201d',
+        ' ”',
       ),
     );
   },

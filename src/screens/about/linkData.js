@@ -9,10 +9,10 @@ var icons = _interopRequireDefault(require('../../theme/icons')),
   r = {
     persons: [
       {
-        name: '\u9cb8\u843d',
+        name: '鲸落',
       },
       {
-        name: '\u4e00\u5934\u9e8b\u9e7f',
+        name: '一头麋鹿',
       },
       {
         name: 'Kuss',
@@ -20,17 +20,17 @@ var icons = _interopRequireDefault(require('../../theme/icons')),
     ],
     sites: [
       {
-        name: '\u5012\u5e26\u9996\u9875',
+        name: '倒带首页',
         url: endpoints.HOST_PAGE,
         icon: icons.default.WEB,
       },
       {
-        name: '\u7535\u62a5\u7fa4\u7ec4',
+        name: '电报群组',
         url: 'https://t.me/Rewind_Group',
         icon: icons.default.CHAT_OUTLINE,
       },
       {
-        name: '\u7535\u62a5\u9891\u9053',
+        name: '电报频道',
         url: 'https://t.me/Rewind_News',
         icon: icons.default.BELL_OUTLINE,
       },

@@ -339,7 +339,7 @@ var utils = require('../../utils/index'),
       };
       this.topPlaylist = function (e) {
         var t = e.category,
-          r = void 0 === t ? '\u5168\u90e8\u6b4c\u5355' : t,
+          r = void 0 === t ? '全部歌单' : t,
           n = e.offset,
           i = void 0 === n ? 0 : n,
           a = e.order,
@@ -358,220 +358,220 @@ var utils = require('../../utils/index'),
       };
       this.playlist_category_names = [
         {
-          name: '\u5168\u90e8\u6b4c\u5355',
+          name: '全部歌单',
         },
         {
-          name: '\u5f71\u89c6\u539f\u58f0',
+          name: '影视原声',
         },
         {
-          name: '\u534e\u8bed',
+          name: '华语',
         },
         {
-          name: '\u6d41\u884c',
+          name: '流行',
         },
         {
-          name: '\u6e05\u6668',
+          name: '清晨',
         },
         {
-          name: '\u6000\u65e7',
+          name: '怀旧',
         },
         {
-          name: '\u6447\u6eda',
+          name: '摇滚',
         },
         {
           name: 'ACG',
         },
         {
-          name: '\u591c\u665a',
+          name: '夜晚',
         },
         {
-          name: '\u6b27\u7f8e',
+          name: '欧美',
         },
         {
-          name: '\u6e05\u65b0',
+          name: '清新',
         },
         {
-          name: '\u6d6a\u6f2b',
+          name: '浪漫',
         },
         {
-          name: '\u65e5\u8bed',
+          name: '日语',
         },
         {
-          name: '\u5b66\u4e60',
+          name: '学习',
         },
         {
-          name: '\u6821\u56ed',
+          name: '校园',
         },
         {
-          name: '\u6c11\u8c23',
+          name: '民谣',
         },
         {
-          name: '\u6027\u611f',
+          name: '性感',
         },
         {
-          name: '\u97e9\u8bed',
+          name: '韩语',
         },
         {
-          name: '\u6e38\u620f',
+          name: '游戏',
         },
         {
-          name: '\u7535\u5b50',
+          name: '电子',
         },
         {
-          name: '\u5de5\u4f5c',
+          name: '工作',
         },
         {
-          name: '\u7ca4\u8bed',
+          name: '粤语',
         },
         {
-          name: '\u4f24\u611f',
+          name: '伤感',
         },
         {
-          name: '\u821e\u66f2',
+          name: '舞曲',
         },
         {
-          name: '70\u540e',
+          name: '70后',
         },
         {
-          name: '\u5348\u4f11',
+          name: '午休',
         },
         {
-          name: '\u5c0f\u8bed\u79cd',
+          name: '小语种',
         },
         {
-          name: '\u8bf4\u5531',
+          name: '说唱',
         },
         {
-          name: '80\u540e',
+          name: '80后',
         },
         {
-          name: '\u4e0b\u5348\u8336',
+          name: '下午茶',
         },
         {
-          name: '\u6cbb\u6108',
+          name: '治愈',
         },
         {
-          name: '90\u540e',
+          name: '90后',
         },
         {
-          name: '\u8f7b\u97f3\u4e50',
+          name: '轻音乐',
         },
         {
-          name: '\u653e\u677e',
+          name: '放松',
         },
         {
-          name: '\u5730\u94c1',
+          name: '地铁',
         },
         {
-          name: '\u7235\u58eb',
+          name: '爵士',
         },
         {
-          name: '\u7f51\u7edc\u6b4c\u66f2',
+          name: '网络歌曲',
         },
         {
-          name: '\u9a7e\u8f66',
+          name: '驾车',
         },
         {
-          name: '\u5b64\u72ec',
+          name: '孤独',
         },
         {
           name: 'KTV',
         },
         {
-          name: '\u4e61\u6751',
+          name: '乡村',
         },
         {
-          name: '\u611f\u52a8',
+          name: '感动',
         },
         {
-          name: '\u8fd0\u52a8',
+          name: '运动',
         },
         {
-          name: '\u65c5\u884c',
+          name: '旅行',
         },
         {
-          name: '\u7ecf\u5178',
+          name: '经典',
         },
         {
-          name: '\u5174\u594b',
+          name: '兴奋',
         },
         {
           name: 'R&B/Soul',
         },
         {
-          name: '\u5feb\u4e50',
+          name: '快乐',
         },
         {
-          name: '\u7ffb\u5531',
+          name: '翻唱',
         },
         {
-          name: '\u53e4\u5178',
+          name: '古典',
         },
         {
-          name: '\u6563\u6b65',
+          name: '散步',
         },
         {
-          name: '\u5409\u4ed6',
+          name: '吉他',
         },
         {
-          name: '\u6c11\u65cf',
+          name: '民族',
         },
         {
-          name: '\u5b89\u9759',
+          name: '安静',
         },
         {
-          name: '\u9152\u5427',
+          name: '酒吧',
         },
         {
-          name: '\u601d\u5ff5',
+          name: '思念',
         },
         {
-          name: '\u82f1\u4f26',
+          name: '英伦',
         },
         {
-          name: '\u94a2\u7434',
+          name: '钢琴',
         },
         {
-          name: '\u91d1\u5c5e',
+          name: '金属',
         },
         {
-          name: '\u5668\u4e50',
+          name: '器乐',
         },
         {
-          name: '\u670b\u514b',
+          name: '朋克',
         },
         {
-          name: '\u513f\u7ae5',
+          name: '儿童',
         },
         {
-          name: '\u84dd\u8c03',
+          name: '蓝调',
         },
         {
-          name: '\u699c\u5355',
+          name: '榜单',
         },
         {
-          name: '\u96f7\u9b3c',
+          name: '雷鬼',
         },
         {
-          name: '00\u540e',
+          name: '00后',
         },
         {
-          name: '\u4e16\u754c\u97f3\u4e50',
+          name: '世界音乐',
         },
         {
-          name: '\u62c9\u4e01',
+          name: '拉丁',
         },
         {
-          name: '\u53e6\u7c7b/\u72ec\u7acb',
+          name: '另类/独立',
         },
         {
           name: 'New Age',
         },
         {
-          name: '\u53e4\u98ce',
+          name: '古风',
         },
         {
-          name: '\u540e\u6447',
+          name: '后摇',
         },
         {
           name: 'Bossa Nova',

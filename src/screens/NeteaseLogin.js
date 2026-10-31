@@ -368,7 +368,7 @@ var cookies = _interopRequireDefault(require('../native/cookies')),
         (n.onNavigationStateChange = function (e) {
           if (e.url.match('music.163.com/back/sns')) {
             if (e.url.match('code=401')) {
-              toast('\u6388\u6743\u51fa\u73b0\u5f02\u5e38');
+              toast('授权出现异常');
               n.props.loginOut();
               return void n.props.onClosed();
             }

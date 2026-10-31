@@ -73,7 +73,7 @@ var React = _interopRequireWildcard(require('react')),
             P =
               u && 2 === e
                 ? {
-                    song: '\uff1f\uff1f\uff1f',
+                    song: '？？？',
                   }
                 : (0, trackInfo.extractFullInfo)(a[v]);
           return React.default.createElement(
