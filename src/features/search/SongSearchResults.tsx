@@ -12,6 +12,7 @@ import {getAlias} from '../../services/trackFields';
 import {playTracks, insertTracks} from '../../player/commands';
 import type {DisplayTrack} from '../../services/track';
 import type {OnlineProvider} from '../../services/providers';
+import type {QQSearchCursor} from '../../services/qqmusic/search';
 interface Props {
   search: string;
   api: OnlineProvider;
@@ -29,6 +30,7 @@ export default class SongSearchResults extends React.PureComponent<Props, State>
   requestId = 0;
   offset = 0;
   pending = false;
+  cursor?: QQSearchCursor;
 
   componentDidMount() {
     this.search();
@@ -45,6 +47,7 @@ export default class SongSearchResults extends React.PureComponent<Props, State>
   search = () => {
     const requestId = ++this.requestId;
     this.offset = 0;
+    this.cursor = undefined;
     this.pending = false;
     this.setState({tracks: [], loading: true, error: null, hasMore: false});
     return this.fetchPage(requestId);
@@ -55,9 +58,15 @@ export default class SongSearchResults extends React.PureComponent<Props, State>
     this.pending = true;
     const {search: query, api} = this.props;
     try {
-      const result = await searchSongs({query, api, offset: this.offset});
+      const result = await searchSongs({
+        query,
+        api,
+        offset: this.offset,
+        ...(this.cursor ? {cursor: this.cursor} : {}),
+      });
       if (requestId !== this.requestId) return;
       this.offset = result.offset;
+      this.cursor = result.cursor;
       this.setState((state) => {
         const knownKeys = new Set(state.tracks.map((track) => track.key));
         return {

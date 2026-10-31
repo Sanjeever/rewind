@@ -5,6 +5,7 @@ interface AccountRequest {
   cookies: string;
 }
 import * as qqHttp from './http';
+import {searchSongPage} from './search';
 import * as utils from '../../utils/index';
 import * as sign from './sign';
 const headers = {
@@ -26,9 +27,10 @@ class QQMusicService {
   getMusicUrl(mid: string, highQuality = false, track?: import('../track').TrackFields) {
     return qqHttp.getMusicUrl(mid, highQuality, track);
   }
-  searchSong(query: string, page = 1) {
-    return qqHttp.searchSongs(query, page);
+  searchSong(query: string) {
+    return searchSongPage(query).then((result) => result.songs);
   }
+  searchSongPage = searchSongPage;
   user_subed_artist({userId, cookies}: AccountRequest) {
     return fetch(
       `http://c.y.qq.com/rsc/fcgi-bin/fcg_order_singer_getlist.fcg?utf8=1&page=1&perpage=100&uin=${userId}&rnd=0.32216905383427985&g_tk=5381&loginUin=${userId}&hostUin=${userId}&format=json&inCharset=utf8&outCharset=utf-8&notice=0&platform=yqq.json&needNewCode=0`,

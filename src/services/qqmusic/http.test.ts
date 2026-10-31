@@ -11,7 +11,7 @@ jest.unstable_mockModule('./session', () => ({
   getSession: async () => session,
   guid: 'session-guid',
 }));
-const {getMusicUrl, searchSongs} = await import('./http');
+const {getMusicUrl} = await import('./http');
 afterEach(() => jest.useRealTimers());
 function respond(data: unknown, status = 200) {
   return jest.spyOn(global, 'fetch').mockImplementation(
@@ -128,48 +128,4 @@ test('QQ 请求超过十五秒终止网络并暴露超时', async () => {
   const rejected = assert.rejects(pending, /请求超时/);
   await jest.advanceTimersByTimeAsync(15000);
   await rejected;
-});
-test('QQ 搜索检查两层业务码，区分空结果和无效响应，并正确发送页码', async () => {
-  const fetch = respond({
-    code: 0,
-    data: {
-      code: 0,
-      data: {
-        body: {
-          song: {
-            list: [],
-          },
-        },
-      },
-    },
-  });
-  await expect(searchSongs('词', 2)).resolves.toStrictEqual([]);
-  const options = fetch.mock.calls[0][1];
-  assert.ok(typeof options?.body === 'string');
-  assert.equal(JSON.parse(options.body).data.param.page_num, 2);
-  fetch.mockImplementation(
-    async () =>
-      new Response(
-        JSON.stringify({
-          code: 0,
-          data: {
-            code: 1000,
-          },
-        }),
-      ),
-  );
-  await assert.rejects(searchSongs('词'), /1000/);
-  fetch.mockImplementation(
-    async () =>
-      new Response(
-        JSON.stringify({
-          code: 0,
-          data: {
-            code: 0,
-            data: {},
-          },
-        }),
-      ),
-  );
-  await assert.rejects(searchSongs('词'), /缺少歌曲列表/);
 });

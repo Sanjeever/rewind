@@ -2,6 +2,7 @@ import {jest} from '@jest/globals';
 jest.unstable_mockModule('../../utils/index', () => ({}));
 jest.unstable_mockModule('./sign', () => ({}));
 jest.unstable_mockModule('./session', () => ({getSession: jest.fn(), guid: 'test'}));
+jest.unstable_mockModule('./search', () => ({searchSongPage: jest.fn()}));
 const {default: service} = await import('./index');
 function respond(data: unknown, status = 200) {
   return jest

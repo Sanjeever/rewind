@@ -1,6 +1,6 @@
 const endpoint = 'https://u.y.qq.com/cgi-bin/musicu.fcg';
 import type * as z from 'zod/mini';
-import {audioResponse, searchResponse, detailResponse} from './responses';
+import {audioResponse, detailResponse} from './responses';
 import {response} from '../schemas';
 import {getSession, guid} from './session';
 import type {TrackFields} from '../track';
@@ -84,30 +84,6 @@ export async function call<S extends z.ZodMiniType>(
     stage,
     schema,
   );
-}
-
-export async function searchSongs(query: string, page = 1) {
-  const payload = {
-    data: {
-      method: 'DoSearchForQQMusicDesktop',
-      module: 'music.search.SearchCgiService',
-      param: {search_type: 0, query, page_num: page, num_per_page: 30},
-    },
-  };
-  const response = await request(
-    endpoint + '?_=' + Date.now(),
-    {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(payload),
-    },
-    '搜索',
-    searchResponse,
-  );
-  if (response.data?.code !== 0) throw new Error('QQ 音乐搜索失败：业务码 ' + response.data?.code);
-  const songs = response.data.data?.body?.song?.list;
-  if (!Array.isArray(songs)) throw new Error('QQ 音乐搜索响应缺少歌曲列表');
-  return songs;
 }
 
 export async function getMusicUrl(mid: string, highQuality = false, track?: TrackFields) {

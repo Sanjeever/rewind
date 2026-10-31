@@ -40,14 +40,17 @@ test('搜索服务统一两种来源结构，并保留正确分页偏移', async
       },
     },
     QQMusic: {
-      searchSong: async (...args) => {
+      searchSongPage: async (...args) => {
         calls.push(args);
-        return [
-          {
-            mid: 'mid',
-            name: '歌曲',
-          },
-        ];
+        return {
+          songs: [
+            {
+              mid: 'mid',
+              name: '歌曲',
+            },
+          ],
+          cursor: undefined,
+        };
       },
     },
   });
@@ -70,7 +73,7 @@ test('搜索服务统一两种来源结构，并保留正确分页偏移', async
       offset: 30,
       limit: 30,
     },
-    ['关键词', 2],
+    ['关键词', undefined],
   ]);
   assert.equal(qq.tracks[0].key, 'qqMusic:mid');
   assert.equal(qq.hasMore, false);
