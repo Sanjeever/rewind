@@ -8,9 +8,21 @@ export default tseslint.config(
   ...tseslint.configs.recommended,
   {
     files: ['**/*.{js,mjs,cjs,ts,tsx}'],
+    rules: {
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {argsIgnorePattern: '^_', ignoreRestSiblings: true},
+      ],
+    },
     languageOptions: {
       parserOptions: {ecmaFeatures: {jsx: true}},
-      globals: {...globals.node, ...globals.jest, __DEV__: 'readonly'},
+      globals: {
+        ...globals.node,
+        ...globals.jest,
+        __DEV__: 'readonly',
+        requestAnimationFrame: 'readonly',
+        cancelAnimationFrame: 'readonly',
+      },
     },
   },
 );

@@ -1,6 +1,10 @@
 import {Alert} from 'react-native';
 import locales from '../locales';
 import restart from '../native/restart';
+declare const ErrorUtils: {
+  getGlobalHandler(): (error: unknown, fatal?: boolean) => void;
+  setGlobalHandler(handler: (error: unknown, fatal?: boolean) => void): void;
+};
 
 export default function installErrorHandler() {
   const previous = ErrorUtils.getGlobalHandler();
