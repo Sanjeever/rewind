@@ -1,5 +1,5 @@
 import SparkMD5 from 'spark-md5';
-import {encode} from 'base-64';
+import base64 from 'base-64';
 function binary(value) {
   return value
     .split('')
@@ -8,5 +8,5 @@ function binary(value) {
 }
 export default {
   hex_md5: (value) => SparkMD5.hashBinary(binary(value)),
-  b64_md5: (value) => encode(SparkMD5.hashBinary(binary(value), true)).replace(/=+$/, ''),
+  b64_md5: (value) => base64.encode(SparkMD5.hashBinary(binary(value), true)).replace(/=+$/, ''),
 };

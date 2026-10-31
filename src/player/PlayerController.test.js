@@ -1,11 +1,14 @@
-const assert = require('node:assert/strict');
-const asDefault = (value) => ({__esModule: true, default: value});
-
+import {jest} from '@jest/globals';
+import assert from 'node:assert/strict';
+const asDefault = (value) => ({
+  __esModule: true,
+  default: value,
+});
 afterEach(() => {
   delete global.toast;
 });
-
-function controller() {
+async function controller() {
+  jest.resetModules();
   const calls = {
     prepared: [],
     play: 0,
@@ -43,15 +46,32 @@ function controller() {
   }
   const dependencies = {
     'react-native': {
-      Animated: {Value: class {}},
-      LayoutAnimation: {create() {}, Types: {}, Properties: {}},
+      Animated: {
+        Value: class {},
+      },
+      LayoutAnimation: {
+        create() {},
+        Types: {},
+        Properties: {},
+      },
+      AppState: undefined,
+      BackHandler: undefined,
+      DeviceEventEmitter: undefined,
+      PanResponder: undefined,
     },
-    '../theme/constants': {},
+    '../theme/constants': {
+      DEVICE_WIDTH: undefined,
+      DEVICE_HEIGHT: undefined,
+    },
     '../events/names': asDefault({}),
     '../storage/keys': asDefault({}),
     '../locales': asDefault({}),
-    '../services': {},
-    '../events': {},
+    '../services': {
+      Netease: undefined,
+    },
+    '../events': {
+      emitter: undefined,
+    },
     '../utils/parseArtist': asDefault((value) => value),
     '../utils/universalNavigator': asDefault({}),
     '../utils/stopTimer': asDefault({}),
@@ -68,26 +88,46 @@ function controller() {
     }),
     '../native/mediaStore': asDefault({}),
     '../native/shutdown': asDefault({}),
-    '../native/wakeLock': asDefault({deactivate() {}}),
-    '../storage': {},
-    '../storage/files': {isUsableFile: async () => true},
-    '../storage/lastSong': asDefault({save: async () => {}}),
+    '../native/wakeLock': asDefault({
+      deactivate() {},
+    }),
+    '../storage': {
+      storage: undefined,
+    },
+    '../storage/files': {
+      isUsableFile: async () => true,
+    },
+    '../storage/lastSong': asDefault({
+      save: async () => {},
+    }),
     '../storage/lastTime': asDefault({}),
-    '../storage/lastQueue': asDefault({save: async () => {}}),
-    '../storage/history': {musicHistory: (song) => calls.history.push(song)},
+    '../storage/lastQueue': asDefault({
+      save: async () => {},
+    }),
+    '../storage/history': {
+      musicHistory: (song) => calls.history.push(song),
+    },
     './cache': asDefault((request) => request),
     './lyricPreferences': asDefault({}),
     './playMode': asDefault({}),
     './lyrics': asDefault({}),
-    './trackUrl': asDefault({getUrl: () => new Promise((resolve) => requests.push(resolve))}),
+    './trackUrl': asDefault({
+      getUrl: () => new Promise((resolve) => requests.push(resolve)),
+    }),
     './notification': asDefault({}),
     './gestures': asDefault({}),
-    './commands': {},
+    './commands': {
+      subscribePlaybackCommands: undefined,
+    },
   };
-  for (const [name, value] of Object.entries(dependencies)) jest.doMock(name, () => value);
+  for (const [name, value] of Object.entries(dependencies))
+    jest.unstable_mockModule(name, () => ({
+      default: value,
+      ...value,
+    }));
   let Controller;
-  jest.isolateModules(() => {
-    Controller = require('./PlayerController.js').default;
+  await jest.isolateModulesAsync(async () => {
+    Controller = (await import('./PlayerController.js')).default;
   });
   const player = new Controller({
     tracks: [],
@@ -105,23 +145,37 @@ function controller() {
   };
   player.props.setPlayerData = (update, callback) => {
     const changes = typeof update === 'function' ? update(player.props) : update;
-    player.props = {...player.props, ...changes};
+    player.props = {
+      ...player.props,
+      ...changes,
+    };
     callback?.(player.props);
   };
   player.getLyric = () => {};
   player.loadLikelist = () => {};
   global.toast = (message) => calls.toasts.push(message);
-  return {player, calls, requests, scheduled};
+  return {
+    player,
+    calls,
+    requests,
+    scheduled,
+  };
 }
-
 const tick = () => new Promise((resolve) => setImmediate(resolve));
 function play(player, id, api = 'netEase') {
-  const song = {id, name: '歌曲'};
-  player.handlePlayCommand({song, data: [song], index: 0, api});
+  const song = {
+    id,
+    name: '歌曲',
+  };
+  player.handlePlayCommand({
+    song,
+    data: [song],
+    index: 0,
+    api,
+  });
 }
-
 test('快速切歌时跨来源相同 ID 与同曲重选都丢弃旧音源响应', async () => {
-  const {player, calls, requests} = controller();
+  const {player, calls, requests} = await controller();
   play(player, 1);
   play(player, 1, 'qqMusic');
   play(player, 1, 'qqMusic');
@@ -133,9 +187,8 @@ test('快速切歌时跨来源相同 ID 与同曲重选都丢弃旧音源响应'
   assert.deepEqual(calls.prepared, ['https://audio/current']);
   assert.equal(player.props.api, 'qqMusic');
 });
-
 test('清空队列后迟到的音源不会开始播放，已准备音频被释放', async () => {
-  const {player, calls, requests} = controller();
+  const {player, calls, requests} = await controller();
   play(player, 1);
   requests[0]('https://audio/first');
   await tick();
@@ -150,9 +203,8 @@ test('清空队列后迟到的音源不会开始播放，已准备音频被释�
   assert.equal(calls.play, 0);
   assert.deepEqual(player.props.tracks, []);
 });
-
 test('播放与暂停命令等待原生通知，状态通知不会再次发送播放指令', async () => {
-  const {player, calls, requests, scheduled} = controller();
+  const {player, calls, requests, scheduled} = await controller();
   play(player, 1);
   requests[0]('https://audio/current');
   await tick();
@@ -160,41 +212,63 @@ test('播放与暂停命令等待原生通知，状态通知不会再次发送�
   assert.equal(calls.play, 1);
   assert.equal(player.state.playState, 'paused');
   assert.equal(player.state.loaded, true);
-  player.handlePlaybackState({playing: true});
+  player.handlePlaybackState({
+    playing: true,
+  });
   assert.equal(player.state.playState, 'playing');
   assert.equal(player.state.currentTime, 12);
   assert.equal(scheduled.size, 1);
-  player.handlePlaybackState({playing: true});
+  player.handlePlaybackState({
+    playing: true,
+  });
   player.pauseSound();
   assert.equal(player.state.playState, 'playing');
-  player.handlePlaybackState({playing: false});
+  player.handlePlaybackState({
+    playing: false,
+  });
   assert.equal(player.state.playState, 'paused');
   assert.equal(calls.play, 1);
   assert.equal(calls.pause, 1);
   assert.equal(scheduled.size, 0);
 });
-
 test('后台停止界面进度轮询，回到前台恢复，暂停后不再轮询', async () => {
-  const {player, requests, scheduled} = controller();
+  const {player, requests, scheduled} = await controller();
   play(player, 1);
   requests[0]('https://audio/current');
   await tick();
-  player.handlePlaybackState({playing: true});
+  player.handlePlaybackState({
+    playing: true,
+  });
   assert.equal(scheduled.size, 1);
   player.handleAppStateChange('background');
   assert.equal(scheduled.size, 0);
   player.handleAppStateChange('active');
   assert.equal(scheduled.size, 1);
-  player.handlePlaybackState({playing: false});
+  player.handlePlaybackState({
+    playing: false,
+  });
   assert.equal(scheduled.size, 0);
 });
-
 test('批量插入走统一队列规则，不启动或暂停当前歌曲', async () => {
-  const {player, calls, requests} = controller();
+  const {player, calls, requests} = await controller();
   play(player, 1);
   requests[0]('https://audio/current');
   await tick();
-  player.insertIntoQueue({data: [{id: 2}, {id: 2}, {id: 1}], type: 'array', api: 'netEase'});
+  player.insertIntoQueue({
+    data: [
+      {
+        id: 2,
+      },
+      {
+        id: 2,
+      },
+      {
+        id: 1,
+      },
+    ],
+    type: 'array',
+    api: 'netEase',
+  });
   assert.deepEqual(
     player.props.tracks.map((song) => song.id),
     [1, 2],
@@ -203,16 +277,25 @@ test('批量插入走统一队列规则，不启动或暂停当前歌曲', async
   assert.equal(calls.prepared.length, 1);
   assert.equal(calls.pause, 0);
 });
-
 test('卸载取消计时与订阅，迟到的音源不会恢复播放', async () => {
-  const {player, calls, requests, scheduled} = controller();
+  const {player, calls, requests, scheduled} = await controller();
   play(player, 1);
   const removed = [];
   player.unsubscribeCommands = () => removed.push('commands');
-  player.subscriptions = [{remove: () => removed.push('events')}];
-  player.playbackStateSubscription = {remove: () => removed.push('state')};
-  player.backSubscription = {remove: () => removed.push('back')};
-  player.appStateSubscription = {remove: () => removed.push('app')};
+  player.subscriptions = [
+    {
+      remove: () => removed.push('events'),
+    },
+  ];
+  player.playbackStateSubscription = {
+    remove: () => removed.push('state'),
+  };
+  player.backSubscription = {
+    remove: () => removed.push('back'),
+  };
+  player.appStateSubscription = {
+    remove: () => removed.push('app'),
+  };
   player.notificationCleanup = () => removed.push('notification');
   player.componentWillUnmount();
   requests[0]('https://audio/late');

@@ -21,7 +21,7 @@
     "format:check": "prettier . --check",
     "typecheck": "tsc --noEmit",
     "check": "pnpm lint && pnpm format:check && pnpm typecheck && pnpm test --runInBand",
-    "test": "jest"
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
   "dependencies": {
     "@babel/runtime": "7.28.4",
