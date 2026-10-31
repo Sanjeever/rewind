@@ -9,27 +9,27 @@ import {isActiveQueue} from './types';
 export default class Player extends PlayerController {
   actions = {
     changeSong: this.changeSong,
-    open: this._playerOpen,
-    close: this._playerClose,
+    open: this.presentation.open,
+    close: this.presentation.close,
     detail: this.onDetail,
     play: this.playSound,
     togglePlay: this.togglePlay,
     showQueue: this.onNowPlaying,
     changePlayMode: this.onChangePlayStatus,
-    toggleLyric: this.onTap,
+    toggleLyric: this.presentation.toggleLyric,
     seek: this.seekTo,
-    toggleTranslation: this.onChangeShowTrans,
-    changeFontSize: this.onChangeLyricFontSize,
+    toggleTranslation: this.presentation.toggleTranslation,
+    changeFontSize: this.presentation.changeFontSize,
     getLyricIndex: this.getLyricIndex,
-    toggleTools: this.showToolBtn,
+    toggleTools: this.presentation.toggleTools,
     like: this.onLike,
     comment: this.onComment,
     toggleFM: this.onFmMode,
     timer: this.onTimer,
     recordPlay: this.onCheck,
-    slidingStart: this.slidingStart,
-    slide: this.onSliderValueChange,
-    slidingEnd: this.slidingEnd,
+    slidingStart: this.presentation.slidingStart,
+    slide: this.presentation.slide,
+    slidingEnd: this.presentation.slidingEnd,
   };
 
   render() {
@@ -53,14 +53,14 @@ export default class Player extends PlayerController {
             queue={queue}
             settings={settings}
             actions={this.actions}
-            animatedOpacity={this.animatedOpacity}
+            animatedOpacity={this.presentation.animatedOpacity}
             lyric={lyric}
             hasTrans={hasTrans}
             gesture={{
-              slider: this._sliderPanResponder,
-              volume: this._volumePanResponder,
-              y0: this.y0,
-              sliding: this.sliding,
+              slider: this.presentation.sliderPanResponder,
+              volume: this.presentation.volumePanResponder,
+              y0: this.presentation.y0,
+              sliding: this.presentation.sliding,
             }}
           />
         </View>

@@ -1,3 +1,4 @@
+import PlayerPresentation from './PlayerPresentation';
 import {subscribePlaybackEvent} from './commands';
 import {collectTracks, showTrackDetails, choosePlaylist} from '../modals/commands';
 import type {
@@ -6,39 +7,23 @@ import type {
   QueueSnapshot,
   PlaybackCommand,
   InsertCommand,
-  PlayMode,
-  PlayState,
 } from './types';
 import type {TrackFields, TrackId} from '../services/track';
 import type {Provider} from '../services/providers';
 import type {LyricRow} from '../utils/parseLyric';
 import type {PlayerError} from '../native/audioPlayer';
 import type {Subscription} from '../events/Emitter';
-import type {
-  AppStateStatus,
-  GestureResponderEvent,
-  PanResponderGestureState,
-  PanResponderInstance,
-} from 'react-native';
+import type {AppStateStatus} from 'react-native';
 import {errorMessage, hasErrorCode} from '../utils/types';
 import {isActiveQueue} from './types';
 import {toast} from '../native/toast';
 import React from 'react';
-import {
-  Animated,
-  AppState,
-  BackHandler,
-  DeviceEventEmitter,
-  LayoutAnimation,
-  PanResponder,
-} from 'react-native';
+import {AppState, BackHandler, DeviceEventEmitter} from 'react-native';
 import providers from '../services/providers';
-import {DEVICE_WIDTH, DEVICE_HEIGHT} from '../theme/constants';
 import names from '../events/names';
 import keys from '../storage/keys';
 import locales from '../locales';
 import {Netease} from '../services';
-import {emitter} from '../events';
 import {extractFullInfo, getTrackKey} from '../services/trackInfo';
 import parseArtist from '../utils/parseArtist';
 import universalNavigator from '../utils/universalNavigator';
@@ -61,11 +46,22 @@ import playModeActions from './playMode';
 import lyrics from './lyrics';
 import trackUrl from './trackUrl';
 import notification from './notification';
-import gestures from './gestures';
 import {createPlayOrder, reconcilePlayOrder, getNextPlayIndex, getRandomIndex} from './playOrder';
 import {subscribePlaybackCommands} from './commands';
 const PROGRESS_INTERVAL = 600;
 export default class PlayerController extends React.PureComponent<PlayerProps, PlayerState> {
+  presentation = new PlayerPresentation({
+    getState: () => this.state,
+    getSong: () => this.activeQueue.songItem,
+    update: (update, onCommitted) =>
+      this.setState(
+        (state) => ({...state, ...(typeof update === 'function' ? update(state) : update)}),
+        onCommitted,
+      ),
+    togglePlay: () => this.togglePlay(),
+    seek: (seconds) => this.seekTo(seconds),
+    refreshTime: () => this.getMusicTimeInfo('currentTime'),
+  });
   get activeQueue() {
     if (!isActiveQueue(this.props)) throw new Error('播放队列尚未选中歌曲');
     return this.props;
@@ -78,29 +74,15 @@ export default class PlayerController extends React.PureComponent<PlayerProps, P
   subscriptions: Subscription[] = [];
   notificationCleanup!: () => void;
   unsubscribeCommands!: () => void;
-  _sliderPanResponder?: PanResponderInstance;
-  _volumePanResponder?: PanResponderInstance;
-  y0: number | null = null;
-  fallBackPlayType: PlayState | null = null;
   currentTimeTimer: number | null = null;
   closeTimer: number | null = null;
-  showSliderTimer: number | null = null;
-  slidingTimer: number | null = null;
   restoreRequest: number | null = null;
   resumeAfterFocus = false;
-  sliding = false;
-  sliderValue0 = 0;
   playbackRequest = 0;
   lyricRequest = 0;
   queueKeys: string[] = [];
   savedFMQueue: Pick<QueueSnapshot, 'tracks' | 'playingIndex' | 'songItem' | 'api'> | null = null;
   audioFocusType: string | null = null;
-  ANIMATION_CONFIG = LayoutAnimation.create(
-    400,
-    LayoutAnimation.Types.easeOut,
-    LayoutAnimation.Properties.opacity,
-  );
-  animatedOpacity = new Animated.Value(1);
   cachedGetWebMusicUrl = cache((request, api) =>
     trackUrl.getUrl(api, request, this.props.settings.defaultHighQuality),
   );
@@ -155,7 +137,10 @@ export default class PlayerController extends React.PureComponent<PlayerProps, P
       stop: this.exit,
     });
     AudioPlayer.setHandleAudioFocus(!this.props.settings.playWithOthers);
-    this.backSubscription = BackHandler.addEventListener('hardwareBackPress', this.onBackPress);
+    this.backSubscription = BackHandler.addEventListener(
+      'hardwareBackPress',
+      this.presentation.onBackPress,
+    );
     this.appStateSubscription = AppState.addEventListener('change', this.handleAppStateChange);
     this.unsubscribeCommands = subscribePlaybackCommands({
       play: this.handlePlayCommand,
@@ -169,32 +154,14 @@ export default class PlayerController extends React.PureComponent<PlayerProps, P
         }),
       ),
       subscribePlaybackEvent('PlayerClose', () => {
-        if (this.state.expanded) this._playerClose(true);
+        if (this.state.expanded) this.presentation.close(true);
       }),
       subscribePlaybackEvent('FM_MODE', this.onFmMode),
       subscribePlaybackEvent('AUDIO_NOISY', this.pauseSound),
       subscribePlaybackEvent('CloseTimerEvent', this.setCloseTimer),
       DeviceEventEmitter.addListener(names.NATIVE_AUDIO_FOCUS, this.handleAudioFocus),
     ];
-    this._sliderPanResponder = PanResponder.create({
-      onStartShouldSetPanResponder: () => true,
-      onMoveShouldSetPanResponder: () => false,
-      onPanResponderGrant: (_, gesture) => {
-        this.y0 = gesture.moveY;
-        this.fallBackPlayType = this.state.playState;
-      },
-      onPanResponderMove: this._sliderOnPanResponderMove,
-      onPanResponderRelease: this._sliderOnPanResponderRelease,
-      onPanResponderTerminationRequest: () => false,
-    });
-    this._volumePanResponder = PanResponder.create({
-      onStartShouldSetPanResponder: () => true,
-      onMoveShouldSetPanResponder: () => false,
-      onPanResponderRelease: (_, gesture) => {
-        if (Math.abs(gesture.dy) > 20) AudioPlayer.showSystemStreamVolumeUI();
-      },
-      onPanResponderTerminationRequest: () => false,
-    });
+    this.presentation.initialize();
   }
   componentDidUpdate(previous: PlayerProps) {
     if (previous.settings.playWithOthers !== this.props.settings.playWithOthers) {
@@ -214,15 +181,10 @@ export default class PlayerController extends React.PureComponent<PlayerProps, P
     this.clearTimers();
     this.audio?.release();
     this.audio = null;
-    wakeLock.deactivate();
+    this.presentation.dispose();
   }
   clearTimers = () => {
-    for (const name of [
-      'currentTimeTimer',
-      'closeTimer',
-      'showSliderTimer',
-      'slidingTimer',
-    ] as const) {
+    for (const name of ['currentTimeTimer', 'closeTimer'] as const) {
       const id = this[name];
       if (id) timer.clearTimeout(id);
       this[name] = null;
@@ -769,7 +731,7 @@ export default class PlayerController extends React.PureComponent<PlayerProps, P
       api: this.activeQueue.api,
       song: this.activeQueue.songItem,
     });
-    this._playerClose();
+    this.presentation.close();
   };
   onFmMode = () => {
     if (this.state.isFM) this.stopFM();
@@ -822,111 +784,6 @@ export default class PlayerController extends React.PureComponent<PlayerProps, P
       });
     else this.clearPlayingList();
   };
-  onBackPress = () => {
-    if (this.state.showLyric) {
-      this.onTap();
-      return true;
-    }
-    if (this.state.expanded) {
-      this._playerClose();
-      return true;
-    }
-    return false;
-  };
-  _playerOpen = () => {
-    emitter.emit(names.PlayerShow, true);
-    this.showSliderTimer = timer.setTimeout(
-      () =>
-        this.setState({
-          showSlider: true,
-        }),
-      300,
-    );
-    LayoutAnimation.configureNext(this.ANIMATION_CONFIG);
-    this.setState({
-      url: extractFullInfo(this.activeQueue.songItem, 'big').img,
-      playerStyle: {
-        width: DEVICE_WIDTH,
-        height: DEVICE_HEIGHT,
-        top: 0,
-        left: 0,
-        position: 'absolute',
-        marginBottom: 0,
-      },
-      expanded: true,
-    });
-    wakeLock.activate();
-  };
-  _playerClose = (skipAnimation?: boolean) => {
-    emitter.emit(names.PlayerShow, false);
-    if (this.showSliderTimer) timer.clearTimeout(this.showSliderTimer);
-    if (!skipAnimation) LayoutAnimation.configureNext(this.ANIMATION_CONFIG);
-    this.setState({
-      url: extractFullInfo(this.activeQueue.songItem).img,
-      playerStyle: null,
-      imgStyle: null,
-      expanded: false,
-      showLyric: false,
-      showSlider: false,
-    });
-    wakeLock.deactivate();
-  };
-  onTap = () => {
-    const showLyric = !this.state.showLyric;
-    this.setState({
-      showSlider: false,
-      showCoverElevation: false,
-    });
-    Animated.timing(this.animatedOpacity, {
-      toValue: 0,
-      duration: 200,
-      useNativeDriver: true,
-    }).start(() => {
-      this.setState({
-        showLyric,
-        showSlider: true,
-      });
-      Animated.timing(this.animatedOpacity, {
-        toValue: 1,
-        duration: 200,
-        useNativeDriver: true,
-      }).start(() =>
-        this.setState({
-          showCoverElevation: true,
-        }),
-      );
-    });
-  };
-  showToolBtn = () => {
-    LayoutAnimation.configureNext(this.ANIMATION_CONFIG);
-    this.setState(
-      (state) => ({
-        showTool: !state.showTool,
-      }),
-      () => this.savePreference(keys.showToolBtnStatus, this.state.showTool),
-    );
-  };
-  savePreference = (key: string, data: boolean | number | PlayMode) =>
-    storage
-      .save({
-        key,
-        data,
-      })
-      .catch((error) => toast('保存播放设置失败：' + error.message));
-  onChangeLyricFontSize = (lyricFontSize: number) => {
-    this.setState({
-      lyricFontSize,
-    });
-    this.savePreference(keys.lyricFontSize, lyricFontSize);
-  };
-  onChangeShowTrans = () => {
-    this.setState(
-      (state) => ({
-        showTrans: !state.showTrans,
-      }),
-      () => this.savePreference(keys.showTrans, this.state.showTrans),
-    );
-  };
   onChangePlayStatus = () => {
     const playMode = (
       {
@@ -940,45 +797,6 @@ export default class PlayerController extends React.PureComponent<PlayerProps, P
       randomArray:
         playMode === 'random' ? createPlayOrder(this.props.tracks.length) : this.state.randomArray,
     } as const);
-    this.savePreference(keys.lastPlayMode, playMode);
-  };
-  slidingStart = (seconds: number) => {
-    if (!this.state.showTool) this.sliderValue0 = seconds;
-  };
-  onSliderValueChange = (currentTime: number) => {
-    this.sliding = true;
-    this.setState({
-      currentTime,
-    });
-  };
-  slidingEnd = (seconds: number) => {
-    if (!this.state.showTool && Math.abs(seconds - this.sliderValue0) < 5) this.togglePlay();
-    else this.seekTo(seconds);
-    this.slidingTimer = timer.setTimeout(() => {
-      this.sliding = false;
-    }, 500);
-  };
-  _sliderOnPanResponderMove = (_: GestureResponderEvent, gesture: PanResponderGestureState) => {
-    if (gesture.x0 < 15 || gesture.x0 > DEVICE_WIDTH - 15) return;
-    const delta = Math.floor(
-      (gestures.stepMap(gesture.moveY - this.y0!) / 200) * this.state.duration,
-    );
-    this.y0 = gesture.moveY;
-    this.onSliderValueChange(
-      Math.max(0, Math.min(this.state.duration, this.state.currentTime + delta)),
-    );
-  };
-  _sliderOnPanResponderRelease = (_: GestureResponderEvent, gesture: PanResponderGestureState) => {
-    if (
-      !gestures.isOverEdge({
-        gestureState: gesture,
-        DEVICE_WIDTH,
-      })
-    )
-      this.slidingEnd(this.state.currentTime);
-    else this.getMusicTimeInfo('currentTime');
-    this.y0 = null;
-    this.sliding = false;
-    this.fallBackPlayType = null;
+    lyricPreferences.save(keys.lastPlayMode, playMode);
   };
 }

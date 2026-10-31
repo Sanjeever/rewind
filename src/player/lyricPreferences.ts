@@ -1,4 +1,5 @@
 import {storage} from '../storage';
+import {toast} from '../native/toast';
 import keys from '../storage/keys';
 import type {PlayMode} from './types';
 interface Preferences {
@@ -9,6 +10,9 @@ interface Preferences {
 }
 
 export default {
+  save(key: string, data: boolean | number | PlayMode) {
+    return storage.save({key, data}).catch((error) => toast('保存播放设置失败：' + error.message));
+  },
   async loadAll() {
     const preferences: Preferences = {};
     const fields = {
