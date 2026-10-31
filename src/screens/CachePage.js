@@ -12,6 +12,7 @@ import * as utils from '../utils/index';
 import * as types from '../utils/types';
 import * as files from '../storage/files';
 class CachePage extends React.PureComponent {
+  mounted = false;
   state = {
     caches: [
       {
@@ -33,31 +34,39 @@ class CachePage extends React.PureComponent {
     const n_state = this.state;
     const e_maxCacheSize = n_state.maxCacheSize;
     if (n_state.deleted === false) {
-      _appStorage.storage.save({
-        key: keys.maxCacheSize,
-        data: e_maxCacheSize,
-      });
+      return _appStorage.storage
+        .save({
+          key: keys.maxCacheSize,
+          data: e_maxCacheSize,
+        })
+        .catch((error) => toast('保存缓存设置失败：' + error.message));
     }
   };
   getStorageCacheSize = () => {
-    _appStorage.storage
+    return _appStorage.storage
       .load({
         key: keys.maxCacheSize,
       })
       .then((maxCacheSize) => {
-        this.setState({
-          maxCacheSize,
-        });
+        if (this.mounted)
+          this.setState({
+            maxCacheSize,
+          });
       })
-      .catch(() => {});
+      .catch((error) => {
+        if (error.name !== 'NotFoundError') toast('读取缓存设置失败：' + error.message);
+      });
   };
   getCacheSize = async () => {
-    this.setState({
-      cacheSize: await files.getCurrentCache(),
-    });
+    try {
+      const cacheSize = await files.getCurrentCache();
+      if (this.mounted) this.setState({cacheSize});
+    } catch (error) {
+      toast('读取缓存大小失败：' + error.message);
+    }
   };
   removeSettings = () => {
-    _appStorage.storage
+    return _appStorage.storage
       .remove({
         key: keys.maxCacheSize,
       })
@@ -67,7 +76,8 @@ class CachePage extends React.PureComponent {
           maxCacheSize: 200,
         });
         toast(locales.CACHE_SETTING_DONE);
-      });
+      })
+      .catch((error) => toast('重置缓存设置失败：' + error.message));
   };
   onSetCacheMax = async () => {
     const size = await utils.dialogs.showCacheSizePicker();
@@ -88,10 +98,12 @@ class CachePage extends React.PureComponent {
     }
   };
   componentDidMount() {
+    this.mounted = true;
     this.getCacheSize();
     this.getStorageCacheSize();
   }
   componentWillUnmount() {
+    this.mounted = false;
     this.saveStorageCacheSize();
   }
   render() {

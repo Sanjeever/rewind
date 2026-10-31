@@ -1,4 +1,5 @@
 import * as _appStorage from './../storage/index.js';
+import {toast} from '../native/toast';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
 import FadingEdge from '../components/FadingEdge';
@@ -116,33 +117,15 @@ class ChangePlaylistModal extends React.PureComponent {
         this.getQQMusicPlayListDetail(l);
     }
   };
-  getQQMusicPlayListDetail = (id) => {
-    _appStorage.storage
-      .load({
-        key: keys.userInfo,
-      })
-      .then((t) => {
-        if (t) {
-          const qq = t.qqMusic.userId;
-          services.QQMusic.disslist({
-            id,
-            qq,
-          }).then((e) => {
-            const songlist = e[0].songlist;
-            this.qqMusicPlaylistPlay(songlist);
-          });
-        }
-      })
-      .catch(() => {
-        services.QQMusic.disslist({
-          id,
-        }).then((e) => {
-          if (e) {
-            const t = e[0].songlist;
-            this.qqMusicPlaylistPlay(t);
-          }
-        });
-      });
+  getQQMusicPlayListDetail = async (id) => {
+    try {
+      const account = (await users.getUserInfo())?.qqMusic;
+      const playlists = await services.QQMusic.disslist({id, qq: account?.userId});
+      if (!playlists[0]) throw new Error(locales.PLAYLIST_FETCH_FAILED);
+      this.qqMusicPlaylistPlay(playlists[0].songlist);
+    } catch (error) {
+      toast('歌单加载失败：' + error.message);
+    }
   };
   qqMusicPlaylistPlay = (data) => {
     this.emit({

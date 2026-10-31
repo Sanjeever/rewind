@@ -1,4 +1,5 @@
 import log from '../../services/logger';
+import locales from '../../locales';
 import {toast} from '../../native/toast';
 import _default from './../../components/Pager.js';
 import * as _appStorage from './../../storage/index.js';
@@ -191,36 +192,25 @@ class Home extends React.PureComponent {
       await users.saveUserLikeList(response.ids, providers.netEase);
     }
   };
-  qqMusicLikelist = function () {
-    _appStorage.storage
-      .load({
-        key: keysModule.playlist,
-      })
-      .then((e) => {
-        if (e.qqMusic) {
-          const id = utils.delve(e, 'qqMusic.0.id');
-          services.QQMusic.disslist({
-            id,
-          }).then((e) => {
-            if (types.isArray(e) && !(e.length < 1)) {
-              const t = [];
-              e[0].songlist.map((e) => {
-                t.push(e.songmid);
-              });
-              users.saveUserLikeList(t, providers.qqMusic);
-            }
-          });
-        }
-      })
-      .catch((e) => e);
+  qqMusicLikelist = async () => {
+    const saved = await users.getUserPlayList();
+    const id = saved?.qqMusic?.[0]?.id;
+    if (!id) return;
+    const playlists = await services.QQMusic.disslist({id});
+    if (playlists.length)
+      await users.saveUserLikeList(
+        playlists[0].songlist.map((song) => song.songmid),
+        providers.qqMusic,
+      );
   };
   getQQMusicPlaylist = async (id) => {
     if (!id) {
       return;
     }
-    const profile = await services.QQMusic.profile(id);
+    const account = (await users.getUserInfo())?.qqMusic;
+    const profile = await services.QQMusic.profile(id, account?.cookies);
     if (!profile?.mymusic) {
-      throw new Error(locales.default.PLAYLIST_FETCH_FAILED);
+      throw new Error(locales.PLAYLIST_FETCH_FAILED);
     }
     const created = await services.QQMusic.user_created_list(id);
     const liked = profile.mymusic.find((item) => item.title === '喜欢' || item.title === '我喜欢');
@@ -241,7 +231,7 @@ class Home extends React.PureComponent {
     }
     const response = await services.Netease.user_playlist(id);
     if (!Array.isArray(response?.playlist)) {
-      throw new Error(response?.message || locales.default.PLAYLIST_FETCH_FAILED);
+      throw new Error(response?.message || locales.PLAYLIST_FETCH_FAILED);
     }
     const ordered = await playlists.newOrder({
       api: providers.netEase,

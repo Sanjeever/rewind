@@ -1,0 +1,36 @@
+import {jest} from '@jest/globals';
+const load = jest.fn<() => Promise<number>>();
+const save = jest.fn<() => Promise<void>>();
+const remove = jest.fn<() => Promise<void>>();
+const size = jest.fn<() => Promise<number>>();
+const toast = jest.fn();
+jest.unstable_mockModule('../storage/index', () => ({storage: {load, save, remove}}));
+jest.unstable_mockModule('../native/toast', () => ({toast}));
+jest.unstable_mockModule('react-native', () => ({StyleSheet: {create: <T>(value: T) => value}}));
+jest.unstable_mockModule('../components/Scrolling', () => ({}));
+jest.unstable_mockModule('../components/index', () => ({}));
+jest.unstable_mockModule('../theme/icons', () => ({default: {}}));
+jest.unstable_mockModule('../locales/index', () => ({default: {}}));
+jest.unstable_mockModule('../utils/index', () => ({}));
+jest.unstable_mockModule('../utils/types', () => ({}));
+jest.unstable_mockModule('../storage/files', () => ({getCurrentCache: size}));
+const {default: CachePage} = await import('./CachePage');
+
+test('缓存设置缺失沿用默认值，其余读取、写入和重置错误可见', async () => {
+  const page = new CachePage({});
+  load.mockRejectedValue(Object.assign(new Error('缺失'), {name: 'NotFoundError'}));
+  await page.getStorageCacheSize();
+  expect(toast).not.toHaveBeenCalled();
+  load.mockRejectedValue(new Error('数据库损坏'));
+  await page.getStorageCacheSize();
+  expect(toast).toHaveBeenLastCalledWith('读取缓存设置失败：数据库损坏');
+  save.mockRejectedValue(new Error('写入失败'));
+  await page.saveStorageCacheSize();
+  expect(toast).toHaveBeenLastCalledWith('保存缓存设置失败：写入失败');
+  remove.mockRejectedValue(new Error('删除失败'));
+  await page.removeSettings();
+  expect(toast).toHaveBeenLastCalledWith('重置缓存设置失败：删除失败');
+  size.mockRejectedValue(new Error('服务不可用'));
+  await page.getCacheSize();
+  expect(toast).toHaveBeenLastCalledWith('读取缓存大小失败：服务不可用');
+});

@@ -189,18 +189,21 @@ const s = new (class e {
         .then((e) => e.data);
     }
   }
-  profile(e) {
-    if (e) {
+  profile(userId, cookies) {
+    if (userId) {
       return fetch(
-        `http://c.y.qq.com/rsc/fcgi-bin/fcg_get_profile_homepage.fcg?format=json&inCharset=utf8&outCharset=utf-8&notice=0&platform=yqq&needNewCode=0&cid=205360838&ct=20&userid=${e}&reqfrom=1&reqtype=0`,
+        `http://c.y.qq.com/rsc/fcgi-bin/fcg_get_profile_homepage.fcg?format=json&inCharset=utf8&outCharset=utf-8&notice=0&platform=yqq&needNewCode=0&cid=205360838&ct=20&userid=${userId}&reqfrom=1&reqtype=0`,
         {
           headers: {
             Host: 'c.y.qq.com',
             'User-Agent':
               'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.80 Safari/537.36',
             Referer: 'http://y.qq.com',
-            Cookie:
-              'pgv_pvi=9099566080; pgv_si=s8829851648; pgv_info=ssid=s8935732285; pgv_pvid=3505264524; ts_uid=4647537021; _qpsvr_localtk=0.635905469678008; ptisp=ctc; RK=+eLNjH4YxE; ptcz=d86c4e2c903cc981336e0c79e13ae45d50b587575e3539a7c9ebbbe9518bdf36; yq_index=0; player_exist=1; qqmusic_fromtag=66; ts_refer=xui.ptlogin2.qq.com/cgi-bin/xlogin; ptui_loginuin=2360314753; _ga=GA1.2.366192045.1560243964; tvfe_boss_uuid=21ee0865e4c6fd46; uin=o2360314753; luin=o2360314753; p_uin=o2360314753; p_luin=o2360314753; yqq_stat=0; skey=@32Zv31UFR; lskey=0001000047de96e5d2b008eadd947809d2c3147c7fd15dba77d29403906eeef5a8b9156f77629949f962999d; pt4_token=3EKnvbV5iRNJxtbZSPA*5sBBQddC3s5pO3hu5D5fDfI_; p_skey=XePo8qP0GBWL0oD*dnJntWr9HncwnHDpbhmNJ1iJeUc_; p_lskey=000400007c63068dec37a686ae7827473a9796fef7a18cb629e73db8ebe1f89fda50192310a455be8107c8f8; yplayer_open=0; ts_last=y.qq.com/portal/profile.html; userAction=1',
+            ...(cookies
+              ? {
+                  Cookie: cookies,
+                }
+              : {}),
           },
           credentials: 'include',
         },
@@ -236,13 +239,15 @@ const s = new (class e {
           },
         },
       )
-        .then((e) => e.json())
-        .then(({cdlist}) => {
-          if (cdlist) {
-            return cdlist;
-          }
+        .then((response) => {
+          if (!response.ok) throw new Error('QQ 音乐歌单 HTTP ' + response.status);
+          return response.json();
         })
-        .catch(() => {});
+        .then((response) => {
+          if (response.code !== 0) throw new Error('QQ 音乐歌单失败：业务码 ' + response.code);
+          if (!Array.isArray(response.cdlist)) throw new Error('QQ 音乐响应缺少歌单');
+          return response.cdlist;
+        });
     }
   }
   addToDir({songmid, dirid, op = 1, qq = 0}) {
@@ -294,11 +299,16 @@ const s = new (class e {
     if (id) {
       return fetch('http://c.y.qq.com/folder/fcgi-bin/fcg_qm_order_diss.fcg?g_tk=5381', {
         method: 'POST',
-        body: `notice=0&platform=yqq&needNewCode=0&g_tk=5381&dissid=${id}&from=1&optype=${(op === undefined ? 'subscribe' : op) === 'subscribe' ? 1 : 2}&utf8=1`,
+        body: `format=json&notice=0&platform=yqq&needNewCode=0&g_tk=5381&dissid=${id}&from=1&optype=${(op === undefined ? 'subscribe' : op) === 'subscribe' ? 1 : 2}&utf8=1`,
       })
-        .then((e) => e.text())
-        .then((e) => e)
-        .catch(() => {});
+        .then((response) => {
+          if (!response.ok) throw new Error('QQ 音乐收藏 HTTP ' + response.status);
+          return response.json();
+        })
+        .then((response) => {
+          if (response.code !== 0) throw new Error('QQ 音乐收藏失败：业务码 ' + response.code);
+          return response;
+        });
     }
   }
   search_suggest(e) {

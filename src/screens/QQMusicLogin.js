@@ -83,7 +83,8 @@ class QQMusicLogin extends React.PureComponent {
     }
     this.loadMask('loading');
     try {
-      const response = await services.QQMusic.profile(searchText);
+      const account = (await users.getUserInfo())?.qqMusic;
+      const response = await services.QQMusic.profile(searchText, account?.cookies);
       if (!response?.mymusic) {
         throw new Error(locales.PLAYLIST_FETCH_FAILED);
       }
@@ -107,20 +108,15 @@ class QQMusicLogin extends React.PureComponent {
       this.loadMask('loaded');
     }
   };
-  qqMusicLikelist = function (e) {
-    services.QQMusic.disslist({
+  qqMusicLikelist = async (e) => {
+    const playlists = await services.QQMusic.disslist({
       id: e.id,
-    })
-      .then((e) => {
-        if (!(e.length < 1)) {
-          const t = [];
-          e[0].songlist.map((e) => {
-            t.push(e.songmid);
-          });
-          users.saveUserLikeList(t, providers.qqMusic);
-        }
-      })
-      .catch((e) => e);
+    });
+    if (playlists.length)
+      await users.saveUserLikeList(
+        playlists[0].songlist.map((song) => song.songmid),
+        providers.qqMusic,
+      );
   };
   onQQMusicMessage = async ({nickname, avatarUrl, cookies}) => {
     if (!avatarUrl || this.loginPending) {
@@ -130,7 +126,7 @@ class QQMusicLogin extends React.PureComponent {
     try {
       await cookiesModule.setFromResponse('https://c.y.qq.com', cookies);
       const qq = services.QQMusic.getCookie('uin', cookies).replace(/o/, '');
-      const response = await services.QQMusic.profile(qq);
+      const response = await services.QQMusic.profile(qq, cookies);
       if (!response?.mymusic) {
         throw new Error(locales.PLAYLIST_FETCH_FAILED);
       }
