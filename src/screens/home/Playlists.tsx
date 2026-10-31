@@ -1,5 +1,5 @@
 import Text from './../../components/Text';
-import _default2 from './../../components/Pager';
+import Pager from './../../components/Pager';
 import * as immer from 'immer';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
@@ -395,7 +395,7 @@ class Playlists extends React.PureComponent<Props, {custom: CustomPlaylist[]; sh
         }}
       >
         {React.createElement(
-          _default2,
+          Pager,
           {
             style: {
               flex: 1,

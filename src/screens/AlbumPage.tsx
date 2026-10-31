@@ -6,7 +6,7 @@ import type {SpringScrollView} from '../components/Scrolling';
 import {errorMessage} from '../utils/types';
 import {toast} from '../native/toast';
 import Clipboard from '@react-native-clipboard/clipboard';
-import _default2 from './../components/Text';
+import Text from './../components/Text';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
 import * as components from '../components/index';
@@ -130,8 +130,8 @@ class AlbumPage extends React.PureComponent<
     });
   };
   onPlayAll = () => {
-    const a_state = this.state;
-    const {api, data} = a_state;
+    const state = this.state;
+    const {api, data} = state;
     const item = data[0];
     events.toPlayer({
       item,
@@ -141,8 +141,8 @@ class AlbumPage extends React.PureComponent<
     });
   };
   addToPlaylist = () => {
-    const a_state = this.state;
-    const {api, data} = a_state;
+    const state = this.state;
+    const {api, data} = state;
     events.toInsertToList({
       data,
       api,
@@ -171,13 +171,13 @@ class AlbumPage extends React.PureComponent<
     });
   };
   getSharedLink = () => {
-    const a_state = this.state;
-    const {api, id} = a_state;
+    const state = this.state;
+    const {api, id} = state;
     return sharedUrlsModule.sharedUrls[api].album + id;
   };
   onLikeAlbumImpl = () => {
-    const a_state = this.state;
-    const {api, followed, id} = a_state;
+    const state = this.state;
+    const {api, followed, id} = state;
     switch (api) {
       case providers.netEase:
         this.setState({
@@ -268,8 +268,8 @@ class AlbumPage extends React.PureComponent<
     queue.playMV(t!, api);
   };
   _renderItem = ({item, index}: {item: TrackFields; index: number}) => {
-    const a_state = this.state;
-    const {api, data} = a_state;
+    const state = this.state;
+    const {api, data} = state;
     const s = this.formatListItem(item);
     return (
       <components.SongRow
@@ -415,7 +415,7 @@ class AlbumPage extends React.PureComponent<
           <ReactNative.View style={E.hoverCon}>
             <ReactNative.TouchableOpacity onPress={this.onPlayAll}>
               {React.createElement(
-                _default2,
+                Text,
                 {
                   style: {
                     color: '#000',

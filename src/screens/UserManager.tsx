@@ -74,8 +74,8 @@ class UserManager extends React.PureComponent<ScreenProps<'UserManager'>, State>
     });
   };
   onPress = (e: NeteaseAccount, t: number) => {
-    const n_state = this.state;
-    const {deleting, users} = n_state;
+    const state = this.state;
+    const {deleting, users} = state;
     if (deleting === true) {
       if (t === 0) {
         return void toast(locales.CAN_NOT_REMOVE_CURRENT_USER);

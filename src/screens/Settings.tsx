@@ -1,6 +1,6 @@
 import {toast} from '../native/toast';
 import Text from './../components/Text';
-import * as _appStorage from './../storage/index';
+import * as appStorage from './../storage/index';
 import {mergeSettings} from '../settings/merge';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
@@ -32,7 +32,7 @@ class Settings extends React.Component<
     if (!this.state.modified) {
       return false;
     }
-    await _appStorage.storage.save({
+    await appStorage.storage.save({
       key: keysModule.settings,
       data: this.state.settings,
     });
@@ -59,7 +59,7 @@ class Settings extends React.Component<
   resetSettings = async () => {
     try {
       const settings = mergeSettings({}, defaults.defaultSettings);
-      await _appStorage.storage.save({
+      await appStorage.storage.save({
         key: keysModule.settings,
         data: settings,
       });
@@ -161,7 +161,7 @@ class Settings extends React.Component<
       modified: true,
     });
     try {
-      await _appStorage.storage.save({
+      await appStorage.storage.save({
         key: keysModule.settings,
         data: settings,
       });
@@ -177,7 +177,7 @@ class Settings extends React.Component<
     }
   };
   async componentDidMount() {
-    const stored = await _appStorage.storage.load({
+    const stored = await appStorage.storage.load({
       key: keysModule.settings,
     });
     this.setState({

@@ -1,4 +1,4 @@
-import * as _appStorage from './../storage/index';
+import * as appStorage from './../storage/index';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
 import * as constants from '../theme/constants';
@@ -30,7 +30,7 @@ class Background extends React.PureComponent<Props, State> {
   };
   changeBackgroundEmitter = (e: AppEvents['ChangeBackground']) => {
     if (e?.path) {
-      _appStorage.storage
+      appStorage.storage
         .save({
           key: keys.background,
           data: e,

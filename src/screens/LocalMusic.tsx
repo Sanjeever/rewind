@@ -47,8 +47,8 @@ class LocalMusic extends React.Component<
   };
   onSort = () => {
     let e;
-    const r_state = this.state;
-    const {sortMode, oriList} = r_state;
+    const state = this.state;
+    const {sortMode, oriList} = state;
     const sortMode_1 = h[sortMode];
     switch (sortMode_1) {
       case 'time':

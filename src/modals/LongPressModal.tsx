@@ -53,9 +53,9 @@ class LongPressModal extends React.PureComponent<Record<string, never>, State> {
     });
   };
   onPressIcon = (e: Kind) => {
-    const a_state = this.state;
-    const {obj, defaultType} = a_state;
-    if (a_state.item && obj) {
+    const state = this.state;
+    const {obj, defaultType} = state;
+    if (state.item && obj) {
       if (defaultType === false) {
         this.openUrl(obj, e);
       } else if (e === 'song') {

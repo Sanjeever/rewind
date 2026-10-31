@@ -1,6 +1,6 @@
 import {toast} from '../native/toast';
 import Text from './../components/Text';
-import * as _appStorage from './../storage/index';
+import * as appStorage from './../storage/index';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
 import reactNativeImageCropPicker from 'react-native-image-crop-picker';
@@ -25,7 +25,7 @@ class Skin extends React.Component<
     blur: false,
   };
   clearRoll = () => {
-    _appStorage.storage
+    appStorage.storage
       .remove({
         key: keys.background,
       })
@@ -65,8 +65,8 @@ class Skin extends React.Component<
       .catch((e) => e);
   };
   emit = () => {
-    const a_state = this.state;
-    const {img, value, blur} = a_state;
+    const state = this.state;
+    const {img, value, blur} = state;
     if (!img) {
       toast(locales.SKIN_NOT_PICK_PIC);
       return false;
@@ -108,7 +108,7 @@ class Skin extends React.Component<
     });
   };
   componentDidMount() {
-    _appStorage.storage
+    appStorage.storage
       .load<{path: string; opacity: number; blur: boolean}>({
         key: keys.background,
       })

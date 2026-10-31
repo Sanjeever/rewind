@@ -92,8 +92,8 @@ class PlaylistIntersection extends React.PureComponent<ScreenProps<'PlaylistInte
   toggleType = () => {
     let e: keyof typeof b;
     let t;
-    const r_state = this.state;
-    const {type, intersectionData, differenceData} = r_state;
+    const state = this.state;
+    const {type, intersectionData, differenceData} = state;
     if (type === b.intersection) {
       e = b.difference;
       t = differenceData;

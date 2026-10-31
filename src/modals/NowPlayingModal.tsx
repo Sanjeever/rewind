@@ -57,9 +57,9 @@ class NowPlayingModal extends React.PureComponent<
     }
   };
   forceClose = () => {
-    const a_props = this.props;
-    const e_setDisplayNowPlaying = a_props.setDisplayNowPlaying;
-    if (a_props.show !== false) {
+    const props = this.props;
+    const e_setDisplayNowPlaying = props.setDisplayNowPlaying;
+    if (props.show !== false) {
       e_setDisplayNowPlaying(false);
       this.setState({
         filterText: '',
@@ -256,9 +256,9 @@ class NowPlayingModal extends React.PureComponent<
     });
   };
   deleteFromQueue = (e: TrackFields, _index: number) => {
-    const a_props = this.props;
-    const n_api = a_props.api;
-    if (b.getTrackKey(e, n_api) !== b.getTrackKey(a_props.data[a_props.index], n_api)) {
+    const props = this.props;
+    const n_api = props.api;
+    if (b.getTrackKey(e, n_api) !== b.getTrackKey(props.data[props.index], n_api)) {
       events.emitter.emit(names.DeleteFromQueue, {
         item: e,
         api: n_api,
@@ -266,9 +266,9 @@ class NowPlayingModal extends React.PureComponent<
     }
   };
   addToQueue = (e: TrackFields) => {
-    const a_props = this.props;
-    const n_api = a_props.api;
-    if (b.getTrackKey(e, n_api) !== b.getTrackKey(a_props.data[a_props.index], n_api)) {
+    const props = this.props;
+    const n_api = props.api;
+    if (b.getTrackKey(e, n_api) !== b.getTrackKey(props.data[props.index], n_api)) {
       events.toInsertToList({
         data: e,
         api: n_api,

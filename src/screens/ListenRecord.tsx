@@ -90,8 +90,8 @@ class ListenRecord extends React.PureComponent<ScreenProps<'ListenRecord'>, Stat
     }
   };
   renderScenes = (e: string) => {
-    const n_state = this.state;
-    const {weekData, allData} = n_state;
+    const state = this.state;
+    const {weekData, allData} = state;
     switch (e) {
       case '1':
         return (

@@ -68,8 +68,8 @@ class UserInfo extends React.PureComponent<ScreenProps<'UserInfo'>, State> {
       events.emitter.emit(names.SelectedUser, {...profile, userId: profile.userId});
   };
   renderForeground = (nativeOffset: {y: ReactNative.Animated.Value}) => {
-    const a_state = this.state;
-    const {profile, listenSongs} = a_state;
+    const state = this.state;
+    const {profile, listenSongs} = state;
     const {backgroundUrl, avatarUrl, nickname, signature} = profile;
     const transform = [
       {
@@ -166,9 +166,9 @@ class UserInfo extends React.PureComponent<ScreenProps<'UserInfo'>, State> {
     );
   };
   onListenRecord = () => {
-    const a_state = this.state;
-    const e_profile = a_state.profile;
-    if (a_state.peopleCanSeeMyPlayRecord && e_profile.userId != null) {
+    const state = this.state;
+    const e_profile = state.profile;
+    if (state.peopleCanSeeMyPlayRecord && e_profile.userId != null) {
       this.props.navigation.navigate('ListenRecord', {
         profile: {...e_profile, userId: e_profile.userId},
       });

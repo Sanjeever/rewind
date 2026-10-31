@@ -201,8 +201,8 @@ const g = {
     });
   },
   playMusic: function (item: TrackFields, t: number, a: PlaylistActionContext) {
-    const a_state = a.state;
-    const {searching, api, oriList, playlist, showRestore, playlistId} = a_state;
+    const state = a.state;
+    const {searching, api, oriList, playlist, showRestore, playlistId} = state;
     const d = showRestore === false ? playlist : oriList;
     let index = t;
     if (searching === true) {

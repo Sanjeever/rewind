@@ -1,4 +1,4 @@
-import * as _appStorage from './../storage/index';
+import * as appStorage from './../storage/index';
 import * as immer from 'immer';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
@@ -31,7 +31,7 @@ class MusicNotificationPage extends React.PureComponent<
     if (await this.saveConfig()) restartModule.restart();
   };
   loadConfig = () => {
-    _appStorage.storage
+    appStorage.storage
       .load<Config>({
         key: keys.musicNotification,
       })
@@ -45,7 +45,7 @@ class MusicNotificationPage extends React.PureComponent<
   };
   saveConfig = async () => {
     try {
-      await _appStorage.storage.save({
+      await appStorage.storage.save({
         key: keys.musicNotification,
         data: this.state.config,
       });
@@ -68,7 +68,7 @@ class MusicNotificationPage extends React.PureComponent<
     );
   };
   removeStorage = () => {
-    _appStorage.storage.remove({
+    appStorage.storage.remove({
       key: keys.musicNotification,
     });
     this.setState({

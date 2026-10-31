@@ -23,8 +23,8 @@ interface Props {
 const p = 0.05 * constants.DEVICE_HEIGHT;
 class LoginView extends React.PureComponent<Props> {
   renderQQMusic = () => {
-    const r_props = this.props;
-    const {_Login, onChangeText, onWebview} = r_props;
+    const props = this.props;
+    const {_Login, onChangeText, onWebview} = props;
     return (
       <ReactNative.View style={y.container}>
         <ReactNative.View style={y.inputCon}>
@@ -82,8 +82,8 @@ class LoginView extends React.PureComponent<Props> {
     );
   };
   renderNetease = () => {
-    const r_props = this.props;
-    const {_Login, otherWay, onChangeText, loginOut, onWebview} = r_props;
+    const props = this.props;
+    const {_Login, otherWay, onChangeText, loginOut, onWebview} = props;
     return (
       <ReactNative.View style={y.container}>
         <ReactNative.View style={y.inputCon}>

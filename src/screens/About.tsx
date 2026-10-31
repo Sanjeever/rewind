@@ -1,6 +1,6 @@
 import {toast} from '../native/toast';
-import _default from '@react-native-clipboard/clipboard';
-import _default2 from './../components/Text';
+import Clipboard from '@react-native-clipboard/clipboard';
+import Text from './../components/Text';
 import LottieView from 'lottie-react-native';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
@@ -39,7 +39,7 @@ class About extends React.PureComponent<ScreenProps<'About'>, {speed: number; en
   };
   onClip = function (e: string) {
     toast(`${locales.COPIED} ${e}`);
-    _default.setString(e);
+    Clipboard.setString(e);
   };
   onThanks = () => {
     return this.props.navigation.navigate('Tip', {
@@ -67,7 +67,7 @@ class About extends React.PureComponent<ScreenProps<'About'>, {speed: number; en
     return (
       <React.Fragment>
         {React.createElement(
-          _default2,
+          Text,
           {
             style: [
               styles.text,
@@ -180,7 +180,7 @@ class About extends React.PureComponent<ScreenProps<'About'>, {speed: number; en
               <Placeholders.Text style={[styles.text, styles.version]} numbers={3} />
             ) : (
               React.createElement(
-                _default2,
+                Text,
                 {
                   style: [styles.text, styles.version],
                 },

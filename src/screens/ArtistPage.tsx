@@ -163,8 +163,8 @@ class ArtistPage extends React.PureComponent<
     }
   };
   onLikeArtistImpl = () => {
-    const a_state = this.state;
-    const {api, followed, id} = a_state;
+    const state = this.state;
+    const {api, followed, id} = state;
     switch (api) {
       case providers.netEase:
         this.netEaseLikeArtist(id!, !followed);
@@ -178,8 +178,8 @@ class ArtistPage extends React.PureComponent<
     toast(!followed == true ? '已收藏。' : '取消收藏。');
   };
   onLikeArtist = () => {
-    const a_state = this.state;
-    const e_followed = a_state.followed;
+    const state = this.state;
+    const e_followed = state.followed;
     if (e_followed) {
       ReactNative.Alert.alert('', '取消收藏？', [
         {
@@ -225,8 +225,8 @@ class ArtistPage extends React.PureComponent<
   };
   onReleaseTab = () => {
     let releaseMode_1: ReleaseMode = RELEASE_MODE.all;
-    const a_state = this.state;
-    const {index, releaseMode} = a_state;
+    const state = this.state;
+    const {index, releaseMode} = state;
     if (index !== 1) {
       this.setState({
         index: 1,
@@ -266,13 +266,13 @@ class ArtistPage extends React.PureComponent<
     });
   };
   getSharedLink = () => {
-    const a_state = this.state;
-    const {api, id} = a_state;
+    const state = this.state;
+    const {api, id} = state;
     return sharedUrlsModule.sharedUrls[api].artist + id;
   };
   getAlbumData = (e: SearchEntity[], _api: OnlineProvider, n: ReleaseMode) => {
-    const a_state = this.state;
-    const {albumsGroup, singlesAndEpsGroup} = a_state;
+    const state = this.state;
+    const {albumsGroup, singlesAndEpsGroup} = state;
     if (n === RELEASE_MODE.all) {
       return e;
     }
@@ -283,8 +283,8 @@ class ArtistPage extends React.PureComponent<
   };
   renderTabs = () => {
     const navigation = this.props.navigation;
-    const a_state = this.state;
-    const {index, hotSongs, albums, mvs, api, releaseMode} = a_state;
+    const state = this.state;
+    const {index, hotSongs, albums, mvs, api, releaseMode} = state;
     switch (index) {
       case 0:
         if (hotSongs.length > 0) {

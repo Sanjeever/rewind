@@ -7,7 +7,7 @@ import {neteaseMessage} from './login/messages';
 import type {NeteaseMessage} from './login/messages';
 import {toast} from '../native/toast';
 import {WebView} from 'react-native-webview';
-import * as _appStorage from './../storage/index';
+import * as appStorage from './../storage/index';
 import cookies from '../native/cookies';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
@@ -91,8 +91,8 @@ class NeteaseLogin extends React.PureComponent<ScreenProps<'NeteaseLogin'>, Stat
   };
   _Login = () => {
     ReactNative.Keyboard.dismiss();
-    const n_state = this.state;
-    const {account, password} = n_state;
+    const state = this.state;
+    const {account, password} = state;
     if (account && password) {
       if (account.match('@')) {
         this.loadMask('loading');
@@ -254,7 +254,7 @@ class NeteaseLogin extends React.PureComponent<ScreenProps<'NeteaseLogin'>, Stat
     await users.removeProvider(key, providers.netEase);
     if (key === keys.playlist) {
       await users.removeProvider(keys.likelist, providers.netEase);
-      await _appStorage.storage.remove({
+      await appStorage.storage.remove({
         key: keys.netEasePlaylistCache,
       });
     }

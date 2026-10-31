@@ -226,8 +226,8 @@ class CommentPage extends React.PureComponent<
     }
   };
   renderHeader = () => {
-    const n_state = this.state;
-    const {hotComments, total, song, api} = n_state;
+    const state = this.state;
+    const {hotComments, total, song, api} = state;
     if (total === 0) {
       return null;
     }
@@ -290,8 +290,8 @@ class CommentPage extends React.PureComponent<
     });
   };
   addComment = () => {
-    const n_state = this.state;
-    const {text, api, id} = n_state;
+    const state = this.state;
+    const {text, api, id} = state;
     if (text && id) {
       ReactNative.Keyboard.dismiss();
       switch (api) {
@@ -327,9 +327,9 @@ class CommentPage extends React.PureComponent<
     }
   };
   onWordsCloud = () => {
-    const n_state = this.state;
-    const e_hotComments = n_state.hotComments;
-    if (!n_state.loadWordsCloudDone) {
+    const state = this.state;
+    const e_hotComments = state.hotComments;
+    if (!state.loadWordsCloudDone) {
       this.getCommentKeywords(e_hotComments);
     }
     this.setState({
@@ -383,8 +383,8 @@ class CommentPage extends React.PureComponent<
     }
   };
   getMoreComment = () => {
-    const n_state = this.state;
-    const {api, id, offset} = n_state;
+    const state = this.state;
+    const {api, id, offset} = state;
     if (id) {
       switch (api) {
         case providers.netEase:

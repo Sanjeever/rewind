@@ -68,8 +68,8 @@ class MiniPlayerContent extends React.PureComponent<Props> {
     }
   };
   renderItem = (e: number) => {
-    const n_props = this.props;
-    const {index, data, unknown, playMode, isRound, currentMiniLyric, randomArray} = n_props;
+    const props = this.props;
+    const {index, data, unknown, playMode, isRound, currentMiniLyric, randomArray} = props;
     const v = playOrder.getNextPlayIndexByPagerPos({
       pos: e,
       playMode,

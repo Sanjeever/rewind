@@ -6,7 +6,7 @@ import {toast} from '../native/toast';
 import {errorMessage} from '../utils/types';
 import * as z from 'zod/mini';
 import {track} from '../services/schemas';
-import * as _appStorage from './../storage/index';
+import * as appStorage from './../storage/index';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
 import * as reactNativeLargelist from './../components/Scrolling';
@@ -44,7 +44,7 @@ class MusicHistory extends React.Component<
   loadHistory = async () => {
     const request = ++this.requestVersion;
     try {
-      const raw = await _appStorage.storage.load<unknown>({key: keys.musicHistory});
+      const raw = await appStorage.storage.load<unknown>({key: keys.musicHistory});
       const {netEase = [], qqMusic = [], local = [], ...extra} = historySchema.parse(raw);
       if (request !== this.requestVersion) return;
       this.historyLoaded = true;
@@ -160,8 +160,8 @@ class MusicHistory extends React.Component<
   };
   sectionDataLength = (e: Provider) => {
     let t;
-    const n_state = this.state;
-    const {netEase, qqMusic, local} = n_state;
+    const state = this.state;
+    const {netEase, qqMusic, local} = state;
     switch (e) {
       case providers.netEase:
         t = netEase.length;
@@ -186,8 +186,8 @@ class MusicHistory extends React.Component<
   };
   refreshList = (e: TrackFields, t: Provider) => {
     let a;
-    const n_state = this.state;
-    const {qqMusic, netEase, local} = n_state;
+    const state = this.state;
+    const {qqMusic, netEase, local} = state;
     switch (t) {
       case providers.qqMusic:
         a = qqMusic;
@@ -210,7 +210,7 @@ class MusicHistory extends React.Component<
       netEase: state.netEase,
       local: state.local,
     };
-    _appStorage.storage
+    appStorage.storage
       .save({
         key: keys.musicHistory,
         data: t,

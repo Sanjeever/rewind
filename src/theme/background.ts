@@ -1,4 +1,4 @@
-import * as _appStorage from './../storage/index';
+import * as appStorage from './../storage/index';
 import keys from '../storage/keys';
 import * as files from '../storage/files';
 export interface BackgroundState {
@@ -17,7 +17,7 @@ export const getBackground = function () {
 };
 export const initBackgroundState = async () => {
   try {
-    const background = await _appStorage.storage.load<{
+    const background = await appStorage.storage.load<{
       path?: string;
       opacity?: number;
       blur?: boolean;

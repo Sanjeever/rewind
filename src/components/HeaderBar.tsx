@@ -41,9 +41,9 @@ class HeaderBar extends React.PureComponent<
   };
   titleOrTextInput = () => {
     const showTextInput = this.state.showTextInput;
-    const r_props = this.props;
-    const {bold, onTop, fontColor, title, onSubmitEditing, onChangeText, searchText} = r_props;
-    if (r_props.forceShowTextInput || showTextInput === true) {
+    const props = this.props;
+    const {bold, onTop, fontColor, title, onSubmitEditing, onChangeText, searchText} = props;
+    if (props.forceShowTextInput || showTextInput === true) {
       return (
         <reactNativeAnimatable.View
           useNativeDriver={true}

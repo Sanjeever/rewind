@@ -32,10 +32,10 @@ class SavePicModal extends React.PureComponent<Record<string, never>, State> {
     return this.downloadSource(uri, 'thanks.jpg', '赞赏码');
   };
   saveTo = async () => {
-    const n_state = this.state;
-    const {img, song} = n_state;
+    const state = this.state;
+    const {img, song} = state;
     try {
-      if (n_state.type !== 'sponsor') {
+      if (state.type !== 'sponsor') {
         if (!img) {
           throw new Error('封面地址为空');
         }

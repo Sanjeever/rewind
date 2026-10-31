@@ -1,6 +1,6 @@
 import _neteaseImage from '../../assets/images/netease.png';
 import _qqmusicImage from '../../assets/images/qqmusic.png';
-import _default from './../components/Text';
+import Text from './../components/Text';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
 import * as Index from '../components/index';
@@ -71,7 +71,7 @@ class ProviderSelector extends React.PureComponent<Props> {
               marginRight: 10,
             }}
           />
-          {React.createElement(_default, null, props.data.title)}
+          {React.createElement(Text, null, props.data.title)}
         </ReactNative.Animated.View>
       );
     }
@@ -86,7 +86,7 @@ class ProviderSelector extends React.PureComponent<Props> {
         ]}
       >
         {this.renderApiIcon(props.data)}
-        {React.createElement(_default, null, props.data)}
+        {React.createElement(Text, null, props.data)}
       </ReactNative.Animated.View>
     );
   }

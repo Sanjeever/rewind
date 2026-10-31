@@ -1,8 +1,8 @@
-import * as _appStorage from './../storage/index';
+import * as appStorage from './../storage/index';
 import keys from '../storage/keys';
 export const check = async () => {
   try {
-    return await _appStorage.storage.load<boolean>({
+    return await appStorage.storage.load<boolean>({
       key: keys.firstTime,
     });
   } catch (error) {
@@ -14,7 +14,7 @@ export const check = async () => {
   }
 };
 const s = () =>
-  _appStorage.storage.save({
+  appStorage.storage.save({
     key: keys.firstTime,
     data: false,
   });

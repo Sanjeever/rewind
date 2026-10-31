@@ -27,8 +27,8 @@ class ListItem extends React.PureComponent<Props, {imgError: boolean}> {
   };
   renderImg = () => {
     const imgError = this.state.imgError;
-    const n_props = this.props;
-    const {img, errorIconName} = n_props;
+    const props = this.props;
+    const {img, errorIconName} = props;
     if (!img || imgError === true || img.includes(d)) {
       return (
         <ReactNative.View
@@ -60,8 +60,8 @@ class ListItem extends React.PureComponent<Props, {imgError: boolean}> {
     );
   };
   renderTitle = () => {
-    const n_props = this.props;
-    const {title, trans, vip, numberOfLines} = n_props;
+    const props = this.props;
+    const {title, trans, vip, numberOfLines} = props;
     if (title === '♡') {
       return (
         <components.Icon

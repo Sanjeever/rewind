@@ -1,8 +1,8 @@
 import log from '../../services/logger';
 import locales from '../../locales';
 import {toast} from '../../native/toast';
-import _default from './../../components/Pager';
-import * as _appStorage from './../../storage/index';
+import Pager from './../../components/Pager';
+import * as appStorage from './../../storage/index';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
 import FadingEdge from '../../components/FadingEdge';
@@ -81,7 +81,7 @@ class Home extends React.PureComponent<{navigation: Navigation}, State> {
     }
   };
   loadOrder = () => {
-    _appStorage.storage
+    appStorage.storage
       .load<State['pagesOrder']>({
         key: keysModule.pagesOrder,
       })
@@ -93,7 +93,7 @@ class Home extends React.PureComponent<{navigation: Navigation}, State> {
         }
       })
       .catch(this.onOrderError);
-    _appStorage.storage
+    appStorage.storage
       .load<State['apisOrder']>({
         key: keysModule.apisOrder,
       })
@@ -342,7 +342,7 @@ class Home extends React.PureComponent<{navigation: Navigation}, State> {
   };
   renderHeader = () => {
     return React.createElement(
-      _default,
+      Pager,
       {
         initialPage: 0,
         style: {

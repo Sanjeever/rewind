@@ -101,8 +101,8 @@ class MusicRecommend extends React.Component<
     });
   };
   _renderScenes = (e: string) => {
-    const a_state = this.state;
-    const {data, playlistData} = a_state;
+    const state = this.state;
+    const {data, playlistData} = state;
     switch (e) {
       case '1':
         if (data?.length > 0) {
@@ -147,8 +147,8 @@ class MusicRecommend extends React.Component<
     }
   };
   _renderItem = ({item, index}: {item: TrackFields; index: number}) => {
-    const a_state = this.state;
-    const {api, data, dislikeMode} = a_state;
+    const state = this.state;
+    const {api, data, dislikeMode} = state;
     const u = trackInfo.extractFullInfo(item);
     const onPress = dislikeMode
       ? () => {

@@ -97,8 +97,8 @@ class FollowPage extends React.PureComponent<ScreenProps<'FollowPage'>, State> {
     }
   };
   getMore = () => {
-    const r_state = this.state;
-    const {follows, followeds, userId, index} = r_state;
+    const state = this.state;
+    const {follows, followeds, userId, index} = state;
     if (userId == null) return;
     if (index === 0) {
       const o = follows.length;
@@ -140,8 +140,8 @@ class FollowPage extends React.PureComponent<ScreenProps<'FollowPage'>, State> {
     );
   };
   _renderScene = ({route}: SceneRendererProps & {route: Route}) => {
-    const r_state = this.state;
-    const {follows, followeds} = r_state;
+    const state = this.state;
+    const {follows, followeds} = state;
     switch (route.key) {
       case '1':
         if (follows?.length > 0) {

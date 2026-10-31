@@ -45,8 +45,8 @@ class DrawerActions extends React.PureComponent<Props, {netEaseLogined: boolean}
     });
   };
   onPress = (e: (typeof actions)[number]) => {
-    const a_props = this.props;
-    const {envelop, about, settings, update, timer, cloud, feature} = a_props;
+    const props = this.props;
+    const {envelop, about, settings, update, timer, cloud, feature} = props;
     switch (e.name) {
       case locales.INBOX:
         envelop();

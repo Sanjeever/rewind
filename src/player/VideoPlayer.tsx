@@ -8,9 +8,9 @@ import type {
   OnVideoErrorData,
 } from 'react-native-video';
 import {SafeAreaView as _SafeAreaView} from 'react-native-safe-area-context';
-import _default from './../components/Text';
+import Text from './../components/Text';
 import Slider from '../components/Slider';
-import Runtime927 from 'lodash/padStart';
+import padStart from 'lodash/padStart';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
 import TextTicker from 'react-native-text-ticker';
@@ -395,9 +395,9 @@ class VideoPlayer extends React.Component<Props, VideoPlayerState> {
     const t = '';
     seconds = Math.min(Math.max(seconds, 0), this.state.duration);
     if (this.state.showHours) {
-      return `${t}${Runtime927(Math.floor(seconds / 3600).toFixed(0), 2, '0')}:${Runtime927((Math.floor(seconds / 60) % 60).toFixed(0), 2, '0')}:${Runtime927(Math.floor(seconds % 60).toFixed(0), 2, '0')}`;
+      return `${t}${padStart(Math.floor(seconds / 3600).toFixed(0), 2, '0')}:${padStart((Math.floor(seconds / 60) % 60).toFixed(0), 2, '0')}:${padStart(Math.floor(seconds % 60).toFixed(0), 2, '0')}`;
     }
-    return `${t}${Runtime927(Math.floor(seconds / 60).toFixed(0), 2, '0')}:${Runtime927(Math.floor(seconds % 60).toFixed(0), 2, '0')}`;
+    return `${t}${padStart(Math.floor(seconds / 60).toFixed(0), 2, '0')}:${padStart(Math.floor(seconds % 60).toFixed(0), 2, '0')}`;
   }
   setSeekerPosition(inputPosition = 0) {
     const position = this.constrainToSeekerMinMax(inputPosition);
@@ -568,11 +568,11 @@ class VideoPlayer extends React.Component<Props, VideoPlayerState> {
           }}
           onValueChange={(t) => {
             this.setSeekerPosition(t);
-            const e_state = this.state;
-            if (this.player.scrubbingTimeStep > 0 && !e_state.loading && !e_state.scrubbing) {
+            const state = this.state;
+            if (this.player.scrubbingTimeStep > 0 && !state.loading && !state.scrubbing) {
               const o = this.calculateTimeFromSeekerPosition(t);
-              const i = 1000 * Math.abs(e_state.currentTime - o);
-              if (o < e_state.duration && i >= this.player.scrubbingTimeStep) {
+              const i = 1000 * Math.abs(state.currentTime - o);
+              if (o < state.duration && i >= this.player.scrubbingTimeStep) {
                 this.setState({
                   scrubbing: true,
                 });
@@ -585,13 +585,13 @@ class VideoPlayer extends React.Component<Props, VideoPlayerState> {
           onSlidingComplete={(t) => {
             this.setSeekerPosition(t);
             const n = this.calculateTimeFromSeekerPosition(t);
-            const e_state = this.state;
-            if (n >= e_state.duration && !e_state.loading) {
+            const state = this.state;
+            if (n >= state.duration && !state.loading) {
               this.setState({
                 paused: true,
               });
               this.events.onEnd();
-            } else if (e_state.scrubbing) {
+            } else if (state.scrubbing) {
               this.setState({
                 seeking: false,
               });
@@ -599,7 +599,7 @@ class VideoPlayer extends React.Component<Props, VideoPlayerState> {
               this.seekTo(n);
               this.setControlTimeout();
               this.setState({
-                paused: e_state.originallyPaused,
+                paused: state.originallyPaused,
                 seeking: false,
               });
             }
@@ -634,7 +634,7 @@ class VideoPlayer extends React.Component<Props, VideoPlayerState> {
   renderTimer() {
     return this.renderControl(
       React.createElement(
-        _default,
+        Text,
         {
           style: g.controls.timerText,
         },
@@ -660,7 +660,7 @@ class VideoPlayer extends React.Component<Props, VideoPlayerState> {
         <ReactNative.View style={g.error.container}>
           <ReactNative.Image style={g.error.icon} />
           {React.createElement(
-            _default,
+            Text,
             {
               style: g.error.text,
             },

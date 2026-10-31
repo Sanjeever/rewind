@@ -38,8 +38,8 @@ class ArtistSongs extends React.PureComponent<{api: Provider; hotSongs: TrackFie
     queue.playMV(e, api);
   };
   _renderItem = ({item, index}: {item: TrackFields; index: number}) => {
-    const r_props = this.props;
-    const {api, hotSongs} = r_props;
+    const props = this.props;
+    const {api, hotSongs} = props;
     const m = this.formatListItem(item);
     return (
       <components.SongRow

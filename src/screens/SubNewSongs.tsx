@@ -95,8 +95,8 @@ class SubNewSongs extends React.PureComponent<ScreenProps<'SubNewSongs'>, State>
     );
   };
   renderMV = () => {
-    const r_state = this.state;
-    const {mvData, dateIds} = r_state;
+    const state = this.state;
+    const {mvData, dateIds} = state;
     return mvData.map((e, t) => (
       <React.Fragment>
         {dateIds.indexOf(t) > -1 &&
@@ -116,8 +116,8 @@ class SubNewSongs extends React.PureComponent<ScreenProps<'SubNewSongs'>, State>
     ));
   };
   renderSongs = () => {
-    const r_state = this.state;
-    const {songData, dateIds} = r_state;
+    const state = this.state;
+    const {songData, dateIds} = state;
     return songData.map((item, t) => (
       <React.Fragment>
         {dateIds.indexOf(t) > -1 &&

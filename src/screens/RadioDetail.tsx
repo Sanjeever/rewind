@@ -91,8 +91,8 @@ class RadioDetail extends React.PureComponent<
     }
   };
   onChangeOrder = () => {
-    const n_state = this.state;
-    const {asc, id} = n_state;
+    const state = this.state;
+    const {asc, id} = state;
     this.getData(id!, !asc);
     this.setState({
       asc: !asc,

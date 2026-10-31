@@ -160,8 +160,8 @@ class CustomPlaylist extends React.PureComponent<
     }
   };
   playMusic = (item: TrackFields, t: number, api?: Provider) => {
-    const a_state = this.state;
-    const {searching, playlist} = a_state;
+    const state = this.state;
+    const {searching, playlist} = state;
     let index = t;
     if (searching === true) {
       playlist.filter((t, a) => {

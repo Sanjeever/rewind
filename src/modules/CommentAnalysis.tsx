@@ -1,5 +1,5 @@
 import Pager from './../components/Pager';
-import _default2 from './../components/Text';
+import Text from './../components/Text';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
 import * as reactNativeSpringScrollview from './../components/Scrolling';
@@ -188,7 +188,7 @@ class CommentAnalysis extends React.Component<
               }}
             >
               {React.createElement(
-                _default2,
+                Text,
                 {
                   style: [
                     p.text,
@@ -203,7 +203,7 @@ class CommentAnalysis extends React.Component<
                 song?.song,
               )}
               {React.createElement(
-                _default2,
+                Text,
                 {
                   style: [
                     p.text,
@@ -242,7 +242,7 @@ class CommentAnalysis extends React.Component<
                       }}
                     >
                       {React.createElement(
-                        _default2,
+                        Text,
                         {
                           style: [
                             p.text,
@@ -297,7 +297,7 @@ const f = function ({text}: {text?: string; style?: ReactNative.StyleProp<ReactN
   return (
     <ReactNative.View style={p.titleCon}>
       {React.createElement(
-        _default2,
+        Text,
         {
           style: [p.text, p.title],
         },

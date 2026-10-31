@@ -15,7 +15,7 @@ const headers = {
   'Accept-Language': 'zh-CN,zh;q=0.8',
   Host: 'c.y.qq.com',
 };
-const s = new (class e {
+class QQMusicService {
   searchTypeMap = {
     song: 0,
     singer: 1,
@@ -453,5 +453,5 @@ const s = new (class e {
     }
     return n;
   }
-})();
-export default s;
+}
+export default new QQMusicService();

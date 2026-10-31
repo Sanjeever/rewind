@@ -10,8 +10,8 @@ class CommentBubble extends React.PureComponent<{
   replied?: boolean;
 }> {
   renderContent = () => {
-    const o_props = this.props;
-    const {item, title, replied} = o_props;
+    const props = this.props;
+    const {item, title, replied} = props;
     const u = formatItem.getFormattedItem(item);
     if (title && u.content) {
       const textToHighlight = u.content;

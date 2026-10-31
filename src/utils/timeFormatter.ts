@@ -1,16 +1,16 @@
 import dayjs from 'dayjs';
 import type {ConfigType} from 'dayjs';
 import languageModule from '../native/language';
-import Runtime572 from 'dayjs/plugin/localizedFormat';
-import Runtime573 from 'dayjs/locale/en';
-import Runtime574 from 'dayjs/locale/zh-cn';
-const i: Record<string, typeof Runtime574> = {
-  zh_CN: Runtime574,
-  zh_TW: Runtime574,
-  zh_HK: Runtime574,
-  en_US: Runtime573,
+import localizedFormat from 'dayjs/plugin/localizedFormat';
+import english from 'dayjs/locale/en';
+import simplifiedChinese from 'dayjs/locale/zh-cn';
+const i: Record<string, typeof simplifiedChinese> = {
+  zh_CN: simplifiedChinese,
+  zh_TW: simplifiedChinese,
+  zh_HK: simplifiedChinese,
+  en_US: english,
 };
-dayjs.extend(Runtime572);
+dayjs.extend(localizedFormat);
 dayjs.locale(i[languageModule.language]);
 const useDate = function (e: number | string | Date) {
   const t = new Date(e);

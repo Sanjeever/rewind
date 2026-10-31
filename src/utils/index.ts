@@ -1,6 +1,6 @@
 import animInterpolate from './animInterpolate';
 import base64 from './base64';
-import Runtime557 from './md5';
+import md5 from './md5';
 import dialogs from './dialogs';
 import filterHelper from './filterHelper';
 import firstTimeChecker from './firstTimeChecker';
@@ -13,7 +13,7 @@ import timeFormatter from './timeFormatter';
 import universalNavigator from './universalNavigator';
 export {animInterpolate};
 export {base64};
-export {Runtime557 as md5};
+export {md5 as md5};
 export {dialogs};
 export {filterHelper};
 export {firstTimeChecker};

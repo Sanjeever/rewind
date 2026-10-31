@@ -50,8 +50,8 @@ class LyricLine extends React.PureComponent<LyricLineProps, {index: number | nul
     }
   };
   scrollToCurrentLine = () => {
-    const r_props = this.props;
-    const {currentTime, lyric, getIndex} = r_props;
+    const props = this.props;
+    const {currentTime, lyric, getIndex} = props;
     if (lyric && !(lyric.length < 2)) {
       const i = getIndex(lyric, currentTime);
       if (this._list && i) {

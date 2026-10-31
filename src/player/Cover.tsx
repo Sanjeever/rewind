@@ -41,8 +41,8 @@ class Cover extends React.Component<Props> {
     _e: ReactNative.GestureResponderEvent,
     t: ReactNative.PanResponderGestureState,
   ) => {
-    const r_props = this.props;
-    const {onTap, playerClose, showToolBtn, onDetail, onNowPlaying, reverseGestureHands} = r_props;
+    const props = this.props;
+    const {onTap, playerClose, showToolBtn, onDetail, onNowPlaying, reverseGestureHands} = props;
     if (!(t.y0 < 50)) {
       const {dy, dx} = t;
       const c = showToolBtn;
@@ -82,8 +82,8 @@ class Cover extends React.Component<Props> {
     onPanResponderRelease: this._onPanResponderRelease,
   });
   renderCoverImage = () => {
-    const r_props = this.props;
-    const {isRound, url, showElevation, showTool} = r_props;
+    const props = this.props;
+    const {isRound, url, showElevation, showTool} = props;
     const d = 0.65 * constants.DEVICE_WIDTH;
     if (isRound === false) {
       return (
@@ -165,8 +165,8 @@ class Cover extends React.Component<Props> {
     }
   };
   renderItem = (e: number) => {
-    const r_props = this.props;
-    const {index, data, unknown, playMode, playState, randomArray} = r_props;
+    const props = this.props;
+    const {index, data, unknown, playMode, playState, randomArray} = props;
     const g = playOrder.getNextPlayIndexByPagerPos({
       pos: e,
       playMode,

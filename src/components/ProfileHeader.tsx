@@ -50,8 +50,8 @@ class ProfileHeader extends React.PureComponent<
     toast(`你好啊，${e}`);
   };
   renderAvatars = () => {
-    const n_props = this.props;
-    const {onNavigate, nativeOffset} = n_props;
+    const props = this.props;
+    const {onNavigate, nativeOffset} = props;
     return this.state.data.map((e, r) => {
       if (e) {
         return (

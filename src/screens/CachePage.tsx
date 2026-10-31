@@ -1,5 +1,5 @@
 import {toast} from '../native/toast';
-import * as _appStorage from './../storage/index';
+import * as appStorage from './../storage/index';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
 import * as reactNativeSpringScrollview from './../components/Scrolling';
@@ -38,10 +38,10 @@ class CachePage extends React.PureComponent<{navigation: Pick<Navigation, 'goBac
     cacheSize: 0,
   };
   saveStorageCacheSize = () => {
-    const n_state = this.state;
-    const e_maxCacheSize = n_state.maxCacheSize;
-    if (n_state.deleted === false) {
-      return _appStorage.storage
+    const state = this.state;
+    const e_maxCacheSize = state.maxCacheSize;
+    if (state.deleted === false) {
+      return appStorage.storage
         .save({
           key: keys.maxCacheSize,
           data: e_maxCacheSize,
@@ -50,7 +50,7 @@ class CachePage extends React.PureComponent<{navigation: Pick<Navigation, 'goBac
     }
   };
   getStorageCacheSize = () => {
-    return _appStorage.storage
+    return appStorage.storage
       .load<number>({
         key: keys.maxCacheSize,
       })
@@ -76,7 +76,7 @@ class CachePage extends React.PureComponent<{navigation: Pick<Navigation, 'goBac
     }
   };
   removeSettings = () => {
-    return _appStorage.storage
+    return appStorage.storage
       .remove({
         key: keys.maxCacheSize,
       })

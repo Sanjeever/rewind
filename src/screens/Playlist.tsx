@@ -7,7 +7,7 @@ import type {Subscription} from '../events/Emitter';
 import {errorMessage} from '../utils/types';
 import {toast} from '../native/toast';
 import Clipboard from '@react-native-clipboard/clipboard';
-import * as _appStorage from './../storage/index';
+import * as appStorage from './../storage/index';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
 import * as reactNativeLargelist from './../components/Scrolling';
@@ -89,8 +89,8 @@ class Playlist extends React.PureComponent<ScreenProps<'Playlist'>, State> {
     }
   };
   collectPlaylistOrder = () => {
-    const r_state = this.state;
-    const {playlistIndex, api} = r_state;
+    const state = this.state;
+    const {playlistIndex, api} = state;
     if (playlistIndex) {
       events.emitter.emit(names.PlaylistSetOrder, {
         index: playlistIndex,
@@ -219,7 +219,7 @@ class Playlist extends React.PureComponent<ScreenProps<'Playlist'>, State> {
   };
   netEaseStorageList = (e?: TrackId) => {
     if (e) {
-      _appStorage.storage
+      appStorage.storage
         .load<PlaylistCache[]>({
           key: keys.netEasePlaylistCache,
         })
@@ -253,8 +253,8 @@ class Playlist extends React.PureComponent<ScreenProps<'Playlist'>, State> {
   };
   searchSong = (e: string, a = true, n = true) => {
     let t;
-    const r_state = this.state;
-    const {playlist, oriList, searchText} = r_state;
+    const state = this.state;
+    const {playlist, oriList, searchText} = state;
     if (playlist) {
       t =
         e.match(':0') || e.length < 1
@@ -331,8 +331,8 @@ class Playlist extends React.PureComponent<ScreenProps<'Playlist'>, State> {
     });
   };
   onSortText = () => {
-    const r_state = this.state;
-    const {orderText, playlist} = r_state;
+    const state = this.state;
+    const {orderText, playlist} = state;
     switch (orderText) {
       case sortModes.orderTexts.song:
       case sortModes.orderTexts.singer:
@@ -346,8 +346,8 @@ class Playlist extends React.PureComponent<ScreenProps<'Playlist'>, State> {
     }
   };
   onUser = () => {
-    const r_state = this.state;
-    const {api, creator} = r_state;
+    const state = this.state;
+    const {api, creator} = state;
     if (api === providers.netEase) {
       const userId = creator?.userId;
       if (userId) {
@@ -364,8 +364,8 @@ class Playlist extends React.PureComponent<ScreenProps<'Playlist'>, State> {
     });
   };
   onSubscribe = async (e: TrackId) => {
-    const r_state = this.state;
-    const {api, subscribed} = r_state;
+    const state = this.state;
+    const {api, subscribed} = state;
     const s = subscribed ? 'unsubscribe' : 'subscribe';
     try {
       await actions.onSubscribe(e, s, api);
@@ -390,8 +390,8 @@ class Playlist extends React.PureComponent<ScreenProps<'Playlist'>, State> {
     }
   };
   onLastPlay = () => {
-    const r_state = this.state;
-    const {lastPlayedSong, playlist} = r_state;
+    const state = this.state;
+    const {lastPlayedSong, playlist} = state;
     if (!(playlist?.length <= 0)) {
       if (lastPlayedSong) {
         const s = playlist.findIndex((e) => e.id === lastPlayedSong.id);
@@ -411,8 +411,8 @@ class Playlist extends React.PureComponent<ScreenProps<'Playlist'>, State> {
     }
   };
   _renderItem = ({item, index}: {item: TrackFields; index: number}) => {
-    const r_state = this.state;
-    const {api, playingIndex, isTopList} = r_state;
+    const state = this.state;
+    const {api, playingIndex, isTopList} = state;
     const d = actions.formatItemData(item, api);
     return (
       <components.SongRow
@@ -452,16 +452,16 @@ class Playlist extends React.PureComponent<ScreenProps<'Playlist'>, State> {
     this.props.navigation.goBack();
   };
   onInsertLastPlayed = () => {
-    const r_state = this.state;
-    const {lastPlayedSong, api} = r_state;
+    const state = this.state;
+    const {lastPlayedSong, api} = state;
     if (lastPlayedSong) {
       actions.addToQueue(lastPlayedSong, api);
     }
   };
   getPlaylistUrl = () => {
     let e;
-    const r_state = this.state;
-    const {api, playlistId} = r_state;
+    const state = this.state;
+    const {api, playlistId} = state;
     switch (api) {
       case providers.netEase:
         e = `https://music.163.com/#/playlist?id=${playlistId}`;

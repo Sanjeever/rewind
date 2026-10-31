@@ -150,8 +150,8 @@ class DetailModal extends React.PureComponent<
     ]);
   };
   deleteFromLocal = async () => {
-    const l_state = this.state;
-    const {songItem, index} = l_state;
+    const state = this.state;
+    const {songItem, index} = state;
     try {
       if (songItem?.id == null || index == null) throw new Error('歌曲缺少本地标识');
       const removed = await _mediaStore.deleteAudio(songItem.id);
@@ -184,8 +184,8 @@ class DetailModal extends React.PureComponent<
   };
   deleteFromPlaylist = () => {
     let trackid;
-    const l_state = this.state;
-    const {api, songItem} = l_state;
+    const state = this.state;
+    const {api, songItem} = state;
     if (!songItem) return;
     switch (api) {
       case providers.netEase:
@@ -221,8 +221,8 @@ class DetailModal extends React.PureComponent<
     n[e]?.();
   };
   onCollect = () => {
-    const l_state = this.state;
-    const {api, songItem} = l_state;
+    const state = this.state;
+    const {api, songItem} = state;
     if (!api || !songItem) return;
     events.emitter.emit(names.CollectModal, {
       api,
@@ -230,16 +230,16 @@ class DetailModal extends React.PureComponent<
     });
   };
   onMV = () => {
-    const l_state = this.state;
-    const {mvid, api} = l_state;
+    const state = this.state;
+    const {mvid, api} = state;
     if (mvid && api) {
       queue.playMV(mvid, api);
       this.onClose();
     }
   };
   onLyric = () => {
-    const l_state = this.state;
-    const {api, songItem} = l_state;
+    const state = this.state;
+    const {api, songItem} = state;
     if (!api || !songItem) return;
     const uid = trackInfo.extractFullInfo(songItem).uid;
     if (uid == null) return;
@@ -251,8 +251,8 @@ class DetailModal extends React.PureComponent<
   };
   onShare = () => {
     let message;
-    const l_state = this.state;
-    const {api, songItem} = l_state;
+    const state = this.state;
+    const {api, songItem} = state;
     if (!songItem) return;
     const o = trackInfo.extractFullInfo(songItem);
     const r = utils.parseArtist(o.singer);
@@ -297,8 +297,8 @@ class DetailModal extends React.PureComponent<
     }
   };
   onAlbum = () => {
-    const l_state = this.state;
-    const {api, songItem} = l_state;
+    const state = this.state;
+    const {api, songItem} = state;
     if (!songItem || !api) return;
     const item = trackInfo.extractAlbumItem(songItem, api);
     if (!item || typeof item !== 'object' || Array.isArray(item)) return;
@@ -308,8 +308,8 @@ class DetailModal extends React.PureComponent<
     });
   };
   onComment = () => {
-    const l_state = this.state;
-    const {songItem, api} = l_state;
+    const state = this.state;
+    const {songItem, api} = state;
     if (!songItem || !api) return;
     this.navigateTo('CommentPage', {
       api,
@@ -318,8 +318,8 @@ class DetailModal extends React.PureComponent<
     this.onClose();
   };
   insertToQueue = () => {
-    const l_state = this.state;
-    const {songItem, api} = l_state;
+    const state = this.state;
+    const {songItem, api} = state;
     if (songItem && api) {
       events.emitter.emit(names.InsertToList, {
         data: songItem,
@@ -329,8 +329,8 @@ class DetailModal extends React.PureComponent<
     }
   };
   onDownload = () => {
-    const l_state = this.state;
-    const {songItem, api} = l_state;
+    const state = this.state;
+    const {songItem, api} = state;
     if (!songItem || !api) return;
     const cloneThroughLinking = this.props.cloneThroughLinking;
     const o = trackInfo.extractFullInfo(songItem);
@@ -351,8 +351,8 @@ class DetailModal extends React.PureComponent<
     );
   };
   saveCover = () => {
-    const l_state = this.state;
-    const {song, songItem} = l_state;
+    const state = this.state;
+    const {song, songItem} = state;
     if (!song || !songItem) return;
     events.emitter.emit(names.SavePicModal, {
       img: song.img,
