@@ -7,7 +7,7 @@ import {qqMessage} from '../features/account/loginMessages';
 import type {QQMessage} from '../features/account/loginMessages';
 import {toast} from '../native/toast';
 import {WebView} from 'react-native-webview';
-import cookiesModule from '../native/cookies';
+import {getWebSession, parseSession} from '../services/qqmusic/session';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
 import * as reactNativeSpringScrollview from './../components/Scrolling';
@@ -141,16 +141,26 @@ class QQMusicLogin extends React.PureComponent<ScreenProps<'QQMusicLogin'>, Stat
       );
   };
   onQQMusicMessage = async ({nickname, avatarUrl, cookies}: QQMessage) => {
-    if (!avatarUrl || this.loginPending) {
+    if (this.loginPending) {
       return;
     }
     this.loginPending = true;
     try {
-      await cookiesModule.setFromResponse('https://c.y.qq.com', cookies);
-      const uin = services.QQMusic.getCookie('uin', cookies);
-      if (!uin) throw new Error('登录响应缺少账号标识');
-      const qq = uin.replace(/o/, '');
-      const response = await services.QQMusic.profile(qq, cookies);
+      const web = await getWebSession();
+      const session = web.musicKey ? web : parseSession(cookies);
+      if (!session.musicKey) return;
+      await users.saveUserStorage(
+        {
+          uin: session.musicId,
+          headpic: avatarUrl,
+          nick: nickname || session.musicId,
+          cookies: session.cookies,
+        },
+        providers.qqMusic,
+      );
+      this.setState({avatar: avatarUrl, nickname: nickname || session.musicId, showWebView: false});
+      events.emitter.emit(names.UserLogined);
+      const response = await services.QQMusic.profile(session.musicId, session.cookies);
       if (!response?.mymusic) {
         throw new Error(locales.PLAYLIST_FETCH_FAILED);
       }
@@ -160,23 +170,10 @@ class QQMusicLogin extends React.PureComponent<ScreenProps<'QQMusicLogin'>, Stat
       if (!liked) {
         throw new Error(locales.PLAYLIST_FETCH_FAILED);
       }
-      await users.saveUserStorage(
-        {
-          ...response.creator,
-          cookies,
-        },
-        providers.qqMusic,
-      );
       await users.saveUserPlayList([liked, ...response.mydiss.list], providers.qqMusic);
-      this.setState({
-        avatar: avatarUrl,
-        nickname,
-        showWebView: false,
-      });
       await this.qqMusicLikelist(liked);
-      events.emitter.emit(names.UserLogined);
     } catch (error) {
-      toast(`登录失败：${errorMessage(error)}`);
+      toast(errorMessage(error));
     } finally {
       this.loginPending = false;
     }
@@ -299,7 +296,6 @@ class QQMusicLoginScreen extends React.PureComponent<
       const result = qqMessage.safeParse(JSON.parse(e.nativeEvent.data));
       if (result.success) {
         this.props.onMessage(result.data);
-        this.login();
       }
     } catch (error) {
       return error;
@@ -344,6 +340,21 @@ class QQMusicLoginScreen extends React.PureComponent<
     );
   }
 }
-const injectedJavaScript =
-  "\nfunction post() {\n  function message(){\n    if (window.ReactNativeWebView && window.ReactNativeWebView.postMessage) {\n      var avatar = document.getElementById('profileHead');\n      var nickname = document.getElementsByClassName('profile__name');\n      var avatar_pe = document.querySelector('.user__avator');\n      if(avatar){\n        var obj = JSON.stringify({\n          avatarUrl:avatar.src,\n          nickname:nickname[0].innerText,\n          cookies:document.cookie\n        });\n        window.ReactNativeWebView.postMessage(obj);\n      }\n      if(avatar_pe) {\n          var username = document.querySelector('.user__name_text');\n          var obj = JSON.stringify({\n              avatarUrl:avatar_pe.src,\n              nickname:username.innerText,\n              cookies:document.cookie\n          });\n          window.ReactNativeWebView.postMessage(obj);\n      }\n    }\n  }\n  setInterval(message, 500);\n}\npost();\n";
+const injectedJavaScript = `
+  (function () {
+    function message() {
+      if (!/(^|\\.)y\\.qq\\.com$/.test(location.hostname)) return;
+      var avatar = document.querySelector('#profileHead, .user__avator');
+      var nickname = document.querySelector('.profile__name, .user__name_text');
+      window.ReactNativeWebView.postMessage(JSON.stringify({
+        avatarUrl: avatar ? avatar.src : '',
+        nickname: nickname ? nickname.innerText : '',
+        cookies: document.cookie
+      }));
+    }
+    message();
+    setInterval(message, 1000);
+  })();
+  true;
+`;
 export default QQMusicLogin;

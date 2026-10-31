@@ -1,9 +1,9 @@
 const endpoint = 'https://u.y.qq.com/cgi-bin/musicu.fcg';
-const guid = '4422768122';
-const uin = '1152921504792286499';
 import type * as z from 'zod/mini';
-import {audioResponse, searchResponse} from './responses';
+import {audioResponse, searchResponse, detailResponse} from './responses';
 import {response} from '../schemas';
+import {getSession, guid} from './session';
+import type {TrackFields} from '../track';
 const envelope = response({});
 
 async function request<S extends z.ZodMiniType>(
@@ -46,6 +46,46 @@ async function request<S extends z.ZodMiniType>(
   }
 }
 
+export async function call<S extends z.ZodMiniType>(
+  module: string,
+  method: string,
+  param: Record<string, unknown>,
+  stage: string,
+  schema: S,
+  currentSession?: Awaited<ReturnType<typeof getSession>>,
+) {
+  const session = currentSession ?? (await getSession());
+  return request(
+    endpoint,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Referer: 'https://y.qq.com/',
+        Origin: 'https://y.qq.com',
+        Cookie: session.cookies,
+      },
+      body: JSON.stringify({
+        comm: {
+          ct: 24,
+          cv: 4747474,
+          format: 'json',
+          platform: 'yqq.json',
+          uin: session.musicId,
+          g_tk: session.token,
+          g_tk_new_20200303: session.token,
+          ...(session.musicKey
+            ? {qq: session.musicId, authst: session.musicKey, tmeLoginType: session.loginType}
+            : {}),
+        },
+        req_0: {module, method, param},
+      }),
+    },
+    stage,
+    schema,
+  );
+}
+
 export async function searchSongs(query: string, page = 1) {
   const payload = {
     data: {
@@ -70,44 +110,39 @@ export async function searchSongs(query: string, page = 1) {
   return songs;
 }
 
-export async function getMusicUrl(mid: string) {
-  const payload = {
-    req: {
-      module: 'CDN.SrfCdnDispatchServer',
-      method: 'GetCdnDispatch',
-      param: {guid, calltype: 0, userip: ''},
-    },
-    req_0: {
-      module: 'vkey.GetVkeyServer',
-      method: 'CgiGetVkey',
-      param: {guid, songmid: [mid], songtype: [0], uin, loginflag: 1, platform: '20'},
-    },
-    comm: {uin, format: 'json', ct: 24, cv: 0},
-  };
-  const parameters = new URLSearchParams({
-    g_tk: '5381',
-    loginUin: uin,
-    hostUin: '0',
-    format: 'json',
-    inCharset: 'utf8',
-    outCharset: 'utf-8',
-    notice: '0',
-    platform: 'yqq.json',
-    needNewCode: '0',
-    data: JSON.stringify(payload),
-  });
-  const response = await request(
-    endpoint + '?' + parameters,
+export async function getMusicUrl(mid: string, highQuality = false, track?: TrackFields) {
+  const session = await getSession();
+  let media = track?.file?.media_mid;
+  let songType = track?.type ?? 0;
+  if (!media) {
+    const detail = await call(
+      'music.pf_song_detail_svr',
+      'get_song_detail_yqq',
+      {song_mid: mid},
+      '歌曲详情',
+      detailResponse,
+      session,
+    );
+    if (detail.req_0?.code !== 0)
+      throw new Error('QQ 音乐歌曲详情失败：业务码 ' + detail.req_0?.code);
+    media = detail.req_0.data?.track_info?.file?.media_mid;
+    songType = detail.req_0.data?.track_info?.type ?? songType;
+    if (!media) throw new Error('QQ 音乐歌曲详情缺少媒体标识');
+  }
+  const response = await call(
+    'music.vkey.GetVkey',
+    'UrlGetVkey',
     {
-      headers: {
-        'Accept-Encoding': 'identity;q=1, *;q=0',
-        'Accept-Language': 'zh-CN,zh;q=0.9',
-        'User-Agent':
-          'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.84 Safari/537.36',
-      },
+      guid,
+      songmid: [mid],
+      songtype: [songType],
+      filename: [(highQuality ? 'M800' : 'M500') + media + '.mp3'],
+      uin: session.musicId,
+      ctx: 0,
     },
     '音源',
     audioResponse,
+    session,
   );
   if (response.req_0?.code !== 0)
     throw new Error('QQ 音乐音源失败：业务码 ' + response.req_0?.code);

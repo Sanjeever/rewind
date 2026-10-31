@@ -66,6 +66,14 @@ export const searchResponse = response({
   ),
 });
 const mid = z.looseObject({result: z.number(), purl: z.string()});
+export const detailResponse = response({
+  req_0: optional(
+    z.looseObject({
+      code: z.number(),
+      data: optional(z.looseObject({track_info: optional(qqTrack)})),
+    }),
+  ),
+});
 const cdn = z.looseObject({sip: optional(z.array(z.string()))});
 export const audioResponse = response({
   req_0: optional(

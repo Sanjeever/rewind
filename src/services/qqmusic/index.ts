@@ -23,8 +23,8 @@ class QQMusicService {
     playlist: 3,
     mv: 4,
   };
-  getMusicUrl(mid: string) {
-    return qqHttp.getMusicUrl(mid);
+  getMusicUrl(mid: string, highQuality = false, track?: import('../track').TrackFields) {
+    return qqHttp.getMusicUrl(mid, highQuality, track);
   }
   searchSong(query: string, page = 1) {
     return qqHttp.searchSongs(query, page);

@@ -50,6 +50,8 @@ export interface TrackFields {
   mainTrackId?: number;
   rid?: TrackId;
   fee?: number;
+  type?: number;
+  file?: {media_mid?: string};
   description?: string;
   mv?: number | {vid?: TrackId};
   vid?: TrackId;
