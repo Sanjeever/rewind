@@ -15,84 +15,67 @@ import * as trackInfo from '../services/trackInfo';
 import users from '../storage/users';
 import CustomPlaylistHeader from './../modules/CustomPlaylistHeader';
 import PlaylistChoice from './../modules/PlaylistChoice';
-class ChangePlaylistModal extends React.PureComponent {
+import {formatPlaylist} from '../services/playlistInfo';
+import {errorMessage} from '../utils/types';
+import type {Provider} from '../services/providers';
+import type {TrackFields, TrackId, ArtworkSize} from '../services/track';
+import type {Playlist} from '../storage/models';
+import type {Subscription} from '../events/Emitter';
+class ChangePlaylistModal extends React.PureComponent<
+  {songItem: TrackFields | null},
+  {playlist: Playlist[]; modalVisible: boolean; loaded: boolean}
+> {
+  sub?: Subscription;
+  requestId = 0;
+  _scrollView: reactNativeSpringScrollview.SpringScrollView | null = null;
   state = {
+    loaded: false,
     playlist: [],
     modalVisible: false,
   };
   closePickPlaylistModal = () => {
+    this.requestId++;
     this.setState({
       modalVisible: false,
       playlist: [],
     });
   };
-  songName = function (e, t = 'big') {
+  songName = function (e: TrackFields | null, t: ArtworkSize = 'big') {
     if (e) {
       return trackInfo.extractFullInfo(e, t);
     }
     return null;
   };
   getPlaylist = async () => {
-    const stored = await users.getUserPlayList();
-    const playlist = [];
-    for (const api of [providers.netEase, providers.qqMusic]) {
-      for (const item of stored?.[api] || []) {
-        playlist.push({
-          ...item,
-          api,
-        });
+    const request = ++this.requestId;
+    try {
+      const stored = await users.getUserPlayList();
+      const playlist: Playlist[] = [];
+      for (const api of [providers.netEase, providers.qqMusic]) {
+        for (const item of stored?.[api] || []) {
+          playlist.push({
+            ...item,
+            api,
+          });
+        }
+      }
+      if (request !== this.requestId) return;
+      this.setState({
+        playlist,
+        loaded: true,
+      });
+    } catch (error) {
+      if (request === this.requestId) {
+        this.setState({loaded: true});
+        toast(errorMessage(error));
       }
     }
-    this.setState({
-      playlist,
-    });
   };
   onTop = () => {
-    this._scrollView.scrollToBegin?.();
+    this._scrollView?.scrollToBegin();
   };
-  _renderIndexPath = ({row}) => {
-    const playlist = this.state.playlist;
-    return this._renderItem({
-      item: playlist[row],
-      index: row,
-    });
-  };
-  formatItem = (e) => {
-    const t = {};
-    if (e.api === providers.netEase) {
-      t.title = e.name;
-      t.img = `${e.coverImgUrl}?param=200y200`;
-      t.trackCount = e.trackCount;
-    } else if (e.api === providers.qqMusic) {
-      const l = this.qqMusicItem(e);
-      t.title = l.title;
-      t.img = l.picurl;
-      t.trackCount = l.num;
-    }
-    return t;
-  };
-  qqMusicItem = function (e) {
-    const t = {};
-    if (e.title) {
-      t.title = e.title;
-      t.picurl =
-        e.picurl !== ''
-          ? e.picurl
-          : 'http://s4.music.126.net/style/web2/img/default/default_album.jpg';
-      t.num = e.subtitle !== '' ? e.subtitle.replace(/\u9996.+/, '') : null;
-      t.id = e.id || e.dissid;
-      t.dirid = e.dirid;
-    } else {
-      t.title = e.dissname;
-      t.num = e.songnum;
-      t.picurl = e.logo;
-      t.id = e.dissid;
-      t.dirid = e.dirid;
-    }
-    return t;
-  };
-  _renderItem = ({item}) => {
-    const l = this.formatItem(item);
+  _renderItem = ({item}: {item: Playlist}) => {
+    const l = formatPlaylist(item, item.api!);
     return (
       <CustomPlaylistHeader
         title={l.title}
@@ -104,49 +87,60 @@ class ChangePlaylistModal extends React.PureComponent {
       />
     );
   };
-  onChangePlaylist = (e) => {
+  onChangePlaylist = (e: Playlist) => {
     switch (e.api) {
       case providers.netEase: {
         const t = e.id;
+        if (t == null) throw new Error('歌单缺少标识');
         this.getNeteasePlayListDetail(t);
         break;
       }
       case providers.qqMusic: {
         const l = e.id || e.dissid;
+        if (l == null) throw new Error('歌单缺少标识');
         this.getQQMusicPlayListDetail(l);
       }
     }
   };
-  getQQMusicPlayListDetail = async (id) => {
+  getQQMusicPlayListDetail = async (id: TrackId) => {
+    const request = this.requestId;
     try {
       const account = (await users.getUserInfo())?.qqMusic;
       const playlists = await services.QQMusic.disslist({
         id,
         qq: account?.userId,
       });
-      if (!playlists[0]) throw new Error(locales.PLAYLIST_FETCH_FAILED);
+      if (request !== this.requestId) return;
+      if (!playlists?.[0]?.songlist) throw new Error(locales.PLAYLIST_FETCH_FAILED);
       this.qqMusicPlaylistPlay(playlists[0].songlist);
     } catch (error) {
-      toast('歌单加载失败：' + error.message);
+      if (request === this.requestId) toast('歌单加载失败：' + errorMessage(error));
     }
   };
-  qqMusicPlaylistPlay = (data) => {
+  qqMusicPlaylistPlay = (data: TrackFields[]) => {
     this.emit({
       data,
       api: providers.qqMusic,
     });
   };
-  getNeteasePlayListDetail = async (id) => {
-    const response = await services.Netease.playlist_detail(id);
-    if (response?.playlist) {
-      this.emit({
-        data: response.playlist.tracks,
-        api: providers.netEase,
-      });
+  getNeteasePlayListDetail = async (id: TrackId) => {
+    const request = this.requestId;
+    try {
+      const response = await services.Netease.playlist_detail(id);
+      if (request !== this.requestId) return;
+      if (response.code === 200 && response.playlist?.tracks) {
+        this.emit({
+          data: response.playlist.tracks,
+          api: providers.netEase,
+        });
+      } else throw new Error(response.message || locales.PLAYLIST_FETCH_FAILED);
+    } catch (error) {
+      if (request === this.requestId) toast('歌单加载失败：' + errorMessage(error));
     }
   };
-  emit = ({api, data}) => {
-    const index = utils.random.getInt(1, data.length);
+  emit = ({api, data}: {api: Provider; data: TrackFields[]}) => {
+    if (!data.length) throw new Error('歌单为空');
+    const index = utils.random.getInt(0, data.length);
     events.toPlayer({
       item: data[index],
       data,
@@ -163,12 +157,14 @@ class ChangePlaylistModal extends React.PureComponent {
     this.sub = events.emitter.addListener(names.ChangePlaylist, () => {
       this.setState({
         modalVisible: true,
+        loaded: false,
       });
       this.getPlaylist();
     });
   }
   componentWillUnmount() {
-    this.sub.remove?.();
+    this.requestId++;
+    this.sub?.remove();
   }
   render() {
     const songItem = this.props.songItem;
@@ -195,16 +191,17 @@ class ChangePlaylistModal extends React.PureComponent {
           <FadingEdge top={30}>
             <reactNativeSpringScrollview.SpringScrollView
               ref={(t) => {
-                return (this._scrollView = t);
+                this._scrollView = t;
               }}
             >
               {playlist?.length > 0 ? (
-                playlist.map((item, index) =>
+                playlist.map((item) =>
                   this._renderItem({
                     item,
-                    index,
                   }),
                 )
+              ) : this.state.loaded ? (
+                <ReactNative.View />
               ) : (
                 <components.Spinkit />
               )}

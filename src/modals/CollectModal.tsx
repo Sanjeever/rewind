@@ -16,42 +16,63 @@ import '../utils/types';
 import users from '../storage/users';
 import CustomPlaylistHeader from './../modules/CustomPlaylistHeader';
 import PlaylistChoice from './../modules/PlaylistChoice';
-class CollectModal extends React.PureComponent {
-  state = {
-    api: '',
+import {formatPlaylist} from '../services/playlistInfo';
+import {getTrackKey} from '../services/trackInfo';
+import {errorMessage} from '../utils/types';
+import type {Provider} from '../services/providers';
+import type {TrackFields, TrackId} from '../services/track';
+import type {Playlist, CustomPlaylist} from '../storage/models';
+import type {Subscription} from '../events/Emitter';
+interface State {
+  api: Provider | null;
+  data: TrackFields[];
+  songItem: TrackFields | null;
+  playlist: Playlist[];
+  locals: CustomPlaylist[];
+  mainModalShow: boolean;
+}
+class CollectModal extends React.PureComponent<Record<string, never>, State> {
+  sub?: Subscription;
+  requestId = 0;
+  _scrollView: reactNativeSpringScrollview.SpringScrollView | null = null;
+  state: State = {
+    api: null,
+    songItem: null,
     data: [],
     playlist: [],
     locals: [],
     mainModalShow: false,
   };
-  getLocalPlaylist = () => {
-    playlistFiles.getPlaylist().then((e) => {
-      if (e.playlists.length > 0) {
-        this.setState({
-          locals: e.playlists,
-        });
-      }
-    });
-  };
-  playlist = async (api) => {
-    const stored = await users.getUserPlayList();
-    this.setState({
-      playlist: stored?.[api] || [],
-    });
+  loadPlaylists = async (api: Provider) => {
+    const request = ++this.requestId;
+    try {
+      const local = await playlistFiles.getPlaylist();
+      const stored = await users.getUserPlayList();
+      if (request !== this.requestId) return;
+      this.setState({
+        playlist: stored?.[api] || [],
+        locals: local.playlists,
+      });
+    } catch (error) {
+      if (request === this.requestId) toast('读取歌单失败：' + errorMessage(error));
+    }
   };
   onClosed = () => {
+    this.requestId++;
     this.setState({
-      api: '',
+      api: null,
+      songItem: null,
+      data: [],
       mainModalShow: false,
       playlist: [],
       locals: [],
     });
   };
   onTop = () => {
-    this._scrollView.scrollToBegin?.();
+    this._scrollView?.scrollToBegin();
   };
-  _renderItem = ({item}) => {
-    const a = this.formatItem(item);
+  _renderItem = ({item}: {item: Playlist}) => {
+    const a = formatPlaylist(item, this.state.api!);
     return (
       <CustomPlaylistHeader
         title={a.title}
@@ -63,44 +84,10 @@ class CollectModal extends React.PureComponent {
       />
     );
   };
-  formatItem = (e) => {
-    const api = this.state.api;
-    const a = {};
-    if (api === providers.netEase) {
-      a.title = e.name;
-      a.img = `${e.coverImgUrl}?param=200y200`;
-      a.trackCount = e.trackCount;
-    } else if (api === providers.qqMusic) {
-      const r = this.qqMusicItem(e);
-      a.title = r.title;
-      a.img = r.picurl;
-      a.trackCount = r.num;
-    }
-    return a;
-  };
-  qqMusicItem = function (e) {
-    const t = {};
-    if (e.title) {
-      t.title = e.title;
-      t.picurl =
-        e.picurl !== ''
-          ? e.picurl
-          : 'http://s4.music.126.net/style/web2/img/default/default_album.jpg';
-      t.num = e.subtitle !== '' ? e.subtitle.replace(/\u9996.+/, '') : null;
-      t.id = e.id || e.dissid;
-      t.dirid = e.dirid;
-    } else {
-      t.title = e.dissname;
-      t.num = e.songnum;
-      t.picurl = e.logo;
-      t.id = e.dissid;
-      t.dirid = e.dirid;
-    }
-    return t;
-  };
-  onLocalCollect = async (index) => {
+  onLocalCollect = async (index: number) => {
     try {
       const {api, data, songItem} = this.state;
+      if (!api) throw new Error('未选择歌曲来源');
       const additions = songItem
         ? [
             {
@@ -123,7 +110,7 @@ class CollectModal extends React.PureComponent {
             tracks: [
               ...additions,
               ...playlist.tracks.filter(
-                (song) => !additions.some((next) => next.id === song.id && next.api === song.api),
+                (song) => !additions.some((next) => getTrackKey(next) === getTrackKey(song)),
               ),
             ],
           };
@@ -136,23 +123,33 @@ class CollectModal extends React.PureComponent {
       });
       this.onClosed();
     } catch (error) {
-      toast(`收藏失败：${error.message}`);
+      toast(`收藏失败：${errorMessage(error)}`);
     }
   };
-  onCollect = async (playlist) => {
+  onCollect = async (playlist: Playlist) => {
     try {
       const {songItem, api, data} = this.state;
       if (api === providers.netEase) {
+        if (playlist.id == null) throw new Error('歌单缺少标识');
+        const tracks = data.length ? data : songItem ? [songItem] : [];
+        if (!tracks.length) throw new Error('未选择歌曲');
         await this.collectToNetease(
           playlist.id,
-          Array.isArray(data) && data.length ? data.map((song) => song.id) : songItem.id,
+          tracks.map((song) => {
+            if (song.id == null) throw new Error('歌曲缺少标识');
+            return song.id;
+          }),
         );
       } else if (api === providers.qqMusic) {
         const account = (await users.getUserInfo())?.qqMusic;
         if (!account?.cookies) {
           throw new Error('请先登录 QQ 音乐');
         }
-        const songmid = songItem.songmid || songItem.mid;
+        const songmid = songItem?.songmid || songItem?.mid;
+        if (!songmid) throw new Error('未选择 QQ 音乐歌曲');
+        if (account.userId == null) throw new Error('QQ 音乐账号缺少标识');
+        if (playlist.title !== '我喜欢' && playlist.dirid == null)
+          throw new Error('歌单缺少目录标识');
         const response =
           playlist.title === '我喜欢'
             ? await services.QQMusic.like({
@@ -162,7 +159,7 @@ class CollectModal extends React.PureComponent {
               })
             : await services.QQMusic.addToDir({
                 songmid,
-                dirid: playlist.dirid,
+                dirid: playlist.dirid!,
                 qq: account.userId,
                 cookies: account.cookies,
               });
@@ -172,10 +169,10 @@ class CollectModal extends React.PureComponent {
       }
       this.onClosed();
     } catch (error) {
-      toast(`收藏失败：${error.message}`);
+      toast(`收藏失败：${errorMessage(error)}`);
     }
   };
-  collectToNetease = async (pid, tracks) => {
+  collectToNetease = async (pid: TrackId, tracks: TrackId[]) => {
     const response = await services.Netease.playlist_tracks({
       pid,
       tracks,
@@ -201,23 +198,16 @@ class CollectModal extends React.PureComponent {
         this.setState({
           api,
           mainModalShow: true,
+          songItem: song || null,
+          data: data || [],
         });
-        this.playlist(api);
-        this.getLocalPlaylist();
-        if (song) {
-          this.setState({
-            songItem: song,
-          });
-        } else if (data) {
-          this.setState({
-            data,
-          });
-        }
+        this.loadPlaylists(api);
       }
     });
   }
   componentWillUnmount() {
-    this.sub.remove?.();
+    this.requestId++;
+    this.sub?.remove();
   }
   render() {
     const state = this.state;
@@ -242,7 +232,7 @@ class CollectModal extends React.PureComponent {
           <FadingEdge top={30}>
             <reactNativeSpringScrollview.SpringScrollView
               ref={(t) => {
-                return (this._scrollView = t);
+                this._scrollView = t;
               }}
             >
               <React.Fragment>
@@ -258,10 +248,9 @@ class CollectModal extends React.PureComponent {
                   />
                 ))}
               </React.Fragment>
-              {playlist.map((item, index) =>
+              {playlist.map((item) =>
                 this._renderItem({
                   item,
-                  index,
                 }),
               )}
               <ReactNative.View style={q.footer} />
@@ -289,7 +278,7 @@ class CollectModal extends React.PureComponent {
     );
   }
 }
-var q = ReactNative.StyleSheet.create({
+const q = ReactNative.StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#000',

@@ -12,13 +12,32 @@ import * as events from '../events/index';
 import * as utils from '../utils/index';
 import '../utils/types';
 import * as b from '../services/trackInfo';
+import type {Provider} from '../services/providers';
+import type {TrackFields} from '../services/track';
+import type {Subscription} from '../events/Emitter';
+import {clearQueue} from '../player/commands';
 const x = {
   normal: 'normal',
   deleting: 'deleting',
   filtering: 'filtering',
-};
-class NowPlayingModal extends React.PureComponent {
-  state = {
+} as const;
+type Mode = (typeof x)[keyof typeof x];
+interface Props {
+  data: readonly TrackFields[];
+  api: Provider;
+  index: number;
+  songItem: TrackFields | null;
+  show: boolean;
+  isRound: boolean;
+  setDisplayNowPlaying(show: boolean): void;
+}
+class NowPlayingModal extends React.PureComponent<
+  Props,
+  {filterText: string; filterList: TrackFields[]; mode: Mode}
+> {
+  sub?: Subscription;
+  _list: reactNativeLargelist.LargeList<TrackFields> | null = null;
+  state: {filterText: string; filterList: TrackFields[]; mode: Mode} = {
     filterText: '',
     filterList: [],
     mode: x.normal,
@@ -53,7 +72,10 @@ class NowPlayingModal extends React.PureComponent {
     const filterText = this.state.filterText;
     const data = this.props.data;
     if (filterText.length > 0) {
-      const filterList = utils.filterHelper.quickSearch(data, filterText);
+      const filterList = utils.filterHelper.quickSearch(
+        data.map((track) => ({...track})),
+        filterText,
+      );
       this.setState({
         filterList,
       });
@@ -63,16 +85,18 @@ class NowPlayingModal extends React.PureComponent {
       });
     }
   };
-  onChangeText = (filterText) => {
-    this.onSubmitEditing();
-    this.setState({
-      filterText,
-    });
+  onChangeText = (filterText: string) => {
+    this.setState(
+      {
+        filterText,
+      },
+      this.onSubmitEditing,
+    );
   };
   changePlaylist = function () {
     events.emitter.emit(names.ChangePlaylist);
   };
-  onMode = (mode) => {
+  onMode = (mode: Mode) => {
     this.setState({
       mode,
     });
@@ -126,9 +150,6 @@ class NowPlayingModal extends React.PureComponent {
               onPress={() => {
                 return this.onMode(x.normal);
               }}
-              style={{
-                paddding: 5,
-              }}
             />
             <components.Input
               autoFocus={true}
@@ -142,17 +163,15 @@ class NowPlayingModal extends React.PureComponent {
     }
   };
   onClear = () => {
-    events.toPlayer({
-      type: 'clearPlayingList',
-    });
+    clearQueue();
     this.forceClose();
   };
-  _renderIndexPath = ({row}) => {
+  _renderIndexPath = ({row}: {row: number}) => {
     const filterList = this.state.filterList;
     if (this.props.data.length !== 0) {
-      let r = this.props.data;
+      let r: readonly TrackFields[] = this.props.data;
       let showPlaying = true;
-      if (filterList.length > 0) {
+      if (this.state.filterText.length > 0) {
         r = filterList;
         showPlaying = false;
       }
@@ -165,6 +184,7 @@ class NowPlayingModal extends React.PureComponent {
   };
   onCover = () => {
     const songItem = this.props.songItem;
+    if (!songItem) return;
     const t = b.extractFullInfo(songItem, 'big');
     events.emitter.emit(names.SavePicModal, {
       img: t.img,
@@ -173,12 +193,17 @@ class NowPlayingModal extends React.PureComponent {
   };
   scrollTo = () => {
     const index = this.props.index;
-    this._list?.scrollToIndexPath?.({
-      section: 0,
-      row: index,
-    });
+    this._list?.scrollTo({x: 0, y: constants.ITEM_HEIGHT * index});
   };
-  renderItem = ({item, index, showPlaying}) => {
+  renderItem = ({
+    item,
+    index,
+    showPlaying,
+  }: {
+    item: TrackFields;
+    index: number;
+    showPlaying: boolean;
+  }) => {
     const o = b.extractFullInfo(item);
     const i = this.getSongRowExtra(item, index);
     const api = this.props.api;
@@ -190,17 +215,17 @@ class NowPlayingModal extends React.PureComponent {
         index={index}
         playing={showPlaying && this.props.index === index}
         onPress={() => {
-          return this.playFiltedMusic(item, index, api, item.api);
+          return this.playFiltedMusic(item, api);
         }}
         addToQueue={() => {
-          return this.addToQueue(item, null, false);
+          return this.addToQueue(item);
         }}
         alias={o.alias}
         {...i}
       />
     );
   };
-  getSongRowExtra = (e, t) => {
+  getSongRowExtra = (e: TrackFields, t: number) => {
     const api = this.props.api;
     if (this.state.mode === x.deleting) {
       return {
@@ -219,13 +244,10 @@ class NowPlayingModal extends React.PureComponent {
       },
     };
   };
-  playFiltedMusic = (e, t, n, r) => {
+  playFiltedMusic = (e: TrackFields, api: Provider) => {
     const data = this.props.data;
-    const o = data.findIndex((t) => b.extractFullInfo(e).song === b.extractFullInfo(t).song);
-    let api = n;
-    if (r && r !== n) {
-      api = n;
-    }
+    const o = data.findIndex((t) => b.getTrackKey(e, api) === b.getTrackKey(t, api));
+    if (o < 0) return;
     events.toPlayer({
       item: e,
       data,
@@ -233,51 +255,25 @@ class NowPlayingModal extends React.PureComponent {
       api,
     });
   };
-  deleteFromQueue = (e, t) => {
+  deleteFromQueue = (e: TrackFields, _index: number) => {
     const a_props = this.props;
     const n_api = a_props.api;
-    if (a_props.index !== t) {
-      this.refreshList(e, 'delete');
+    if (b.getTrackKey(e, n_api) !== b.getTrackKey(a_props.data[a_props.index], n_api)) {
       events.emitter.emit(names.DeleteFromQueue, {
         item: e,
         api: n_api,
       });
     }
   };
-  addToQueue = (e, t) => {
+  addToQueue = (e: TrackFields) => {
     const a_props = this.props;
     const n_api = a_props.api;
-    if (a_props.index !== t) {
-      this.refreshList(e, 'add');
+    if (b.getTrackKey(e, n_api) !== b.getTrackKey(a_props.data[a_props.index], n_api)) {
       events.toInsertToList({
         data: e,
         api: n_api,
       });
     }
-  };
-  refreshList = (e, t) => {
-    let n = null;
-    switch (t) {
-      case 'add':
-        (n = this.props.data.filter(
-          (t) => b.extractFullInfo(t).song !== b.extractFullInfo(e).song,
-        )).splice(this.props.index + 1, 0, e);
-        break;
-      case 'delete':
-        n = this.props.data.filter((t) => b.extractFullInfo(t).song !== b.extractFullInfo(e).song);
-    }
-    this.setState({
-      data: n,
-    });
-  };
-  playMusic = (item, t, api) => {
-    const data = this.props.data;
-    events.toPlayer({
-      item,
-      data,
-      index: t,
-      api,
-    });
   };
   componentDidMount() {
     this.sub = events.emitter.addListener(names.NowPlayingModal, (t) => {
@@ -287,7 +283,7 @@ class NowPlayingModal extends React.PureComponent {
     });
   }
   componentWillUnmount() {
-    this.sub.remove?.();
+    this.sub?.remove();
   }
   render() {
     const props = this.props;
@@ -386,7 +382,7 @@ class NowPlayingModal extends React.PureComponent {
           <FadingEdge top={30}>
             <reactNativeLargelist.LargeList
               ref={(t) => {
-                return (this._list = t);
+                this._list = t;
               }}
               data={[
                 {
@@ -398,7 +394,7 @@ class NowPlayingModal extends React.PureComponent {
               }}
               renderIndexPath={this._renderIndexPath}
               renderEmpty={function () {
-                return <components.Spinkit />;
+                return <ReactNative.View />;
               }}
             />
           </FadingEdge>
@@ -407,7 +403,7 @@ class NowPlayingModal extends React.PureComponent {
     );
   }
 }
-var E = ReactNative.StyleSheet.create({
+const E = ReactNative.StyleSheet.create({
   container: {
     flex: 1,
   },

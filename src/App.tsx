@@ -160,15 +160,17 @@ export default class App extends React.PureComponent<Record<string, never>, Stat
             isRound={settings.isRound}
           />
           <modals.CollectModal />
-          <modals.NowPlayingModal
-            api={playerInfo.api}
-            data={playerInfo.tracks}
-            songItem={playerInfo.songItem}
-            index={playerInfo.playingIndex}
-            setDisplayNowPlaying={this.setDisplayNowPlaying}
-            show={displayNowPlaying}
-            isRound={settings.isRound}
-          />
+          {playerInfo.api !== null && playerInfo.playingIndex !== null && (
+            <modals.NowPlayingModal
+              api={playerInfo.api}
+              data={playerInfo.tracks}
+              songItem={playerInfo.songItem}
+              index={playerInfo.playingIndex}
+              setDisplayNowPlaying={this.setDisplayNowPlaying}
+              show={displayNowPlaying}
+              isRound={settings.isRound}
+            />
+          )}
           <modals.SavePicModal />
           <modals.ChangePlaylistModal songItem={playerInfo.songItem} />
         </View>

@@ -7,7 +7,7 @@ class CustomPlaylistHeader extends React.PureComponent<{
   onPress(): void;
   title?: string;
   img?: string;
-  trackCount?: number;
+  trackCount?: number | string;
 }> {
   render() {
     const props = this.props;

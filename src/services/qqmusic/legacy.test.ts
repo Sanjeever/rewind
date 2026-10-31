@@ -37,3 +37,8 @@ test('QQ 资料请求使用传入会话，未传会话时不添加固定 Cookie'
   await service.profile('test', undefined);
   expect(request.mock.calls[1][1]?.headers).not.toHaveProperty('Cookie');
 });
+test('QQ 添加到歌单传递当前会话，不依赖固定身份', async () => {
+  const request = respond({code: 0});
+  await service.addToDir({songmid: 'test', dirid: 1, qq: 2, cookies: 'session=test'});
+  expect(request.mock.calls[0][1]?.headers).toMatchObject({Cookie: 'session=test'});
+});

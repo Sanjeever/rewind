@@ -12,14 +12,26 @@ import locales from '../locales/index';
 import * as events from '../events/index';
 import * as trackInfo from '../services/trackInfo';
 import * as sharedUrlsModule from '../services/sharedUrls';
-const h = (img) => img.replace(/100y100/gi, '500y500').replace(/150x150/, '500x500');
+import type {TrackFields} from '../services/track';
+import type {Subscription} from '../events/Emitter';
+type Kind = 'song' | 'artist' | 'album';
+interface State {
+  visible: boolean;
+  defaultType: boolean;
+  item: TrackFields | null;
+  obj: ReturnType<typeof trackInfo.extractFullInfo> | null;
+}
+const h = (img: string) => img.replace(/100y100/gi, '500y500').replace(/150x150/, '500x500');
 const C = 'song';
 const y = 'artist';
 const I = 'album';
-class LongPressModal extends React.PureComponent {
-  state = {
+class LongPressModal extends React.PureComponent<Record<string, never>, State> {
+  sub?: Subscription;
+  state: State = {
     visible: false,
     defaultType: true,
+    item: null,
+    obj: null,
   };
   onClose = () => {
     this.setState({
@@ -29,7 +41,7 @@ class LongPressModal extends React.PureComponent {
       item: null,
     });
   };
-  getImg = function (e) {
+  getImg = function (e: TrackFields | null) {
     if (e) {
       const t = trackInfo.extractFullInfo(e);
       return h(t.img);
@@ -40,38 +52,39 @@ class LongPressModal extends React.PureComponent {
       defaultType: !this.state.defaultType,
     });
   };
-  onPressIcon = (e) => {
+  onPressIcon = (e: Kind) => {
     const a_state = this.state;
     const {obj, defaultType} = a_state;
-    if (a_state.item) {
+    if (a_state.item && obj) {
       if (defaultType === false) {
         this.openUrl(obj, e);
       } else if (e === 'song') {
-        this.copy(obj.song);
+        this.copy(obj.song || '');
       } else if (e === 'artist') {
-        this.copy(obj.singer[0].name);
+        this.copy(typeof obj.singer === 'string' ? obj.singer : obj.singer?.[0]?.name || '');
       } else if (e === 'album') {
         this.copy(obj.album);
       }
       this.onClose();
     }
   };
-  openUrl = (e, t) => {
+  openUrl = (e: ReturnType<typeof trackInfo.extractFullInfo>, t: Kind) => {
     let n;
     const e_api = e.api;
-    const r = T(this.state.item, t);
+    const r = this.state.item && entityId(this.state.item, t);
+    if (r == null) return;
     if (e_api === providers.netEase) {
       n = sharedUrlsModule.sharedUrls.netEase[t] + r;
     } else if (e_api === providers.qqMusic) {
       n = `${sharedUrlsModule.sharedUrls.qqMusic[t] + r}.html`;
     }
-    this.linking(n);
+    if (n) this.linking(n);
   };
-  copy = function (e) {
+  copy = function (e: string) {
     Clipboard.setString(e);
     toast(`${locales.COPIED} ${e}`);
   };
-  linking = function (e) {
+  linking = function (e: string) {
     ReactNative.Linking.openURL(e);
   };
   componentDidMount() {
@@ -84,7 +97,7 @@ class LongPressModal extends React.PureComponent {
     });
   }
   componentWillUnmount() {
-    this.sub.remove?.();
+    this.sub?.remove();
   }
   render() {
     const state = this.state;
@@ -151,32 +164,22 @@ class LongPressModal extends React.PureComponent {
     );
   }
 }
-const E = (e, t) => {
-  switch (t) {
-    case 'song':
-      return e;
-    case 'artist':
-      return (e.singer || e.ar || e.artist)[0];
-    case 'album':
-      return e.al || e.album;
+function entityId(item: TrackFields, kind: Kind) {
+  if (kind === 'song') return trackInfo.getUid(item);
+  if (kind === 'artist') {
+    const artists = item.singer || item.ar || item.artists;
+    const artist = Array.isArray(artists) ? artists[0] : undefined;
+    return artist?.mid || artist?.id;
   }
-};
-var T = (item, t) => {
-  let n;
-  const a = E(item, t);
-  switch (t) {
-    case 'song':
-      n = a.songmid || a.mid || a.id;
-      break;
-    case 'artist':
-      n = a.mid || a.id;
-      break;
-    case 'album':
-      n = item.albummid || a.mid || a.id;
-  }
-  return n;
-};
-var H = ReactNative.StyleSheet.create({
+  const album = item.al || item.album;
+  return (
+    item.albummid ||
+    (album && typeof album === 'object' && !Array.isArray(album)
+      ? album.mid || album.id
+      : undefined)
+  );
+}
+const H = ReactNative.StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',

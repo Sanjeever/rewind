@@ -278,15 +278,18 @@ const s = new (class e {
     dirid,
     op = 1,
     qq = 0,
+    cookies,
   }: {
     songmid: string;
     dirid: TrackId;
     op?: number;
     qq?: TrackId;
+    cookies: string;
   }) {
     if (songmid) {
       return fetch('http://c.y.qq.com/splcloud/fcgi-bin/fcg_music_add2songdir.fcg?g_tk=5381', {
         method: 'POST',
+        headers: {Cookie: cookies},
         body: `loginUin=${qq}&hostUin=0&format=json&inCharset=utf8&outCharset=utf-8&notice=0&platform=yqq.post&needNewCode=0&uin=${qq}&midlist=${songmid}&typelist=13&dirid=${dirid}&addtype=${op}&formsender=4&source=153&r2=0&r3=1&utf8=1&g_tk=5381`,
       })
         .then((e) => e.json().then((value) => responses.addToDir.parse(value)))
