@@ -1,3 +1,5 @@
+import TrackResources from './TrackResources';
+import {getMiniLyric} from './lyricPosition';
 import PlayerPresentation from './PlayerPresentation';
 import {subscribePlaybackEvent} from './commands';
 import {collectTracks, showTrackDetails, choosePlaylist} from '../modals/commands';
@@ -10,11 +12,10 @@ import type {
 } from './types';
 import type {TrackFields, TrackId} from '../services/track';
 import type {Provider} from '../services/providers';
-import type {LyricRow} from '../utils/parseLyric';
 import type {PlayerError} from '../native/audioPlayer';
 import type {Subscription} from '../events/Emitter';
 import type {AppStateStatus} from 'react-native';
-import {errorMessage, hasErrorCode} from '../utils/types';
+import {errorMessage} from '../utils/types';
 import {isActiveQueue} from './types';
 import {toast} from '../native/toast';
 import React from 'react';
@@ -30,10 +31,8 @@ import universalNavigator from '../utils/universalNavigator';
 import stopTimer from '../utils/stopTimer';
 import AudioPlayer from '../native/audioPlayer';
 import timer from '../native/timer';
-import mediaStore from '../native/mediaStore';
 import shutdown from '../native/shutdown';
 import wakeLock from '../native/wakeLock';
-import {storage} from '../storage';
 import {isUsableFile} from '../storage/files';
 import lastSong from '../storage/lastSong';
 import lastTime from '../storage/lastTime';
@@ -42,14 +41,25 @@ import {musicHistory} from '../storage/history';
 import cache from './cache';
 import lyricPreferences from './lyricPreferences';
 import {selectQueue, insertNext, removeFromQueue} from './queue';
-import playModeActions from './playMode';
-import lyrics from './lyrics';
 import trackUrl from './trackUrl';
 import notification from './notification';
 import {createPlayOrder, reconcilePlayOrder, getNextPlayIndex, getRandomIndex} from './playOrder';
 import {subscribePlaybackCommands} from './commands';
 const PROGRESS_INTERVAL = 600;
 export default class PlayerController extends React.PureComponent<PlayerProps, PlayerState> {
+  resources = new TrackResources({
+    isCurrent: (request) => request === this.playbackRequest,
+    setLyric: (lyric, hasTrans) => this.props.setLyric(lyric, hasTrans),
+    setLiked: (isLike) => this.setState({isLike}),
+    setArtwork: (url) => this.setState({url}),
+  });
+  onLike = () =>
+    this.resources.toggleLike(
+      this.activeQueue.songItem,
+      this.activeQueue.api,
+      this.state.isLike,
+      this.playbackRequest,
+    );
   presentation = new PlayerPresentation({
     getState: () => this.state,
     getSong: () => this.activeQueue.songItem,
@@ -79,7 +89,6 @@ export default class PlayerController extends React.PureComponent<PlayerProps, P
   restoreRequest: number | null = null;
   resumeAfterFocus = false;
   playbackRequest = 0;
-  lyricRequest = 0;
   queueKeys: string[] = [];
   savedFMQueue: Pick<QueueSnapshot, 'tracks' | 'playingIndex' | 'songItem' | 'api'> | null = null;
   audioFocusType: string | null = null;
@@ -171,7 +180,7 @@ export default class PlayerController extends React.PureComponent<PlayerProps, P
   componentWillUnmount() {
     this.mounted = false;
     this.playbackRequest++;
-    this.lyricRequest++;
+    this.resources.cancelLyrics();
     this.unsubscribeCommands();
     this.subscriptions.forEach((subscription) => subscription.remove());
     this.playbackStateSubscription.remove();
@@ -301,7 +310,7 @@ export default class PlayerController extends React.PureComponent<PlayerProps, P
     );
   };
   switchSong = () => {
-    this.lyricRequest++;
+    this.resources.cancelLyrics();
     this.audio?.release();
     this.audio = null;
     if (this.currentTimeTimer) timer.clearTimeout(this.currentTimeTimer);
@@ -369,8 +378,8 @@ export default class PlayerController extends React.PureComponent<PlayerProps, P
         );
       },
     );
-    this.loadLikelist(song, api, request);
-    this.getLyric(api, info, song);
+    this.resources.loadLikes(song, api, request);
+    this.resources.loadLyrics(api, info, song);
   };
   prepareMusic = async (
     command: {
@@ -386,7 +395,7 @@ export default class PlayerController extends React.PureComponent<PlayerProps, P
       if (local?.length && (await isUsableFile(local))) source = local;
       else if (api === providers.local) {
         source = command.song.path;
-        this.setLocalArtWork(info.localAlbumId, command.song, request);
+        this.resources.loadArtwork(info.localAlbumId, command.song, request);
       } else source = await this.cachedGetWebMusicUrl(command, api);
       if (request !== this.playbackRequest) return;
       if (typeof source !== 'string' || !source) throw new Error('未取得可播放地址');
@@ -550,7 +559,14 @@ export default class PlayerController extends React.PureComponent<PlayerProps, P
     if (this.state.isBackground || this.state.playState !== 'playing' || !this.audio) return;
     this.getMusicTimeInfo('currentTime');
     this.currentTimeTimer = timer.setTimeout(this.intervalCurrentTimeGetter, PROGRESS_INTERVAL);
-    if (!this.state.expanded && !this.props.settings.hideMiniLyric) this.getCurrentMiniLyric();
+    if (!this.state.expanded && !this.props.settings.hideMiniLyric) {
+      const currentMiniLyric = getMiniLyric(
+        this.props.lyric,
+        this.state.currentTime,
+        !this.props.settings.hideMiniLyricTrans,
+      );
+      if (currentMiniLyric !== undefined) this.setState({currentMiniLyric});
+    }
   };
   getMusicTimeInfo = (type: 'duration' | 'currentTime') => {
     const request = this.playbackRequest;
@@ -611,100 +627,6 @@ export default class PlayerController extends React.PureComponent<PlayerProps, P
       else this.pauseSound();
       toast(locales.PLAY_STOPPED);
     }, minutes * 60000);
-  };
-  getLyric = async (
-    api: Provider,
-    info: ReturnType<typeof extractFullInfo>,
-    songItem: TrackFields,
-  ) => {
-    const request = ++this.lyricRequest;
-    try {
-      const result = await lyrics.getLyric({
-        api,
-        obj: info,
-        songItem,
-      });
-      if (request === this.lyricRequest) this.props.setLyric(result.lyric, result.hasTrans);
-    } catch (error) {
-      if (request !== this.lyricRequest || hasErrorCode(error, 'ERR_CANCELED')) return;
-      this.props.setLyric(null, false);
-      toast('歌词加载失败：' + errorMessage(error));
-    }
-  };
-  loadLikelist = async (song: TrackFields, api: Provider, request: number) => {
-    try {
-      const likes = await storage.load<Partial<Record<Provider, TrackId[]>>>({
-        key: keys.likelist,
-      });
-      if (request === this.playbackRequest)
-        this.setState({
-          isLike: (likes[api] || []).includes(
-            (api === providers.qqMusic ? song.mid || song.songmid : song.id)!,
-          ),
-        });
-    } catch (error) {
-      if (request !== this.playbackRequest) return;
-      if (!(error instanceof Error && error.name === 'NotFoundError'))
-        toast('读取收藏失败：' + errorMessage(error));
-      this.setState({
-        isLike: false,
-      });
-    }
-  };
-  setLocalArtWork = async (albumId: TrackId | undefined, song: TrackFields, request: number) => {
-    if (albumId == null) return;
-    try {
-      const image = await mediaStore.getArtWork(albumId);
-      if (request !== this.playbackRequest) return;
-      if (image) {
-        const info = extractFullInfo({
-          ...song,
-          img: image,
-        });
-        this.setState({
-          url: info.img,
-        });
-        AudioPlayer.updatePlayback({
-          title: info.song,
-          artwork: info.img,
-          artist: parseArtist(info.singer),
-        });
-      }
-    } catch (error) {
-      if (request === this.playbackRequest) toast('本地封面加载失败：' + errorMessage(error));
-    }
-  };
-  getLyricIndex = (lines: readonly LyricRow[] | null, seconds: number) => {
-    if (!lines?.length) return null;
-    if (lines[0].total != null && seconds < lines[0].total) return 0;
-    let selected: number | null = null;
-    for (let index = 0; index < lines.length; index++) {
-      const total = lines[index].total;
-      if (total != null && Number.isFinite(total) && seconds + 0.3 >= total) selected = index;
-    }
-    return selected;
-  };
-  getCurrentMiniLyric = () => {
-    const lines = this.props.lyric;
-    const index = this.getLyricIndex(lines, this.state.currentTime + 0.2);
-    const line = index == null ? undefined : lines?.[index];
-    if (!line || /词|曲|音|：|:/.test(line.txt)) return;
-    const currentMiniLyric =
-      !this.props.settings.hideMiniLyricTrans && line.trans
-        ? line.trans.txt + ' / ' + line.txt
-        : line.txt;
-    this.setState({
-      currentMiniLyric,
-    });
-  };
-  onLike = async () => {
-    const {songItem, api} = this.activeQueue;
-    try {
-      await playModeActions.onLike(songItem, api, this.state.isLike);
-      this.loadLikelist(songItem, api, this.playbackRequest);
-    } catch (error) {
-      toast('更新收藏失败：' + errorMessage(error));
-    }
   };
   onCollect = () =>
     collectTracks({

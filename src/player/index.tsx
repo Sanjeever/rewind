@@ -1,3 +1,4 @@
+import {getLyricIndex} from './lyricPosition';
 import React from 'react';
 import {View} from 'react-native';
 import {Background} from '../components';
@@ -20,7 +21,7 @@ export default class Player extends PlayerController {
     seek: this.seekTo,
     toggleTranslation: this.presentation.toggleTranslation,
     changeFontSize: this.presentation.changeFontSize,
-    getLyricIndex: this.getLyricIndex,
+    getLyricIndex,
     toggleTools: this.presentation.toggleTools,
     like: this.onLike,
     comment: this.onComment,

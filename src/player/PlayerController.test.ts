@@ -203,8 +203,8 @@ async function controller() {
     });
     callback?.(player.props);
   };
-  player.getLyric = async () => {};
-  player.loadLikelist = async () => {};
+  player.resources.loadLyrics = async () => {};
+  player.resources.loadLikes = async () => {};
   return {
     player,
     calls,
