@@ -5,7 +5,7 @@ import ParallaxList from '../components/ParallaxList';
 import providers from '../services/providers';
 import * as constants from '../theme/constants';
 import icons from '../theme/icons';
-import PlaylistSearchResults from './../modules/PlaylistSearchResults.js';
+import PlaylistSearchResults from './../modules/PlaylistSearchResults';
 import * as services from '../services/index';
 import PlaylistFilters from './../modules/PlaylistFilters.js';
 const type = '全部歌单';
@@ -24,6 +24,7 @@ class HotPlaylist extends React.PureComponent {
     type,
     page: 0,
     search: '',
+    submittedSearch: '',
   };
   getPlaylists = (e) => {
     services.Netease.topPlaylist({
@@ -70,6 +71,7 @@ class HotPlaylist extends React.PureComponent {
       loading: true,
       data: [],
       search: '',
+      submittedSearch: '',
     });
     this.getPlaylists(e);
     this.onTop();
@@ -88,10 +90,7 @@ class HotPlaylist extends React.PureComponent {
   onSubmitEditing = () => {
     const search = this.state.search;
     if (search?.length > 0) {
-      if (!this._searcher) {
-        return;
-      }
-      this._searcher.fetchData(search);
+      this.setState({submittedSearch: search});
     }
   };
   onSearch = () => {
@@ -99,6 +98,7 @@ class HotPlaylist extends React.PureComponent {
     this.setState({
       type: 'search',
       mainModalShow: false,
+      submittedSearch: '',
     });
   };
   formatItem = function (e) {
@@ -173,9 +173,8 @@ class HotPlaylist extends React.PureComponent {
         {type === 'search' ? (
           <PlaylistSearchResults
             api={providers.netEase}
-            onRef={function (t) {
-              return (e._searcher = t);
-            }}
+            search={this.state.submittedSearch}
+            index={3}
             navigation={this.props.navigation}
           />
         ) : (

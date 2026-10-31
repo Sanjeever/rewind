@@ -64,6 +64,10 @@ export default class EntitySearchResults extends React.PureComponent<Props, Stat
     const requestId = ++this.requestId;
     this.offset = 0;
     this.pending = false;
+    if (!this.props.search) {
+      this.setState({data: [], loading: false, error: null, hasMore: false});
+      return;
+    }
     this.setState({data: [], loading: true, error: null, hasMore: false});
     return this.fetchPage(requestId);
   };
