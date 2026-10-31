@@ -1,3 +1,4 @@
+import {toast} from '../../native/toast';
 import providers from '../../services/providers';
 import names from '../../events/names';
 import locales from '../../locales/index';

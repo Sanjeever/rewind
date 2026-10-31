@@ -1,6 +1,7 @@
+import {toast} from '../native/toast';
 import Text from './../components/Text.js';
 import * as _appStorage from './../storage/index.js';
-import {mergeSettings} from '../settings/merge.cjs';
+import {mergeSettings} from '../settings/merge';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
 import reactNativeSlider from '@react-native-community/slider';

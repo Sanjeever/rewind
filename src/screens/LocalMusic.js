@@ -1,3 +1,4 @@
+import {toast} from '../native/toast';
 import * as React from 'react';
 import * as components from '../components/index';
 import providers from '../services/providers';

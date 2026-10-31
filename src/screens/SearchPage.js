@@ -1,3 +1,4 @@
+import {toast} from '../native/toast';
 import React from 'react';
 import {Image, Keyboard, StyleSheet, View} from 'react-native';
 import {TabBar, TabView} from 'react-native-tab-view';

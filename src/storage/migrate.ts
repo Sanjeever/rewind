@@ -1,6 +1,23 @@
-const marker = '__rewind_storage_migration_v1';
+export const marker = '__rewind_storage_migration_v1';
 
-async function migrateStorage({readLegacy, destination, validatePlaylists}) {
+export interface MigrationBackend {
+  getItem(key: string): Promise<string | null>;
+  setItem(key: string, value: string): Promise<void>;
+  setMany(entries: Record<string, string>): Promise<void>;
+  getMany(keys: string[]): Promise<Record<string, string | null>>;
+}
+
+interface MigrationOptions {
+  readLegacy(): Promise<Record<string, string>>;
+  destination: MigrationBackend;
+  validatePlaylists(): Promise<void>;
+}
+
+export async function migrateStorage({
+  readLegacy,
+  destination,
+  validatePlaylists,
+}: MigrationOptions) {
   await validatePlaylists();
   if (await destination.getItem(marker)) return;
   const entries = await readLegacy();
@@ -17,5 +34,3 @@ async function migrateStorage({readLegacy, destination, validatePlaylists}) {
   );
   if (!(await destination.getItem(marker))) throw new Error('旧数据迁移状态写入失败');
 }
-
-module.exports = {migrateStorage, marker};

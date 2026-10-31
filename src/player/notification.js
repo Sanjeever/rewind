@@ -1,3 +1,4 @@
+import {toast} from '../native/toast';
 import {Platform} from 'react-native';
 import {storage} from '../storage';
 import notification from '../settings/notification';

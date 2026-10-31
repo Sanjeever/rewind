@@ -1,7 +1,7 @@
 import {NativeModules} from 'react-native';
 import {createAsyncStorage} from '@react-native-async-storage/async-storage';
 import Storage from 'react-native-storage';
-import {migrateStorage} from './migrate.cjs';
+import {migrateStorage} from './migrate';
 import playlistFiles from './playlistFiles';
 
 const backend = createAsyncStorage('rewind');

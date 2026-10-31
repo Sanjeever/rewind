@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {migrateStorage, marker} from './migrate.cjs';
+import {migrateStorage, marker} from './migrate';
 function database(initial = {}) {
   const values = {
     ...initial,

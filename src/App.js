@@ -1,8 +1,8 @@
-import './bootstrap/globals';
+import {toast} from './native/toast';
 import React from 'react';
 import {StatusBar, View} from 'react-native';
 import {MenuProvider} from 'react-native-popup-menu';
-import {mergeSettings} from './settings/merge.cjs';
+import {mergeSettings} from './settings/merge';
 import {storage} from './storage';
 import * as modals from './modals';
 import {defaultSettings} from './settings/defaults';

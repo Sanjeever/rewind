@@ -1,3 +1,4 @@
+import {toast} from '../native/toast';
 import * as ReactNative from 'react-native';
 import locales from '../locales/index';
 import * as endpoints from './endpoints';

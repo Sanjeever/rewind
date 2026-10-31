@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {mergeSettings} from './merge.cjs';
+import {mergeSettings} from './merge';
 test('新增设置时保留旧开关、零值和未知字段，不修改原配置', () => {
   const stored = {
     volume: {

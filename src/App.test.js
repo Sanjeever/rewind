@@ -4,7 +4,6 @@ test('连续队列更新基于最新状态计算，提交回调取得最终队�
   jest.resetModules();
   const dependencies = Object.fromEntries(
     [
-      './bootstrap/globals',
       'react-native',
       'react-native-popup-menu',
       './storage',
@@ -41,6 +40,7 @@ test('连续队列更新基于最新状态计算，提交回调取得最终队�
   dependencies['./utils'] = {
     extractKeyValue: () => ({}),
   };
+  dependencies['./native/toast'] = {toast: undefined};
   for (const [name, value] of Object.entries(dependencies))
     jest.unstable_mockModule(name, () => ({
       default: value,

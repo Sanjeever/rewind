@@ -1,3 +1,4 @@
+import {toast} from '../native/toast';
 import Clipboard from '@react-native-clipboard/clipboard';
 import * as React from 'react';
 import * as ReactNative from 'react-native';

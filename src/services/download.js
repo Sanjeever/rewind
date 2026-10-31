@@ -1,3 +1,4 @@
+import {toast} from '../native/toast';
 import * as ReactNative from 'react-native';
 import rnFetchBlob from 'react-native-blob-util';
 import providers from './providers';

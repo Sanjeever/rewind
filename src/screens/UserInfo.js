@@ -1,3 +1,4 @@
+import {toast} from '../native/toast';
 import Text from './../components/Text.js';
 import * as React from 'react';
 import * as ReactNative from 'react-native';

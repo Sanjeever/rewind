@@ -1,3 +1,4 @@
+import {toast} from '../native/toast';
 import React from 'react';
 import {
   Animated,

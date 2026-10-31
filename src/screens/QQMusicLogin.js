@@ -1,3 +1,4 @@
+import {toast} from '../native/toast';
 import {WebView} from 'react-native-webview';
 import cookiesModule from '../native/cookies';
 import * as React from 'react';

@@ -1,3 +1,4 @@
+import {toast} from '../native/toast';
 import Text from './../components/Text.js';
 import * as _appStorage from './../storage/index.js';
 import * as React from 'react';

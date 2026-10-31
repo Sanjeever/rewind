@@ -9,6 +9,7 @@ test('QQ 音源明确拒绝后下载仍可使用原有备用来源', async () =>
   const notices = [];
   global.toast = (value) => notices.push(value);
   const dependencies = {
+    '../native/toast': {toast: (message) => notices.push(message)},
     'react-native': {
       Linking: {
         openURL: (value) => opened.push(value),

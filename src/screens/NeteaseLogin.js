@@ -1,3 +1,4 @@
+import {toast} from '../native/toast';
 import {WebView} from 'react-native-webview';
 import * as _appStorage from './../storage/index.js';
 import cookies from '../native/cookies';

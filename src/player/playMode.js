@@ -1,3 +1,4 @@
+import {toast} from '../native/toast';
 import providers from '../services/providers';
 import locales from '../locales';
 import * as services from '../services';

@@ -45,6 +45,7 @@ async function controller() {
     static updatePlayback() {}
   }
   const dependencies = {
+    '../native/toast': {toast: (message) => calls.toasts.push(message)},
     'react-native': {
       Animated: {
         Value: class {},
