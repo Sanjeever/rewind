@@ -14,6 +14,8 @@ async function controller() {
     play: 0,
     pause: 0,
     release: 0,
+    seeks: [],
+    savedTimes: [],
     clearedTimers: [],
     toasts: [],
     history: [],
@@ -40,6 +42,9 @@ async function controller() {
     }
     getDuration() {
       return 180;
+    }
+    setCurrentTime(seconds, playing) {
+      calls.seeks.push({seconds, playing});
     }
     static setNowPlaying() {}
     static updatePlayback() {}
@@ -101,7 +106,12 @@ async function controller() {
     '../storage/lastSong': asDefault({
       save: async () => {},
     }),
-    '../storage/lastTime': asDefault({}),
+    '../storage/lastTime': asDefault({
+      get: async () => 1.83,
+      save: async (seconds) => {
+        calls.savedTimes.push(seconds);
+      },
+    }),
     '../storage/lastQueue': asDefault({
       save: async () => {},
     }),
@@ -163,6 +173,24 @@ async function controller() {
   };
 }
 const tick = () => new Promise((resolve) => setImmediate(resolve));
+test('恢复队列不清零已保存进度，之后选择新歌曲才重置进度', async () => {
+  const {player, calls, requests} = await controller();
+  player.props.settings.autoLoadLastPlayedTracks = true;
+  const song = {id: 1, name: '歌曲'};
+  player.handlePlayCommand({song, data: [song], index: 0, api: 'netEase', restore: true});
+  requests[0]('https://audio/one');
+  await tick();
+  player.audio.ready(null);
+  await tick();
+  assert.deepEqual(calls.seeks, [{seconds: 1.83, playing: false}]);
+  assert.deepEqual(calls.savedTimes, []);
+  play(player, 2);
+  requests[1]('https://audio/two');
+  await tick();
+  player.audio.ready(null);
+  await tick();
+  assert.deepEqual(calls.savedTimes, [0]);
+});
 function play(player, id, api = 'netEase') {
   const song = {
     id,

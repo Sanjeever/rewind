@@ -25,6 +25,7 @@ export default {
         data: queue.tracks,
         index: queue.index,
         api: queue.api,
+        restore: true,
       });
     }
   },

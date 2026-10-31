@@ -187,6 +187,7 @@ export default class PlayerController extends React.PureComponent {
       return;
     }
     const request = ++this.playbackRequest;
+    this.restoreRequest = command.restore ? request : null;
     this.switchSong();
     this.props.setPlayerData(
       (current) => {
@@ -332,10 +333,14 @@ export default class PlayerController extends React.PureComponent {
       if (error) return this.errorWhenPlay(error);
       this.setState({duration: this.audio.getDuration(), loaded: true, retriedTimes: 0}, () => {
         if (request !== this.playbackRequest) return;
-        if (!this.state.lastPlayedTracksLoaded && this.props.settings.autoLoadLastPlayedTracks) {
+        if (this.restoreRequest === request && this.props.settings.autoLoadLastPlayedTracks) {
           this.setState({lastPlayedTracksLoaded: true});
           this.seekToLastPlayedTime(request);
-        } else this.playSound();
+        } else {
+          if (this.props.settings.autoLoadLastPlayedTracks)
+            lastTime.save(0).catch((error) => toast('保存进度失败：' + error.message));
+          this.playSound();
+        }
       });
     });
     lastSong
@@ -387,7 +392,6 @@ export default class PlayerController extends React.PureComponent {
       const seconds = await lastTime.get();
       if (request !== this.playbackRequest) return;
       this.seekTo(seconds, false);
-      await lastTime.save(0);
     } catch (error) {
       if (request === this.playbackRequest) toast('恢复进度失败：' + error.message);
     }

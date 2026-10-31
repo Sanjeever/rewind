@@ -9,6 +9,7 @@ export interface QueueSelection {
   api: Provider;
   type?: 'insert' | 'ChangePlaylist';
   pid?: string | number;
+  restore?: boolean;
 }
 export type PlaybackCommand = QueueSelection | {type: 'clearPlayingList'};
 export type InsertCommand = {api: Provider} & (
