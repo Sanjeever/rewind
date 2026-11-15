@@ -1,6 +1,5 @@
 import * as React from 'react';
 import * as ReactNative from 'react-native';
-import FadingEdge from '../components/FadingEdge';
 import styles from './styles';
 import LyricLine from './LyricLine';
 import type {LyricLineProps} from './LyricLine';
@@ -47,7 +46,7 @@ class LyricsView extends React.PureComponent<Props> {
           },
         ]}
       >
-        <FadingEdge bottom={128} top={128}>
+        <ReactNative.View style={{flex: 1}}>
           <LyricLine
             playState={playState}
             lyric={lyric}
@@ -68,7 +67,7 @@ class LyricsView extends React.PureComponent<Props> {
             fontSize={lyricFontSize}
             getIndex={getLyricIndex}
           />
-        </FadingEdge>
+        </ReactNative.View>
       </ReactNative.Animated.View>
     );
   }

@@ -231,6 +231,7 @@ class LyricLine extends React.PureComponent<LyricLineProps, {index: number | nul
               this._list = t;
             }}
             showVerticalScrollBar={false}
+            fadingEdgeLength={128}
             isScrollOverMode={false}
             ListHeaderComponent={this.btns}
             ListFooterComponent={this.emptyComp}
