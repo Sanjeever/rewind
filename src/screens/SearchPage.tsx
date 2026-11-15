@@ -3,11 +3,12 @@ import _qqmusicImage from '../../assets/images/qqmusic.png';
 import {toast} from '../native/toast';
 import React from 'react';
 import {Image, Keyboard, StyleSheet, View} from 'react-native';
+import {SafeAreaView} from 'react-native-safe-area-context';
 import {TabBar, TabView} from 'react-native-tab-view';
 import type {SceneRendererProps, NavigationState, Route, TabBarProps} from 'react-native-tab-view';
 import {Background, Icon, Input, TouchableBorderless} from '../components';
 import providers from '../services/providers';
-import {STATUS_BAR_HEIGHT, COLORS} from '../theme/constants';
+import {COLORS} from '../theme/constants';
 import icons from '../theme/icons';
 import locales from '../locales';
 import {SECTION_KEYS} from '../features/search/sections';
@@ -167,56 +168,61 @@ export default class SearchPage extends React.PureComponent<ScreenProps<'SearchP
   render() {
     const {api, text, focusing, show} = this.state;
     return (
-      <View style={styles.container}>
-        <Background />
-        <View style={styles.toolbar}>
-          <TouchableBorderless onPress={() => this.props.navigation.goBack()} style={styles.button}>
-            <Icon name={icons.ARROW_LEFT} />
-          </TouchableBorderless>
-          <Input
-            autoFocus
-            value={text}
-            style={styles.textInput}
-            placeholder="Everything……"
-            onChangeText={this.changeText}
-            onSubmitEditing={this.submit}
-            onFocus={() =>
-              this.setState({
-                focusing: true,
-              })
-            }
+      <SafeAreaView edges={['top']} style={styles.container}>
+        <View style={styles.container}>
+          <Background />
+          <View style={styles.toolbar}>
+            <TouchableBorderless
+              onPress={() => this.props.navigation.goBack()}
+              style={styles.button}
+            >
+              <Icon name={icons.ARROW_LEFT} />
+            </TouchableBorderless>
+            <Input
+              autoFocus
+              value={text}
+              style={styles.textInput}
+              placeholder="Everything……"
+              onChangeText={this.changeText}
+              onSubmitEditing={this.submit}
+              onFocus={() =>
+                this.setState({
+                  focusing: true,
+                })
+              }
+            />
+            <TouchableBorderless
+              onPress={this.changeProvider}
+              style={styles.button}
+              accessibilityLabel={api === providers.netEase ? '切换到 QQ 音乐' : '切换到网易云音乐'}
+            >
+              <View style={styles.provider}>
+                <Image source={providerImages[api]} style={styles.providerImage} />
+              </View>
+            </TouchableBorderless>
+          </View>
+          <SearchSuggestions
+            query={text}
+            focusing={focusing}
+            historyVersion={this.state.historyVersion}
+            api={api}
+            onSuggest={this.selectSuggestion}
           />
-          <TouchableBorderless
-            onPress={this.changeProvider}
-            style={styles.button}
-            accessibilityLabel={api === providers.netEase ? '切换到 QQ 音乐' : '切换到网易云音乐'}
-          >
-            <View style={styles.provider}>
-              <Image source={providerImages[api]} style={styles.providerImage} />
-            </View>
-          </TouchableBorderless>
+          {show && !focusing && (
+            <TabView
+              style={styles.container}
+              navigationState={this.state}
+              renderScene={this.renderScene}
+              renderTabBar={this.renderTabBar}
+              onIndexChange={(index) =>
+                this.setState({
+                  index,
+                })
+              }
+            />
+          )}
         </View>
-        <SearchSuggestions
-          query={text}
-          focusing={focusing}
-          historyVersion={this.state.historyVersion}
-          api={api}
-          onSuggest={this.selectSuggestion}
-        />
-        {show && !focusing && (
-          <TabView
-            style={styles.container}
-            navigationState={this.state}
-            renderScene={this.renderScene}
-            renderTabBar={this.renderTabBar}
-            onIndexChange={(index) =>
-              this.setState({
-                index,
-              })
-            }
-          />
-        )}
-      </View>
+      </SafeAreaView>
     );
   }
 }
@@ -225,7 +231,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   toolbar: {
-    marginTop: STATUS_BAR_HEIGHT,
     height: 40,
     width: '100%',
     alignItems: 'center',

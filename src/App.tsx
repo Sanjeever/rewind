@@ -1,6 +1,7 @@
 import {toast} from './native/toast';
 import React from 'react';
-import {StatusBar, View} from 'react-native';
+import {StatusBar} from 'react-native';
+import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {MenuProvider} from 'react-native-popup-menu';
 import {mergeSettings} from './settings/merge';
 import {storage} from './storage';
@@ -138,7 +139,7 @@ export default class App extends React.PureComponent<Record<string, never>, Stat
     if (!checkPermissionDone) return null;
     return (
       <MenuProvider>
-        <View style={{flex: 1}}>
+        <SafeAreaProvider style={{flex: 1}}>
           <StatusBar hidden={settings.hideStatusBar} />
           <Navigation
             animationEnabled={!settings.disabledRouterTransition}
@@ -173,7 +174,7 @@ export default class App extends React.PureComponent<Record<string, never>, Stat
           )}
           <modals.SavePicModal />
           <modals.ChangePlaylistModal songItem={playerInfo.songItem} />
-        </View>
+        </SafeAreaProvider>
       </MenuProvider>
     );
   }

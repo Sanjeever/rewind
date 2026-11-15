@@ -1,6 +1,7 @@
 import Text from './Text';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
+import {SafeAreaInsetsContext} from 'react-native-safe-area-context';
 import * as reactNativeAnimatable from 'react-native-animatable';
 import * as constants from '../theme/constants';
 import icons from '../theme/icons';
@@ -35,6 +36,8 @@ class HeaderBar extends React.PureComponent<
   HeaderBarProps,
   {showTextInput: boolean; hideStatusBar: boolean}
 > {
+  static contextType = SafeAreaInsetsContext;
+  context: React.ContextType<typeof SafeAreaInsetsContext> = null;
   state = {
     showTextInput: false,
     hideStatusBar: false,
@@ -100,7 +103,11 @@ class HeaderBar extends React.PureComponent<
     const rightIcon = this.props.rightIcon;
     if (rightIcon) {
       if (typeof rightIcon === 'function') {
-        return <ReactNative.View style={b.rightIcon}>{rightIcon()}</ReactNative.View>;
+        return (
+          <ReactNative.View style={[b.rightIcon, {top: this.context!.top}]}>
+            {rightIcon()}
+          </ReactNative.View>
+        );
       }
       if (Array.isArray(rightIcon)) {
         return (
@@ -108,7 +115,7 @@ class HeaderBar extends React.PureComponent<
             style={[
               {
                 right: 10,
-                top: ReactNative.StatusBar.currentHeight,
+                top: this.context!.top,
                 position: 'absolute',
                 justifyContent: 'center',
                 alignItems: 'center',
@@ -130,7 +137,7 @@ class HeaderBar extends React.PureComponent<
         );
       }
       return (
-        <ReactNative.View style={b.rightIcon}>
+        <ReactNative.View style={[b.rightIcon, {top: this.context!.top}]}>
           {React.createElement(h, {
             onPress: function () {
               return rightIcon.onPress!();
@@ -155,7 +162,7 @@ class HeaderBar extends React.PureComponent<
   };
   textInputBtn = () => {
     return (
-      <ReactNative.View style={b.rightIcon}>
+      <ReactNative.View style={[b.rightIcon, {top: this.context!.top}]}>
         {React.createElement(h, {
           onPress: this.switchTextInput,
           name: icons.MAGNIFY,
@@ -183,7 +190,9 @@ class HeaderBar extends React.PureComponent<
       disabledTextInputBtn,
     } = props;
     return (
-      <ReactNative.Animated.View style={[b.container, b.borderline, headerStyle]}>
+      <ReactNative.Animated.View
+        style={[b.container, {height: 40 + this.context!.top}, b.borderline, headerStyle]}
+      >
         {blur && (
           <ReactNative.Animated.View
             pointerEvents="none"
@@ -205,6 +214,7 @@ class HeaderBar extends React.PureComponent<
         <ReactNative.View
           style={[
             b.tool,
+            {top: this.context!.top},
             toolStyle,
             (textInput || rightIcon) && {
               paddingRight: 70,
@@ -233,7 +243,6 @@ const h = function ({onPress, name, size}: HeaderIcon) {
 };
 const b = ReactNative.StyleSheet.create({
   container: {
-    height: 40 + constants.STATUS_BAR_HEIGHT,
     width: '100%',
   },
   borderline: {
@@ -245,7 +254,6 @@ const b = ReactNative.StyleSheet.create({
   },
   tool: {
     position: 'absolute',
-    top: ReactNative.StatusBar.currentHeight,
     alignItems: 'center',
     flexDirection: 'row',
     height: 40,
@@ -263,7 +271,6 @@ const b = ReactNative.StyleSheet.create({
   rightIcon: {
     position: 'absolute',
     right: 10,
-    top: ReactNative.StatusBar.currentHeight,
     height: 40,
     width: 40,
     borderRadius: 20,

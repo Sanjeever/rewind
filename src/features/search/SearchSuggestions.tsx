@@ -6,7 +6,6 @@ import {SpringScrollView} from '../../components/Scrolling';
 import {Icon} from '../../components';
 import Text from '../../components/Text';
 import providers from '../../services/providers';
-import {STATUS_BAR_HEIGHT} from '../../theme/constants';
 import icons from '../../theme/icons';
 import {storage} from '../../storage';
 import keys from '../../storage/keys';
@@ -214,7 +213,7 @@ export default class SearchSuggestions extends React.PureComponent<SuggestionPro
 
 const styles = StyleSheet.create({
   container: {
-    top: 40 + STATUS_BAR_HEIGHT,
+    top: 40,
     flex: 1,
     alignSelf: 'center',
     width: '100%',

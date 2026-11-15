@@ -1,7 +1,8 @@
 import React, {useState} from 'react';
 import {Modal, Pressable, View} from 'react-native';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {TouchableBorderless, Icon} from '../components';
-import {STATUS_BAR_HEIGHT, DEVICE_WIDTH} from '../theme/constants';
+import {DEVICE_WIDTH} from '../theme/constants';
 import icons from '../theme/icons';
 import devMenu from '../native/devMenu';
 import {isDebug} from '../native/info';
@@ -10,6 +11,7 @@ import HomeContent from '../features/home/HomeContent';
 import type {ScreenProps, Navigation, NavigateArgs} from '../navigation/types';
 
 export default function Home({navigation}: ScreenProps<'Home'>) {
+  const {top} = useSafeAreaInsets();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const drawerNavigation: Navigation = {
     ...navigation,
@@ -28,14 +30,14 @@ export default function Home({navigation}: ScreenProps<'Home'>) {
           onLongPress={() => {
             if (isDebug) devMenu.show();
           }}
-          style={{position: 'absolute', top: STATUS_BAR_HEIGHT, left: 10}}
+          style={{position: 'absolute', top, left: 10}}
         >
           <Icon name={icons.MENU} color="#fff" />
         </TouchableBorderless>
         <TouchableBorderless
           accessibilityLabel="搜索"
           onPress={() => navigation.navigate('SearchPage')}
-          style={{position: 'absolute', top: STATUS_BAR_HEIGHT, right: 10}}
+          style={{position: 'absolute', top, right: 10}}
         >
           <Icon name={icons.MAGNIFY} color="#fff" />
         </TouchableBorderless>

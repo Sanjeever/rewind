@@ -6,6 +6,7 @@ test('连续队列更新基于最新状态计算，提交回调取得最终队�
   const dependencies = Object.fromEntries(
     [
       'react-native',
+      'react-native-safe-area-context',
       'react-native-popup-menu',
       './storage',
       './modals',
@@ -28,6 +29,9 @@ test('连续队列更新基于最新状态计算，提交回调取得最终队�
   });
   Object.assign(dependencies['react-native-popup-menu'], {
     MenuProvider: undefined,
+  });
+  Object.assign(dependencies['react-native-safe-area-context'], {
+    SafeAreaProvider: undefined,
   });
   Object.assign(dependencies['./storage'], {
     storage: undefined,
