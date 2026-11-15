@@ -4,7 +4,7 @@ import type {
   PanResponderGestureState,
   PanResponderInstance,
 } from 'react-native';
-import {DEVICE_WIDTH, DEVICE_HEIGHT} from '../theme/constants';
+import {DEVICE_WIDTH} from '../theme/constants';
 import {emitter} from '../events';
 import names from '../events/names';
 import keys from '../storage/keys';
@@ -114,7 +114,7 @@ export default class PlayerPresentation {
       url: extractFullInfo(this.host.getSong(), 'big').img,
       playerStyle: {
         width: DEVICE_WIDTH,
-        height: DEVICE_HEIGHT,
+        height: '100%',
         top: 0,
         left: 0,
         position: 'absolute',
