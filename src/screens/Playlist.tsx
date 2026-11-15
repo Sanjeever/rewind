@@ -110,7 +110,7 @@ class Playlist extends React.PureComponent<ScreenProps<'Playlist'>, State> {
     const {api, index, subscribed, playlist} = e;
     if (api === providers.netEase) {
       trackCount = playlist.trackCount;
-      coverImgUrl = playlist.coverImgUrl || playlist.picUrl;
+      coverImgUrl = playlist.coverImgUrl || playlist.picUrl || undefined;
       s = playlist.name;
       i = playlist.id;
       creator = playlist.creator;

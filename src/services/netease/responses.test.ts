@@ -30,6 +30,24 @@ test('专辑搜索保留服务实际返回的空发行公司，不拒绝有效�
   };
   expect(responses.search.parse(value)).toEqual(value);
 });
+test('搜索建议保留歌手的空图片和翻译字段，歌曲及专辑内歌手同样可读取', () => {
+  const artist = {id: 977173, name: '3Bangz', picUrl: null, trans: null};
+  const value = {
+    code: 200,
+    result: {
+      artists: [artist],
+      songs: [{id: 538920912, name: '习惯你', artists: [artist]}],
+      albums: [{id: 37641443, name: '习惯你', artist}],
+    },
+  };
+  expect(responses.search_suggest.parse(value)).toEqual(value);
+  expect(() =>
+    responses.search_suggest.parse({
+      code: 200,
+      result: {artists: [{...artist, picUrl: 42}]},
+    }),
+  ).toThrow();
+});
 test('响应校验向界面给出简短错误，同时保留原始校验原因', () => {
   try {
     parseResponse(responses.search, {code: 200, result: {songs: 'broken'}});

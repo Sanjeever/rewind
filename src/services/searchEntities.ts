@@ -27,7 +27,7 @@ export interface SearchEntity {
   singerName?: string;
   albumNum?: number;
   artist?: {name: string};
-  picUrl?: string;
+  picUrl?: string | null;
   publishTime?: number | string;
   transNames?: string[];
   albumName?: string;
