@@ -29,6 +29,7 @@ test('创建与删除本地歌单保留文档未知字段，写入失败不改�
     qqMusic: [],
     navigation: {goBack() {}, navigate() {}},
     Playlist() {},
+    onProviderChange() {},
     onRefresh: async () => {},
   });
   page.setState = (update) => {

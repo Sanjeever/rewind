@@ -30,6 +30,7 @@ interface Props {
   qqMusic: Playlist[];
   navigation: Navigation;
   Playlist: OpenPlaylist;
+  onProviderChange(api: OnlineProvider): void;
   onRefresh(api: OnlineProvider, list?: reactNativeLargelist.LargeList<Playlist>): Promise<void>;
 }
 const b = {
@@ -37,7 +38,11 @@ const b = {
   netEase: '无网易云歌单，点击获取',
   qqMusic: '无QQ音乐歌单，点击获取',
 };
-class Playlists extends React.PureComponent<Props, {custom: CustomPlaylist[]; showModal: boolean}> {
+class Playlists extends React.PureComponent<
+  Props,
+  {custom: CustomPlaylist[]; showModal: boolean; page: number}
+> {
+  pager = React.createRef<React.ElementRef<typeof Pager>>();
   active = false;
   lists: Partial<Record<OnlineProvider, reactNativeLargelist.LargeList<Playlist>>> = {};
   _customScrollView: reactNativeLargelist.LargeList<CustomPlaylist> | null = null;
@@ -45,9 +50,10 @@ class Playlists extends React.PureComponent<Props, {custom: CustomPlaylist[]; sh
     x: new ReactNative.Animated.Value(0),
     y: new ReactNative.Animated.Value(0),
   };
-  state: {custom: CustomPlaylist[]; showModal: boolean} = {
+  state: {custom: CustomPlaylist[]; showModal: boolean; page: number} = {
     custom: [],
     showModal: false,
+    page: 1,
   };
   renderPagerContent = () => {
     return this.props.apisOrder.map((e) => this.renderContent(e));
@@ -335,7 +341,7 @@ class Playlists extends React.PureComponent<Props, {custom: CustomPlaylist[]; sh
     );
   };
   _render_netEase = ({item, index}: {item: Playlist; index: number}) => {
-    let title = item.name && index === 0 ? '♡' : item.name || '';
+    let title = item.name || '';
     if ((title = title.replace(/\s\u6700\u61c2\u4f60.+\u9996$/, '')).includes('私人雷达')) {
       title = '[私人雷达]';
     }
@@ -351,22 +357,22 @@ class Playlists extends React.PureComponent<Props, {custom: CustomPlaylist[]; sh
     );
   };
   _render_qqMusic = ({item, index}: {item: Playlist; index: number}) => {
-    const a = this.formatItem(item, index);
+    const a = this.formatItem(item);
     return (
       <components.ListItem
         img={a.picurl}
         title={a.title}
-        subtitle={a.num == null ? undefined : String(a.num)}
+        subtitle={a.num == null ? undefined : `${a.num} ${locales.SONG_COUNT}`}
         onPress={() => {
           return this.props.Playlist(a, 'qqMusic', index);
         }}
       />
     );
   };
-  formatItem = function (e: Playlist, t: number) {
+  formatItem = function (e: Playlist) {
     const r: Playlist & {num?: string | number} = {};
     if (e.title) {
-      r.title = e.title?.length > 0 && t === 0 ? '♡' : e.title;
+      r.title = e.title;
       r.picurl = e.picurl || undefined;
       r.num = e.subtitle ? e.subtitle.replace(/首.+/, '') : undefined;
       r.id = e.id || e.dissid;
@@ -388,12 +394,39 @@ class Playlists extends React.PureComponent<Props, {custom: CustomPlaylist[]; sh
     this.active = false;
   }
   render() {
+    const labels = {
+      custom: '本地歌单',
+      netEase: locales.NETEASE_MUSIC,
+      qqMusic: locales.QQ_MUSIC,
+    };
     return (
       <ReactNative.View
         style={{
           flex: 1,
         }}
       >
+        <ReactNative.View style={{flexDirection: 'row', paddingHorizontal: 16, gap: 8}}>
+          {this.props.apisOrder.map((api, index) => (
+            <ReactNative.TouchableOpacity
+              key={api}
+              accessibilityRole="tab"
+              accessibilityState={{selected: this.state.page === index}}
+              onPress={() => this.pager.current?.setPage(index)}
+              style={{
+                flex: 1,
+                minHeight: 48,
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderBottomWidth: 2,
+                borderBottomColor: this.state.page === index ? '#fff' : 'transparent',
+              }}
+            >
+              <Text style={{fontSize: 14, opacity: this.state.page === index ? 1 : 0.55}}>
+                {labels[api]}
+              </Text>
+            </ReactNative.TouchableOpacity>
+          ))}
+        </ReactNative.View>
         {React.createElement(
           Pager,
           {
@@ -401,6 +434,12 @@ class Playlists extends React.PureComponent<Props, {custom: CustomPlaylist[]; sh
               flex: 1,
             },
             initialPage: 1,
+            ref: this.pager,
+            onPageSelected: ({nativeEvent}) => {
+              this.setState({page: nativeEvent.position});
+              const api = this.props.apisOrder[nativeEvent.position];
+              if (api !== 'custom') this.props.onProviderChange(api);
+            },
           },
           this.renderPagerContent(),
         )}

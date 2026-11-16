@@ -9,10 +9,12 @@ import {isDebug} from '../native/info';
 import Drawer from '../features/home/Drawer';
 import HomeContent from '../features/home/HomeContent';
 import type {ScreenProps, Navigation, NavigateArgs} from '../navigation/types';
+import type {OnlineProvider} from '../services/providers';
 
 export default function Home({navigation}: ScreenProps<'Home'>) {
   const {top} = useSafeAreaInsets();
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [api, setApi] = useState<OnlineProvider>('netEase');
   const drawerNavigation: Navigation = {
     ...navigation,
     navigate(...args: NavigateArgs) {
@@ -23,7 +25,7 @@ export default function Home({navigation}: ScreenProps<'Home'>) {
   return (
     <>
       <View style={{flex: 1, backgroundColor: '#000'}}>
-        <HomeContent navigation={navigation} />
+        <HomeContent navigation={navigation} onProviderChange={setApi} />
         <TouchableBorderless
           accessibilityLabel="菜单"
           onPress={() => setDrawerOpen(true)}
@@ -36,7 +38,7 @@ export default function Home({navigation}: ScreenProps<'Home'>) {
         </TouchableBorderless>
         <TouchableBorderless
           accessibilityLabel="搜索"
-          onPress={() => navigation.navigate('SearchPage')}
+          onPress={() => navigation.navigate('SearchPage', {api})}
           style={{position: 'absolute', top, right: 10}}
         >
           <Icon name={icons.MAGNIFY} color="#fff" />

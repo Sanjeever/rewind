@@ -40,13 +40,15 @@ interface Props {
   onOpenUrl?(): void;
   onShare?(): void;
 }
-const g = 0.9 * constants.DEVICE_WIDTH;
-const E = 0.5 * constants.DEVICE_WIDTH;
-const b = 0.2 * constants.DEVICE_WIDTH;
+const g = 304;
+const E = 120;
+const b = 64;
 const I = function ({onWebview, onOpenUrl, onCopy, onShare}: Props) {
   return (
     <reactNativePopupMenu.Menu>
       <reactNativePopupMenu.MenuTrigger
+        accessibilityLabel="更多歌单操作"
+        accessibilityRole="button"
         customStyles={{
           triggerWrapper: {
             alignItems: 'center',
@@ -55,7 +57,12 @@ const I = function ({onWebview, onOpenUrl, onCopy, onShare}: Props) {
           TriggerTouchableComponent: ReactNative.TouchableOpacity,
         }}
       >
-        <components.IconButton name={icons.MENU_OPEN} size={25} disabled={true} />
+        <components.IconButton
+          accessibilityLabel="更多"
+          name={icons.MENU_OPEN}
+          size={25}
+          disabled={true}
+        />
       </reactNativePopupMenu.MenuTrigger>
       <reactNativePopupMenu.MenuOptions
         customStyles={{
@@ -68,7 +75,7 @@ const I = function ({onWebview, onOpenUrl, onCopy, onShare}: Props) {
             flex: 0,
             justifyContent: 'center',
             alignItems: 'center',
-            flexDirection: 'row',
+            flexDirection: 'column',
           },
           OptionTouchableComponent: ReactNative.TouchableOpacity,
         }}
@@ -80,6 +87,7 @@ const I = function ({onWebview, onOpenUrl, onCopy, onShare}: Props) {
         }}
       >
         <reactNativePopupMenu.MenuOption onSelect={onCopy}>
+          <Text>复制链接</Text>
           <components.Icon
             name={icons.CONTENT_COPY}
             style={{
@@ -89,6 +97,7 @@ const I = function ({onWebview, onOpenUrl, onCopy, onShare}: Props) {
           />
         </reactNativePopupMenu.MenuOption>
         <reactNativePopupMenu.MenuOption onSelect={onOpenUrl}>
+          <Text>打开链接</Text>
           <components.Icon
             name={icons.LINK_VARIANT}
             style={{
@@ -98,6 +107,7 @@ const I = function ({onWebview, onOpenUrl, onCopy, onShare}: Props) {
           />
         </reactNativePopupMenu.MenuOption>
         <reactNativePopupMenu.MenuOption onSelect={onWebview}>
+          <Text>网页查看</Text>
           <components.Icon
             name={icons.WEB}
             style={{
@@ -107,6 +117,7 @@ const I = function ({onWebview, onOpenUrl, onCopy, onShare}: Props) {
           />
         </reactNativePopupMenu.MenuOption>
         <reactNativePopupMenu.MenuOption onSelect={onShare}>
+          <Text>分享</Text>
           <components.Icon
             name={icons.SHARE_VARIANT_OUTLINE}
             style={{
@@ -152,12 +163,29 @@ class PlaylistForeground extends React.PureComponent<Props> {
       <React.Fragment>
         <ReactNative.View style={[C.foreground]}>
           <ReactNative.View style={C.coverCon}>
-            {h({
-              coverImgUrl,
-              savePic,
-              creator,
-              onUser,
-            })}
+            <ReactNative.View>
+              {h({
+                coverImgUrl,
+                savePic,
+                creator,
+                onUser,
+              })}
+            </ReactNative.View>
+            <ReactNative.View style={{flex: 1, marginLeft: 20, gap: 10}}>
+              <Text style={{fontSize: 21, fontWeight: '600'}}>{props.name}</Text>
+              <Text style={{fontSize: 13, opacity: 0.7}}>
+                {[
+                  props.api === 'netEase'
+                    ? '网易云音乐'
+                    : props.api === 'qqMusic'
+                      ? 'QQ 音乐'
+                      : '本地歌单',
+                  props.trackCount == null ? null : `${props.trackCount} 首`,
+                ]
+                  .filter(Boolean)
+                  .join(' · ')}
+              </Text>
+            </ReactNative.View>
           </ReactNative.View>
           <ReactNative.View style={C.extraBtnCon}>
             {orderText ? (
@@ -176,16 +204,32 @@ class PlaylistForeground extends React.PureComponent<Props> {
               </ReactNative.TouchableOpacity>
             ) : null}
             {onSort && (
-              <components.IconButton name={icons.SORT_VARIANT} size={25} onPress={onSort} />
+              <components.IconButton
+                accessibilityLabel="排序"
+                name={icons.SORT_VARIANT}
+                size={25}
+                onPress={onSort}
+              />
             )}
             {showRestore && (
-              <components.IconButton name={icons.BACKUP_RESTORE} onPress={onRestore} size={25} />
+              <components.IconButton
+                accessibilityLabel="恢复顺序"
+                name={icons.BACKUP_RESTORE}
+                onPress={onRestore}
+                size={25}
+              />
             )}
             {onHeartMode && isCreatedByMe && (
-              <components.IconButton name={icons.HEART_PULSE} size={25} onPress={onHeartMode} />
+              <components.IconButton
+                accessibilityLabel="心动模式"
+                name={icons.HEART_PULSE}
+                size={25}
+                onPress={onHeartMode}
+              />
             )}
             {!isCreatedByMe && onSubscribe && (
               <components.IconButton
+                accessibilityLabel={subscribed ? '取消收藏歌单' : '收藏歌单'}
                 name={subscribed ? icons.PLAYLIST_REMOVE : icons.PLAYLIST_PLUS}
                 size={25}
                 onPress={onSubscribe}
@@ -193,6 +237,7 @@ class PlaylistForeground extends React.PureComponent<Props> {
             )}
             {onMult && (
               <components.IconButton
+                accessibilityLabel="多选歌曲"
                 name={icons.CHECKBOX_MULTIPLE_MARKED_CIRCLE_OUTLINE}
                 size={25}
                 onPress={onMult}
@@ -326,15 +371,18 @@ const y = ({lastPlayedSong, onPlay, onInsert}: Props) => {
 const C = ReactNative.StyleSheet.create({
   foreground: {
     width: '100%',
-    height: g,
+    minHeight: g,
     paddingHorizontal: 15,
     alignItems: 'center',
     justifyContent: 'center',
+    paddingTop: constants.STATUS_BAR_HEIGHT + 56,
+    paddingBottom: b + 16,
   },
   coverCon: {
-    height: E,
+    minHeight: E,
     width: '100%',
     alignItems: 'center',
+    flexDirection: 'row',
   },
   coverImg: {
     width: E,
@@ -352,7 +400,7 @@ const C = ReactNative.StyleSheet.create({
   },
   avatarCon: {
     position: 'absolute',
-    right: 70,
+    right: -8,
     bottom: -10,
   },
   avatar: {

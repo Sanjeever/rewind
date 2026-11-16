@@ -7,6 +7,7 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import {TabBar, TabView} from 'react-native-tab-view';
 import type {SceneRendererProps, NavigationState, Route, TabBarProps} from 'react-native-tab-view';
 import {Background, Icon, Input, TouchableBorderless} from '../components';
+import Text from '../components/Text';
 import providers from '../services/providers';
 import {COLORS} from '../theme/constants';
 import icons from '../theme/icons';
@@ -46,7 +47,7 @@ const resultComponents: React.ComponentType<EntitySearchProps>[] = [
 export default class SearchPage extends React.PureComponent<ScreenProps<'SearchPage'>, State> {
   mounted = false;
   state: State = {
-    api: providers.netEase,
+    api: this.props.route.params?.api || providers.netEase,
     index: 0,
     text: this.props.route.params?.text || '',
     query: '',
@@ -173,6 +174,7 @@ export default class SearchPage extends React.PureComponent<ScreenProps<'SearchP
           <Background />
           <View style={styles.toolbar}>
             <TouchableBorderless
+              accessibilityLabel="返回"
               onPress={() => this.props.navigation.goBack()}
               style={styles.button}
             >
@@ -182,7 +184,8 @@ export default class SearchPage extends React.PureComponent<ScreenProps<'SearchP
               autoFocus
               value={text}
               style={styles.textInput}
-              placeholder="Everything……"
+              placeholder="搜索歌曲、歌手、专辑"
+              returnKeyType="search"
               onChangeText={this.changeText}
               onSubmitEditing={this.submit}
               onFocus={() =>
@@ -193,11 +196,14 @@ export default class SearchPage extends React.PureComponent<ScreenProps<'SearchP
             />
             <TouchableBorderless
               onPress={this.changeProvider}
-              style={styles.button}
+              style={[styles.button, {width: 88}]}
               accessibilityLabel={api === providers.netEase ? '切换到 QQ 音乐' : '切换到网易云音乐'}
             >
               <View style={styles.provider}>
                 <Image source={providerImages[api]} style={styles.providerImage} />
+                <Text style={{fontSize: 12}}>
+                  {api === providers.netEase ? '网易云' : 'QQ 音乐'}
+                </Text>
               </View>
             </TouchableBorderless>
           </View>
@@ -246,6 +252,8 @@ const styles = StyleSheet.create({
     padding: 6,
   },
   provider: {
+    gap: 4,
+    flexDirection: 'row',
     height: '100%',
     width: '100%',
     alignItems: 'center',
@@ -253,8 +261,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   providerImage: {
-    height: 25,
-    width: 25,
+    height: 18,
+    width: 18,
   },
   tabBar: {
     marginTop: -10,

@@ -1,5 +1,5 @@
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
-import type {Provider} from '../services/providers';
+import type {Provider, OnlineProvider} from '../services/providers';
 import type {TrackFields, TrackId} from '../services/track';
 import type {SearchEntity} from '../services/searchEntities';
 import type {CustomPlaylist, Playlist, NeteaseAccount} from '../storage/models';
@@ -32,7 +32,7 @@ export type AppRoutes = {
   Home: undefined;
   Skin: undefined;
   About: undefined;
-  SearchPage: {text?: string} | undefined;
+  SearchPage: {text?: string; api?: OnlineProvider} | undefined;
   Settings: undefined;
   MusicHistory: undefined;
   CustomPlaylist: {playlist: CustomPlaylist; index: number};

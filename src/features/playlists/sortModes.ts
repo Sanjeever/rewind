@@ -1,6 +1,5 @@
-import * as constants from '../../theme/constants';
 import locales from '../../locales/index';
-export const FOREGROUND_HEIGHT = constants.DEVICE_WIDTH;
+export const FOREGROUND_HEIGHT = 364;
 export const sortModeMap = {
   time: 'random',
   random: 'song',

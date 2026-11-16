@@ -41,7 +41,10 @@ interface State {
   pagesOrder: typeof pagesModule.pages;
   apisOrder: typeof pagesModule.apis;
 }
-class Home extends React.PureComponent<{navigation: Navigation}, State> {
+class Home extends React.PureComponent<
+  {navigation: Navigation; onProviderChange(api: OnlineProvider): void},
+  State
+> {
   active = false;
   loginTimer?: ReturnType<typeof setTimeout>;
   loginedListener?: Subscription;
@@ -332,6 +335,7 @@ class Home extends React.PureComponent<{navigation: Navigation}, State> {
         {e.map((e, t) => (
           <PlaylistHeader
             icon={e.icon}
+            title={e.title}
             key={t}
             onPress={() => {
               return this.goToPage(e.page);
@@ -347,7 +351,7 @@ class Home extends React.PureComponent<{navigation: Navigation}, State> {
       {
         initialPage: 0,
         style: {
-          height: 100,
+          height: 82,
           width: '100%',
         },
       },
@@ -446,7 +450,7 @@ class Home extends React.PureComponent<{navigation: Navigation}, State> {
       <ReactNative.View style={M.container}>
         <Index.Background />
         {this.renderHeader()}
-        <FadingEdge top={30}>
+        <FadingEdge top={0}>
           <Playlists
             apisOrder={apisOrder}
             navigation={this.props.navigation}
@@ -454,6 +458,7 @@ class Home extends React.PureComponent<{navigation: Navigation}, State> {
             qqMusic={qqMusic}
             Playlist={this.Playlist}
             onRefresh={this.loadPlaylistById}
+            onProviderChange={this.props.onProviderChange}
           />
         </FadingEdge>
       </ReactNative.View>
@@ -464,10 +469,10 @@ export default Home;
 const M = ReactNative.StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: constants.STATUS_BAR_HEIGHT + 40,
+    paddingTop: constants.STATUS_BAR_HEIGHT + 48,
   },
   compCon: {
-    paddingVertical: 20,
+    paddingVertical: 6,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-around',
