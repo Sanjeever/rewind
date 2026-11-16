@@ -55,6 +55,8 @@ SOFTWARE.
 | [react-native-popup-menu](https://github.com/instea/react-native-popup-menu)、[react-native-touchable-scale](https://github.com/kohver/react-native-touchable-scale) | ISC                                   |
 | [spark-md5](https://github.com/satazor/js-spark-md5)                                                                                                                 | `WTFPL OR MIT`；本项目选择按 MIT 使用 |
 
+开发检查工具 [Oxlint](https://github.com/oxc-project/oxc) 使用 MIT 许可，已核对安装包内的 `LICENSE`；该工具作为开发依赖使用。
+
 以下 Android 依赖已核对发布材料中的声明：
 
 | Android 依赖                       | 许可与证据                                                                                                                                                                                                              |

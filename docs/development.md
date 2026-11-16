@@ -69,7 +69,9 @@ pnpm test
 pnpm bundle:android
 ```
 
-`pnpm check` 串行执行 ESLint、Prettier、严格类型检查与测试；各项也可通过 `lint`、`format:check`、`typecheck` 独立运行。`lint:fix` 和 `format` 会修改文件。GitHub Actions 在 push 和 PR 中冻结锁文件安装并执行检查。
+`pnpm check` 串行执行 Oxlint、Prettier、严格类型检查与测试；各项也可通过 `lint`、`format:check`、`typecheck` 独立运行。`lint:fix` 和 `format` 会修改文件。GitHub Actions 在 push 和 PR 中冻结锁文件安装并执行检查。
+
+Lint 规则与文件范围见 [.oxlintrc.json](../.oxlintrc.json)。规则沿用迁移前的 ESLint 与 TypeScript recommended 检查，保留项目的未使用参数豁免与全局变量范围；TypeScript 已负责的检查继续由两套类型检查覆盖。
 
 应用、测试、配置和 Android 启动脚本统一使用 ESM。Babel 同步加载配置依赖项目 Node 范围内的原生 `require(esm)` 能力；不要将配置改回 CJS。相关正式支持见 [Node 模块互操作](https://nodejs.org/api/modules.html#loading-ecmascript-modules-using-require)、[Babel 配置文件](https://babeljs.io/docs/config-files#supported-file-extensions)和 [Metro 配置](https://metrobundler.dev/docs/configuration/)。
 
