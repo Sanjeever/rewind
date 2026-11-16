@@ -45,3 +45,31 @@ test('QQ 添加到歌单传递当前会话，不依赖固定身份', async () =>
   await service.addToDir({songmid: 'test', dirid: 1, qq: 2, cookies: 'session=test'});
   expect(request.mock.calls[0][1]?.headers).toMatchObject({Cookie: 'session=test'});
 });
+
+test('QQ 最新与热门评论统一还原换行，保留真实换行及未知字段', async () => {
+  const comment = {
+    rootcommentcontent: '第一行\\n第二行\n第三行',
+    nick: '用户',
+    avatarurl: '',
+    time: 1,
+    opaque: '保留',
+  };
+  const request = respond({
+    code: 0,
+    comment: {commentlist: [comment], commenttotal: 1},
+    hot_comment: {commentlist: [comment], commenttotal: 1},
+  });
+  const result = await service.song_comments({songid: 1});
+  const expected = {...comment, rootcommentcontent: '第一行\n第二行\n第三行'};
+  expect(result?.comment.commentlist).toEqual([expected]);
+  expect(result?.hot_comment?.commentlist).toEqual([expected]);
+  request.mockResolvedValue(
+    new Response(
+      JSON.stringify({
+        code: 0,
+        comment: {commentlist: [{...comment, rootcommentcontent: 1}], commenttotal: 1},
+      }),
+    ),
+  );
+  await expect(service.song_comments({songid: 1})).rejects.toThrow();
+});

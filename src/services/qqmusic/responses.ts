@@ -104,7 +104,10 @@ const suggestion = z.looseObject({id: optional(id), mid: string, name: z.string(
 const suggestions = z.looseObject({itemlist: z.array(suggestion)});
 export const qqComment = z.looseObject({
   commentid: optional(id),
-  rootcommentcontent: z.string(),
+  rootcommentcontent: z.pipe(
+    z.string(),
+    z.transform((text) => text.replace(/\\n/g, '\n')),
+  ),
   nick: z.string(),
   avatarurl: z.string(),
   time: z.number(),
