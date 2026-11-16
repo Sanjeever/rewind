@@ -10,6 +10,8 @@ import locales from '../../locales/index';
 import type {Provider} from '../../services/providers';
 export type LoginProvider = 'qqmusic_qq' | 'qqmusic_wechat' | 'netease_qq' | 'netease_weibo';
 interface Props {
+  authorized?: boolean;
+  onRefresh?(): void;
   api: Provider;
   avatar?: string | null;
   nickname?: string | null;
@@ -23,62 +25,59 @@ interface Props {
 }
 const p = 0.05 * constants.DEVICE_HEIGHT;
 class LoginView extends React.PureComponent<Props> {
+  state = {showPublicForm: false};
   renderQQMusic = () => {
     const props = this.props;
     const {_Login, onChangeText, onWebview} = props;
     return (
       <ReactNative.View style={y.container}>
-        <ReactNative.View style={y.inputCon}>
-          <components.Input
-            style={[
-              {
-                fontSize: 18,
-              },
-              y.inputText,
-            ]}
-            placeholder={locales.INPUT_QQ_FETCH_PUBLIC_MIX}
-            onChangeText={function (e) {
-              return onChangeText(e);
-            }}
-            keyboardType={'numeric'}
+        {props.authorized && (
+          <components.TextButton
+            text="刷新歌单"
+            onPress={props.onRefresh}
+            style={y.btnCon}
+            textStyle={{opacity: 1}}
           />
-        </ReactNative.View>
+        )}
         <components.TextButton
-          onPress={_Login}
-          style={y.btnCon}
-          text={locales.CONFIRM}
-          textStyle={{
-            opacity: 1,
-          }}
+          text={props.authorized ? '重新授权' : '账号授权登录'}
+          onPress={() => onWebview('qqmusic_qq')}
+          style={[y.btnCon, {marginTop: 16}]}
+          textStyle={{opacity: 1}}
         />
-        <ReactNative.View
-          style={[
-            y.other,
-            {
-              width: '40%',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              flexDirection: 'row',
-            },
-          ]}
-        >
-          <components.Icon
-            style={y.textBtn}
-            name={icons.QQCHAT}
-            size={30}
-            onPress={function () {
-              return onWebview('qqmusic_qq');
-            }}
-          />
-          <components.Icon
-            style={y.textBtn}
-            name={icons.WECHAT}
-            size={30}
-            onPress={function () {
-              return onWebview('qqmusic_wechat');
-            }}
-          />
-        </ReactNative.View>
+        <components.TextButton
+          text={this.state.showPublicForm ? '收起公开歌单' : '读取公开歌单'}
+          onPress={() => this.setState({showPublicForm: !this.state.showPublicForm})}
+          style={{minHeight: 48, marginTop: 16}}
+        />
+        {this.state.showPublicForm && (
+          <ReactNative.View style={{alignItems: 'center'}}>
+            <ReactNative.View style={y.inputCon}>
+              <components.Input
+                style={[
+                  {
+                    fontSize: 18,
+                  },
+                  y.inputText,
+                  {width: constants.DEVICE_WIDTH - 48},
+                ]}
+                placeholder={locales.INPUT_QQ_FETCH_PUBLIC_MIX}
+                onChangeText={function (e) {
+                  return onChangeText(e);
+                }}
+                keyboardType={'numeric'}
+              />
+            </ReactNative.View>
+            <components.TextButton
+              onPress={_Login}
+              style={y.btnCon}
+              text={locales.CONFIRM}
+              textStyle={{
+                opacity: 1,
+              }}
+            />
+          </ReactNative.View>
+        )}
       </ReactNative.View>
     );
   };
@@ -190,7 +189,7 @@ class LoginView extends React.PureComponent<Props> {
         useNativeDriver={true}
         style={{
           flex: 1,
-          paddingTop: 60,
+          paddingTop: api === providers.qqMusic ? 12 : 60,
           alignItems: 'center',
         }}
       >
@@ -255,6 +254,7 @@ const y = ReactNative.StyleSheet.create({
     height: 46,
   },
   btnCon: {
+    minHeight: 48,
     width: 200,
     marginTop: 0.5 * p,
     borderRadius: 50,

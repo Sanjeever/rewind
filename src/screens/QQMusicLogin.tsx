@@ -23,6 +23,7 @@ import LoginView from '../features/account/LoginView';
 import QQMusicHelp from '../features/account/QQMusicHelp';
 const loginUrl = 'https://y.qq.com/n/ryqq/profile';
 interface State {
+  authorized: boolean;
   loading: boolean;
   avatar?: string;
   nickname?: string;
@@ -37,6 +38,7 @@ interface State {
 class QQMusicLogin extends React.PureComponent<ScreenProps<'QQMusicLogin'>, State> {
   loginPending = false;
   state: State = {
+    authorized: false,
     loading: false,
     avatar: '',
     nickname: '',
@@ -52,6 +54,7 @@ class QQMusicLogin extends React.PureComponent<ScreenProps<'QQMusicLogin'>, Stat
       const account = (await users.getUserInfo())?.qqMusic;
       if (account) {
         this.setState({
+          authorized: Boolean(account.cookies),
           nickname: account.nickname,
           avatar: account.avatarUrl,
         });
@@ -88,6 +91,18 @@ class QQMusicLogin extends React.PureComponent<ScreenProps<'QQMusicLogin'>, Stat
         this.setState({
           loading: false,
         });
+    }
+  };
+  refreshAccount = async () => {
+    this.loadMask('loading');
+    try {
+      const account = (await users.getUserInfo())?.qqMusic;
+      if (!account?.userId || !account.cookies) throw new Error('请先授权登录 QQ 音乐');
+      await this.loadProfile(account.userId, account.cookies);
+    } catch (error) {
+      toast(errorMessage(error));
+    } finally {
+      this.loadMask('loaded');
     }
   };
   onWebview = () => {
@@ -169,7 +184,12 @@ class QQMusicLogin extends React.PureComponent<ScreenProps<'QQMusicLogin'>, Stat
         },
         providers.qqMusic,
       );
-      this.setState({avatar: avatarUrl, nickname: nickname || session.musicId, showWebView: false});
+      this.setState({
+        authorized: true,
+        avatar: avatarUrl,
+        nickname: nickname || session.musicId,
+        showWebView: false,
+      });
       events.emitter.emit(names.UserLogined);
       const response = await this.loadProfile(session.musicId, session.cookies);
       if (!response?.mymusic) {
@@ -219,6 +239,8 @@ class QQMusicLogin extends React.PureComponent<ScreenProps<'QQMusicLogin'>, Stat
       >
         <reactNativeSpringScrollview.SpringScrollView>
           <LoginView
+            authorized={state.authorized}
+            onRefresh={this.refreshAccount}
             avatar={avatar}
             nickname={nickname}
             _Login={this._qqMusicLogin}

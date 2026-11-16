@@ -113,3 +113,21 @@ test('完整账号读取本地资料，无需重新请求；资料请求失败�
   );
   expect(notice).toHaveBeenCalledWith('资料请求失败');
 });
+
+test('刷新歌单使用已保存的本人会话，请求失败保留账号并结束加载', async () => {
+  account.mockResolvedValue({qqMusic: {userId: '123', cookies: 'session=current'}});
+  const view = page();
+  await view.refreshAccount();
+  expect(profile).toHaveBeenCalledWith('123', 'session=current');
+  expect(save).toHaveBeenLastCalledWith(
+    expect.objectContaining({uin: '123', cookies: 'session=current'}),
+    'qqMusic',
+  );
+  expect(view.state.loading).toBe(false);
+  save.mockClear();
+  profile.mockRejectedValue(new Error('刷新失败'));
+  await view.refreshAccount();
+  expect(save).not.toHaveBeenCalled();
+  expect(notice).toHaveBeenCalledWith('刷新失败');
+  expect(view.state.loading).toBe(false);
+});
