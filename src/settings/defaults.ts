@@ -25,7 +25,7 @@ const {
   HIDE_MINI_LYRIC_TRANS,
   DISABLED_ROUTER_TRANSITION,
 } = locales_SETTINGS;
-const {GENERAL, PLAY, PLAYER_UI} = locales;
+const {GENERAL, PLAY, PLAYER_UI, ADVANCED} = locales;
 export const defaultSettings = {
   navbarPadding: {
     title: NAVBAR_PADDING,
@@ -119,8 +119,6 @@ export type Settings = {[K in keyof typeof defaultSettings]: boolean};
 export const settingsMap: (keyof typeof defaultSettings | keyof typeof sectionsMap)[] = [
   'SECTION_GENERAL',
   'autoSetPlaylistOrder',
-  'navbarPadding',
-  'bottomPadding',
   'bottomBlur',
   'hideMiniPlayerTopBorder',
   'hideStatusBar',
@@ -131,9 +129,7 @@ export const settingsMap: (keyof typeof defaultSettings | keyof typeof sectionsM
   'autoErrorNext',
   'recordPlayCount',
   'playWithOthers',
-  'cloneThroughLinking',
   'SECTION_PLAYER_UI',
-  'reverseGestureHands',
   'isRound',
   'hideRoundSlider',
   'hideBottomTip',
@@ -141,8 +137,16 @@ export const settingsMap: (keyof typeof defaultSettings | keyof typeof sectionsM
   'hideFloatLyric',
   'hideMiniLyric',
   'hideMiniLyricTrans',
+  'SECTION_ADVANCED',
+  'navbarPadding',
+  'bottomPadding',
+  'reverseGestureHands',
+  'cloneThroughLinking',
 ];
 export const sectionsMap = {
+  SECTION_ADVANCED: {
+    title: ADVANCED,
+  },
   SECTION_GENERAL: {
     title: GENERAL,
   },

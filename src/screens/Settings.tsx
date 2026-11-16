@@ -87,7 +87,12 @@ class Settings extends React.Component<
   renderSettingItems = () => {
     const settings = this.state.settings;
     return defaults.settingsMap.map((t, key) => {
-      if (t === 'SECTION_GENERAL' || t === 'SECTION_PLAY' || t === 'SECTION_PLAYER_UI') {
+      if (
+        t === 'SECTION_GENERAL' ||
+        t === 'SECTION_PLAY' ||
+        t === 'SECTION_PLAYER_UI' ||
+        t === 'SECTION_ADVANCED'
+      ) {
         return (
           <components.Title key={t} style={C.sectionText}>
             {defaults.sectionsMap[t].title}
@@ -101,7 +106,7 @@ class Settings extends React.Component<
           <components.SettingItem
             key={key}
             title={o.title}
-            subtitle={defaults.defaultSettings.bottomPadding.subtitle || null}
+            subtitle={settings.bottomPadding.subtitle}
             onPress={this.onShowBottomPaddingModal}
             showChevron={true}
           />
@@ -119,7 +124,7 @@ class Settings extends React.Component<
             title={o.title}
             subtitle={'subtitle' in o ? o.subtitle || null : null}
             switchButton={true}
-            switched={i.on}
+            switched={t.startsWith('hide') || t === 'disabledRouterTransition' ? !i.on : i.on}
             onSwitch={() => {
               return this.switchOptions(t);
             }}
