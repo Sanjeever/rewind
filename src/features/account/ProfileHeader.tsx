@@ -173,6 +173,7 @@ const m = ReactNative.StyleSheet.create({
     alignItems: 'center',
   },
   nickname: {
+    color: '#fff',
     marginLeft: 10,
     fontSize: 16,
     fontWeight: 'bold',
