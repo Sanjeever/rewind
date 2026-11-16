@@ -194,6 +194,9 @@ export default class SearchPage extends React.PureComponent<ScreenProps<'SearchP
                 })
               }
             />
+            <TouchableBorderless accessibilityLabel="搜索" onPress={this.submit}>
+              <Icon name={icons.MAGNIFY} size={22} />
+            </TouchableBorderless>
             <TouchableBorderless
               onPress={this.changeProvider}
               style={[styles.button, {width: 88}]}
@@ -237,7 +240,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   toolbar: {
-    height: 40,
+    height: 56,
     width: '100%',
     alignItems: 'center',
     flexDirection: 'row',
@@ -265,7 +268,6 @@ const styles = StyleSheet.create({
     width: 18,
   },
   tabBar: {
-    marginTop: -10,
     backgroundColor: 'transparent',
     elevation: 0,
   },
