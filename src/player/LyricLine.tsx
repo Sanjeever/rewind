@@ -4,7 +4,6 @@ import * as ReactNative from 'react-native';
 import LyricDataSource from './LyricDataSource';
 import VirtualLyricList from './VirtualLyricList';
 import * as constants from '../theme/constants';
-import locales from '../locales/index';
 import type {LyricRow} from '../utils/parseLyric';
 import type {PlayState} from './types';
 export interface LyricLineProps {
@@ -93,77 +92,6 @@ class LyricLine extends React.PureComponent<LyricLineProps, {index: number | nul
     }
     return 1000;
   };
-  btns = () => {
-    return (
-      <ReactNative.View
-        style={{
-          height: 200,
-          paddingTop: 100,
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        {this.props.hasTrans && (
-          <ReactNative.TouchableOpacity onPress={this.props.changeShowTrans}>
-            <Text style={h.text}>
-              {this.props.showTrans ? locales.HIDE_TRANS : locales.SHOW_TRANS}
-            </Text>
-          </ReactNative.TouchableOpacity>
-        )}
-        <ReactNative.View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-around',
-            alignItems: 'center',
-          }}
-        >
-          <ReactNative.TouchableOpacity
-            onPress={() => {
-              return this.props.changeFontSize(
-                this.props.fontSize > 1 ? this.props.fontSize - 1 : 0,
-              );
-            }}
-          >
-            <Text
-              style={[
-                h.text,
-                {
-                  padding: 5,
-                },
-              ]}
-            >
-              {'-'}
-            </Text>
-          </ReactNative.TouchableOpacity>
-          <ReactNative.View
-            style={{
-              padding: 20,
-            }}
-          >
-            <Text style={h.text}>{this.props.fontSize - 15}</Text>
-          </ReactNative.View>
-          <ReactNative.TouchableOpacity
-            onPress={() => {
-              return this.props.changeFontSize(
-                this.props.fontSize < 25 ? this.props.fontSize + 1 : 25,
-              );
-            }}
-          >
-            <Text
-              style={[
-                h.text,
-                {
-                  padding: 5,
-                },
-              ]}
-            >
-              {'+'}
-            </Text>
-          </ReactNative.TouchableOpacity>
-        </ReactNative.View>
-      </ReactNative.View>
-    );
-  };
   emptyComp = function () {
     return <ReactNative.View style={h.space} />;
   };
@@ -233,7 +161,7 @@ class LyricLine extends React.PureComponent<LyricLineProps, {index: number | nul
             showVerticalScrollBar={false}
             fadingEdgeLength={128}
             isScrollOverMode={false}
-            ListHeaderComponent={this.btns}
+            ListHeaderComponent={this.emptyComp}
             ListFooterComponent={this.emptyComp}
             onTouchStart={this.scrollDragBegin}
             onScrollEndDrag={this.scrollEndDrag}
@@ -289,7 +217,7 @@ class LyricLineScreen extends React.PureComponent<LineProps> {
                 style={[
                   h.text,
                   {
-                    opacity: highlight ? 1 : 0.6,
+                    opacity: 1,
                     fontSize,
                   },
                 ]}

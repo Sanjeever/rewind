@@ -1,11 +1,17 @@
 import 'react';
-import * as ReactNative from 'react-native';
 import TouchableScale from '../components/TouchableScale';
 import * as components from '../components/index';
 import type {IconProps} from '../components/Icon';
 export type ControlIconProps = Pick<
   IconProps,
-  'name' | 'size' | 'color' | 'disabled' | 'style' | 'onPress' | 'onLongPress'
+  | 'name'
+  | 'size'
+  | 'color'
+  | 'disabled'
+  | 'style'
+  | 'onPress'
+  | 'onLongPress'
+  | 'accessibilityLabel'
 > & {type?: string};
 const SComponent = function (e: ControlIconProps) {
   const {name, size} = e;
@@ -14,11 +20,17 @@ const SComponent = function (e: ControlIconProps) {
   const disabled_1 = disabled !== undefined && disabled;
   const {style, onPress, onLongPress} = e;
   return (
-    <ReactNative.View
+    <TouchableScale
+      activeScale={0.8}
+      disabled={disabled_1}
+      onPress={onPress}
+      onLongPress={onLongPress}
+      accessibilityRole="button"
+      accessibilityLabel={e.accessibilityLabel}
       style={[
         {
-          height: size_1 + 12,
-          width: size_1 + 12,
+          minHeight: Math.max(48, size_1 + 12),
+          minWidth: Math.max(48, size_1 + 12),
           borderRadius: (size_1 + 12) / 2,
           justifyContent: 'center',
           alignItems: 'center',
@@ -27,15 +39,8 @@ const SComponent = function (e: ControlIconProps) {
         style,
       ]}
     >
-      <TouchableScale
-        activeScale={0.8}
-        disabled={disabled_1}
-        onPress={onPress}
-        onLongPress={onLongPress}
-      >
-        <components.Icon size={size_1} name={name} color={color} />
-      </TouchableScale>
-    </ReactNative.View>
+      <components.Icon size={size_1} name={name} color={color} />
+    </TouchableScale>
   );
 };
 export default SComponent;

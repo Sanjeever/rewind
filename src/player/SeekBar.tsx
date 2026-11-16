@@ -1,7 +1,8 @@
 import * as React from 'react';
 import reactNativeSlider from '../components/Slider';
 import styles from './styles';
-interface Props {
+export interface SeekBarProps {
+  inline?: boolean;
   showLyric: boolean;
   isRound: boolean;
   duration: number;
@@ -14,7 +15,7 @@ interface Props {
   disabled?: boolean;
   SOFT_MENU_HEIGHT?: number;
 }
-class SeekBar extends React.PureComponent<Props> {
+class SeekBar extends React.PureComponent<SeekBarProps> {
   render() {
     const props = this.props;
     const {
@@ -37,7 +38,7 @@ class SeekBar extends React.PureComponent<Props> {
           position: 'absolute',
           top: width,
           bottom: 0,
-          height: 40,
+          height: 48,
           opacity: 1,
         },
         showLyric && {
@@ -49,8 +50,17 @@ class SeekBar extends React.PureComponent<Props> {
         },
         showLyric && styles.sliderHide,
         isRound && !showLyric && styles.roundStyle,
+        props.inline && {
+          position: 'relative',
+          top: undefined,
+          bottom: undefined,
+          width: '100%',
+          height: 48,
+          opacity: 1,
+        },
       ],
-      maximumTrackTintColor: 'rgba(0,0,0,0)',
+      maximumTrackTintColor: props.inline ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0)',
+      accessibilityLabel: '播放进度',
       minimumTrackTintColor: 'rgba(255,255,255,0.8)',
       thumbTintColor: 'rgba(255,255,255,0.8)',
       maximumValue: duration && duration > 0 ? duration : 0,

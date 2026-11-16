@@ -1,7 +1,7 @@
 import React from 'react';
 import {Animated, View} from 'react-native';
 import * as Animatable from 'react-native-animatable';
-import {Background, Spinkit} from '../components';
+import {Background, Spinkit, TouchableBorderless} from '../components';
 import Text from '../components/Text';
 import {DEVICE_WIDTH, STATUS_BAR_HEIGHT} from '../theme/constants';
 import buttons from './buttons';
@@ -119,7 +119,7 @@ export default function PlayerView({
         bgStyle={{top: null, bottom: 0}}
         imageStyle={[
           isRound && {borderBottomLeftRadius: 0, borderBottomRightRadius: 0},
-          showLyric && {opacity: 0.7, borderBottomLeftRadius: 0, borderBottomRightRadius: 0},
+          showLyric && {opacity: 0.35, borderBottomLeftRadius: 0, borderBottomRightRadius: 0},
         ]}
       />
       {showLyric && (
@@ -186,6 +186,11 @@ export default function PlayerView({
       )}
       {showTool && (
         <PlaybackControls
+          duration={duration}
+          currentTime={currentTime}
+          slidingStart={actions.slidingStart}
+          onSliderValueChange={actions.slide}
+          slidingEnd={actions.slidingEnd}
           animatedOpacity={animatedOpacity}
           playMode={playMode}
           playState={playState}
@@ -194,11 +199,11 @@ export default function PlayerView({
           changeSong={actions.changeSong}
           togglePlay={actions.togglePlay}
           onNowPlaying={actions.showQueue}
-          color={color}
+          color="#fff"
           loaded={loaded}
         />
       )}
-      {!hidePlayingTime && showLyric && (
+      {!showTool && !hidePlayingTime && showLyric && (
         <LyricTime
           color={color}
           duration={duration}
@@ -219,6 +224,7 @@ export default function PlayerView({
         />
       )}
       {!isRound &&
+        !showTool &&
         !hidePlayingTime &&
         !showLyric &&
         (gesture.sliding || (playState === 'paused' && loaded)) && (
@@ -246,26 +252,29 @@ export default function PlayerView({
           onCheck={actions.recordPlay}
         />
       )}
-      {showTool && (
-        <View style={[styles.topBtn, {left: 10, right: null}]}>
-          <ControlIcon
-            name={buttons.CLOSE.name}
-            onPress={() => actions.close()}
-            color={showLyric ? '#fff' : color}
-            size={23}
-          />
-        </View>
-      )}
-      {showTool && (
-        <View style={[styles.topBtn, {right: 10, left: null}]}>
-          <ControlIcon
-            name={buttons.CIRCLE.name}
-            color={color}
-            size={23}
-            onPress={actions.toggleTools}
-          />
-        </View>
-      )}
+      <View style={[styles.topBtn, {left: 10, right: null}]}>
+        <ControlIcon
+          accessibilityLabel="收起播放器"
+          name={buttons.CLOSE.name}
+          onPress={() => actions.close()}
+          color="#fff"
+          size={23}
+        />
+      </View>
+      <TouchableBorderless
+        accessibilityLabel={showLyric ? '显示封面' : '显示歌词'}
+        onPress={actions.toggleLyric}
+        style={[styles.topBtn, {right: 68, width: 52}]}
+      >
+        <Text>{showLyric ? '封面' : '歌词'}</Text>
+      </TouchableBorderless>
+      <TouchableBorderless
+        accessibilityLabel={showTool ? '隐藏播放控件' : '显示播放控件'}
+        onPress={actions.toggleTools}
+        style={[styles.topBtn, {right: 10, left: null}]}
+      >
+        <Text>{showTool ? '精简' : '控件'}</Text>
+      </TouchableBorderless>
       {!showLyric && !showTool && !loaded && (
         <View style={styles.blankLyric}>
           <Spinkit size={55} />
@@ -279,7 +288,7 @@ export default function PlayerView({
           tracksLength={queue.tracks.length}
         />
       )}
-      {sliderVisible && (
+      {!showTool && sliderVisible && (
         <SeekBar
           SOFT_MENU_HEIGHT={softMenuHeight}
           showLyric={showLyric}

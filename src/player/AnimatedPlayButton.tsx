@@ -23,7 +23,14 @@ const DComponent = function ({playMode, onPress, color, size, style}: Props) {
       };
   }
   return (
-    <ControlIcon onPress={onPress} name={a.name} size={size || 28} color={color} style={style} />
+    <ControlIcon
+      accessibilityLabel={`播放模式：${playMode === 'random' ? '随机播放' : playMode === 'circulate' ? '单曲循环' : '列表循环'}`}
+      onPress={onPress}
+      name={a.name}
+      size={size || 28}
+      color={color}
+      style={style}
+    />
   );
 };
 export default DComponent;

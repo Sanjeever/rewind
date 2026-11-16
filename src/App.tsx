@@ -138,7 +138,7 @@ export default class App extends React.PureComponent<Record<string, never>, Stat
     } = this.state;
     if (!checkPermissionDone) return null;
     return (
-      <MenuProvider>
+      <MenuProvider backHandler>
         <SafeAreaProvider style={{flex: 1}}>
           <StatusBar hidden={settings.hideStatusBar} />
           <Navigation

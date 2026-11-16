@@ -63,13 +63,21 @@ class ExtraPlaybackControls extends React.PureComponent<Props> {
             }}
           >
             <ControlIcon
+              accessibilityLabel={isLike ? '取消喜欢' : '喜欢'}
               name={isLike === true ? buttons.HEART.name : buttons.HEART_OFF.name}
               onPress={onLike}
               color={showLyric ? '#fff' : color}
               size={23}
             />
-            <ControlIcon name={buttons.COMMENT.name} onPress={onComment} color={color} size={23} />
             <ControlIcon
+              accessibilityLabel="评论"
+              name={buttons.COMMENT.name}
+              onPress={onComment}
+              color={color}
+              size={23}
+            />
+            <ControlIcon
+              accessibilityLabel="歌曲更多操作"
               name={buttons.MORE.name}
               onPress={onDetail}
               color={showLyric ? '#fff' : color}
@@ -87,9 +95,22 @@ class ExtraPlaybackControls extends React.PureComponent<Props> {
               paddingHorizontal: 45,
             }}
           >
-            <ControlIcon name={buttons.TIMER.name} onPress={onTimer} color={color} size={23} />
-            <ControlIcon name={buttons.CHECK.name} onPress={onCheck} color={color} size={24} />
             <ControlIcon
+              accessibilityLabel="定时停止"
+              name={buttons.TIMER.name}
+              onPress={onTimer}
+              color={color}
+              size={23}
+            />
+            <ControlIcon
+              accessibilityLabel="记录播放次数"
+              name={buttons.CHECK.name}
+              onPress={onCheck}
+              color={color}
+              size={24}
+            />
+            <ControlIcon
+              accessibilityLabel="私人电台"
               name={tabIcons.FM.name}
               onPress={onFmMode}
               color={color}

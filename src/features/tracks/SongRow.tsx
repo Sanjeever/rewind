@@ -167,7 +167,12 @@ const h = function ({
   size?: number;
 }) {
   return (
-    <TouchableScale onPress={onPress} activeScale={0.7}>
+    <TouchableScale
+      onPress={onPress}
+      activeScale={0.7}
+      accessibilityRole="button"
+      accessibilityLabel={name === icons.WINDOW_CLOSE ? '移除歌曲' : '歌曲更多操作'}
+    >
       <ReactNative.View style={style}>
         <Icon name={name || icons.DOTS_VERTICAL} size={size || 20} />
       </ReactNative.View>

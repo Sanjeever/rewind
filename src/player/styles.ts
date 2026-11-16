@@ -16,10 +16,10 @@ const d = ReactNative.StyleSheet.create({
   },
   footer: {
     position: 'absolute',
-    bottom: 10,
-    height: 150,
+    bottom: 24 + SOFT_MENU_HEIGHT,
+    left: 0,
+    right: 0,
     justifyContent: 'center',
-    paddingBottom: 10 + SOFT_MENU_HEIGHT,
   },
   softKeyFooterHeight: {
     bottom: 20,
@@ -44,7 +44,7 @@ const d = ReactNative.StyleSheet.create({
   },
   lyric: {
     position: 'absolute',
-    height: constants.DEVICE_HEIGHT - 130,
+    bottom: 220 + SOFT_MENU_HEIGHT,
     top: 0,
     alignItems: 'center',
     width: constants.DEVICE_WIDTH,
@@ -55,7 +55,7 @@ const d = ReactNative.StyleSheet.create({
     top: constants.STATUS_BAR_HEIGHT - 5,
     justifyContent: 'center',
     paddingLeft: 45,
-    paddingRight: 50,
+    paddingRight: 140,
   },
   songTitle: {
     fontWeight: 'bold',
@@ -67,14 +67,14 @@ const d = ReactNative.StyleSheet.create({
   topBtn: {
     position: 'absolute',
     top: constants.STATUS_BAR_HEIGHT,
-    height: 30,
-    width: 30,
+    height: 48,
+    width: 48,
     justifyContent: 'center',
     alignItems: 'center',
   },
   totalTool: {
     position: 'absolute',
-    top: constants.DEVICE_WIDTH - 50,
+    bottom: 185 + SOFT_MENU_HEIGHT,
     height: 50,
     width: '100%',
   },
@@ -83,7 +83,7 @@ const d = ReactNative.StyleSheet.create({
     bottom: 0,
   },
   toolHide: {
-    height: '100%',
+    bottom: 0,
     paddingBottom: 30,
   },
   blankLyric: {

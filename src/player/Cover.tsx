@@ -260,9 +260,9 @@ const m = ReactNative.StyleSheet.create({
     alignItems: 'center',
   },
   songTitleCon: {
-    paddingTop: 20,
+    paddingTop: 28,
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     alignItems: 'center',
   },
   coverCon: {

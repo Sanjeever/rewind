@@ -30,6 +30,7 @@ class PlayButton extends React.PureComponent<
     if (loaded === true) {
       return (
         <ControlIcon
+          accessibilityLabel={playState === 'playing' ? '暂停' : '播放'}
           color={color}
           name={u[playState].name}
           size={size}

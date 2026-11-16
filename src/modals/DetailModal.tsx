@@ -3,8 +3,9 @@ import {closePlayer, insertTracks} from '../player/commands';
 import {toast} from '../native/toast';
 import * as React from 'react';
 import * as ReactNative from 'react-native';
-import * as Scrolling from './../components/Scrolling';
+import {SafeAreaView} from 'react-native-safe-area-context';
 import * as Index from '../components/index';
+import Text from '../components/Text';
 import providers from '../services/providers';
 import * as constants from '../theme/constants';
 import TrackActions from './trackActions';
@@ -17,7 +18,6 @@ import * as utils from '../utils/index';
 import * as trackInfo from '../services/trackInfo';
 import queue from '../player/videoActions';
 import ActionRow from './ActionRow';
-import CloseButton from './CloseButton';
 import _mediaStore from '../native/mediaStore';
 import type {Provider} from '../services/providers';
 import type {TrackFields, TrackId, Artist} from '../services/track';
@@ -372,10 +372,10 @@ class DetailModal extends React.PureComponent<
   render() {
     const state = this.state;
     const {song, playlistId, mvid, mainModalShow, sonModalShow, tools, artists} = state;
-    const isRound = this.props.isRound;
     return (
       <ReactNative.Modal
-        animationType={'fade'}
+        animationType={'slide'}
+        transparent
         onRequestClose={this.onClose}
         visible={mainModalShow}
         style={
@@ -388,84 +388,93 @@ class DetailModal extends React.PureComponent<
         }
       >
         <ReactNative.View style={w.container}>
-          <Index.Background
-            imageStyle={{
-              opacity: 0.5,
-            }}
-            coverUrl={song?.img}
-            blur={true}
+          <ReactNative.Pressable
+            accessibilityRole="button"
+            accessibilityLabel="关闭歌曲菜单"
+            style={ReactNative.StyleSheet.absoluteFill}
+            onPress={this.onClose}
           />
-          <Scrolling.SpringScrollView
-            style={{
-              padding: 10,
-              flex: 1,
-              width: '100%',
-              paddingBottom: 0,
-            }}
-            showsVerticalScrollIndicator={false}
-            overScrollMode={'never'}
-          >
-            <ReactNative.TouchableWithoutFeedback onPress={this.onClose}>
-              <ReactNative.View style={[ReactNative.StyleSheet.absoluteFill]} />
-            </ReactNative.TouchableWithoutFeedback>
-            <ReactNative.View
+          <SafeAreaView edges={['bottom']} style={w.sheet}>
+            <ReactNative.ScrollView
               style={{
-                height: 0.1 * constants.DEVICE_HEIGHT,
                 width: '100%',
+                flexGrow: 0,
+                flexShrink: 1,
               }}
-            />
-            {song ? (
-              <ReactNative.View style={w.songAvatar}>
-                <ReactNative.TouchableOpacity onPress={this.saveCover}>
-                  <ReactNative.Image
-                    source={{
-                      uri: song.img,
-                    }}
+              showsVerticalScrollIndicator={false}
+              overScrollMode={'never'}
+            >
+              {song ? (
+                <ReactNative.View style={w.songAvatar}>
+                  <ReactNative.TouchableOpacity
+                    accessibilityRole="button"
+                    accessibilityLabel="保存封面"
+                    onPress={this.saveCover}
+                  >
+                    <ReactNative.Image
+                      source={{
+                        uri: song.img,
+                      }}
+                      style={{
+                        height: 52,
+                        width: 52,
+                        borderRadius: 6,
+                      }}
+                    />
+                  </ReactNative.TouchableOpacity>
+                  <ReactNative.View style={{flex: 1, gap: 4}}>
+                    <Index.Selectable
+                      numberOfLines={3}
+                      style={[
+                        w.text,
+                        {
+                          fontSize: 18,
+                          fontWeight: 'bold',
+                        },
+                      ]}
+                    >
+                      {song.song}
+                    </Index.Selectable>
+                    <Index.Selectable
+                      style={[
+                        w.text,
+                        {
+                          fontSize: 13,
+                        },
+                      ]}
+                    >
+                      {song.album}
+                    </Index.Selectable>
+                  </ReactNative.View>
+                  {mvid ? (
+                    <Index.TouchableBorderless accessibilityLabel="播放 MV" onPress={this.onMV}>
+                      <Text>MV</Text>
+                    </Index.TouchableBorderless>
+                  ) : null}
+                </ReactNative.View>
+              ) : null}
+              <ReactNative.View style={w.tool}>
+                {this.renderTools(tools)}
+                {playlistId && (
+                  <ReactNative.View
                     style={{
-                      height: 150,
-                      width: 150,
-                      borderRadius: isRound ? 75 : 5,
+                      width: '100%',
+                      marginTop: 8,
+                      borderTopWidth: ReactNative.StyleSheet.hairlineWidth,
+                      borderTopColor: '#444',
                     }}
-                  />
-                </ReactNative.TouchableOpacity>
-                {mvid ? <CloseButton onPress={this.onMV} isRound={isRound} /> : null}
-                <Index.Selectable
-                  numberOfLines={3}
-                  style={[
-                    w.text,
-                    {
-                      flex: 1,
-                      fontSize: 18,
-                      fontWeight: 'bold',
-                      marginTop: 10,
-                    },
-                  ]}
-                >
-                  {song.song}
-                </Index.Selectable>
-                <Index.Selectable
-                  style={[
-                    w.text,
-                    {
-                      fontSize: 13,
-                    },
-                  ]}
-                >
-                  {song.album}
-                </Index.Selectable>
+                  >
+                    <ActionRow destructive title={D.title} onPress={this.alertDeleteFromPlaylist} />
+                  </ReactNative.View>
+                )}
               </ReactNative.View>
-            ) : null}
-            <ReactNative.View style={w.tool}>
-              {playlistId && <ActionRow title={D.title} onPress={this.alertDeleteFromPlaylist} />}
-              {this.renderTools(tools)}
-            </ReactNative.View>
-            <ReactNative.View
-              style={{
-                height: 0.1 * constants.DEVICE_HEIGHT,
-                width: '100%',
-              }}
+            </ReactNative.ScrollView>
+            <Index.TextButton
+              text={locales.CANCEL}
+              onPress={this.onClose}
+              style={{minHeight: 48, width: '100%'}}
             />
-          </Scrolling.SpringScrollView>
+          </SafeAreaView>
           <ReactNative.Modal
             animationType={'fade'}
             transparent={true}
@@ -515,25 +524,30 @@ class DetailModal extends React.PureComponent<
 export default DetailModal;
 const w = ReactNative.StyleSheet.create({
   container: {
-    height: constants.DEVICE_HEIGHT,
-    width: constants.DEVICE_WIDTH,
     flex: 1,
-    alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,1)',
+    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(0,0,0,0.6)',
+  },
+  sheet: {
+    maxHeight: '85%',
+    paddingTop: 16,
+    backgroundColor: '#161616',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
   },
   text: {
     fontSize: 16,
-    textAlign: 'center',
+    textAlign: 'left',
   },
   songAvatar: {
-    justifyContent: 'center',
+    flexDirection: 'row',
+    gap: 14,
     alignItems: 'center',
     paddingHorizontal: 24,
     marginBottom: 10,
   },
   tool: {
-    flex: 1,
-    width: '80%',
+    width: '100%',
     alignSelf: 'center',
     alignItems: 'center',
   },

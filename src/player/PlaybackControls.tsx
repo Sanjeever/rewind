@@ -5,8 +5,15 @@ import styles from './styles';
 import ControlIcon from './ControlIcon';
 import PlayButton from './PlayButton';
 import AnimatedPlayButton from './AnimatedPlayButton';
+import SeekBar from './SeekBar';
+import Text from '../components/Text';
+import timeFormatter from '../utils/timeFormatter';
+import type {SeekBarProps} from './SeekBar';
 import type {PlayMode, PlayState} from './types';
-interface Props {
+interface Props extends Pick<
+  SeekBarProps,
+  'duration' | 'currentTime' | 'slidingStart' | 'slidingEnd' | 'onSliderValueChange'
+> {
   animatedOpacity: ReactNative.Animated.Value;
   playMode: PlayMode;
   onChangePlayStatus(): void;
@@ -45,6 +52,35 @@ class PlaybackControls extends React.PureComponent<Props> {
           },
         ]}
       >
+        <ReactNative.View style={{paddingHorizontal: 24}}>
+          <SeekBar
+            inline
+            showLyric={false}
+            isRound={false}
+            width={0}
+            loaded={loaded}
+            duration={props.duration}
+            currentTime={props.currentTime}
+            slidingStart={props.slidingStart}
+            slidingEnd={props.slidingEnd}
+            onSliderValueChange={props.onSliderValueChange}
+          />
+          <ReactNative.View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              marginTop: -6,
+              marginBottom: 12,
+            }}
+          >
+            <Text style={{fontSize: 12, opacity: 0.8}}>
+              {timeFormatter.parseTime(props.currentTime)}
+            </Text>
+            <Text style={{fontSize: 12, opacity: 0.8}}>
+              {timeFormatter.parseTime(props.duration)}
+            </Text>
+          </ReactNative.View>
+        </ReactNative.View>
         <ReactNative.View style={styles.toolBar}>
           <AnimatedPlayButton
             playMode={playMode}
@@ -56,6 +92,7 @@ class PlaybackControls extends React.PureComponent<Props> {
             }}
           />
           <ControlIcon
+            accessibilityLabel="上一首"
             name={buttons.PREV.name}
             onPress={function () {
               return changeSong('pre');
@@ -67,6 +104,7 @@ class PlaybackControls extends React.PureComponent<Props> {
           />
           <PlayButton playState={playState} onPress={togglePlay} color={color} loaded={loaded} />
           <ControlIcon
+            accessibilityLabel="下一首"
             name={buttons.NEXT.name}
             onPress={function () {
               return changeSong('next');
@@ -77,6 +115,7 @@ class PlaybackControls extends React.PureComponent<Props> {
             }}
           />
           <ControlIcon
+            accessibilityLabel="播放队列"
             onPress={onNowPlaying}
             name={buttons.LIST.name}
             color={color}

@@ -6,24 +6,28 @@ class ActionRow extends React.PureComponent<{
   onPress?: () => void;
   title: string;
   value?: string | null;
+  destructive?: boolean;
 }> {
   render() {
     const props = this.props;
     const {onPress, title, value} = props;
     return (
       <TouchableScale
+        accessibilityRole="button"
         onPress={function () {
           onPress?.();
         }}
         style={{
           width: '100%',
         }}
-        activeScale={1.1}
+        activeScale={0.98}
       >
         <ReactNative.View
           style={{
             width: '100%',
-            padding: 8,
+            minHeight: 48,
+            paddingVertical: 10,
+            paddingHorizontal: 24,
             justifyContent: 'center',
           }}
         >
@@ -41,8 +45,15 @@ class ActionRow extends React.PureComponent<{
               {value}
             </Text>
           ) : null}
-          <Text style={[u.text, u.listItemText, value && u.mini]}>
-            {value ? `- ${title} -` : title}
+          <Text
+            style={[
+              u.text,
+              u.listItemText,
+              value && u.mini,
+              props.destructive && {color: '#ff9090'},
+            ]}
+          >
+            {title}
           </Text>
         </ReactNative.View>
       </TouchableScale>
@@ -53,11 +64,11 @@ export default ActionRow;
 const u = ReactNative.StyleSheet.create({
   text: {
     fontSize: 16,
-    textAlign: 'center',
+    textAlign: 'left',
   },
   listItemText: {
-    alignSelf: 'center',
-    textAlign: 'center',
+    alignSelf: 'flex-start',
+    textAlign: 'left',
   },
   mini: {
     marginTop: -2,
