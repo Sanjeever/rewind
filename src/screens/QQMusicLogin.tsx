@@ -48,13 +48,34 @@ class QQMusicLogin extends React.PureComponent<ScreenProps<'QQMusicLogin'>, Stat
     url: null,
   };
   loadInfo = async () => {
-    const account = (await users.getUserInfo())?.qqMusic;
-    if (account) {
-      this.setState({
-        nickname: account.nickname,
-        avatar: account.avatarUrl,
-      });
+    try {
+      const account = (await users.getUserInfo())?.qqMusic;
+      if (account) {
+        this.setState({
+          nickname: account.nickname,
+          avatar: account.avatarUrl,
+        });
+        if (
+          account.userId &&
+          account.cookies &&
+          (!account.avatarUrl || !account.nickname || account.nickname === String(account.userId))
+        ) {
+          await this.loadProfile(account.userId, account.cookies);
+        }
+      }
+    } catch (error) {
+      toast(errorMessage(error));
     }
+  };
+  loadProfile = async (userId: TrackId, cookies: string) => {
+    const response = await services.QQMusic.profile(userId, cookies);
+    if (!response?.creator.headpic || !response.creator.nick) {
+      throw new Error('QQ 音乐账号资料缺少头像或昵称');
+    }
+    await users.saveUserStorage({...response.creator, uin: userId, cookies}, providers.qqMusic);
+    this.setState({avatar: response.creator.headpic, nickname: response.creator.nick});
+    events.emitter.emit(names.UserLogined);
+    return response;
   };
   loadMask = (e: 'loading' | 'loaded') => {
     switch (e) {
@@ -150,7 +171,7 @@ class QQMusicLogin extends React.PureComponent<ScreenProps<'QQMusicLogin'>, Stat
       );
       this.setState({avatar: avatarUrl, nickname: nickname || session.musicId, showWebView: false});
       events.emitter.emit(names.UserLogined);
-      const response = await services.QQMusic.profile(session.musicId, session.cookies);
+      const response = await this.loadProfile(session.musicId, session.cookies);
       if (!response?.mymusic) {
         throw new Error(locales.PLAYLIST_FETCH_FAILED);
       }
