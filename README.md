@@ -42,3 +42,11 @@ pnpm android --no-packager
 - [架构与兼容约束](docs/architecture.md)：设计原因、播放边界、数据保护与相关代码入口。
 - [验证记录与未解决问题](docs/validation.md)：历史验收证据、未覆盖范围与在线失败。
 - [Coding Agent 工作约定](AGENTS.md)：事实来源、变更影响分析与完成标准。
+
+## 许可证与贡献
+
+本项目对有权授权的原创贡献采用 GNU General Public License v3.0 only（`GPL-3.0-only`），详见 [LICENSE](LICENSE)。项目由 `open-rewind` 组织维护，各部分版权归相应权利人所有。
+
+从原发布包恢复的代码与资源，其再许可依据仍待确认；本声明不授予这些材料尚未取得的权利。第三方材料保留原有许可，已核实来源与待确认项见 [第三方声明](THIRD_PARTY_NOTICES.md)。整个衍生项目的对外分发仍需先解决上游授权。
+
+提交贡献前请阅读 [贡献指南](CONTRIBUTING.md)。
