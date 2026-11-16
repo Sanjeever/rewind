@@ -348,7 +348,8 @@ const T = ReactNative.StyleSheet.create({
   },
   next: {
     height: constants.ITEM_HEIGHT,
-    width: 50,
+    width: 56,
+    marginRight: 12,
     alignItems: 'center',
     justifyContent: 'center',
   },

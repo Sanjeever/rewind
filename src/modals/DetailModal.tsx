@@ -378,14 +378,6 @@ class DetailModal extends React.PureComponent<
         transparent
         onRequestClose={this.onClose}
         visible={mainModalShow}
-        style={
-          mainModalShow
-            ? {
-                height: constants.DEVICE_HEIGHT,
-                width: constants.DEVICE_WIDTH,
-              }
-            : undefined
-        }
       >
         <ReactNative.View style={w.container}>
           <ReactNative.Pressable
@@ -469,11 +461,13 @@ class DetailModal extends React.PureComponent<
                 )}
               </ReactNative.View>
             </ReactNative.ScrollView>
-            <Index.TextButton
-              text={locales.CANCEL}
+            <ReactNative.TouchableOpacity
+              accessibilityRole="button"
               onPress={this.onClose}
-              style={{minHeight: 48, width: '100%'}}
-            />
+              style={{height: 48, flexShrink: 0, alignItems: 'center', justifyContent: 'center'}}
+            >
+              <Text style={{fontSize: 16, opacity: 0.7}}>{locales.CANCEL}</Text>
+            </ReactNative.TouchableOpacity>
           </SafeAreaView>
           <ReactNative.Modal
             animationType={'fade'}
