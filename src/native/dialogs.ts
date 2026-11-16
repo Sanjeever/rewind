@@ -4,7 +4,8 @@ export interface PickerItem<T> {
   value: T;
 }
 type Selection<T> =
-  {action: 'positive'; selectedItem: T} | {action: 'negative'; selectedItem?: never};
+  | {action: 'positive'; selectedItem: T}
+  | {action: 'negative'; selectedItem?: never};
 type PromptResult = {action: 'positive'; text: string} | {action: 'negative'; text?: never};
 const native = NativeModules.RewindDialogs as {
   prompt(

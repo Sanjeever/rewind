@@ -7,7 +7,8 @@ import * as Index from '../../components/index';
 import providers from '../../services/providers';
 import icons from '../../theme/icons';
 type Props = {active?: boolean} & (
-  {type: 'pages'; data: {icon: {name: string}; title: string}} | {type: 'apis'; data: string}
+  | {type: 'pages'; data: {icon: {name: string}; title: string}}
+  | {type: 'apis'; data: string}
 );
 class ProviderSelector extends React.PureComponent<Props> {
   renderApiIcon = function (e: string) {

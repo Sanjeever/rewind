@@ -37,11 +37,13 @@ const v = <T extends TrackFields>(e: T[], r: string) => {
   const n = r.replace(l, '');
   const t = r.replace(new RegExp(n, 'gi'), '');
   let a = m(e, t);
-  if (!(
-    t !== searchTypesMap.bySongReversed &&
-    t !== searchTypesMap.byArtistReversed &&
-    t !== searchTypesMap.byAlbumReversed
-  )) {
+  if (
+    !(
+      t !== searchTypesMap.bySongReversed &&
+      t !== searchTypesMap.byArtistReversed &&
+      t !== searchTypesMap.byAlbumReversed
+    )
+  ) {
     a = a.reverse();
   }
   return a;

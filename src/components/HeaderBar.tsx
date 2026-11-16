@@ -21,7 +21,9 @@ export interface HeaderBarProps {
   forceShowTextInput?: boolean;
   rightIcon?: HeaderIcon | HeaderIcon[] | (() => React.ReactNode);
   opacity?:
-    number | ReactNative.Animated.Value | ReactNative.Animated.AnimatedInterpolation<number>;
+    | number
+    | ReactNative.Animated.Value
+    | ReactNative.Animated.AnimatedInterpolation<number>;
   goBack?: () => void;
   blur?: boolean;
   headerBlur?: boolean;

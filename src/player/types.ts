@@ -18,7 +18,8 @@ export interface QueueSnapshot {
   songItemInfo: SongInfo;
 }
 export type QueueUpdate =
-  Partial<QueueSnapshot> | ((current: QueueSnapshot) => Partial<QueueSnapshot>);
+  | Partial<QueueSnapshot>
+  | ((current: QueueSnapshot) => Partial<QueueSnapshot>);
 export function isActiveQueue<
   T extends Pick<QueueSnapshot, 'tracks' | 'songItem' | 'api' | 'playingIndex'>,
 >(queue: T): queue is T & ActiveQueue {
@@ -77,7 +78,8 @@ export interface QueueSelection {
 }
 export type PlaybackCommand = QueueSelection | {type: 'clearPlayingList'};
 export type InsertCommand = {api: Provider} & (
-  {type: 'item'; data: TrackFields} | {type: 'array'; data: readonly TrackFields[]}
+  | {type: 'item'; data: TrackFields}
+  | {type: 'array'; data: readonly TrackFields[]}
 );
 export interface ActiveQueue {
   tracks: readonly TrackFields[];
