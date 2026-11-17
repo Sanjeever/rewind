@@ -122,6 +122,9 @@ test('队列筛选使用当前输入，按歌曲身份播放同名歌曲，空�
   });
   const modal = tree.root.findByType(NowPlaying).instance as InstanceType<typeof NowPlaying>;
   expect(modal.state.expanded).toBe(false);
+  await act(async () => modal.onMode('deleting'));
+  expect(modal.getSongRowExtra(tracks[0], 0).deleteBtn).toBeUndefined();
+  expect(modal.getSongRowExtra(tracks[1], 1).deleteBtn).toEqual(expect.any(Function));
   await act(async () => modal.onMode('filtering'));
   expect(modal.state.expanded).toBe(true);
   await act(async () => modal.onChangeText('同名'));

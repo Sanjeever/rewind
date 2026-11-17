@@ -294,9 +294,12 @@ class NowPlayingModal extends React.PureComponent<
     const api = this.props.api;
     if (this.state.mode === x.deleting) {
       return {
-        deleteBtn: () => {
-          return this.deleteFromQueue(e, t);
-        },
+        deleteBtn:
+          b.getTrackKey(e, api) === b.getTrackKey(this.props.data[this.props.index], api)
+            ? undefined
+            : () => {
+                return this.deleteFromQueue(e, t);
+              },
       };
     }
     return {
