@@ -3,6 +3,7 @@ const songs = jest.fn<() => Promise<unknown>>();
 const videos = jest.fn<() => Promise<unknown>>();
 const Content = () => null;
 const Spinner = () => null;
+jest.unstable_mockModule('../components/Text', () => ({default: Content}));
 jest.unstable_mockModule('../services/index', () => ({
   Netease: {sub_new_songs: songs, sub_new_mv: videos},
 }));

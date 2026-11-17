@@ -10,10 +10,11 @@ import * as utils from '../utils/index';
 import queue from '../player/videoActions';
 import ArtistHeader from '../features/artists/ArtistHeader';
 import type {NewWork} from '../features/artists/ArtistHeader';
-import type {ScreenProps} from '../navigation/types';
+import type {ScreenProps, Navigation} from '../navigation/types';
 import type {responses} from '../services/netease/responses';
 import type * as z from 'zod/mini';
 import {errorMessage} from '../utils/types';
+import Text from '../components/Text';
 type NewVideo = NonNullable<z.output<typeof responses.sub_new_mv>['data']>['newWorks'][number];
 const h = (songData: {publishTime?: number}[]) => {
   const t = [0];
@@ -37,7 +38,10 @@ interface State {
   songsError: string | null;
   mvError: string | null;
 }
-class SubNewSongs extends React.PureComponent<ScreenProps<'SubNewSongs'>, State> {
+class SubNewSongs extends React.PureComponent<
+  Pick<ScreenProps<'SubNewSongs'>, 'route'> & {navigation: Navigation},
+  State
+> {
   scrollView: reactNativeSpringScrollview.SpringScrollView | null = null;
   songRequest = 0;
   mvRequest = 0;
@@ -216,7 +220,7 @@ class SubNewSongs extends React.PureComponent<ScreenProps<'SubNewSongs'>, State>
           <components.Spinkit />
         ) : error ? (
           <ReactNative.View style={v.status}>
-            <components.Text>{error}</components.Text>
+            <Text>{error}</Text>
             <components.TextButton
               text="重试"
               onPress={showingMV ? this.loadMV : this.loadSongs}
@@ -234,7 +238,7 @@ class SubNewSongs extends React.PureComponent<ScreenProps<'SubNewSongs'>, State>
           </reactNativeSpringScrollview.SpringScrollView>
         ) : (
           <ReactNative.View style={v.status}>
-            <components.Text>{showingMV ? '暂无音画' : '暂无新歌'}</components.Text>
+            <Text>{showingMV ? '暂无音画' : '暂无新歌'}</Text>
           </ReactNative.View>
         )}
       </components.PageContainer>
