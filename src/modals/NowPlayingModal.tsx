@@ -17,6 +17,9 @@ import type {Provider} from '../services/providers';
 import type {TrackFields} from '../services/track';
 import type {Subscription} from '../events/Emitter';
 import {clearQueue} from '../player/commands';
+import Text from '../components/Text';
+import {motion, ReducedMotionContext} from '../theme/motion';
+import parseArtist from '../utils/parseArtist';
 const x = {
   normal: 'normal',
   deleting: 'deleting',
@@ -34,39 +37,74 @@ interface Props {
 }
 class NowPlayingModal extends React.PureComponent<
   Props,
-  {filterText: string; filterList: TrackFields[]; mode: Mode}
+  {filterText: string; filterList: TrackFields[]; mode: Mode; expanded: boolean; presented: boolean}
 > {
+  static contextType = ReducedMotionContext;
+  context = false;
+  progress = new ReactNative.Animated.Value(0);
+  positioned = false;
+  onListReady = () => {
+    if (this.positioned || !this.props.show) return;
+    this.positioned = true;
+    this.scrollTo();
+  };
   sub?: Subscription;
   _list: reactNativeLargelist.LargeList<TrackFields> | null = null;
-  state: {filterText: string; filterList: TrackFields[]; mode: Mode} = {
+  state = {
     filterText: '',
-    filterList: [],
-    mode: x.normal,
+    filterList: [] as TrackFields[],
+    mode: x.normal as Mode,
+    expanded: false,
+    presented: this.props.show,
+  };
+  animate = (toValue: number, done?: () => void) => {
+    this.progress.stopAnimation();
+    if (this.context) {
+      this.progress.setValue(toValue);
+      done?.();
+      return;
+    }
+    ReactNative.Animated.timing(this.progress, {
+      toValue,
+      duration: motion.panel,
+      useNativeDriver: true,
+    }).start(({finished}) => {
+      if (finished) done?.();
+    });
+  };
+  toggleExpanded = () => {
+    ReactNative.Keyboard.dismiss();
+    if (!this.context)
+      ReactNative.LayoutAnimation.configureNext(ReactNative.LayoutAnimation.Presets.easeInEaseOut);
+    this.setState((state) => ({
+      expanded: !state.expanded,
+      mode: x.normal,
+      filterText: '',
+      filterList: [],
+    }));
   };
   handledBack = () => {
     return (
       this.state.mode !== x.normal &&
       (this.setState({
         mode: x.normal,
+        filterText: '',
+        filterList: [],
       }),
       true)
     );
   };
   onClose = () => {
-    if (!this.handledBack()) {
-      this.forceClose();
-    }
+    ReactNative.Keyboard.dismiss();
+    if (this.handledBack()) return;
+    if (this.state.expanded) this.toggleExpanded();
+    else this.forceClose();
   };
   forceClose = () => {
     const props = this.props;
     const e_setDisplayNowPlaying = props.setDisplayNowPlaying;
     if (props.show !== false) {
       e_setDisplayNowPlaying(false);
-      this.setState({
-        filterText: '',
-        filterList: [],
-        mode: x.normal,
-      });
     }
   };
   onSubmitEditing = () => {
@@ -98,9 +136,13 @@ class NowPlayingModal extends React.PureComponent<
     choosePlaylist();
   };
   onMode = (mode: Mode) => {
-    this.setState({
+    if (mode !== x.filtering) ReactNative.Keyboard.dismiss();
+    this.setState((state) => ({
       mode,
-    });
+      expanded: true,
+      filterText: mode === x.normal ? '' : state.filterText,
+      filterList: mode === x.normal ? [] : state.filterList,
+    }));
   };
   renderTools = () => {
     switch (this.state.mode) {
@@ -109,13 +151,25 @@ class NowPlayingModal extends React.PureComponent<
           <React.Fragment>
             <components.Icon
               name={icons.MAGNIFY}
+              accessibilityLabel="搜索队列"
+              accessibilityRole="button"
+              style={{minWidth: 48, minHeight: 48}}
               onPress={() => {
                 return this.onMode(x.filtering);
               }}
             />
-            <components.Icon name={tabIcons.DISC.name} onPress={this.changePlaylist} />
+            <components.Icon
+              name={tabIcons.DISC.name}
+              accessibilityLabel="切换歌单"
+              accessibilityRole="button"
+              style={{minWidth: 48, minHeight: 48}}
+              onPress={this.changePlaylist}
+            />
             <components.Icon
               name={icons.DELETE_OUTLINE}
+              accessibilityLabel="管理队列"
+              accessibilityRole="button"
+              style={{minWidth: 48, minHeight: 48}}
               onPress={() => {
                 return this.onMode(x.deleting);
               }}
@@ -130,12 +184,16 @@ class NowPlayingModal extends React.PureComponent<
           <React.Fragment>
             <components.Icon
               name={icons.ARROW_LEFT}
+              accessibilityLabel="退出队列管理"
+              style={{minWidth: 48, minHeight: 48}}
               onPress={() => {
                 return this.onMode(x.normal);
               }}
             />
             <components.Icon
               name={icons.NOTIFICATION_CLEAR_ALL}
+              accessibilityLabel="清空队列"
+              style={{minWidth: 48, minHeight: 48}}
               onPress={this.onClear}
               containerStyle={{
                 marginRight: 3,
@@ -148,6 +206,8 @@ class NowPlayingModal extends React.PureComponent<
           <React.Fragment>
             <components.Icon
               name={icons.ARROW_LEFT}
+              accessibilityLabel="退出队列搜索"
+              style={{minWidth: 48, minHeight: 48}}
               onPress={() => {
                 return this.onMode(x.normal);
               }}
@@ -158,6 +218,7 @@ class NowPlayingModal extends React.PureComponent<
               onChangeText={this.onChangeText}
               onSubmitEditing={this.onSubmitEditing}
               placeholder={locales.FILTER}
+              accessibilityLabel="搜索队列"
             />
           </React.Fragment>
         );
@@ -194,7 +255,7 @@ class NowPlayingModal extends React.PureComponent<
   };
   scrollTo = () => {
     const index = this.props.index;
-    this._list?.scrollTo({x: 0, y: constants.ITEM_HEIGHT * index});
+    this._list?.scrollTo({x: 0, y: constants.ITEM_HEIGHT * index, animated: false});
   };
   renderItem = ({
     item,
@@ -265,18 +326,40 @@ class NowPlayingModal extends React.PureComponent<
     }
   };
   componentDidMount() {
+    if (this.props.show) this.animate(1);
     this.sub = subscribeModal('NowPlayingModal', (t) => {
       if (t.forceClose === true) {
         this.forceClose();
       }
     });
   }
+  componentDidUpdate(previous: Props) {
+    if (previous.show === this.props.show) return;
+    if (this.props.show) {
+      this.positioned = false;
+      this.setState(
+        {presented: true, expanded: false, mode: x.normal, filterText: '', filterList: []},
+        () => this.animate(1),
+      );
+    } else {
+      this.animate(0, () =>
+        this.setState({
+          presented: false,
+          expanded: false,
+          mode: x.normal,
+          filterText: '',
+          filterList: [],
+        }),
+      );
+    }
+  }
   componentWillUnmount() {
+    this.progress.stopAnimation();
     this.sub?.remove();
   }
   render() {
     const props = this.props;
-    const {show, songItem, data, isRound} = props;
+    const {songItem, data, isRound} = props;
     const state = this.state;
     const {filterList, filterText} = state;
     if (!songItem) {
@@ -286,135 +369,155 @@ class NowPlayingModal extends React.PureComponent<
     const h = filterText.length > 0;
     return (
       <ReactNative.Modal
-        animationType={'fade'}
+        animationType="none"
         transparent={true}
         onRequestClose={this.onClose}
-        visible={show}
+        visible={state.presented}
+        onShow={this.scrollTo}
       >
-        <ReactNative.View
-          style={[
-            E.container,
-            {
-              backgroundColor: '#000',
-            },
-          ]}
+        <ReactNative.KeyboardAvoidingView
+          behavior="height"
+          style={{flex: 1, justifyContent: 'flex-end'}}
         >
-          {g && (
-            <components.Background
-              imageStyle={{
-                opacity: 0.5,
-              }}
-              coverUrl={g.img}
-              blur={true}
-            />
-          )}
-          <ReactNative.TouchableWithoutFeedback onPress={this.forceClose}>
-            <ReactNative.View
-              style={{
-                width: '100%',
-                height: '35%',
-                position: 'absolute',
-              }}
-            />
-          </ReactNative.TouchableWithoutFeedback>
-          {g && (
-            <ReactNative.View style={E.title}>
-              <ReactNative.TouchableOpacity onPress={this.onCover}>
-                <ReactNative.Image
-                  source={{
-                    uri: g.img,
-                  }}
-                  style={{
-                    height: 150,
-                    width: 150,
-                    borderRadius: isRound ? 75 : 5,
-                  }}
-                />
-              </ReactNative.TouchableOpacity>
-              <ReactNative.TouchableOpacity
-                onPress={() => {
-                  return this.scrollTo();
-                }}
-                style={{
-                  alignItems: 'center',
-                }}
+          <ReactNative.Animated.View
+            pointerEvents="none"
+            style={[
+              ReactNative.StyleSheet.absoluteFill,
+              {backgroundColor: 'rgba(0,0,0,0.6)', opacity: this.progress},
+            ]}
+          />
+          <ReactNative.Pressable
+            accessibilityLabel="关闭播放队列"
+            onPress={this.forceClose}
+            style={ReactNative.StyleSheet.absoluteFill}
+          />
+          <ReactNative.Animated.View
+            style={[
+              E.container,
+              {
+                height: state.expanded ? '92%' : '62%',
+                opacity: this.progress,
+                transform: [
+                  {
+                    translateY: this.progress.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [80, 0],
+                    }),
+                  },
+                ],
+              },
+            ]}
+          >
+            <ReactNative.View style={E.header}>
+              <ReactNative.View style={{flex: 1}}>
+                <Text style={{fontSize: 18, fontWeight: '600'}}>播放队列</Text>
+                <Text style={{fontSize: 12, opacity: 0.6, marginTop: 4}}>{data.length} 首</Text>
+              </ReactNative.View>
+              <components.TouchableBorderless
+                accessibilityLabel={state.expanded ? '收起队列' : '展开队列'}
+                onPress={this.toggleExpanded}
               >
-                <components.Selectable
-                  numberOfLines={3}
-                  style={[
-                    E.text,
-                    {
-                      fontSize: 18,
-                      fontWeight: 'bold',
-                      marginTop: 5,
-                      textAlign: 'center',
-                    },
-                  ]}
-                >
-                  {g.song}
-                </components.Selectable>
-                <components.Selectable
-                  style={[
-                    E.text,
-                    {
-                      fontSize: 13,
-                      textAlign: 'center',
-                    },
-                  ]}
-                >
-                  {g.album}
-                </components.Selectable>
-              </ReactNative.TouchableOpacity>
+                <components.Icon
+                  name={state.expanded ? icons.FULLSCREEN_EXIT : icons.FULLSCREEN}
+                  size={22}
+                />
+              </components.TouchableBorderless>
+              <components.TouchableBorderless
+                accessibilityLabel="关闭播放队列"
+                onPress={this.forceClose}
+              >
+                <components.Icon name={icons.WINDOW_CLOSE} size={22} />
+              </components.TouchableBorderless>
             </ReactNative.View>
-          )}
-          <ReactNative.View style={E.btnsBar}>{this.renderTools()}</ReactNative.View>
-          <FadingEdge top={30}>
-            <reactNativeLargelist.LargeList
-              ref={(t) => {
-                this._list = t;
-              }}
-              data={[
-                {
-                  items: h ? filterList : data,
-                },
-              ]}
-              heightForIndexPath={function () {
-                return constants.ITEM_HEIGHT;
-              }}
-              renderIndexPath={this._renderIndexPath}
-              renderEmpty={function () {
-                return <ReactNative.View />;
-              }}
-            />
-          </FadingEdge>
-        </ReactNative.View>
+            <ReactNative.TouchableOpacity
+              accessibilityRole="button"
+              accessibilityLabel="定位当前歌曲"
+              onPress={this.scrollTo}
+              onLongPress={this.onCover}
+              style={E.current}
+            >
+              <ReactNative.Image
+                source={{uri: g.img}}
+                style={{width: 40, height: 40, borderRadius: isRound ? 20 : 6}}
+              />
+              <ReactNative.View style={{flex: 1, gap: 4}}>
+                <Text numberOfLines={1} style={{fontSize: 14}}>
+                  {g.song}
+                </Text>
+                <Text numberOfLines={1} style={{fontSize: 12, opacity: 0.6}}>
+                  {parseArtist(g.singer)}
+                </Text>
+              </ReactNative.View>
+            </ReactNative.TouchableOpacity>
+            <ReactNative.View style={E.btnsBar}>{this.renderTools()}</ReactNative.View>
+            <FadingEdge top={8} bottom={12}>
+              <reactNativeLargelist.LargeList
+                ref={(t) => {
+                  this._list = t;
+                }}
+                data={[
+                  {
+                    items: h ? filterList : data,
+                  },
+                ]}
+                heightForIndexPath={function () {
+                  return constants.ITEM_HEIGHT;
+                }}
+                renderIndexPath={this._renderIndexPath}
+                getItemLayout={(_, index) => ({
+                  length: constants.ITEM_HEIGHT,
+                  offset: Math.max(0, index - 1) * constants.ITEM_HEIGHT,
+                  index,
+                })}
+                keyboardShouldPersistTaps="handled"
+                onContentSizeChange={this.onListReady}
+                renderEmpty={() => (
+                  <Text style={{padding: 24, opacity: 0.6}}>{h ? '无匹配歌曲' : '队列为空'}</Text>
+                )}
+              />
+            </FadingEdge>
+          </ReactNative.Animated.View>
+        </ReactNative.KeyboardAvoidingView>
       </ReactNative.Modal>
     );
   }
 }
 const E = ReactNative.StyleSheet.create({
   container: {
-    flex: 1,
+    backgroundColor: '#171717',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    overflow: 'hidden',
+    paddingBottom: 12,
   },
   text: {
     fontSize: 15,
   },
-  title: {
-    marginTop: '15%',
+  header: {
+    paddingLeft: 20,
+    paddingRight: 8,
+    paddingVertical: 12,
+    flexDirection: 'row',
     alignItems: 'center',
   },
+  current: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingHorizontal: 20,
+    paddingBottom: 12,
+  },
   btnsBar: {
-    height: 40,
+    height: 48,
     justifyContent: 'space-between',
     alignItems: 'center',
     flexDirection: 'row',
     paddingHorizontal: 15,
-    marginTop: 15,
-    marginBottom: 10,
+    marginBottom: 4,
   },
   textInput: {
     height: '100%',
-    width: '100%',
+    flex: 1,
     fontSize: 16,
   },
 });

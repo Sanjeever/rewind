@@ -27,6 +27,23 @@ jest.unstable_mockModule('react-native', () => ({
   Image: Host,
   TouchableWithoutFeedback: Host,
   TouchableOpacity: Host,
+  Pressable: Host,
+  KeyboardAvoidingView: Host,
+  Keyboard: {dismiss() {}},
+  Animated: {
+    Value: class {
+      stopAnimation() {}
+      setValue() {}
+      interpolate() {
+        return 0;
+      }
+    },
+    View: Host,
+    timing: () => ({
+      start: (done: (result: {finished: boolean}) => void) => done({finished: true}),
+    }),
+  },
+  LayoutAnimation: {configureNext() {}, Presets: {easeInEaseOut: {}}},
   StyleSheet: {create: <T,>(value: T) => value},
 }));
 jest.unstable_mockModule('../components/Text', () => ({default: Host}));
@@ -38,6 +55,7 @@ jest.unstable_mockModule('../components/index', () => ({
   Selectable: Host,
   Spinkit: Host,
   EmptyFooter: Host,
+  TouchableBorderless: Host,
 }));
 jest.unstable_mockModule('../components/Scrolling', () => ({
   LargeList: List,
@@ -88,6 +106,7 @@ beforeEach(() => {
 
 test('队列筛选使用当前输入，按歌曲身份播放同名歌曲，空筛选不回退到原队列', async () => {
   let tree!: renderer.ReactTestRenderer;
+  const close = jest.fn();
   await act(async () => {
     tree = renderer.create(
       <NowPlaying
@@ -97,11 +116,14 @@ test('队列筛选使用当前输入，按歌曲身份播放同名歌曲，空�
         songItem={tracks[0]}
         show
         isRound
-        setDisplayNowPlaying={() => {}}
+        setDisplayNowPlaying={close}
       />,
     );
   });
   const modal = tree.root.findByType(NowPlaying).instance as InstanceType<typeof NowPlaying>;
+  expect(modal.state.expanded).toBe(false);
+  await act(async () => modal.onMode('filtering'));
+  expect(modal.state.expanded).toBe(true);
   await act(async () => modal.onChangeText('同名'));
   expect(modal.state.filterList).toEqual(tracks.slice(0, 2));
   modal.playFiltedMusic(tracks[1], 'netEase');
@@ -109,6 +131,13 @@ test('队列筛选使用当前输入，按歌曲身份播放同名歌曲，空�
   await act(async () => modal.onChangeText('没有结果'));
   expect(modal.state.filterList).toEqual([]);
   expect(tree.root.findByType(List).props.data).toEqual([{items: []}]);
+  await act(async () => modal.onClose());
+  expect(modal.state).toMatchObject({mode: 'normal', filterText: '', expanded: true});
+  await act(async () => modal.onClose());
+  expect(modal.state.expanded).toBe(false);
+  expect(close).not.toHaveBeenCalled();
+  await act(async () => modal.onClose());
+  expect(close).toHaveBeenCalledWith(false);
   await act(async () => tree.unmount());
 });
 
