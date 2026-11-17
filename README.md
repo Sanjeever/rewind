@@ -2,7 +2,7 @@
 
 本项目以倒带 v3.5.0 Android 发布包为基础重建。应用逻辑已整理为 TypeScript/TSX 与 ESM 源码，保留自有 Android 原生能力，供二次开发使用。
 
-应用包含本地音乐播放、队列、歌单、历史、歌词，以及网易云和 QQ 音乐搜索与账号入口。在线播放使用本人账号的平台权限，评论分词在 Android 本地执行。各平台与账号的验收范围见[验证概况](docs/validation.md)。
+应用包含本地音乐播放、队列、歌单、历史、歌词，以及网易云和 QQ 音乐搜索与账号入口。在线音源按当前会话申请，主来源失败后会尝试匹配备用来源，具体边界见[歌曲与搜索约束](docs/architecture.md#歌曲与搜索边界)。评论分词在 Android 本地执行。各平台与账号的验收范围见[验证概况](docs/validation.md)。
 
 上游仓库与源码来源：[KusStar/rewind-apks](https://github.com/KusStar/rewind-apks)
 
@@ -10,20 +10,9 @@
 
 ## 快速开始
 
-按[开发指南](docs/development.md#环境与配置来源)准备 Node.js、pnpm、JDK 和 Android SDK，再执行：
+先按[环境与配置来源](docs/development.md#环境与配置来源)准备工具链，再按[日常开发](docs/development.md#日常开发)安装依赖、启动 Metro 并运行 Android 应用。
 
-```sh
-pnpm install --frozen-lockfile
-pnpm start
-```
-
-保持 Metro 运行，连接已授权 USB 调试的 Android 设备或启动模拟器，在另一终端执行：
-
-```sh
-pnpm android --no-packager
-```
-
-脱离 Metro 的构建、签名与覆盖安装、单元测试和设备验收见[开发指南](docs/development.md)。
+脱离 Metro 运行见[独立构建](docs/development.md#独立构建)，已有安装的数据保留要求见[覆盖安装与签名](docs/development.md#覆盖安装与签名)。
 
 ## 项目结构
 

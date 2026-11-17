@@ -6,15 +6,15 @@
 
 准备 Node.js、pnpm、JDK 17 和 Android SDK。安装依赖前按下表确认工具链，避免在文档维护第二份版本清单。
 
-| 内容                                                 | 事实来源                                                                                                     |
-| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| Node 范围、pnpm、JS 依赖与命令                       | [package.json](../package.json)；依赖解析见 [pnpm-lock.yaml](../pnpm-lock.yaml)                              |
-| Android SDK、Build Tools、NDK、Kotlin 与最低设备 API | [android/build.gradle](../android/build.gradle)；依赖模块也可能要求额外 Build Tools                          |
-| Gradle Wrapper                                       | [Wrapper 配置](../android/gradle/wrapper/gradle-wrapper.properties)                                          |
-| AGP 与 Gradle 插件的 JDK 要求                        | 固定版本的 `@react-native/gradle-plugin`，安装后可查其 `gradle/libs.versions.toml` 与构建文件                |
-| ABI、新架构、Hermes 与 Gradle 参数                   | [android/gradle.properties](../android/gradle.properties)                                                    |
-| 应用标识、版本、构建类型与签名                       | [android/app/build.gradle](../android/app/build.gradle)；JS 注册名见 [index.js](../index.js)                 |
-| 权限声明与运行时申请                                 | [AndroidManifest.xml](../android/app/src/main/AndroidManifest.xml)、[权限入口](../src/native/permissions.ts) |
+| 内容                                                 | 事实来源                                                                                                                                  |
+| ---------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| Node 范围、pnpm、JS 依赖与命令                       | [package.json](../package.json)；依赖解析见 [pnpm-lock.yaml](../pnpm-lock.yaml)，安装策略见 [pnpm-workspace.yaml](../pnpm-workspace.yaml) |
+| Android SDK、Build Tools、NDK、Kotlin 与最低设备 API | [android/build.gradle](../android/build.gradle)；依赖模块也可能要求额外 Build Tools                                                       |
+| Gradle Wrapper                                       | [Wrapper 配置](../android/gradle/wrapper/gradle-wrapper.properties)                                                                       |
+| AGP 与 Gradle 插件的 JDK 要求                        | 固定版本的 `@react-native/gradle-plugin`，安装后可查其 `gradle/libs.versions.toml` 与构建文件                                             |
+| ABI、新架构、Hermes 与 Gradle 参数                   | [android/gradle.properties](../android/gradle.properties)                                                                                 |
+| 应用标识、版本、构建类型与签名                       | [android/app/build.gradle](../android/app/build.gradle)；JS 注册名见 [index.js](../index.js)                                              |
+| 权限声明与运行时申请                                 | [AndroidManifest.xml](../android/app/src/main/AndroidManifest.xml)、[权限入口](../src/native/permissions.ts)                              |
 
 设置 `JAVA_HOME` 指向所需 JDK，优先用 `ANDROID_HOME` 指向本机 SDK，并将 SDK 的 `platform-tools` 加入 `PATH`。使用 `ANDROID_SDK_ROOT` 时也须保证 `adb` 在 `PATH` 中，因为 React Native CLI 通过 `ANDROID_HOME` 或 `PATH` 定位它。Gradle 还支持本地 `android/local.properties`，该文件保持忽略，不提交机器路径。
 
@@ -70,15 +70,15 @@ pnpm bundle:android
 
 `pnpm check` 串行执行 Oxlint、Oxfmt、严格类型检查与测试；各项也可通过 `lint`、`format:check`、`typecheck`、`test` 独立运行。`lint:fix` 和 `format` 会修改文件。GitHub Actions 在 push 和 PR 中冻结锁文件安装并执行检查。
 
-Lint 规则与文件范围见 [.oxlintrc.json](../.oxlintrc.json)。规则沿用迁移前的 ESLint 与 TypeScript recommended 检查，保留项目的未使用参数豁免与全局变量范围；TypeScript 已负责的检查继续由两套类型检查覆盖。
+Lint 规则、全局变量与豁免范围见 [.oxlintrc.json](../.oxlintrc.json)。TypeScript 文件中交给类型系统负责的规则在该配置中关闭，修改规则时需结合两套类型检查判断覆盖范围。
 
-格式设置与忽略范围见 [.oxfmtrc.json](../.oxfmtrc.json)，沿用原有 Prettier 风格，关闭 `package.json` 字段排序。编辑器使用 Oxc 扩展接入同一套 lint 与格式配置。
+格式设置与忽略范围见 [.oxfmtrc.json](../.oxfmtrc.json)。编辑器可通过 Oxc 扩展接入同一套 lint 与格式配置。
 
-应用、测试、配置和 Android 启动脚本统一使用 ESM。Babel 同步加载配置依赖项目 Node 范围内的原生 `require(esm)` 能力；不要将配置改回 CJS。相关正式支持见 [Node 模块互操作](https://nodejs.org/api/modules.html#loading-ecmascript-modules-using-require)、[Babel 配置文件](https://babeljs.io/docs/config-files#supported-file-extensions)和 [Metro 配置](https://metrobundler.dev/docs/configuration/)。
+应用、测试与配置采用 [ESM 工程约束](architecture.md#工程边界)。Babel 同步加载配置依赖项目 Node 范围内的原生 `require(esm)` 能力。配置入口见 [babel.config.js](../babel.config.js) 与 [metro.config.js](../metro.config.js)。
 
-应用与测试使用 TypeScript/TSX。[应用配置](../tsconfig.json)沿用 React Native 的 bundler 解析与 JSX 设置，启用 strict、noEmit，关闭 allowJs；[测试配置](../tsconfig.test.json)补充 Jest 与 Node 类型。`typecheck` 同时运行两套检查，应用不能依赖测试全局变量。TypeScript 负责检查，Metro/Babel 负责打包。第三方缺失类型的声明与兼容边界需对应实际版本接口，不能用无类型模块声明绕过检查。
+[应用配置](../tsconfig.json)与[测试配置](../tsconfig.test.json)分开检查，避免应用依赖 Jest 或 Node 全局类型。TypeScript 负责检查，Metro/Babel 负责打包。第三方缺失类型的声明与兼容边界需对应实际版本接口，不能用无类型模块声明绕过检查。
 
-测试使用 Jest 与 React Native preset，发现 `*.test.ts`、`*.test.tsx`。`pnpm test` 通过 Node VM Modules 执行真实 ESM，Babel 根据调用方保留模块语法；Node 仍会打印实验性 VM Modules 提示。ESM mock 使用 `jest.unstable_mockModule` 后动态导入，隔离使用异步模块隔离，不能照搬 CJS 的 require/mock 提升时序。支持边界见 [Jest ESM 文档](https://jestjs.io/docs/29.7/ecmascript-modules)，具体配置见 [jest.config.js](../jest.config.js)与 [babel.config.js](../babel.config.js)。回归测试靠近对应源码，按变更概念查[实现与回归入口](architecture.md#按概念查实现与回归)。
+测试入口与发现范围见 [jest.config.js](../jest.config.js)。`pnpm test` 通过 Node VM Modules 执行 ESM，Babel 根据调用方保留模块语法；Node 仍会打印实验性 VM Modules 提示。ESM mock 使用 `jest.unstable_mockModule` 后动态导入，隔离使用异步模块隔离，不能照搬 CJS 的 require/mock 提升时序。可参考[命令通道回归](../src/player/commands.test.ts)与[播放器渲染回归](../src/player/VideoPlayer.test.tsx)；测试靠近对应源码，按变更概念查[实现与回归入口](architecture.md#按概念查实现与回归)。
 
 单独 Metro 包写入 `.cache/metro/`；常规 Android 构建由 Gradle 插件管理打包，无需预先执行 `pnpm bundle:android`。
 

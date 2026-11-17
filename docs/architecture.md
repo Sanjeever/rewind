@@ -6,7 +6,7 @@
 
 工程面向 Android，保留已有页面、业务语义与用户数据。框架迁移不包含 iOS 适配、产品重设计或新增音乐来源。应用和测试采用严格 TypeScript/TSX，保留类组件，不为统一组件写法扩大行为变化。应用、配置与工具脚本统一使用 ESM，标准 JS 注册入口保持最小引导职责。
 
-`screens` 承载路由页面及页面专属内容，`features` 按业务组织组件、辅助逻辑与同目录测试，`components` 提供通用 UI。业务组件直接从所属功能导入，不由通用组件入口转发；功能共享的数据与行为放入对应业务模块，避免反向依赖页面实现。弹层内部组件与操作定义跟随 `modals`。
+目录职责见 [README](../README.md#项目结构)。业务组件直接从所属功能导入，不由通用组件入口转发；共享业务数据与行为不依赖页面实现，避免页面调整牵连其它功能。弹层内部组件与操作定义跟随 `modals`。
 
 旧兼容包把第三方实现固定在包内，安装 npm 依赖无法替换实际运行代码。因此使用标准 Metro、React Native Gradle 插件和自动链接，让声明依赖与实际产物对应。保持新架构与 Hermes，自有原生能力通过互操作保留 JS 接口，降低同时重写业务与原生能力的风险。框架升级需核对对应官方模板与实际依赖兼容性。
 
@@ -21,13 +21,11 @@
 - **视图通过数据和操作回调连接。** 播放视图接收状态、队列、设置和命名回调，不读取控制器实例，避免布局调整与播放命令处理相互牵连。
 - **退出遵循宿主生命周期。** 关闭时释放媒体资源，由 Activity 正常生命周期卸载界面。提前销毁 ReactHost 曾触发 Fabric Surface 生命周期断言，不以强制销毁宿主替代资源清理。
 
-播放控制器集中处理音源准备、播放状态、音频焦点与生命周期；队列协调、界面交互、歌曲资源、私人电台和播放记录分别维护。各职责通过数据读取与命名回调组合，队列提交继续由应用入口处理。播放器组件负责导航与弹层操作，视图继续接收数据和操作回调。
-
 ## 界面反馈与动效
 
 播放器、队列和通用骨架占位跟随系统减少动态效果设置。过渡可中断，清空队列与卸载时停止未完成动画；旧完成回调不能恢复已关闭界面。封面与歌词交叉切换时保留播放控件和进度条，避免改变操作目标的位置。动效时长不决定网络或播放业务是否完成。
 
-播放队列默认以底部弹层打开，可展开搜索与管理，两种视图共用业务队列。搜索索引在弹层内复用，数据变化后重建、关闭后释放，不修改原歌曲；筛选播放仍按歌曲身份定位原队列。Android 弹层使用宿主的键盘尺寸调整，避免重复计算键盘避让。
+队列的紧凑视图与展开视图共用业务队列，筛选播放按歌曲身份定位原队列，避免搜索改变播放上下文。搜索索引随弹层复用并在关闭后释放，减少连续输入时重复构建索引，也不污染原歌曲。Android 弹层由宿主调整键盘尺寸，避免重复避让压缩可用区域。
 
 异步操作在所属控件反馈等待状态，并阻止重复提交。页面离开或歌曲切换后，旧请求不能覆盖当前反馈。歌单已有内容在刷新时保留，未知歌曲数不显示为零，迟到缓存不能覆盖已接收的网络结果；失败应结束加载并提供原因及重试入口。
 
@@ -35,7 +33,7 @@
 
 歌曲身份包含来源及来源内标识，本地歌曲优先使用媒体路径。同名歌曲或不同来源的相同 ID 不能当成同一首。展示用歌曲结构保留原始来源数据，旧接口与持久化继续使用原始歌曲，避免展示层转换破坏兼容格式。字段与时间单位查歌曲结构定义和测试，不在文档复制字段表。
 
-在线音源按当前平台会话申请授权，音质选择与账号播放权限分开。试听地址不能当作完整歌曲。每次准备在线播放时重新取得临时地址，音频数据继续使用原生缓存，避免复用过期地址或前一账号的授权。跨来源音源和本地歌词匹配同时核对歌名、歌手、版本与已知时长，不能直接选择搜索首项。
+在线音源按当前平台会话申请授权，音质选择与账号播放权限分开。主来源失败后保留既有备用匹配；试听地址不能当作完整歌曲，备用播放成功也不能证明原来源授权通过。每次准备在线播放时重新取得临时地址，音频数据继续使用原生缓存，避免复用过期地址或前一账号的授权。跨来源音源和本地歌词匹配同时核对歌名、歌手、名称中的版本信息与双方已知时长，不能直接选择搜索首项。
 
 平台可能为部分歌曲返回空歌手名、空专辑名或空订阅字段。按已确认的响应契约保留这些原始值，展示与导航处理缺失元数据，避免一首歌曲阻止整张歌单读取；其它畸形响应仍在边界拒绝。
 
@@ -45,13 +43,11 @@ QQ 歌曲搜索按服务返回的会话与游标继续翻页，不能用当前�
 
 第三方响应属于外部边界，接收 unknown 后按实际接口校验。宽松对象校验保留未知字段，原始歌曲不因展示类型转换丢失字段。音源与搜索错误保留服务拒绝原因，备用来源失败保留主来源错误，不能用空 catch 或假成功隐藏失败。QQ 账号接口使用当前账号会话，不能内置固定 Cookie 或身份。客户端不得内置云凭据。评论分词在 Android 本地执行，词典随应用打包，保留评论边界并在后台线程处理，避免网络依赖和界面阻塞。
 
-网易云接口按业务领域维护，由入口组合并保留既有调用接口。领域间直接导入所需函数，避免反向调用组合入口形成循环；两个音源入口继续共用请求取消状态。
-
-网易云网页与移动端接口共用本人认证会话。扫码 Cookie 可能仅保存在移动端域名，网站请求、CSRF 和移动端加密头均须取得该会话，不能根据单一网站域名缺少 Cookie 判定未登录。
+网易云领域模块不反向依赖组合入口，避免初始化循环。主、备用音源共用取消边界，避免切换入口后遗留旧请求。网页与移动端接口共用本人认证会话；扫码 Cookie 可能仅保存在移动端域名，网站请求、CSRF 和移动端加密头均须取得该会话，不能根据单一网站域名缺少 Cookie 判定未登录。
 
 ## 数据保护与升级
 
-升级保留应用标识、开发签名和现有数据，不通过卸载、清空数据、改包名或换目录规避迁移。标识的具体值见应用构建配置，覆盖安装的签名限制见[开发指南](development.md#覆盖安装与签名)。
+升级保留应用标识、开发签名和现有数据，不通过卸载、清空数据、改包名或换目录规避迁移。具体标识见[应用构建配置](../android/app/build.gradle)，签名限制见[开发指南](development.md#覆盖安装与签名)。
 
 旧数据库包含业务包装值、索引及未知键，迁移必须原样保留，不能按已知业务 JSON 重建。写入并读回成功后才能标记完成，保留旧数据库供恢复。迁移完成后也要校验歌单；旧数据读取或歌单校验失败应阻止正常启动并暴露错误，不能解释为首次使用后写入空数据。
 
@@ -61,16 +57,18 @@ QQ 歌曲搜索按服务返回的会话与游标继续翻页，不能用当前�
 
 下表提供阅读入口，不穷举调用链。按本次变更选择相关边界，再沿引用和同目录测试扩展检查。
 
-| 概念                 | 实现与可执行定义入口                                                                                                                                                                                                                                         |
-| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| 队列归属与提交       | [应用入口](../src/App.tsx)、[队列提交测试](../src/App.test.ts)、[队列规则](../src/player/queue.ts)、[队列与命令类型](../src/player/types.ts)                                                                                                                 |
-| 播放指令、状态与竞态 | [播放控制](../src/player/PlayerController.ts)、[播放命令](../src/player/commands.ts)、[播放契约](../src/player/commandTypes.ts)、[原生播放器](../android/app/src/main/kotlin/com/kuss/rewind/player/)                                                        |
-| 歌曲身份与展示结构   | [身份规则](../src/services/trackFields.ts)、[原始与展示类型](../src/services/track.ts)、[歌曲转换](../src/services/trackInfo.ts)                                                                                                                             |
-| 搜索与请求生命周期   | [搜索页面](../src/screens/SearchPage.tsx)、[歌曲结果](../src/features/search/SongSearchResults.tsx)、[其它结果](../src/features/search/EntitySearchResults.tsx)、[建议](../src/features/search/SearchSuggestions.tsx)、[搜索服务](../src/services/search.ts) |
-| 音源与外部错误       | [音源解析](../src/player/trackUrl.ts)、[QQ 请求](../src/services/qqmusic/http.ts)、[备用来源](../src/services/provider.ts)、[下载](../src/services/download.ts)、[响应校验](../src/services/schemas.ts)                                                      |
-| 迁移与文件写入       | [初始化](../src/storage/index.ts)、[迁移](../src/storage/migrate.ts)、[歌单文件](../src/storage/playlistFiles.ts)、[路径](../src/storage/paths.ts)、[原生存储](../android/app/src/main/kotlin/com/kuss/rewind/RewindStorageModule.kt)                        |
-| 设置默认值与合并     | [默认值](../src/settings/defaults.ts)、[合并规则](../src/settings/merge.ts)、[排序操作](../src/screens/OrderPage.tsx)                                                                                                                                        |
-| 导航与原生边界       | [路由参数](../src/navigation/types.ts)、[路由注册](../src/navigation/index.tsx)、[原生接口](../src/native/)                                                                                                                                                  |
-| 视频状态与资源清理   | [视频播放器](../src/player/VideoPlayer.tsx)、[渲染回归](../src/player/VideoPlayer.test.tsx)、[视频页面](../src/screens/Video.tsx)                                                                                                                            |
+| 概念                 | 实现与可执行定义入口                                                                                                                                                                                                                                                                                     |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 队列归属与提交       | [应用入口](../src/App.tsx)、[队列提交测试](../src/App.test.ts)、[队列规则](../src/player/queue.ts)、[队列与命令类型](../src/player/types.ts)                                                                                                                                                             |
+| 播放指令、状态与竞态 | [播放控制](../src/player/PlayerController.ts)、[播放命令](../src/player/commands.ts)、[播放契约](../src/player/commandTypes.ts)、[原生播放器](../android/app/src/main/kotlin/com/kuss/rewind/player/)                                                                                                    |
+| 动效、加载与队列界面 | [系统动效设置](../src/theme/motion.tsx)、[播放器过渡](../src/player/PlayerPresentation.ts)、[占位生命周期](../src/components/PulsingPlaceholder.test.tsx)、[队列弹层](../src/modals/NowPlayingModal.tsx)、[队列交互回归](../src/modals/queueActions.test.tsx)                                            |
+| 歌曲身份与展示结构   | [身份规则](../src/services/trackFields.ts)、[原始与展示类型](../src/services/track.ts)、[歌曲转换](../src/services/trackInfo.ts)                                                                                                                                                                         |
+| 搜索与请求生命周期   | [搜索页面](../src/screens/SearchPage.tsx)、[歌曲结果](../src/features/search/SongSearchResults.tsx)、[其它结果](../src/features/search/EntitySearchResults.tsx)、[建议](../src/features/search/SearchSuggestions.tsx)、[搜索服务](../src/services/search.ts)                                             |
+| 音源与外部错误       | [音源解析](../src/player/trackUrl.ts)、[音源失败与备用回归](../src/player/trackUrl.test.ts)、[QQ 请求](../src/services/qqmusic/http.ts)、[备用来源](../src/services/provider.ts)、[歌曲匹配](../src/services/trackMatch.ts)、[下载](../src/services/download.ts)、[响应校验](../src/services/schemas.ts) |
+| 平台会话与认证请求   | [网易云请求](../src/services/netease/http.ts)、[双域名会话回归](../src/services/netease/http.test.ts)、[认证入口回归](../src/services/netease/index.test.ts)、[QQ 会话](../src/services/qqmusic/session.ts)                                                                                              |
+| 迁移与文件写入       | [初始化](../src/storage/index.ts)、[迁移](../src/storage/migrate.ts)、[歌单文件](../src/storage/playlistFiles.ts)、[路径](../src/storage/paths.ts)、[原生存储](../android/app/src/main/kotlin/com/kuss/rewind/RewindStorageModule.kt)                                                                    |
+| 设置默认值与合并     | [默认值](../src/settings/defaults.ts)、[合并规则](../src/settings/merge.ts)、[排序操作](../src/screens/OrderPage.tsx)                                                                                                                                                                                    |
+| 导航与原生边界       | [路由参数](../src/navigation/types.ts)、[路由注册](../src/navigation/index.tsx)、[原生接口](../src/native/)                                                                                                                                                                                              |
+| 视频状态与资源清理   | [视频播放器](../src/player/VideoPlayer.tsx)、[渲染回归](../src/player/VideoPlayer.test.tsx)、[视频页面](../src/screens/Video.tsx)                                                                                                                                                                        |
 
 测试覆盖范围以断言和隔离边界为准，实际设备与在线验收见[验证概况](validation.md)。
