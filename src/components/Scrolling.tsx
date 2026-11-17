@@ -205,12 +205,14 @@ export class LargeList<T = unknown> extends React.Component<LargeListProps<T>, L
       onScroll,
       ...props
     } = this.props;
-    const sections = data.map((section, index) => ({
-      ...section,
-      index,
-      key: String(index),
-      data: section.items,
-    }));
+    const sections = data.some((section) => section.items.length)
+      ? data.map((section, index) => ({
+          ...section,
+          index,
+          key: String(index),
+          data: section.items,
+        }))
+      : [];
     return (
       <SectionList<T, Section<T>>
         {...props}
