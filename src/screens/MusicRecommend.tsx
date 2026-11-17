@@ -61,37 +61,42 @@ class MusicRecommend extends React.Component<
   };
   getRe = async () => {
     const request = ++this.requestVersion;
-    try {
-      const response = await services.Netease.recommend_songs();
-      if (request !== this.requestVersion) return;
-      if (response?.code === 301) {
-        toast(locales.NETEASE_NOT_LOGIN);
-        this.props.navigation.navigate('NeteaseLogin');
-        return;
-      }
-      if (response.code === 200 && response.recommend) {
-        this.setState({
-          data: response.recommend,
-        });
-        await this.getRePlaylist(request);
-      } else throw new Error(response.message || locales.ERROR);
-    } catch (error) {
-      if (request === this.requestVersion) toast(errorMessage(error));
-    } finally {
-      if (request === this.requestVersion)
-        this.setState({
-          loaded: true,
-        });
+    const results = await Promise.allSettled([
+      this.getReSongs(request),
+      this.getRePlaylist(request),
+    ]);
+    if (request !== this.requestVersion) return;
+    for (const result of results) {
+      if (result.status === 'rejected') toast(errorMessage(result.reason));
     }
+    this.setState({loaded: true});
+  };
+  getReSongs = async (request: number) => {
+    const response = await services.Netease.recommend_songs();
+    if (request !== this.requestVersion) return;
+    if (response.code === 301) {
+      toast(locales.NETEASE_NOT_LOGIN);
+      this.props.navigation.navigate('NeteaseLogin');
+      return;
+    }
+    if (response.code !== 200 || !response.recommend)
+      throw new Error(response.message || response.msg || `推荐歌曲读取失败（${response.code}）`);
+    this.setState({data: response.recommend});
   };
   getRePlaylist = async (request = this.requestVersion) => {
     const response = await services.Netease.recommend_playlists();
     if (request !== this.requestVersion) return;
+    if (response.code === 301) {
+      toast(locales.NETEASE_NOT_LOGIN);
+      this.props.navigation.navigate('NeteaseLogin');
+      return;
+    }
     if (response?.code === 200 && response.recommend) {
       this.setState({
         playlistData: response.recommend,
       });
-    } else throw new Error(response.message || locales.ERROR);
+    } else
+      throw new Error(response.message || response.msg || `推荐歌单读取失败（${response.code}）`);
   };
   onTop = () => {
     (this.state.tabIndex === 0 ? this._songScrollView : this._playlistScrollView)?.scrollToBegin();
