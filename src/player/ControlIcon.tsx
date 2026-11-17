@@ -1,5 +1,6 @@
 import 'react';
 import TouchableScale from '../components/TouchableScale';
+import {ActivityIndicator} from 'react-native';
 import * as components from '../components/index';
 import type {IconProps} from '../components/Icon';
 export type ControlIconProps = Pick<
@@ -12,7 +13,7 @@ export type ControlIconProps = Pick<
   | 'onPress'
   | 'onLongPress'
   | 'accessibilityLabel'
-> & {type?: string};
+> & {type?: string; busy?: boolean};
 const SComponent = function (e: ControlIconProps) {
   const {name, size} = e;
   const size_1 = size === undefined ? 28 : size;
@@ -22,11 +23,12 @@ const SComponent = function (e: ControlIconProps) {
   return (
     <TouchableScale
       activeScale={0.94}
-      disabled={disabled_1}
+      disabled={disabled_1 || e.busy}
       onPress={onPress}
       onLongPress={onLongPress}
       accessibilityRole="button"
       accessibilityLabel={e.accessibilityLabel}
+      accessibilityState={{disabled: !!disabled_1, busy: !!e.busy}}
       style={[
         {
           minHeight: Math.max(48, size_1 + 12),
@@ -39,7 +41,11 @@ const SComponent = function (e: ControlIconProps) {
         style,
       ]}
     >
-      <components.Icon size={size_1} name={name} color={color} />
+      {e.busy ? (
+        <ActivityIndicator color={color || '#fff'} style={{width: size_1, height: size_1}} />
+      ) : (
+        <components.Icon size={size_1} name={name} color={color} />
+      )}
     </TouchableScale>
   );
 };

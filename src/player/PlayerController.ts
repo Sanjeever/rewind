@@ -246,6 +246,7 @@ export default class PlayerController extends React.PureComponent<PlayerProps, P
       currentTime: 0,
       loaded: false,
       currentMiniLyric: '',
+      likePending: false,
     });
   };
   clearPlayingList = () => {

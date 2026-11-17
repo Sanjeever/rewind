@@ -22,6 +22,7 @@ import type {Provider} from '../services/providers';
 import type {TrackFields, TrackId} from '../services/track';
 import type {Playlist, CustomPlaylist} from '../storage/models';
 import type {Subscription} from '../events/Emitter';
+import {ReducedMotionContext} from '../theme/motion';
 interface State {
   api: Provider | null;
   data: TrackFields[];
@@ -29,12 +30,18 @@ interface State {
   playlist: Playlist[];
   locals: CustomPlaylist[];
   mainModalShow: boolean;
+  collecting: boolean;
 }
 class CollectModal extends React.PureComponent<Record<string, never>, State> {
+  static contextType = ReducedMotionContext;
+  context = false;
+  collecting = false;
+  disposed = false;
   sub?: Subscription;
   requestId = 0;
   _scrollView: reactNativeSpringScrollview.SpringScrollView | null = null;
   state: State = {
+    collecting: false,
     api: null,
     songItem: null,
     data: [],
@@ -84,6 +91,10 @@ class CollectModal extends React.PureComponent<Record<string, never>, State> {
     );
   };
   onLocalCollect = async (index: number) => {
+    if (this.collecting) return;
+    this.collecting = true;
+    this.setState({collecting: true});
+    const request = this.requestId;
     try {
       const {api, data, songItem} = this.state;
       if (!api) throw new Error('未选择歌曲来源');
@@ -120,12 +131,19 @@ class CollectModal extends React.PureComponent<Record<string, never>, State> {
         ...current,
         playlists,
       });
-      this.onClosed();
+      if (request === this.requestId) this.onClosed();
     } catch (error) {
-      toast(`收藏失败：${errorMessage(error)}`);
+      if (request === this.requestId) toast(`收藏失败：${errorMessage(error)}`);
+    } finally {
+      this.collecting = false;
+      if (!this.disposed) this.setState({collecting: false});
     }
   };
   onCollect = async (playlist: Playlist) => {
+    if (this.collecting) return;
+    this.collecting = true;
+    this.setState({collecting: true});
+    const request = this.requestId;
     let collected = 0;
     let total = 0;
     try {
@@ -174,11 +192,15 @@ class CollectModal extends React.PureComponent<Record<string, never>, State> {
           collected++;
         }
       } else throw new Error('该来源不能收藏到在线歌单');
-      this.onClosed();
+      if (request === this.requestId) this.onClosed();
     } catch (error) {
-      toast(
-        `收藏失败${collected ? `（已完成 ${collected}/${total}）` : ''}：${errorMessage(error)}`,
-      );
+      if (request === this.requestId)
+        toast(
+          `收藏失败${collected ? `（已完成 ${collected}/${total}）` : ''}：${errorMessage(error)}`,
+        );
+    } finally {
+      this.collecting = false;
+      if (!this.disposed) this.setState({collecting: false});
     }
   };
   collectToNetease = async (pid: TrackId, tracks: TrackId[]) => {
@@ -215,6 +237,7 @@ class CollectModal extends React.PureComponent<Record<string, never>, State> {
     });
   }
   componentWillUnmount() {
+    this.disposed = true;
     this.requestId++;
     this.sub?.remove();
   }
@@ -223,7 +246,7 @@ class CollectModal extends React.PureComponent<Record<string, never>, State> {
     const {playlist, locals} = state;
     return (
       <ReactNative.Modal
-        animationType={'fade'}
+        animationType={this.context ? 'none' : 'fade'}
         transparent={true}
         onRequestClose={this.onClosed}
         visible={this.state.mainModalShow}
@@ -238,6 +261,13 @@ class CollectModal extends React.PureComponent<Record<string, never>, State> {
             <ReactNative.View style={[ReactNative.StyleSheet.absoluteFill]} />
           </ReactNative.TouchableWithoutFeedback>
           <PlaylistChoice onPress={this.onTop} content={locales.ADD_TO_MIX} />
+          {state.collecting && (
+            <ReactNative.ActivityIndicator
+              color="#fff"
+              accessibilityLabel="正在收藏"
+              style={{marginBottom: 12}}
+            />
+          )}
           <FadingEdge top={30}>
             <reactNativeSpringScrollview.SpringScrollView
               ref={(t) => {

@@ -214,7 +214,7 @@ const g = {
       song,
     });
   },
-  onHeartMode: async function (page: PlaylistActionContext) {
+  onHeartMode: async function (page: PlaylistActionContext, isCurrent = () => true) {
     const {heartMode, playlist, playlistId, api} = page.state;
     if (heartMode !== true || !playlist.length) {
       return;
@@ -225,6 +225,7 @@ const g = {
         songId: song.id!,
         playlistId: playlistId!,
       });
+      if (!isCurrent()) return;
       if (response.code === 301) {
         throw new Error(locales.NETEASE_NOT_LOGIN);
       }
@@ -240,7 +241,7 @@ const g = {
       }));
       playTracks({song: tracks[0], tracks: tracks, index: 0, api});
     } catch (error) {
-      toast(errorMessage(error));
+      if (isCurrent()) toast(errorMessage(error));
     }
   },
   onSubscribe: function (e: TrackId, t: 'subscribe' | 'unsubscribe', a: Provider) {

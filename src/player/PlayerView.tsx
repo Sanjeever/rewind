@@ -268,6 +268,7 @@ export default function PlayerView({
           color={color}
           isFM={isFM}
           isLike={isLike}
+          likePending={playback.likePending}
           onCheck={actions.recordPlay}
         />
       )}

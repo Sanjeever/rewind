@@ -1,6 +1,6 @@
 import {subscribePlaybackEvent} from '../player/commands';
 import SongRow from '../features/tracks/SongRow';
-import type {ScreenProps, PlaylistParams} from '../navigation/types';
+import type {ScreenProps, PlaylistParams, Navigation} from '../navigation/types';
 import type {TrackFields, TrackId} from '../services/track';
 import type {Provider} from '../services/providers';
 import type {Playlist as PlaylistModel, PlaylistCache} from '../storage/models';
@@ -30,6 +30,8 @@ import * as sortModes from '../features/playlists/sortModes';
 import actions from '../features/playlists/actions';
 type PlaylistBase = PlaylistActionContext['state'];
 interface State extends PlaylistBase {
+  heartPending: boolean;
+  subscribePending: boolean;
   title?: string;
   loading: boolean;
   index: number | null;
@@ -51,7 +53,13 @@ interface State extends PlaylistBase {
   id?: TrackId;
   creator?: PlaylistModel['creator'];
 }
-class Playlist extends React.PureComponent<ScreenProps<'Playlist'>, State> {
+class Playlist extends React.PureComponent<
+  Pick<ScreenProps<'Playlist'>, 'route'> & {navigation: Navigation},
+  State
+> {
+  active = false;
+  heartBusy = false;
+  subscribeBusy = false;
   _list: reactNativeLargelist.LargeList<TrackFields> | null = null;
   deleteSub!: Subscription;
   playerSub!: Subscription;
@@ -60,6 +68,8 @@ class Playlist extends React.PureComponent<ScreenProps<'Playlist'>, State> {
     y: new ReactNative.Animated.Value(0),
   };
   state: State = {
+    heartPending: false,
+    subscribePending: false,
     title: '',
     playlist: [],
     playlistId: null,
@@ -367,16 +377,35 @@ class Playlist extends React.PureComponent<ScreenProps<'Playlist'>, State> {
     });
   };
   onSubscribe = async (e: TrackId) => {
+    if (this.subscribeBusy) return;
+    this.subscribeBusy = true;
+    this.setState({subscribePending: true});
     const state = this.state;
     const {api, subscribed} = state;
     const s = subscribed ? 'unsubscribe' : 'subscribe';
     try {
       await actions.onSubscribe(e, s, api);
-      this.setState({
-        subscribed: !subscribed,
-      });
+      if (this.active)
+        this.setState({
+          subscribed: !subscribed,
+        });
     } catch (error) {
-      toast(errorMessage(error));
+      if (this.active) toast(errorMessage(error));
+    } finally {
+      this.subscribeBusy = false;
+      if (this.active) this.setState({subscribePending: false});
+    }
+  };
+  onHeartMode = async () => {
+    if (this.heartBusy || !this.state.playlist.length) return;
+    this.heartBusy = true;
+    this.setState({heartPending: true});
+    const playlistId = this.state.playlistId;
+    try {
+      await actions.onHeartMode(this, () => this.active && this.state.playlistId === playlistId);
+    } finally {
+      this.heartBusy = false;
+      if (this.active) this.setState({heartPending: false});
     }
   };
   onScroll = (e: ReactNative.NativeSyntheticEvent<ReactNative.NativeScrollEvent>) => {
@@ -499,6 +528,7 @@ class Playlist extends React.PureComponent<ScreenProps<'Playlist'>, State> {
     });
   };
   componentDidMount() {
+    this.active = true;
     const params = this.props.route.params;
     this.switchPlaylist(params);
     this.deleteSub = events.emitter.addListener(names.DeleteFromPlaylist, async (event) => {
@@ -560,6 +590,7 @@ class Playlist extends React.PureComponent<ScreenProps<'Playlist'>, State> {
     });
   }
   componentWillUnmount() {
+    this.active = false;
     this.deleteSub.remove();
     this.playerSub.remove();
   }
@@ -611,9 +642,9 @@ class Playlist extends React.PureComponent<ScreenProps<'Playlist'>, State> {
                   onSortText={() => {
                     return this.onSortText();
                   }}
-                  onHeartMode={() => {
-                    return actions.onHeartMode(this);
-                  }}
+                  onHeartMode={this.onHeartMode}
+                  heartPending={this.state.heartPending}
+                  subscribePending={this.state.subscribePending}
                   heartMode={this.state.heartMode}
                   onMult={() => {
                     return this.setState({

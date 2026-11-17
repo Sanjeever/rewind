@@ -78,3 +78,12 @@ test('心动请求异常转为页面错误反馈', async () => {
   expect(toast).toHaveBeenCalledWith('服务响应格式无效');
   expect(playTracks).not.toHaveBeenCalled();
 });
+
+test('离开歌单后的心动结果和失败不再提交队列或提示', async () => {
+  heartMode.mockResolvedValue({code: 200, data: [{id: 2, songInfo: {id: 2}}]});
+  await actions.onHeartMode(page, () => false);
+  heartMode.mockRejectedValue(new Error('已离开'));
+  await actions.onHeartMode(page, () => false);
+  expect(playTracks).not.toHaveBeenCalled();
+  expect(toast).not.toHaveBeenCalled();
+});

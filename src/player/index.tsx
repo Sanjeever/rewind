@@ -16,13 +16,24 @@ import styles, {BOTTOM_BAR_HEIGHT, SOFT_MENU_HEIGHT} from './styles';
 import {isActiveQueue} from './types';
 
 export default class Player extends PlayerController {
-  onLike = () =>
-    this.resources.toggleLike(
-      this.activeQueue.songItem,
-      this.activeQueue.api,
-      this.state.isLike,
-      this.playbackRequest,
-    );
+  likeRequest: number | null = null;
+  onLike = async () => {
+    const request = this.playbackRequest;
+    if (this.likeRequest === request) return;
+    this.likeRequest = request;
+    this.setState({likePending: true});
+    try {
+      await this.resources.toggleLike(
+        this.activeQueue.songItem,
+        this.activeQueue.api,
+        this.state.isLike,
+        request,
+      );
+    } finally {
+      if (this.likeRequest === request) this.likeRequest = null;
+      if (this.mounted && this.playbackRequest === request) this.setState({likePending: false});
+    }
+  };
   onCollect = () =>
     collectTracks({
       api: this.activeQueue.api,

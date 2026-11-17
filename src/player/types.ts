@@ -45,6 +45,7 @@ export interface PlayerState {
   loaded: boolean;
   showTool: boolean;
   isLike: boolean;
+  likePending?: boolean;
   volume: number;
   color: string;
   showSlider: boolean;

@@ -18,6 +18,7 @@ interface Props {
   color?: ReactNative.ColorValue;
   isFM: boolean;
   isLike: boolean;
+  likePending?: boolean;
   playState: PlayState;
 }
 class ExtraPlaybackControls extends React.PureComponent<Props> {
@@ -66,6 +67,7 @@ class ExtraPlaybackControls extends React.PureComponent<Props> {
               accessibilityLabel={isLike ? '取消喜欢' : '喜欢'}
               name={isLike === true ? buttons.HEART.name : buttons.HEART_OFF.name}
               onPress={onLike}
+              busy={props.likePending}
               color={showLyric ? '#fff' : color}
               size={23}
             />

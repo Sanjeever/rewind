@@ -62,7 +62,7 @@ export default class TrackResources {
       await playModeActions.onLike(song, api, liked);
       await this.loadLikes(song, api, request);
     } catch (error) {
-      toast('更新收藏失败：' + errorMessage(error));
+      if (this.host.isCurrent(request)) toast('更新收藏失败：' + errorMessage(error));
     }
   }
 
