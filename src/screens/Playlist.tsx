@@ -28,10 +28,13 @@ import mediaStore from '../native/mediaStore';
 import lastSong from '../storage/lastSong';
 import * as sortModes from '../features/playlists/sortModes';
 import actions from '../features/playlists/actions';
+import TrackListPlaceholder from '../components/TrackListPlaceholder';
+import Text from '../components/Text';
 type PlaylistBase = PlaylistActionContext['state'];
 interface State extends PlaylistBase {
   heartPending: boolean;
   subscribePending: boolean;
+  loadError: string | null;
   title?: string;
   loading: boolean;
   index: number | null;
@@ -60,6 +63,8 @@ class Playlist extends React.PureComponent<
   active = false;
   heartBusy = false;
   subscribeBusy = false;
+  loadRequest = 0;
+  networkLoaded = false;
   _list: reactNativeLargelist.LargeList<TrackFields> | null = null;
   deleteSub!: Subscription;
   playerSub!: Subscription;
@@ -70,6 +75,7 @@ class Playlist extends React.PureComponent<
   state: State = {
     heartPending: false,
     subscribePending: false,
+    loadError: null,
     title: '',
     playlist: [],
     playlistId: null,
@@ -84,18 +90,23 @@ class Playlist extends React.PureComponent<
     userId: 0,
     searchText: '',
     api: this.props.route.params.api,
-    trackCount: 0,
+    trackCount: undefined,
     orderText: '',
     heartMode: true,
     sortMode: 'time',
     lastPlayedSong: null,
     playingIndex: -1,
-    isCreatedByMe: true,
+    isCreatedByMe: false,
     isTopList: false,
   };
   loadLastPlayedSong = async (api: Provider, tracks: TrackFields[]) => {
     const song = await lastSong.get(api);
-    if (song && tracks.some((item) => item.id === song.id)) {
+    if (
+      this.active &&
+      this.state.oriList === tracks &&
+      song &&
+      tracks.some((item) => item.id === song.id)
+    ) {
       this.setState({
         lastPlayedSong: song,
       });
@@ -127,7 +138,7 @@ class Playlist extends React.PureComponent<
     } else if (api === providers.qqMusic) {
       coverImgUrl = playlist.picurl || playlist.imgurl;
       s = playlist.title || playlist.dissname;
-      trackCount = this.state.trackCount;
+      trackCount = playlist.trackCount;
       i = playlist.dissid || playlist.id;
     }
     this.setState({
@@ -140,6 +151,7 @@ class Playlist extends React.PureComponent<
       trackCount,
       id: i,
       creator,
+      isCreatedByMe: api === providers.netEase && this.getIsCreatedByMe(e.userId, playlist),
     });
     switch (api) {
       case providers.netEase:
@@ -154,27 +166,33 @@ class Playlist extends React.PureComponent<
     if (!playlist.id) {
       return;
     }
+    const request = ++this.loadRequest;
+    this.setState({loading: !this.state.playlist.length, loadError: null});
     try {
       const data = await actions.getFromNetease(playlist.id);
-      if (!data) {
+      if (!data || !this.active || request !== this.loadRequest) {
         return;
       }
+      this.networkLoaded = true;
       this.setData(data);
       this.setState({
         userId,
         isCreatedByMe: this.getIsCreatedByMe(userId, playlist),
       });
-      await this.loadMoreThanThousands(data.moreFunc);
+      await this.loadMoreThanThousands(data.moreFunc, request);
     } catch (error) {
-      toast(errorMessage(error));
+      if (this.active && request === this.loadRequest)
+        this.setState({loading: false, loadError: errorMessage(error)});
+    } finally {
+      if (this.active && request === this.loadRequest) this._list?.endRefresh();
     }
   };
-  loadMoreThanThousands = async (more: PlaylistData['moreFunc']) => {
+  loadMoreThanThousands = async (more: PlaylistData['moreFunc'], request = this.loadRequest) => {
     if (!more) {
       return;
     }
     const response = await more();
-    if (response?.songs?.length) {
+    if (this.active && request === this.loadRequest && response?.songs?.length) {
       const songs = response.songs;
       this.setState((previous) => {
         const tracks = [...previous.oriList, ...songs];
@@ -200,19 +218,24 @@ class Playlist extends React.PureComponent<
     if (!id) {
       return;
     }
+    const request = ++this.loadRequest;
+    this.setState({loading: !this.state.playlist.length, loadError: null});
     try {
       const data = await actions.getFromQQMusic(id);
-      if (data) {
+      if (data && this.active && request === this.loadRequest) {
         this.setData(data);
         this.setState({
           isCreatedByMe: false,
         });
       }
     } catch (error) {
-      toast(errorMessage(error));
+      if (this.active && request === this.loadRequest)
+        this.setState({loading: false, loadError: errorMessage(error)});
+    } finally {
+      if (this.active && request === this.loadRequest) this._list?.endRefresh();
     }
   };
-  setData = ({name, id, tracks, trackCount = 0}: PlaylistData) => {
+  setData = ({name, id, tracks, trackCount = tracks.length}: PlaylistData) => {
     this.setState(
       {
         playlist: tracks,
@@ -237,6 +260,7 @@ class Playlist extends React.PureComponent<
           key: keys.netEasePlaylistCache,
         })
         .then((t) => {
+          if (!this.active || this.networkLoaded) return;
           const a = t.find((t) => t.id === e);
           if (!a) return;
           const {tracks, name} = a;
@@ -245,6 +269,7 @@ class Playlist extends React.PureComponent<
               id: e,
               name,
               tracks,
+              trackCount: this.state.trackCount ?? tracks.length,
             });
           }
         })
@@ -256,10 +281,11 @@ class Playlist extends React.PureComponent<
   };
   attachLocalPath = (e: TrackFields[]) => {
     if (!(e.length < 1)) {
-      mediaStore.attachLocalPath(e).then((e) => {
+      mediaStore.attachLocalPath(e).then((tracks) => {
+        if (!this.active || this.state.oriList !== e) return;
         this.setState({
-          playlist: e,
-          oriList: e,
+          playlist: tracks,
+          oriList: tracks,
         });
       });
     }
@@ -616,9 +642,15 @@ class Playlist extends React.PureComponent<
           onScroll={this.onScroll}
           onRefresh={this.onRefresh}
           refreshHeader={PlaylistTabs}
-          renderEmpty={function () {
-            return <components.Spinkit />;
-          }}
+          renderEmpty={() =>
+            this.state.loading ? (
+              <TrackListPlaceholder />
+            ) : this.state.loadError ? (
+              <ReactNative.View />
+            ) : (
+              <Text style={{padding: 24, textAlign: 'center', opacity: 0.65}}>暂无歌曲</Text>
+            )
+          }
           onNativeContentOffsetExtract={this._nativeOffset}
           renderHeader={() => {
             return (
@@ -643,6 +675,7 @@ class Playlist extends React.PureComponent<
                     return this.onSortText();
                   }}
                   onHeartMode={this.onHeartMode}
+                  heartDisabled={!this.state.playlist.length}
                   heartPending={this.state.heartPending}
                   subscribePending={this.state.subscribePending}
                   heartMode={this.state.heartMode}
@@ -662,6 +695,16 @@ class Playlist extends React.PureComponent<
                   onOpenUrl={this.onOpenUrl}
                   onShare={this.onShare}
                 />
+                {this.state.loadError && (
+                  <ReactNative.View style={{paddingHorizontal: 24, paddingVertical: 12, gap: 8}}>
+                    <Text>{this.state.loadError}</Text>
+                    <components.TextButton
+                      text="重试"
+                      onPress={this.onRefresh}
+                      style={{minHeight: 48}}
+                    />
+                  </ReactNative.View>
+                )}
               </ReactNative.View>
             );
           }}

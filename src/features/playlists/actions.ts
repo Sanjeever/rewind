@@ -122,7 +122,7 @@ const g = {
       id,
       name,
       tracks,
-      trackCount: tracks.length,
+      trackCount: response.playlist.trackCount ?? trackIds.length,
       moreFunc: response.moreFunc,
     };
   },

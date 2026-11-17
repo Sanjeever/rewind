@@ -8,6 +8,7 @@ jest.unstable_mockModule('../services/index', () => ({
 }));
 jest.unstable_mockModule('../native/toast', () => ({toast}));
 jest.unstable_mockModule('../components/index', () => ({}));
+jest.unstable_mockModule('../components/TrackListPlaceholder', () => ({default: undefined}));
 jest.unstable_mockModule('../features/tracks/SongRow', () => ({default: undefined}));
 jest.unstable_mockModule('../components/Scrolling', () => ({}));
 jest.unstable_mockModule('../native/TabbedViewPager', () => ({default: undefined}));

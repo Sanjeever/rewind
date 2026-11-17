@@ -18,6 +18,7 @@ interface Props {
   trackCount?: number;
   heartMode?: boolean;
   heartPending?: boolean;
+  heartDisabled?: boolean;
   subscribePending?: boolean;
   coverImgUrl?: string;
   creator?: Playlist['creator'];
@@ -228,6 +229,7 @@ class PlaylistForeground extends React.PureComponent<Props> {
                 size={25}
                 onPress={onHeartMode}
                 busy={props.heartPending}
+                disabled={props.heartDisabled}
               />
             )}
             {!isCreatedByMe && onSubscribe && (

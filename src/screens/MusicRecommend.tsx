@@ -20,6 +20,7 @@ import type {Playlist} from '../storage/models';
 import type {Provider} from '../services/providers';
 import type {PagerViewOnPageSelectedEvent} from 'react-native-pager-view';
 import {errorMessage} from '../utils/types';
+import TrackListPlaceholder from '../components/TrackListPlaceholder';
 const tabNames = [locales.ARTIST_SONGS, locales.MIX];
 const l: Record<string, string> = {};
 l[locales.ARTIST_SONGS] = '1';
@@ -129,7 +130,7 @@ class MusicRecommend extends React.Component<
             </reactNativeSpringScrollview.SpringScrollView>
           );
         }
-        return this.state.loaded ? <ReactNative.View /> : <components.Spinkit />;
+        return this.state.loaded ? <ReactNative.View /> : <TrackListPlaceholder />;
       case '2':
         if (playlistData?.length > 0) {
           return (

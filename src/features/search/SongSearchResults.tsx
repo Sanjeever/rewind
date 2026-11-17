@@ -3,7 +3,8 @@ import SongRow from '../tracks/SongRow';
 import React from 'react';
 import {StyleSheet, View} from 'react-native';
 import {LargeList} from '../../components/Scrolling';
-import {Spinkit, TextButton} from '../../components';
+import {TextButton} from '../../components';
+import TrackListPlaceholder from '../../components/TrackListPlaceholder';
 import Text from '../../components/Text';
 import {ITEM_HEIGHT} from '../../theme/constants';
 import {searchSongs} from '../../services/search';
@@ -141,7 +142,7 @@ export default class SongSearchResults extends React.PureComponent<Props, State>
   };
 
   render() {
-    if (this.state.loading) return <Spinkit />;
+    if (this.state.loading) return <TrackListPlaceholder />;
     return (
       <LargeList
         key={this.props.api + ':' + this.props.search}
