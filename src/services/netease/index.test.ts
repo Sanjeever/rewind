@@ -19,6 +19,20 @@ beforeEach(() => {
   eapiRequest.mockReset();
 });
 
+test('心动模式使用移动端认证请求并携带歌单与起始歌曲', async () => {
+  const data = [{id: 2, songInfo: {id: 2, name: '心动歌曲'}}];
+  eapiRequest.mockResolvedValueOnce({code: 200, data});
+  await expect(netease.heart_mode({songId: 1, playlistId: 42})).resolves.toEqual({code: 200, data});
+  expect(eapiRequest).toHaveBeenCalledWith(expect.anything(), '/api/playmode/intelligence/list', {
+    songId: 1,
+    type: 'fromPlayOne',
+    playlistId: 42,
+    startMusicId: 1,
+    count: 1,
+  });
+  expect(request).not.toHaveBeenCalled();
+});
+
 test('认证入口使用移动端请求，每日推荐保留页面既有歌曲字段', async () => {
   await netease.msg();
   await netease.cloud(20, 40);

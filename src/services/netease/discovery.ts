@@ -57,8 +57,13 @@ export const radio_hot = function (offset = 0, limit = 30) {
 };
 export const heart_mode = function (options: {songId: TrackId; playlistId: TrackId}) {
   const songId = options.songId;
-  const query = `songId=${songId}&type=fromPlayOne&playlistId=${options.playlistId}&startMusicId=${songId}&count=1`;
-  return http.request(responses.heart_mode, '/api/playmode/intelligence/list', query);
+  return http.eapiRequest(responses.heart_mode, '/api/playmode/intelligence/list', {
+    songId,
+    type: 'fromPlayOne',
+    playlistId: options.playlistId,
+    startMusicId: songId,
+    count: 1,
+  });
 };
 export const sub_new_songs = function (limit = 100) {
   const body = {

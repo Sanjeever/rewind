@@ -7,6 +7,7 @@ import providers from '../../services/providers';
 import locales from '../../locales/index';
 import * as services from '../../services/index';
 import * as utils from '../../utils/index';
+import {errorMessage} from '../../utils/types';
 import queue from '../../player/videoActions';
 import users from '../../storage/users';
 export interface PlaylistActionContext {
@@ -218,21 +219,28 @@ const g = {
     if (heartMode !== true || !playlist.length) {
       return;
     }
-    const song = playlist[utils.random.getInt(0, playlist.length)];
-    const response = await services.Netease.heart_mode({
-      songId: song.id!,
-      playlistId: playlistId!,
-    });
-    if (String(response?.code) === '500') {
-      toast(locales.NETEASE_NOT_LOGIN);
-      return;
-    }
-    if (response?.data?.length) {
+    try {
+      const song = playlist[utils.random.getInt(0, playlist.length)];
+      const response = await services.Netease.heart_mode({
+        songId: song.id!,
+        playlistId: playlistId!,
+      });
+      if (response.code === 301) {
+        throw new Error(locales.NETEASE_NOT_LOGIN);
+      }
+      if (response.code !== 200) {
+        throw new Error(response.message || response.msg || locales.ERROR);
+      }
+      if (!response.data?.length) {
+        throw new Error('心动模式暂无可播放歌曲');
+      }
       const tracks = response.data.map((item) => ({
         id: item.id,
         ...item.songInfo,
       }));
       playTracks({song: tracks[0], tracks: tracks, index: 0, api});
+    } catch (error) {
+      toast(errorMessage(error));
     }
   },
   onSubscribe: function (e: TrackId, t: 'subscribe' | 'unsubscribe', a: Provider) {
