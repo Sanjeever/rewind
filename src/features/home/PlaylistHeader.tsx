@@ -18,12 +18,12 @@ const IComponent = function ({
       accessibilityLabel={title}
       style={{
         width: 80,
-        height: 70,
+        height: 64,
       }}
       size={50}
     >
-      <View style={{alignItems: 'center', gap: 8}}>
-        <components.Icon name={icon.name} color={icon.color} size={25} />
+      <View style={{alignItems: 'center', gap: 6}}>
+        <components.Icon name={icon.name} color={icon.color} size={23} />
         <Text style={{fontSize: 12}}>{title}</Text>
       </View>
     </components.TouchableBorderless>

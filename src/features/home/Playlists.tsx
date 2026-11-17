@@ -417,11 +417,17 @@ class Playlists extends React.PureComponent<
                 minHeight: 48,
                 alignItems: 'center',
                 justifyContent: 'center',
-                borderBottomWidth: 2,
-                borderBottomColor: this.state.page === index ? '#fff' : 'transparent',
+                borderBottomWidth: 1,
+                borderBottomColor: this.state.page === index ? '#bdbdbd' : 'transparent',
               }}
             >
-              <Text style={{fontSize: 14, opacity: this.state.page === index ? 1 : 0.55}}>
+              <Text
+                style={{
+                  fontSize: 13,
+                  fontWeight: this.state.page === index ? '600' : '400',
+                  opacity: this.state.page === index ? 1 : 0.55,
+                }}
+              >
                 {labels[api]}
               </Text>
             </ReactNative.TouchableOpacity>

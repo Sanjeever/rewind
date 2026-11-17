@@ -32,6 +32,7 @@ import type {OpenPlaylist} from './Playlists';
 import type {LargeList} from '../../components/Scrolling';
 import {errorMessage} from '../../utils/types';
 interface State {
+  quickPage: number;
   netEase: Playlist[];
   qqMusic: Playlist[];
   showList: boolean;
@@ -51,6 +52,7 @@ class Home extends React.PureComponent<
   playlistSetOrderListener?: Subscription;
   setStateListener?: Subscription;
   state: State = {
+    quickPage: 0,
     netEase: [],
     qqMusic: [],
     showList: true,
@@ -346,16 +348,42 @@ class Home extends React.PureComponent<
     ));
   };
   renderHeader = () => {
-    return React.createElement(
-      Pager,
-      {
-        initialPage: 0,
-        style: {
-          height: 82,
-          width: '100%',
-        },
-      },
-      this.renderPager(),
+    const pages = this.renderPager();
+    return (
+      <ReactNative.View style={{marginBottom: 8}}>
+        <Pager
+          initialPage={0}
+          style={{height: 68, width: '100%'}}
+          onPageSelected={(event) => this.setState({quickPage: event.nativeEvent.position})}
+        >
+          {pages}
+        </Pager>
+        {pages.length > 1 && (
+          <ReactNative.View
+            accessible
+            accessibilityLabel={`快捷功能，第 ${this.state.quickPage + 1} 页，共 ${pages.length} 页`}
+            style={{
+              height: 12,
+              flexDirection: 'row',
+              gap: 5,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            {pages.map((_, index) => (
+              <ReactNative.View
+                key={index}
+                style={{
+                  height: 3,
+                  width: this.state.quickPage === index ? 12 : 3,
+                  borderRadius: 2,
+                  backgroundColor: this.state.quickPage === index ? '#bdbdbd' : '#454545',
+                }}
+              />
+            ))}
+          </ReactNative.View>
+        )}
+      </ReactNative.View>
     );
   };
   goToPage = (e: string) => {
@@ -469,10 +497,10 @@ export default Home;
 const M = ReactNative.StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: constants.STATUS_BAR_HEIGHT + 48,
+    paddingTop: constants.STATUS_BAR_HEIGHT + 42,
   },
   compCon: {
-    paddingVertical: 6,
+    paddingVertical: 0,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-around',
