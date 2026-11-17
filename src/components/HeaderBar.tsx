@@ -206,6 +206,7 @@ class HeaderBar extends React.PureComponent<
                 right: 0,
                 bottom: 0,
                 opacity,
+                overflow: 'hidden',
               },
               b.borderline,
             ]}
