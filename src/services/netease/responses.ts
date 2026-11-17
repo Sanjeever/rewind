@@ -86,7 +86,7 @@ export const responses = {
   }),
   musicUrl: sound,
   freeMusicUrl: sound,
-  recommend_songs: response({recommend: optional(tracks)}),
+  recommend_songs: response({data: optional(z.nullable(z.looseObject({dailySongs: tracks})))}),
   recommend_dislike: response({data: optional(track)}),
   recommend_playlists: response({recommend: optional(z.array(playlist))}),
   likelist: response({ids: optional(z.array(id))}),
@@ -140,7 +140,7 @@ export const responses = {
     data: optional(
       z.array(
         z.looseObject({
-          simpleSong: track,
+          simpleSong: z.extend(track, {ar: z.nullable(track.shape.ar)}),
           songId: id,
           songName: z.string(),
           fileName: optional(z.string()),

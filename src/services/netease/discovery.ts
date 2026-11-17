@@ -1,22 +1,28 @@
 import {responses} from './responses';
 import * as http from './http';
 import type {TrackId} from '../track';
-export const recommend_songs = function () {
-  return http.request(
+export const recommend_songs = async function () {
+  const csrf = await http.getCsrfToken();
+  const result = await http.cryptoRequest(
     responses.recommend_songs,
-    '/api/v1/discovery/recommend/songs?total=true',
-    '',
+    '/weapi/v3/discovery/recommend/songs?csrf_token=' + (csrf || ''),
+    {afresh: false},
   );
+  return {...result, recommend: result.data?.dailySongs};
 };
 export const recommend_dislike = function ({id, type}: {id: TrackId; type?: 'song' | 'playlist'}) {
   const query = `resId=${id}&resType=${(type === undefined ? 'song' : type) === 'song' ? 4 : 1000}`;
   return http.request(responses.recommend_dislike, 'api/v2/discovery/recommend/dislike', query);
 };
 export const recommend_playlists = function () {
-  return http.request(responses.recommend_playlists, '/api/v1/discovery/recommend/resource', '');
+  return http.eapiRequest(
+    responses.recommend_playlists,
+    '/api/v1/discovery/recommend/resource',
+    {},
+  );
 };
 export const personal_fm = function () {
-  return http.request(responses.personal_fm, '/api/v1/radio/get', '');
+  return http.cryptoRequest(responses.personal_fm, '/weapi/v1/radio/get', {limit: 3});
 };
 export const radio_category = function () {
   return fetch('http://music.163.com/api/djradio/category/get')
@@ -24,11 +30,11 @@ export const radio_category = function () {
     .then((e) => e);
 };
 export const radio_sublist = function () {
-  return http.request(
-    responses.radio_sublist,
-    '/api/djradio/get/subed',
-    '?limit=1000&offset=0&total=true',
-  );
+  return http.eapiRequest(responses.radio_sublist, '/api/djradio/get/subed', {
+    limit: 1000,
+    offset: 0,
+    total: true,
+  });
 };
 export const radio_detail = function ({
   id,
@@ -59,12 +65,12 @@ export const sub_new_songs = function (limit = 100) {
     limit: limit,
     startTimestamp: Date.now(),
   };
-  return http.cryptoRequest(responses.sub_new_songs, '/weapi/sub/artist/new/works/song/list', body);
+  return http.eapiRequest(responses.sub_new_songs, '/api/sub/artist/new/works/song/list', body);
 };
 export const sub_new_mv = function (limit = 100) {
   const body = {
     limit: limit,
     startTimestamp: Date.now(),
   };
-  return http.cryptoRequest(responses.sub_new_mv, '/weapi/sub/artist/new/works/mv/list', body);
+  return http.eapiRequest(responses.sub_new_mv, '/api/sub/artist/new/works/mv/list', body);
 };

@@ -5,13 +5,38 @@ import type {responses} from './responses';
 const request = jest.fn<typeof Http.request>();
 const cryptoRequest = jest.fn<typeof Http.cryptoRequest<typeof responses.song_detail>>();
 const eapiRequest = jest.fn<typeof Http.eapiRequest<typeof responses.musicUrl>>();
-jest.unstable_mockModule('./http', () => ({request, cryptoRequest, eapiRequest}));
+jest.unstable_mockModule('./http', () => ({
+  request,
+  cryptoRequest,
+  eapiRequest,
+  getCsrfToken: async () => 'csrf',
+}));
 const {default: netease} = await import('./index');
 
 beforeEach(() => {
   request.mockReset();
   cryptoRequest.mockReset();
   eapiRequest.mockReset();
+});
+
+test('认证入口使用移动端请求，每日推荐保留页面既有歌曲字段', async () => {
+  await netease.msg();
+  await netease.cloud(20, 40);
+  await netease.sublist_artist({offset: 30, limit: 30});
+  await netease.radio_sublist();
+  expect(eapiRequest.mock.calls.map((call) => [call[1], call[2]])).toEqual([
+    ['/api/msg/private/users', {total: true, limit: 50, offset: 0}],
+    ['/api/v1/cloud/get', {limit: 20, offset: 40}],
+    ['/api/artist/sublist', {offset: 30, limit: 30}],
+    ['/api/djradio/get/subed', {limit: 1000, offset: 0, total: true}],
+  ]);
+  const songs = [{id: 1, name: '推荐歌曲'}];
+  cryptoRequest.mockResolvedValueOnce({code: 200, data: {dailySongs: songs}});
+  await expect(netease.recommend_songs()).resolves.toMatchObject({code: 200, recommend: songs});
+  expect(cryptoRequest.mock.calls[0].slice(1)).toEqual([
+    '/weapi/v3/discovery/recommend/songs?csrf_token=csrf',
+    {afresh: false},
+  ]);
 });
 
 test('两个音源入口共用取消状态，统一使用音源 v1 并按音质选择等级', async () => {

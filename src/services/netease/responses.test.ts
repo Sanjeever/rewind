@@ -20,6 +20,21 @@ test('歌单、榜单与私人电台保留平台合法空字段，仍拒绝错�
   ).toThrow();
 });
 
+test('云盘保留歌曲缺失的歌手列表与歌手名', () => {
+  const entries = [null, [{id: 0, name: null}]].map((ar) => ({
+    songId: 1,
+    songName: '歌曲',
+    artist: '',
+    album: '',
+    simpleSong: {id: 1, ar},
+  }));
+  const value = {code: 200, data: entries};
+  expect(responses.cloud.parse(value)).toEqual(value);
+  expect(() =>
+    responses.cloud.parse({code: 200, data: [{...entries[0], simpleSong: {ar: 'broken'}}]}),
+  ).toThrow();
+});
+
 test('外部响应校验保留业务错误、未知字段与原始歌曲字段', () => {
   expect(responses.freeMusicUrl.parse({code: -460, message: '拒绝'})).toEqual({
     code: -460,

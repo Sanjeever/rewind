@@ -67,19 +67,31 @@ export const like = function (options: {id: TrackId; isLike?: boolean}) {
   return http.request(responses.like, '/api/radio/like', query);
 };
 export const msg = function () {
-  return http.request(responses.msg, '/api/msg/private/users', 'total=true&limit=50&offset=0');
+  return http.eapiRequest(responses.msg, '/api/msg/private/users', {
+    total: true,
+    limit: 50,
+    offset: 0,
+  });
 };
 export const msg_history = function ({userId, offset}: {userId: TrackId; offset?: number}) {
-  const query = `userId=${userId}&offset=${offset === undefined ? 0 : offset}&limit=50&total=true`;
-  return http.request(responses.msg_history, '/api/msg/private/history', query);
+  return http.eapiRequest(responses.msg_history, '/api/msg/private/history', {
+    userId,
+    offset: offset ?? 0,
+    limit: 50,
+    total: true,
+  });
 };
 export const sublist_artist = function ({offset = 0, limit}: {offset?: number; limit?: number}) {
-  const query = `offset=${offset}&limit=${limit === undefined ? 1000 : limit}`;
-  return http.request(responses.sublist_artist, '/api/artist/sublist', query);
+  return http.eapiRequest(responses.sublist_artist, '/api/artist/sublist', {
+    offset,
+    limit: limit ?? 1000,
+  });
 };
 export const sublist_album = function ({offset = 0, limit}: {offset?: number; limit?: number}) {
-  const query = `offset=${offset}&limit=${limit === undefined ? 30 : limit}`;
-  return http.request(responses.sublist_album, '/api/album/sublist', query);
+  return http.eapiRequest(responses.sublist_album, '/api/album/sublist', {
+    offset,
+    limit: limit ?? 30,
+  });
 };
 export const subcount = function () {
   return http.cryptoRequest(responses.subcount, '/weapi/subcount', {
@@ -126,8 +138,7 @@ export const sublist_album_add = function ({id, op = 'sub'}: {id: TrackId; op?: 
   }
 };
 export const cloud = function (limit = 1000, offset = 0) {
-  const query = `limit=${limit}&offset=${offset}`;
-  return http.request(responses.cloud, '/api/v1/cloud/get', query);
+  return http.eapiRequest(responses.cloud, '/api/v1/cloud/get', {limit, offset});
 };
 export const listen_record = function (id: TrackId, type = 1) {
   const query = `uid=${id}&type=${type}&timestamp=${Date.now()}`;
