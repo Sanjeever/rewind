@@ -10,6 +10,7 @@ object PlayerBridge {
     val controls = mutableMapOf<String, Boolean>()
     var handleAudioFocus = true
     var audioFocusUpdater: ((Boolean) -> Unit)? = null
+    var audioSessionId: (() -> Int)? = null
     var maxCacheBytes = 200L * 1024 * 1024
     var cacheSizeReader: ((Promise) -> Unit)? = null
     var cacheClearer: ((Promise) -> Unit)? = null

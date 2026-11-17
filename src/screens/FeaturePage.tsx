@@ -5,7 +5,16 @@ import locales from '../locales/index';
 import audioPlayer from '../native/audioPlayer';
 import languageModule from '../native/language';
 import type {ScreenProps} from '../navigation/types';
+import {toast} from '../native/toast';
+import {errorMessage} from '../utils/types';
 class FeaturePage extends React.PureComponent<ScreenProps<'FeaturePage'>> {
+  openEqualizer = async () => {
+    try {
+      await audioPlayer.openEqualizer();
+    } catch (error) {
+      toast(errorMessage(error));
+    }
+  };
   render() {
     const t = [
       {
@@ -36,9 +45,7 @@ class FeaturePage extends React.PureComponent<ScreenProps<'FeaturePage'>> {
       {
         title: locales.EQUALIZER,
         subtitle: locales.EQUALIZER_SUB,
-        onPress: function () {
-          return audioPlayer.openEqualizer();
-        },
+        onPress: this.openEqualizer,
       },
     ];
     return (

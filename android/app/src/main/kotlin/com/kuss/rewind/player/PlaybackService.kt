@@ -47,6 +47,7 @@ class PlaybackService : MediaSessionService() {
             setWakeMode(C.WAKE_MODE_LOCAL)
         }
         PlayerBridge.audioFocusUpdater = { enabled -> player.setAudioAttributes(player.audioAttributes, enabled) }
+        PlayerBridge.audioSessionId = { player.audioSessionId }
         player.addListener(object : Player.Listener {
             override fun onIsPlayingChanged(isPlaying: Boolean) { PlayerBridge.playback(isPlaying) }
         })
@@ -92,6 +93,7 @@ class PlaybackService : MediaSessionService() {
     override fun onGetSession(controllerInfo: MediaSession.ControllerInfo) = session
 
     private fun releaseSession() {
+        PlayerBridge.audioSessionId = null
         session?.let { active ->
             active.player.pause()
             removeSession(active)

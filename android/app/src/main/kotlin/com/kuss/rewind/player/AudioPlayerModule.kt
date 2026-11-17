@@ -1,6 +1,7 @@
 package com.kuss.rewind.player
 
 import android.content.ComponentName
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.media.AudioManager
@@ -153,12 +154,17 @@ class AudioPlayerModule(private val context: ReactApplicationContext) : ReactCon
     fun openEqualizer(promise: Promise) {
         main.post {
             try {
+                val activity = context.currentActivity ?: throw IllegalStateException("当前页面不可用")
                 val intent = Intent(AudioEffect.ACTION_DISPLAY_AUDIO_EFFECT_CONTROL_PANEL)
                     .putExtra(AudioEffect.EXTRA_PACKAGE_NAME, context.packageName)
                     .putExtra(AudioEffect.EXTRA_CONTENT_TYPE, AudioEffect.CONTENT_TYPE_MUSIC)
-                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                if (intent.resolveActivity(context.packageManager) == null) promise.reject("E_EQUALIZER_UNAVAILABLE", "设备未提供均衡器")
-                else { context.startActivity(intent); promise.resolve(null) }
+                PlayerBridge.audioSessionId?.invoke()?.takeIf { it > 0 }?.let {
+                    intent.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, it)
+                }
+                activity.startActivityForResult(intent, 0)
+                promise.resolve(null)
+            } catch (error: ActivityNotFoundException) {
+                promise.reject("E_EQUALIZER_UNAVAILABLE", "设备未提供均衡器", error)
             } catch (error: Exception) { promise.reject("E_EQUALIZER", error) }
         }
     }
