@@ -339,7 +339,10 @@ class NowPlayingModal extends React.PureComponent<
       this.positioned = false;
       this.setState(
         {presented: true, expanded: false, mode: x.normal, filterText: '', filterList: []},
-        () => this.animate(1),
+        () => {
+          this.animate(1);
+          this.scrollTo();
+        },
       );
     } else {
       this.animate(0, () =>

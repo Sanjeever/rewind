@@ -101,6 +101,7 @@ export default class Player extends PlayerController {
     const queue = {tracks, songItemInfo, playingIndex};
     const fullPlayer = (expanded || playerStyle) && (
       <Animated.View
+        pointerEvents={expanded ? 'auto' : 'none'}
         style={[
           styles.container,
           playerStyle,

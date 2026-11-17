@@ -5,6 +5,7 @@ import * as reactNativeAnimatable from 'react-native-animatable';
 import * as constants from '../theme/constants';
 import icons from '../theme/icons';
 import * as components from './index';
+import {ReducedMotionContext} from '../theme/motion';
 interface Props {
   img?: string | null;
   subtitle?: string | string[] | null;
@@ -14,6 +15,8 @@ interface Props {
   onInfo?: () => void;
 }
 class ParallaxForeground extends React.PureComponent<Props> {
+  static contextType = ReducedMotionContext;
+  context = false;
   renderBottomMask = () => {
     const animOffsetY = this.props.animOffsetY;
     return (
@@ -76,7 +79,7 @@ class ParallaxForeground extends React.PureComponent<Props> {
       >
         {typeof img === 'string' && img ? (
           <reactNativeAnimatable.Image
-            animation={'fadeIn'}
+            animation={this.context ? undefined : 'fadeIn'}
             useNativeDriver={true}
             source={{
               uri: img,
@@ -84,7 +87,7 @@ class ParallaxForeground extends React.PureComponent<Props> {
             style={[
               f.foregroundImg,
               {
-                transform,
+                transform: this.context ? [] : transform,
               },
             ]}
           />

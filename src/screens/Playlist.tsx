@@ -437,15 +437,8 @@ class Playlist extends React.PureComponent<
   onScroll = (e: ReactNative.NativeSyntheticEvent<ReactNative.NativeScrollEvent>) => {
     const t = e.nativeEvent.contentOffset.y;
     const a = sortModes.FOREGROUND_HEIGHT - 100;
-    if (t < a) {
-      this.setState({
-        title: '',
-      });
-    } else if (t > a) {
-      this.setState({
-        title: this.state.name,
-      });
-    }
+    const title = t >= a ? this.state.name : '';
+    if (title !== this.state.title) this.setState({title});
   };
   onLastPlay = () => {
     const state = this.state;
