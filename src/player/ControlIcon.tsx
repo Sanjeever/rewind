@@ -28,7 +28,7 @@ const SComponent = function (e: ControlIconProps) {
       onLongPress={onLongPress}
       accessibilityRole="button"
       accessibilityLabel={e.accessibilityLabel}
-      accessibilityState={{disabled: !!disabled_1, busy: !!e.busy}}
+      accessibilityState={{disabled: !!(disabled_1 || e.busy), busy: !!e.busy}}
       style={[
         {
           minHeight: Math.max(48, size_1 + 12),

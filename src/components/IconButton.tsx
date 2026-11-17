@@ -25,7 +25,7 @@ class IconButton extends React.PureComponent<
           disabled={disabled || props.busy}
           accessibilityRole="button"
           accessibilityLabel={props.accessibilityLabel}
-          accessibilityState={{disabled: !!disabled, busy: !!props.busy}}
+          accessibilityState={{disabled: !!(disabled || props.busy), busy: !!props.busy}}
           style={{minWidth: 48, minHeight: 48, alignItems: 'center', justifyContent: 'center'}}
         >
           {props.busy ? (
