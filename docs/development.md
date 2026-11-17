@@ -1,6 +1,6 @@
 # 开发与构建
 
-本文说明环境准备、开发命令、构建类型和验证方式。版本与脚本定义以仓库配置为准，设计取舍见[架构约束](architecture.md)，已验证范围见[验证记录](validation.md)。
+本文说明环境准备、开发命令、构建类型和验证方式。版本与脚本定义以仓库配置为准，设计取舍见[架构约束](architecture.md)，已验证范围见[验证概况](validation.md)。
 
 ## 环境与配置来源
 
@@ -18,7 +18,7 @@
 
 设置 `JAVA_HOME` 指向所需 JDK，优先用 `ANDROID_HOME` 指向本机 SDK，并将 SDK 的 `platform-tools` 加入 `PATH`。使用 `ANDROID_SDK_ROOT` 时也须保证 `adb` 在 `PATH` 中，因为 React Native CLI 通过 `ANDROID_HOME` 或 `PATH` 定位它。Gradle 还支持本地 `android/local.properties`，该文件保持忽略，不提交机器路径。
 
-pnpm 使用严格依赖布局。根开发依赖中的 Gradle 插件、Codegen 和 Hermes 编译器供构建工具定位，不能按业务 JS 是否导入来判断是否多余。Kotlin 需满足原生依赖的编译器要求，AsyncStorage 的 KSP 匹配逻辑由依赖管理。
+依赖使用精确版本，框架升级按对应官方模板核对兼容性。pnpm 使用严格依赖布局，根开发依赖中的 Gradle 插件、Codegen 和 Hermes 编译器供构建工具定位。Kotlin 需满足原生依赖的编译器要求，AsyncStorage 的 KSP 匹配逻辑由依赖管理。
 
 Apple Silicon 使用 ARM64 模拟器，Intel Mac 与 Windows x64 使用 x86_64 模拟器。单一设备构建可向 `pnpm android:build` 追加 `-PreactNativeArchitectures=arm64-v8a` 或 `-PreactNativeArchitectures=x86_64`；默认 ABI 查 Gradle 参数。
 
@@ -65,11 +65,10 @@ SDK/JDK 本机路径、私钥、凭据、缓存和构建输出不提交。仓库
 
 ```sh
 pnpm check
-pnpm test
 pnpm bundle:android
 ```
 
-`pnpm check` 串行执行 Oxlint、Oxfmt、严格类型检查与测试；各项也可通过 `lint`、`format:check`、`typecheck` 独立运行。`lint:fix` 和 `format` 会修改文件。GitHub Actions 在 push 和 PR 中冻结锁文件安装并执行检查。
+`pnpm check` 串行执行 Oxlint、Oxfmt、严格类型检查与测试；各项也可通过 `lint`、`format:check`、`typecheck`、`test` 独立运行。`lint:fix` 和 `format` 会修改文件。GitHub Actions 在 push 和 PR 中冻结锁文件安装并执行检查。
 
 Lint 规则与文件范围见 [.oxlintrc.json](../.oxlintrc.json)。规则沿用迁移前的 ESLint 与 TypeScript recommended 检查，保留项目的未使用参数豁免与全局变量范围；TypeScript 已负责的检查继续由两套类型检查覆盖。
 
@@ -85,4 +84,4 @@ Lint 规则与文件范围见 [.oxlintrc.json](../.oxlintrc.json)。规则沿用
 
 选择能验证本次变化的检查：业务逻辑使用相关回归；依赖、原生或构建变更按影响验证打包和设备运行；纯文档变更核对事实、链接和 diff。内存迁移后端、网络与原生 mock、直接调用组件方法的状态测试，都不能替代 SQLite、文件写入、React 渲染或设备验收。
 
-构建通过、页面打开与业务通过分别表述。全新安装、覆盖升级、模拟器、实体机和真实账号分别记录环境、日期、操作结果及未覆盖范围。新的验收证据或已知问题状态变化写入[验证记录](validation.md)，保留旧记录的历史含义；不因文档整理而把历史结果算作本轮验证。
+PR 写明实际执行的检查与结果。设备验收记录代码基线、日期、环境、操作和未覆盖范围，分别说明构建、启动与业务结果。重要验收按[记录方式](validation.md#记录方式)归档，待处理事项更新到[问题与续测](tasks.md)。

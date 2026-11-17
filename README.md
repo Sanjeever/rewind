@@ -2,7 +2,7 @@
 
 本项目以倒带 v3.5.0 Android 发布包为基础重建。应用逻辑已整理为 TypeScript/TSX 与 ESM 源码，保留自有 Android 原生能力，供二次开发使用。
 
-应用包含本地音乐播放、队列、歌单、历史、歌词，以及网易云和 QQ 音乐搜索与账号入口。在线播放使用本人账号的平台权限，评论分词在 Android 本地执行。各平台与账号的实际验收范围、已知限制见[验证记录](docs/validation.md)。
+应用包含本地音乐播放、队列、歌单、历史、歌词，以及网易云和 QQ 音乐搜索与账号入口。在线播放使用本人账号的平台权限，评论分词在 Android 本地执行。各平台与账号的验收范围见[验证概况](docs/validation.md)。
 
 上游仓库与源码来源：[KusStar/rewind-apks](https://github.com/KusStar/rewind-apks)
 
@@ -38,10 +38,12 @@ pnpm android --no-packager
 
 ## 开发文档
 
+- [贡献指南](CONTRIBUTING.md)：任务协作、提交评审与文档维护。
 - [开发与构建](docs/development.md)：配置来源、运行命令、构建类型、签名与检查方式。
 - [架构与兼容约束](docs/architecture.md)：设计原因、播放边界、数据保护与相关代码入口。
-- [验证记录与未解决问题](docs/validation.md)：历史验收证据、未覆盖范围与在线失败。
-- [Coding Agent 工作约定](AGENTS.md)：事实来源、变更影响分析与完成标准。
+- [验证概况](docs/validation.md)：最近验证证据与在线接口观察。
+- [问题与续测](docs/tasks.md)：待处理事项与完成条件。
+- [Coding Agent 工作约定](AGENTS.md)：任务上下文与执行要求。
 
 ## 许可证与贡献
 
