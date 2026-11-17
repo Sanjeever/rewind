@@ -83,8 +83,7 @@ jest.unstable_mockModule('../storage/users', () => ({
 jest.unstable_mockModule('../utils/index', () => ({
   usable: (value: unknown) => value != null,
   filterHelper: {
-    quickSearch: (items: TrackFields[], query: string) =>
-      items.filter((item) => item.name?.includes(query)),
+    quickSearch: (items: TrackFields[], query: string) => filterHelper.quickSearch(items, query),
   },
   random: {getInt: (min: number, max: number) => Math.floor(0.99 * (max - min)) + min},
 }));
@@ -95,6 +94,7 @@ jest.unstable_mockModule('../player/commands', () => ({
   removeFromPlaybackQueue() {},
 }));
 const {default: NowPlaying} = await import('./NowPlayingModal');
+const {default: filterHelper} = await import('../utils/filterHelper');
 const {default: ChangePlaylist} = await import('./ChangePlaylistModal');
 const {default: Collect} = await import('./CollectModal');
 beforeEach(() => {
@@ -125,12 +125,29 @@ test('队列筛选使用当前输入，按歌曲身份播放同名歌曲，空�
   await act(async () => modal.onMode('filtering'));
   expect(modal.state.expanded).toBe(true);
   await act(async () => modal.onChangeText('同名'));
-  expect(modal.state.filterList).toEqual(tracks.slice(0, 2));
-  modal.playFiltedMusic(tracks[1], 'netEase');
+  expect(modal.state.filterList.map((track) => track.id)).toEqual([1, 2]);
+  await act(async () => modal.onChangeText('tongming'));
+  expect(modal.state.filterList.map((track) => track.id)).toEqual([1, 2]);
+  expect(tracks.every((track) => !('_searchable' in track))).toBe(true);
+  modal.playFiltedMusic(modal.state.filterList[1], 'netEase');
   expect(play).toHaveBeenLastCalledWith(expect.objectContaining({song: tracks[1], index: 1}));
   await act(async () => modal.onChangeText('没有结果'));
   expect(modal.state.filterList).toEqual([]);
   expect(tree.root.findByType(List).props.data).toEqual([{items: []}]);
+  await act(async () =>
+    tree.update(
+      <NowPlaying
+        data={[...tracks, {id: 4, name: '没有结果'}]}
+        api="netEase"
+        index={0}
+        songItem={tracks[0]}
+        show
+        isRound
+        setDisplayNowPlaying={close}
+      />,
+    ),
+  );
+  expect(modal.state.filterList.map((track) => track.id)).toEqual([4]);
   await act(async () => modal.onClose());
   expect(modal.state).toMatchObject({mode: 'normal', filterText: '', expanded: true});
   await act(async () => modal.onClose());

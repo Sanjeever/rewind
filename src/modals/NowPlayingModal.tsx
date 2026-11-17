@@ -43,6 +43,8 @@ class NowPlayingModal extends React.PureComponent<
   context = false;
   progress = new ReactNative.Animated.Value(0);
   positioned = false;
+  searchSource: readonly TrackFields[] | null = null;
+  searchTracks: TrackFields[] = [];
   onListReady = () => {
     if (this.positioned || !this.props.show) return;
     this.positioned = true;
@@ -111,10 +113,11 @@ class NowPlayingModal extends React.PureComponent<
     const filterText = this.state.filterText;
     const data = this.props.data;
     if (filterText.length > 0) {
-      const filterList = utils.filterHelper.quickSearch(
-        data.map((track) => ({...track})),
-        filterText,
-      );
+      if (this.searchSource !== data) {
+        this.searchSource = data;
+        this.searchTracks = data.map((track) => ({...track}));
+      }
+      const filterList = utils.filterHelper.quickSearch(this.searchTracks, filterText);
       this.setState({
         filterList,
       });
@@ -306,7 +309,7 @@ class NowPlayingModal extends React.PureComponent<
     const data = this.props.data;
     const o = data.findIndex((t) => b.getTrackKey(e, api) === b.getTrackKey(t, api));
     if (o < 0) return;
-    playTracks({song: e, tracks: data, index: o, api});
+    playTracks({song: data[o], tracks: data, index: o, api});
   };
   deleteFromQueue = (e: TrackFields, _index: number) => {
     const props = this.props;
@@ -334,6 +337,8 @@ class NowPlayingModal extends React.PureComponent<
     });
   }
   componentDidUpdate(previous: Props) {
+    if (this.props.show && previous.data !== this.props.data && this.state.filterText)
+      this.onSubmitEditing();
     if (previous.show === this.props.show) return;
     if (this.props.show) {
       this.positioned = false;
@@ -345,6 +350,8 @@ class NowPlayingModal extends React.PureComponent<
         },
       );
     } else {
+      this.searchSource = null;
+      this.searchTracks = [];
       this.animate(0, () =>
         this.setState({
           presented: false,
@@ -378,10 +385,7 @@ class NowPlayingModal extends React.PureComponent<
         visible={state.presented}
         onShow={this.scrollTo}
       >
-        <ReactNative.KeyboardAvoidingView
-          behavior="height"
-          style={{flex: 1, justifyContent: 'flex-end'}}
-        >
+        <ReactNative.View style={{flex: 1, justifyContent: 'flex-end'}}>
           <ReactNative.Animated.View
             pointerEvents="none"
             style={[
@@ -480,7 +484,7 @@ class NowPlayingModal extends React.PureComponent<
               />
             </FadingEdge>
           </ReactNative.Animated.View>
-        </ReactNative.KeyboardAvoidingView>
+        </ReactNative.View>
       </ReactNative.Modal>
     );
   }
