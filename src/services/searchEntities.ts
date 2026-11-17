@@ -12,7 +12,7 @@ export interface SearchEntity {
   pubTime?: string;
   albumMID?: string;
   latest_song?: {song_count: number};
-  title?: string;
+  title?: string | null;
   date?: string;
   pic?: string;
   vid?: string | number;
@@ -35,7 +35,7 @@ export interface SearchEntity {
   publicTime?: string;
   coverImgUrl?: string;
   trackCount?: number;
-  creator?: {nickname?: string; name?: string};
+  creator?: {nickname?: string; name?: string} | null;
   dissname?: string;
   imgurl?: string;
   song_count?: number;

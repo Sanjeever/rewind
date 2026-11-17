@@ -70,7 +70,7 @@ export const track = z.looseObject({
   localPath: string,
   alias: z.optional(z.array(z.string())),
   tns: z.optional(z.array(z.string())),
-  transName: string,
+  transName: z.optional(z.nullable(z.string())),
 });
 export const profile = z.looseObject({
   userId: id,
@@ -92,10 +92,10 @@ export const profile = z.looseObject({
 export const playlist = z.looseObject({
   id: z.optional(id),
   name: string,
-  title: string,
+  title: z.optional(z.nullable(z.string())),
   coverImgUrl: string,
   trackCount: number,
-  creator: z.optional(profile),
+  creator: z.optional(z.nullable(profile)),
   tracks: z.optional(z.nullable(z.array(track))),
   trackIds: z.optional(z.array(z.looseObject({id, lr: number}))),
   subscribed: z.optional(z.nullable(z.boolean())),

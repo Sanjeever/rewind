@@ -26,13 +26,13 @@ export interface Accounts {
 }
 export interface Playlist extends SearchEntity {
   copywriter?: string;
-  creator?: {name?: string; nickname?: string; userId?: TrackId; avatarUrl?: string};
+  creator?: {name?: string; nickname?: string; userId?: TrackId; avatarUrl?: string} | null;
   subtitle?: string;
   playCount?: number;
   api?: Provider;
   dissid?: TrackId;
   dirid?: TrackId;
-  title?: string;
+  title?: string | null;
   picurl?: string;
   songnum?: number;
   logo?: string;

@@ -1,6 +1,25 @@
 import {responses} from './responses';
 import {parseResponse} from '../schemas';
 
+test('歌单、榜单与私人电台保留平台合法空字段，仍拒绝错误类型', () => {
+  const playlist = {id: 1, name: '歌单', title: null, creator: null};
+  expect(responses.topPlaylist.parse({code: 200, playlists: [playlist]}).playlists).toEqual([
+    playlist,
+  ]);
+  expect(responses.charts.parse({code: 200, list: [playlist]}).list).toEqual([playlist]);
+  const song = {id: 1, name: '歌曲', transName: null};
+  expect(responses.personal_fm.parse({code: 200, data: [song]}).data).toEqual([song]);
+  expect(() =>
+    responses.topPlaylist.parse({code: 200, playlists: [{...playlist, title: 42}]}),
+  ).toThrow();
+  expect(() =>
+    responses.charts.parse({code: 200, list: [{...playlist, creator: 'broken'}]}),
+  ).toThrow();
+  expect(() =>
+    responses.personal_fm.parse({code: 200, data: [{...song, transName: 42}]}),
+  ).toThrow();
+});
+
 test('外部响应校验保留业务错误、未知字段与原始歌曲字段', () => {
   expect(responses.freeMusicUrl.parse({code: -460, message: '拒绝'})).toEqual({
     code: -460,

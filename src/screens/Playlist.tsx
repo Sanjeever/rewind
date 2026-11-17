@@ -183,7 +183,7 @@ class Playlist extends React.PureComponent<ScreenProps<'Playlist'>, State> {
     return (name || title || dissname)!.includes('榜');
   };
   getIsCreatedByMe = function (e: TrackId | undefined, t: PlaylistModel) {
-    return !!e && e === t.creator!.userId;
+    return !!e && e === t.creator?.userId;
   };
   switchQQMusic = async ({playlist}: PlaylistParams) => {
     const id = playlist.id || playlist.dissid;

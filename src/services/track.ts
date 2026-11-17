@@ -40,7 +40,7 @@ export interface TrackFields {
   localPath?: string;
   tns?: string[];
   alias?: string[];
-  transName?: string;
+  transName?: string | null;
   coverUrl?: string;
   img?: string;
   path?: string;

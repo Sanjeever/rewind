@@ -7,7 +7,8 @@ export const getUid = (song: TrackFields) => song.songmid || song.mid || song.id
 export const getSong = (song: TrackFields) =>
   song.name || song.songname || song.song || song.title || song.filename;
 export const getSinger = (song: TrackFields) => song.singer || song.artists || song.ar;
-export const getAlias = (song: TrackFields) => song.tns?.[0] || song.alias?.[0] || song.transName;
+export const getAlias = (song: TrackFields) =>
+  song.tns?.[0] || song.alias?.[0] || (song.transName ?? undefined);
 
 export function getAlbum(song: TrackFields) {
   return (
