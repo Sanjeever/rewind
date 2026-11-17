@@ -3,7 +3,6 @@ import * as React from 'react';
 import * as ReactNative from 'react-native';
 import TouchableScale from '../components/TouchableScale';
 import * as components from '../components/index';
-import * as constants from '../theme/constants';
 import icons from '../theme/icons';
 import * as utils from '../utils/index';
 import * as types from '../utils/types';
@@ -174,7 +173,7 @@ class MiniPlayerContent extends React.PureComponent<Props> {
         initialPage={1}
         style={{
           flex: 1,
-          width: constants.DEVICE_WIDTH - 50,
+          width: '100%',
           height,
         }}
         onPageScrollStateChanged={this.onPageScrollStateChanged}

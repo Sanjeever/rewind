@@ -59,6 +59,8 @@ export function MiniPlayerView({
       playState={playback.playState}
       togglePlay={actions.togglePlay}
       loaded={playback.loaded}
+      currentTime={playback.currentTime}
+      duration={playback.duration}
       onNowPlaying={actions.showQueue}
       hideTopBorder={settings.hideMiniPlayerTopBorder}
       isRound={settings.isRound}
