@@ -44,6 +44,7 @@ import SubNewSongs from '../screens/SubNewSongs';
 import Video from '../screens/Video';
 
 import type {AppRoutes} from './types';
+import {ReducedMotionContext} from '../theme/motion';
 const Stack = createNativeStackNavigator<AppRoutes>();
 
 export default function Navigation({
@@ -53,6 +54,7 @@ export default function Navigation({
   animationEnabled?: boolean;
   statusBarHidden?: boolean;
 }) {
+  const reducedMotion = React.useContext(ReducedMotionContext);
   return (
     <NavigationContainer ref={navigationRef} theme={DarkTheme}>
       <Stack.Navigator
@@ -61,7 +63,7 @@ export default function Navigation({
           statusBarStyle: 'light',
           statusBarHidden,
           contentStyle: {backgroundColor: '#000'},
-          animation: animationEnabled ? 'slide_from_right' : 'none',
+          animation: animationEnabled && !reducedMotion ? 'slide_from_right' : 'none',
         }}
       >
         <Stack.Screen name="Home" component={Home} />

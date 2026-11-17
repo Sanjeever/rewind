@@ -21,7 +21,7 @@ const SComponent = function (e: ControlIconProps) {
   const {style, onPress, onLongPress} = e;
   return (
     <TouchableScale
-      activeScale={0.8}
+      activeScale={0.94}
       disabled={disabled_1}
       onPress={onPress}
       onLongPress={onLongPress}

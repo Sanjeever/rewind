@@ -13,6 +13,7 @@ import * as trackInfo from '../services/trackInfo';
 import * as sharedUrlsModule from '../services/sharedUrls';
 import type {TrackFields} from '../services/track';
 import type {Subscription} from '../events/Emitter';
+import {motion, ReducedMotionContext} from '../theme/motion';
 type Kind = 'song' | 'artist' | 'album';
 interface State {
   visible: boolean;
@@ -25,6 +26,8 @@ const C = 'song';
 const y = 'artist';
 const I = 'album';
 class LongPressModal extends React.PureComponent<Record<string, never>, State> {
+  static contextType = ReducedMotionContext;
+  context = false;
   sub?: Subscription;
   state: State = {
     visible: false,
@@ -103,7 +106,11 @@ class LongPressModal extends React.PureComponent<Record<string, never>, State> {
     const {visible, item} = state;
     const l = this.getImg(item);
     return (
-      <ReactNative.Modal animationType={'fade'} onRequestClose={this.onClose} visible={visible}>
+      <ReactNative.Modal
+        animationType={this.context ? 'none' : 'fade'}
+        onRequestClose={this.onClose}
+        visible={visible}
+      >
         <ReactNative.View style={H.container}>
           {l && <components.Background blur={true} coverUrl={l} />}
           <ReactNative.TouchableWithoutFeedback onPress={this.onClose}>
@@ -111,7 +118,8 @@ class LongPressModal extends React.PureComponent<Record<string, never>, State> {
           </ReactNative.TouchableWithoutFeedback>
           <reactNativeAnimatable.View
             useNativeDriver={true}
-            animation={'bounceIn'}
+            animation={this.context ? undefined : 'fadeIn'}
+            duration={motion.state}
             easing={'ease-out'}
             style={H.imgCon}
           >

@@ -10,8 +10,10 @@ import Drawer from '../features/home/Drawer';
 import HomeContent from '../features/home/HomeContent';
 import type {ScreenProps, Navigation, NavigateArgs} from '../navigation/types';
 import type {OnlineProvider} from '../services/providers';
+import {ReducedMotionContext} from '../theme/motion';
 
 export default function Home({navigation}: ScreenProps<'Home'>) {
+  const reducedMotion = React.useContext(ReducedMotionContext);
   const {top} = useSafeAreaInsets();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [api, setApi] = useState<OnlineProvider>('netEase');
@@ -47,7 +49,7 @@ export default function Home({navigation}: ScreenProps<'Home'>) {
       <Modal
         visible={drawerOpen}
         transparent
-        animationType="fade"
+        animationType={reducedMotion ? 'none' : 'fade'}
         onRequestClose={() => setDrawerOpen(false)}
       >
         <View style={{flex: 1, flexDirection: 'row', backgroundColor: 'rgba(0,0,0,0.6)'}}>

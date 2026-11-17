@@ -23,6 +23,7 @@ import type {Settings} from './settings/defaults';
 import type {QueueSnapshot, QueueUpdate, PlayerProps} from './player/types';
 import type {Subscription} from './events/Emitter';
 import {errorMessage} from './utils/types';
+import {MotionProvider} from './theme/motion';
 interface State {
   displayNowPlaying: boolean;
   playerInfo: QueueSnapshot;
@@ -138,44 +139,46 @@ export default class App extends React.PureComponent<Record<string, never>, Stat
     } = this.state;
     if (!checkPermissionDone) return null;
     return (
-      <MenuProvider backHandler>
-        <SafeAreaProvider style={{flex: 1}}>
-          <StatusBar hidden={settings.hideStatusBar} />
-          <Navigation
-            animationEnabled={!settings.disabledRouterTransition}
-            statusBarHidden={settings.hideStatusBar}
-          />
-          <Player
-            {...playerInfo}
-            lyric={lyric}
-            hasTrans={hasTrans}
-            settings={settings}
-            bottomPaddingValue={bottomPaddingValue}
-            setPlayerData={this.setPlayerData}
-            setDisplayNowPlaying={this.setDisplayNowPlaying}
-            setLyric={this.setLyric}
-          />
-          <modals.LongPressModal />
-          <modals.DetailModal
-            cloneThroughLinking={settings.cloneThroughLinking}
-            isRound={settings.isRound}
-          />
-          <modals.CollectModal />
-          {playerInfo.api !== null && playerInfo.playingIndex !== null && (
-            <modals.NowPlayingModal
-              api={playerInfo.api}
-              data={playerInfo.tracks}
-              songItem={playerInfo.songItem}
-              index={playerInfo.playingIndex}
+      <MotionProvider>
+        <MenuProvider backHandler>
+          <SafeAreaProvider style={{flex: 1}}>
+            <StatusBar hidden={settings.hideStatusBar} />
+            <Navigation
+              animationEnabled={!settings.disabledRouterTransition}
+              statusBarHidden={settings.hideStatusBar}
+            />
+            <Player
+              {...playerInfo}
+              lyric={lyric}
+              hasTrans={hasTrans}
+              settings={settings}
+              bottomPaddingValue={bottomPaddingValue}
+              setPlayerData={this.setPlayerData}
               setDisplayNowPlaying={this.setDisplayNowPlaying}
-              show={displayNowPlaying}
+              setLyric={this.setLyric}
+            />
+            <modals.LongPressModal />
+            <modals.DetailModal
+              cloneThroughLinking={settings.cloneThroughLinking}
               isRound={settings.isRound}
             />
-          )}
-          <modals.SavePicModal />
-          <modals.ChangePlaylistModal songItem={playerInfo.songItem} />
-        </SafeAreaProvider>
-      </MenuProvider>
+            <modals.CollectModal />
+            {playerInfo.api !== null && playerInfo.playingIndex !== null && (
+              <modals.NowPlayingModal
+                api={playerInfo.api}
+                data={playerInfo.tracks}
+                songItem={playerInfo.songItem}
+                index={playerInfo.playingIndex}
+                setDisplayNowPlaying={this.setDisplayNowPlaying}
+                show={displayNowPlaying}
+                isRound={settings.isRound}
+              />
+            )}
+            <modals.SavePicModal />
+            <modals.ChangePlaylistModal songItem={playerInfo.songItem} />
+          </SafeAreaProvider>
+        </MenuProvider>
+      </MotionProvider>
     );
   }
 }

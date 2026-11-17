@@ -1,8 +1,11 @@
 import * as React from 'react';
 import * as ReactNative from 'react-native';
+import {ReducedMotionContext} from '../theme/motion';
 const o = 1000;
 const s = 500;
 class PulsingPlaceholder extends React.PureComponent<ReactNative.TextProps & {textMode?: boolean}> {
+  static contextType = ReducedMotionContext;
+  context = false;
   _animation: ReactNative.Animated.CompositeAnimation | null = null;
   _animValue = new ReactNative.Animated.Value(0.3);
   start = () => {
@@ -24,7 +27,15 @@ class PulsingPlaceholder extends React.PureComponent<ReactNative.TextProps & {te
     });
   };
   componentDidMount() {
-    this.start();
+    this.reducedMotion = this.context;
+    if (!this.context) this.start();
+  }
+  reducedMotion = false;
+  componentDidUpdate() {
+    if (this.reducedMotion === this.context) return;
+    this.reducedMotion = this.context;
+    this._animation?.stop();
+    if (!this.context) this.start();
   }
   componentWillUnmount() {
     this._animation?.stop();
@@ -37,7 +48,7 @@ class PulsingPlaceholder extends React.PureComponent<ReactNative.TextProps & {te
         <ReactNative.Animated.Text
           style={[
             {
-              opacity: this._animValue,
+              opacity: this.context ? 0.5 : this._animValue,
             },
             style,
           ]}
@@ -50,7 +61,7 @@ class PulsingPlaceholder extends React.PureComponent<ReactNative.TextProps & {te
         style={[
           {
             backgroundColor: '#eee',
-            opacity: this._animValue,
+            opacity: this.context ? 0.5 : this._animValue,
           },
           style,
         ]}

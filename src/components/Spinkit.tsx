@@ -3,10 +3,13 @@ import * as React from 'react';
 import * as ReactNative from 'react-native';
 import * as constants from '../theme/constants';
 import loading from '../../assets/animations/loading';
+import {ReducedMotionContext} from '../theme/motion';
 class Spinkit extends React.PureComponent<{
   size?: number;
   style?: ReactNative.StyleProp<ReactNative.ViewStyle>;
 }> {
+  static contextType = ReducedMotionContext;
+  context = false;
   render() {
     const {size = constants.SPINKIT_SIZE, style} = this.props;
     return (
@@ -20,17 +23,32 @@ class Spinkit extends React.PureComponent<{
           style,
         ]}
       >
-        {React.createElement(lottieReactNative, {
-          loop: true,
-          autoPlay: true,
-          source: loading,
-          style: {
-            height: size,
-            width: size,
-            alignItems: 'center',
-          },
-          duration: 2000,
-        })}
+        {this.context ? (
+          <ReactNative.View
+            accessibilityRole="progressbar"
+            accessibilityLabel="加载中"
+            style={{
+              width: size * 0.5,
+              height: size * 0.5,
+              borderRadius: size / 2,
+              borderWidth: 2,
+              borderColor: '#777',
+              borderTopColor: '#fff',
+            }}
+          />
+        ) : (
+          React.createElement(lottieReactNative, {
+            loop: true,
+            autoPlay: true,
+            source: loading,
+            style: {
+              height: size,
+              width: size,
+              alignItems: 'center',
+            },
+            duration: 2000,
+          })
+        )}
       </ReactNative.View>
     );
   }
