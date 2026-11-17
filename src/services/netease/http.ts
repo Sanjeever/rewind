@@ -5,6 +5,11 @@ import type * as z from 'zod/mini';
 import {parseResponse} from '../schemas';
 
 const origin = 'https://music.163.com';
+const appOrigin = 'https://interface3.music.163.com';
+async function getSessionCookies() {
+  const [web, app] = await Promise.all([cookies.get(origin), cookies.get(appOrigin)]);
+  return {...web, ...app};
+}
 export const http = axios.create({
   baseURL: origin,
   headers: {
@@ -19,11 +24,12 @@ export const http = axios.create({
 });
 
 http.interceptors.request.use(async (config) => {
-  const stored = await cookies.get(origin);
+  if (config.headers.has('Cookie')) return config;
+  const stored = await getSessionCookies();
   const header = Object.values(stored)
     .map((cookie) => cookie.name + '=' + cookie.value)
     .join('; ');
-  if (!config.headers.has('Cookie')) config.headers.set('Cookie', header);
+  config.headers.set('Cookie', header);
   return config;
 });
 
@@ -62,14 +68,14 @@ export async function eapiRequest<S extends z.ZodMiniType>(
   data: Record<string, unknown>,
   options?: {signal: AbortSignal},
 ) {
-  const stored = await cookies.get(origin);
+  const stored = await getSessionCookies();
   const session = Object.fromEntries(
     Object.values(stored).map((cookie) => [cookie.name, cookie.value]),
   );
   const header = {...session, os: 'android', appver: '9.5.61', requestId: String(Date.now())};
   const params = await crypto.eapi(path, {...data, e_r: false, header: JSON.stringify(header)});
   const result = await http.post<unknown>(
-    'https://interface3.music.163.com' + path.replace(/^\/api\//, '/eapi/'),
+    appOrigin + path.replace(/^\/api\//, '/eapi/'),
     new URLSearchParams({params}).toString(),
     {
       signal: options?.signal,
@@ -85,5 +91,5 @@ export async function eapiRequest<S extends z.ZodMiniType>(
 }
 
 export async function getCsrfToken() {
-  return (await cookies.get(origin)).__csrf?.value;
+  return (await getSessionCookies()).__csrf?.value;
 }

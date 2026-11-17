@@ -1,6 +1,6 @@
 import {jest} from '@jest/globals';
 import type {Cookie} from '../../native/cookies';
-const get = jest.fn<() => Promise<Record<string, Cookie>>>();
+const get = jest.fn<(url: string) => Promise<Record<string, Cookie>>>();
 const weapi = jest.fn<(...args: unknown[]) => Promise<{params: string; encSecKey: string}>>();
 const eapi = jest.fn<(...args: unknown[]) => Promise<string>>();
 jest.unstable_mockModule('../../native/cookies', () => ({default: {get}}));
@@ -10,6 +10,8 @@ const {responses} = await import('./responses');
 const received: {url?: string; cookie: unknown}[] = [];
 beforeEach(() => {
   received.length = 0;
+  weapi.mockClear();
+  eapi.mockClear();
   get.mockResolvedValue({});
   weapi.mockResolvedValue({params: 'encrypted', encSecKey: 'key'});
   eapi.mockResolvedValue('encrypted-eapi');
@@ -22,6 +24,26 @@ beforeEach(() => {
 test('游客请求不再注入伪造匿名 Cookie', async () => {
   await request(responses.login_out, '/api/test');
   expect(received[0].cookie).toBe('');
+});
+
+test('扫码会话保存在移动端域名时，网站请求和加密头继续使用同一会话', async () => {
+  get.mockImplementation(async (url: string): Promise<Record<string, Cookie>> =>
+    url === 'https://interface3.music.163.com'
+      ? {
+          MUSIC_U: {name: 'MUSIC_U', value: 'mobile-session'},
+          __csrf: {name: '__csrf', value: 'mobile-csrf'},
+        }
+      : {},
+  );
+  await request(responses.msg, '/api/msg/private/users');
+  expect(received[0].cookie).toContain('MUSIC_U=mobile-session');
+  await cryptoRequest(responses.login_out, '/weapi/test', {});
+  expect(weapi).toHaveBeenLastCalledWith({csrf_token: 'mobile-csrf'});
+  await eapiRequest(responses.login_status, '/api/w/nuser/account/get', {});
+  expect(received[2].cookie).toContain('MUSIC_U=mobile-session');
+  expect(
+    JSON.parse(String((eapi.mock.calls.at(-1)![1] as Record<string, unknown>).header)),
+  ).toMatchObject({MUSIC_U: 'mobile-session'});
 });
 
 test('登录会话与 CSRF 进入加密请求，音源使用同一账号的 EAPI 会话', async () => {
