@@ -5,6 +5,7 @@ import type {
   PanResponderInstance,
 } from 'react-native';
 import {DEVICE_WIDTH} from '../theme/constants';
+import {motion} from '../theme/motion';
 import {emitter} from '../events';
 import names from '../events/names';
 import keys from '../storage/keys';
@@ -34,6 +35,7 @@ type PresentationState = Pick<
   | 'showTrans'
 >;
 interface Host {
+  reduceMotion(): boolean;
   getState(): PresentationState;
   getSong(): TrackFields;
   update(
@@ -68,27 +70,48 @@ export default class PlayerPresentation {
       onPanResponderTerminationRequest: () => false,
     });
   }
-  dispose() {
-    if (this.showSliderTimer) timer.clearTimeout(this.showSliderTimer);
-    if (this.slidingTimer) timer.clearTimeout(this.slidingTimer);
-    this.showSliderTimer = null;
-    this.slidingTimer = null;
+  reset() {
+    this.expansion.stopAnimation();
+    this.lyricProgress.stopAnimation();
+    this.expansion.setValue(0);
+    this.lyricProgress.setValue(0);
     wakeLock.deactivate();
+  }
+  dispose() {
+    this.reset();
+    if (this.slidingTimer) timer.clearTimeout(this.slidingTimer);
+    this.slidingTimer = null;
   }
   sliderPanResponder?: PanResponderInstance;
   volumePanResponder?: PanResponderInstance;
   y0: number | null = null;
   fallBackPlayType: PlayState | null = null;
-  showSliderTimer: number | null = null;
   slidingTimer: number | null = null;
   sliding = false;
   sliderValue0 = 0;
   ANIMATION_CONFIG = LayoutAnimation.create(
-    400,
+    motion.panel,
     LayoutAnimation.Types.easeOut,
     LayoutAnimation.Properties.opacity,
   );
   animatedOpacity = new Animated.Value(1);
+  expansion = new Animated.Value(0);
+  lyricProgress = new Animated.Value(0);
+  animate(value: Animated.Value, toValue: number, onFinished?: () => void) {
+    value.stopAnimation();
+    if (this.host.reduceMotion()) {
+      value.setValue(toValue);
+      onFinished?.();
+      return;
+    }
+    Animated.timing(value, {
+      toValue,
+      duration: value === this.expansion ? motion.panel : motion.state,
+      useNativeDriver: true,
+    }).start(({finished}) => {
+      if (finished) onFinished?.();
+    });
+  }
   onBackPress = () => {
     if (this.host.getState().showLyric) {
       this.toggleLyric();
@@ -102,70 +125,51 @@ export default class PlayerPresentation {
   };
   open = () => {
     emitter.emit(names.PlayerShow, true);
-    this.showSliderTimer = timer.setTimeout(
-      () =>
-        this.host.update({
-          showSlider: true,
-        }),
-      300,
-    );
-    LayoutAnimation.configureNext(this.ANIMATION_CONFIG);
-    this.host.update({
-      url: extractFullInfo(this.host.getSong(), 'big').img,
-      playerStyle: {
-        width: DEVICE_WIDTH,
-        height: '100%',
-        top: 0,
-        left: 0,
-        position: 'absolute',
-        marginBottom: 0,
+    this.host.update(
+      {
+        url: extractFullInfo(this.host.getSong(), 'big').img,
+        playerStyle: {
+          width: DEVICE_WIDTH,
+          height: '100%',
+          top: 0,
+          left: 0,
+          position: 'absolute',
+          marginBottom: 0,
+        },
+        expanded: true,
+        showSlider: true,
       },
-      expanded: true,
-    });
+      () => this.animate(this.expansion, 1),
+    );
     wakeLock.activate();
   };
   close = (skipAnimation?: boolean) => {
     emitter.emit(names.PlayerShow, false);
-    if (this.showSliderTimer) timer.clearTimeout(this.showSliderTimer);
-    if (!skipAnimation) LayoutAnimation.configureNext(this.ANIMATION_CONFIG);
-    this.host.update({
-      url: extractFullInfo(this.host.getSong()).img,
-      playerStyle: null,
-      imgStyle: null,
-      expanded: false,
-      showLyric: false,
-      showSlider: false,
-    });
+    const finish = () => {
+      this.lyricProgress.stopAnimation();
+      this.lyricProgress.setValue(0);
+      this.host.update({
+        url: extractFullInfo(this.host.getSong()).img,
+        playerStyle: null,
+        imgStyle: null,
+        showLyric: false,
+        showSlider: false,
+      });
+    };
+    this.host.update({expanded: false});
+    if (skipAnimation) {
+      this.expansion.stopAnimation();
+      this.expansion.setValue(0);
+      finish();
+    } else this.animate(this.expansion, 0, finish);
     wakeLock.deactivate();
   };
   toggleLyric = () => {
     const showLyric = !this.host.getState().showLyric;
-    this.host.update({
-      showSlider: false,
-      showCoverElevation: false,
-    });
-    Animated.timing(this.animatedOpacity, {
-      toValue: 0,
-      duration: 200,
-      useNativeDriver: true,
-    }).start(() => {
-      this.host.update({
-        showLyric,
-        showSlider: true,
-      });
-      Animated.timing(this.animatedOpacity, {
-        toValue: 1,
-        duration: 200,
-        useNativeDriver: true,
-      }).start(() =>
-        this.host.update({
-          showCoverElevation: true,
-        }),
-      );
-    });
+    this.host.update({showLyric}, () => this.animate(this.lyricProgress, showLyric ? 1 : 0));
   };
   toggleTools = () => {
-    LayoutAnimation.configureNext(this.ANIMATION_CONFIG);
+    if (!this.host.reduceMotion()) LayoutAnimation.configureNext(this.ANIMATION_CONFIG);
     this.host.update(
       (state) => ({
         showTool: !state.showTool,

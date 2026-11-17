@@ -78,7 +78,10 @@ async function controller() {
     },
     'react-native': {
       Animated: {
-        Value: class {},
+        Value: class {
+          stopAnimation() {}
+          setValue() {}
+        },
       },
       LayoutAnimation: {
         create() {},

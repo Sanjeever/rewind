@@ -1,5 +1,6 @@
 import React from 'react';
 import {Animated, View} from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 import * as Animatable from 'react-native-animatable';
 import {Background, Spinkit, TouchableBorderless} from '../components';
 import Text from '../components/Text';
@@ -36,6 +37,7 @@ export interface PlayerViewProps {
     sliding: boolean;
   };
   animatedOpacity: Animated.Value;
+  lyricProgress: Animated.Value;
   lyric: PlayerProps['lyric'];
   hasTrans: boolean;
 }
@@ -75,6 +77,7 @@ export default function PlayerView({
   actions,
   gesture,
   animatedOpacity,
+  lyricProgress,
   lyric,
   hasTrans,
 }: PlayerViewProps) {
@@ -122,10 +125,21 @@ export default function PlayerView({
           showLyric && {opacity: 0.35, borderBottomLeftRadius: 0, borderBottomRightRadius: 0},
         ]}
       />
-      {showLyric && (
+      <LinearGradient
+        pointerEvents="none"
+        colors={['rgba(0,0,0,0.4)', 'rgba(0,0,0,0.55)', 'rgba(0,0,0,0.85)']}
+        locations={[0, 0.45, 1]}
+        style={{position: 'absolute', top: 0, bottom: 0, left: 0, right: 0}}
+      />
+      <View
+        pointerEvents={showLyric ? 'auto' : 'none'}
+        accessibilityElementsHidden={!showLyric}
+        importantForAccessibility={showLyric ? 'auto' : 'no-hide-descendants'}
+        style={{position: 'absolute', top: 0, bottom: 0, left: 0, right: 0}}
+      >
         <LyricsView
           showTool={showTool}
-          animatedOpacity={animatedOpacity}
+          animatedOpacity={lyricProgress}
           hidePlayingTime={hidePlayingTime}
           lyric={lyric}
           hasTrans={hasTrans}
@@ -141,35 +155,40 @@ export default function PlayerView({
           lyricFontSize={lyricFontSize}
           getLyricIndex={actions.getLyricIndex}
         />
-      )}
-      {!showLyric && (
-        <Animated.View
-          style={[styles.lyric, !showTool && styles.toolHide, {opacity: animatedOpacity}]}
-        >
-          <Cover
-            reverseGestureHands={reverseGestureHands}
-            onPlay={showTool ? null : actions.togglePlay}
-            onTap={actions.toggleLyric}
-            url={url}
-            song={queue.songItemInfo.song}
-            data={queue.tracks}
-            index={queue.playingIndex}
-            randomArray={randomArray}
-            onNext={() => actions.changeSong('next')}
-            onPrev={() => actions.changeSong('pre')}
-            unknown={isFM}
-            playMode={playMode}
-            playState={playState}
-            playerClose={actions.close}
-            showToolBtn={actions.toggleTools}
-            onDetail={actions.detail}
-            onNowPlaying={actions.showQueue}
-            isRound={isRound}
-            showTool={showTool}
-            showElevation={showCoverElevation}
-          />
-        </Animated.View>
-      )}
+      </View>
+      <Animated.View
+        pointerEvents={showLyric ? 'none' : 'auto'}
+        accessibilityElementsHidden={showLyric}
+        importantForAccessibility={showLyric ? 'no-hide-descendants' : 'auto'}
+        style={[
+          styles.lyric,
+          !showTool && styles.toolHide,
+          {opacity: lyricProgress.interpolate({inputRange: [0, 1], outputRange: [1, 0]})},
+        ]}
+      >
+        <Cover
+          reverseGestureHands={reverseGestureHands}
+          onPlay={showTool ? null : actions.togglePlay}
+          onTap={actions.toggleLyric}
+          url={url}
+          song={queue.songItemInfo.song}
+          data={queue.tracks}
+          index={queue.playingIndex}
+          randomArray={randomArray}
+          onNext={() => actions.changeSong('next')}
+          onPrev={() => actions.changeSong('pre')}
+          unknown={isFM}
+          playMode={playMode}
+          playState={playState}
+          playerClose={actions.close}
+          showToolBtn={actions.toggleTools}
+          onDetail={actions.detail}
+          onNowPlaying={actions.showQueue}
+          isRound={isRound}
+          showTool={showTool}
+          showElevation={showCoverElevation}
+        />
+      </Animated.View>
       {showLyric && (
         <TrackTitle
           viewStyle={[

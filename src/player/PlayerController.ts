@@ -34,8 +34,11 @@ import trackUrl from './trackUrl';
 import notification from './notification';
 import {createPlayOrder, getNextPlayIndex, getRandomIndex} from './playOrder';
 import {subscribePlaybackCommands} from './commands';
+import {ReducedMotionContext} from '../theme/motion';
 const PROGRESS_INTERVAL = 600;
 export default class PlayerController extends React.PureComponent<PlayerProps, PlayerState> {
+  static contextType = ReducedMotionContext;
+  context = false;
   queue = new PlaybackQueue({
     getQueue: () => this.props,
     getState: () => this.state,
@@ -58,6 +61,7 @@ export default class PlayerController extends React.PureComponent<PlayerProps, P
     setArtwork: (url) => this.setState({url}),
   });
   presentation = new PlayerPresentation({
+    reduceMotion: () => this.context,
     getState: () => this.state,
     getSong: () => this.activeQueue.songItem,
     update: (update, onCommitted) =>
@@ -245,6 +249,7 @@ export default class PlayerController extends React.PureComponent<PlayerProps, P
     });
   };
   clearPlayingList = () => {
+    this.presentation.reset();
     this.playbackRequest++;
     this.switchSong();
     this.queue.reset();

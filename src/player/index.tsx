@@ -7,7 +7,8 @@ import locales from '../locales';
 import {toast} from '../native/toast';
 import {getLyricIndex} from './lyricPosition';
 import React from 'react';
-import {View} from 'react-native';
+import {Animated, View} from 'react-native';
+import {DEVICE_HEIGHT} from '../theme/constants';
 import {Background} from '../components';
 import PlayerView, {MiniPlayerView} from './PlayerView';
 import PlayerController from './PlayerController';
@@ -87,45 +88,65 @@ export default class Player extends PlayerController {
       hasTrans,
     } = this.activeQueue;
     const queue = {tracks, songItemInfo, playingIndex};
-    if (expanded)
-      return (
-        <View style={[styles.container, playerStyle]}>
-          <PlayerView
-            playback={this.state}
-            queue={queue}
-            settings={settings}
-            actions={this.actions}
-            animatedOpacity={this.presentation.animatedOpacity}
-            lyric={lyric}
-            hasTrans={hasTrans}
-            gesture={{
-              slider: this.presentation.sliderPanResponder,
-              volume: this.presentation.volumePanResponder,
-              y0: this.presentation.y0,
-              sliding: this.presentation.sliding,
-            }}
-          />
-        </View>
-      );
-    const bottomPadding = bottomPaddingValue + (settings.navbarPadding ? SOFT_MENU_HEIGHT : 0);
-    return (
-      <View
+    const fullPlayer = (expanded || playerStyle) && (
+      <Animated.View
         style={[
           styles.container,
           playerStyle,
-          {overflow: 'hidden', height: BOTTOM_BAR_HEIGHT + bottomPadding},
+          {
+            opacity: this.presentation.expansion,
+            transform: [
+              {
+                translateY: this.presentation.expansion.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [DEVICE_HEIGHT - BOTTOM_BAR_HEIGHT, 0],
+                }),
+              },
+            ],
+          },
         ]}
       >
-        <View style={{height: '100%', width: '100%', paddingBottom: bottomPadding}}>
-          <Background blur={settings.bottomBlur} bgStyle={{top: null, bottom: 0}} />
-          <MiniPlayerView
-            playback={this.state}
-            queue={queue}
-            settings={settings}
-            actions={this.actions}
-          />
+        <PlayerView
+          playback={this.state}
+          queue={queue}
+          settings={settings}
+          actions={this.actions}
+          animatedOpacity={this.presentation.animatedOpacity}
+          lyricProgress={this.presentation.lyricProgress}
+          lyric={lyric}
+          hasTrans={hasTrans}
+          gesture={{
+            slider: this.presentation.sliderPanResponder,
+            volume: this.presentation.volumePanResponder,
+            y0: this.presentation.y0,
+            sliding: this.presentation.sliding,
+          }}
+        />
+      </Animated.View>
+    );
+    const bottomPadding = bottomPaddingValue + (settings.navbarPadding ? SOFT_MENU_HEIGHT : 0);
+    return (
+      <>
+        <View
+          pointerEvents={expanded ? 'none' : 'auto'}
+          importantForAccessibility={expanded ? 'no-hide-descendants' : 'auto'}
+          style={[
+            styles.container,
+            {overflow: 'hidden', height: BOTTOM_BAR_HEIGHT + bottomPadding},
+          ]}
+        >
+          <View style={{height: '100%', width: '100%', paddingBottom: bottomPadding}}>
+            <Background blur={settings.bottomBlur} bgStyle={{top: null, bottom: 0}} />
+            <MiniPlayerView
+              playback={this.state}
+              queue={queue}
+              settings={settings}
+              actions={this.actions}
+            />
+          </View>
         </View>
-      </View>
+        {fullPlayer}
+      </>
     );
   }
 }

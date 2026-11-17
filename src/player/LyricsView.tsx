@@ -6,7 +6,7 @@ import {Menu, MenuTrigger, MenuOptions, MenuOption} from 'react-native-popup-men
 import Text from '../components/Text';
 import type {LyricLineProps} from './LyricLine';
 type Props = Omit<LyricLineProps, 'fontSize' | 'getIndex'> & {
-  animatedOpacity: ReactNative.Animated.Value;
+  animatedOpacity: ReactNative.Animated.Value | ReactNative.Animated.AnimatedInterpolation<number>;
   hidePlayingTime: boolean;
   playSound(): void;
   changeFontSize(size: number): void;
