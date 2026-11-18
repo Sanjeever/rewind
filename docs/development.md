@@ -2,9 +2,9 @@
 
 ## 日常开发
 
-首次运行按 [README 的快速开始](../README.md#快速开始)安装依赖并启动应用。
+首次运行见 [README 的快速开始](../README.md#快速开始)。
 
-Debug 使用 Metro。应用内开发菜单支持刷新，首页菜单图标长按也可打开开发菜单。Windows、macOS 使用相同 pnpm 入口，[Android 脚本](../scripts/android.mjs)选择对应 Gradle Wrapper。单独构建与安装 Debug：
+Debug 使用 Metro。长按首页菜单图标可打开开发菜单并重新加载应用。Windows 和 macOS 使用相同的命令，由 [Android 脚本](../scripts/android.mjs)选择对应的 Gradle Wrapper。可单独构建和安装 Debug 包。
 
 ```sh
 pnpm android:build
@@ -22,11 +22,11 @@ pnpm android:install:standalone
 
 `standalone` 由 React Native Gradle 插件打包 JS、图片和 Hermes 字节码，使用本机开发签名，供验证脱离 Metro 运行。APK 输出在 `android/app/build/outputs/apk/standalone/`。当前 `release` 未配置发布签名，`standalone` 也不作为正式发布包。
 
-构建入口保留跨平台 Wrapper 调用，不依赖 PowerShell、用户目录或固定盘符。Wrapper 的换行规则见 [.gitattributes](../.gitattributes)，`gradlew` 在 Git 中保留可执行权限。
+Wrapper 的换行规则见 [.gitattributes](../.gitattributes)。`gradlew` 在 Git 中保留可执行权限。
 
 ## 覆盖安装与签名
 
-覆盖安装须保留相同应用 ID 与开发签名，并检查 versionCode；更换开发设备时应保留本地签名。原发布包私钥不在本项目中，现有升级证据来自本工程可控签名的兼容基线，不承诺覆盖安装原发布包。升级验证不卸载、不清空数据，数据兼容要求见[架构约束](architecture.md#数据保护与升级)。
+覆盖安装须使用相同的应用 ID 和签名，并检查 `versionCode`。更换开发机器时应保留原签名密钥。原发布包私钥不在仓库，现有升级证据来自本工程可控签名的兼容基线。验收约束见[数据保护与升级](architecture.md#数据保护与升级)。
 
 SDK/JDK 本机路径、私钥、凭据、缓存和构建输出不提交。仓库也不保存 APK/AAB、发布元数据、提取转换工具或临时验证材料，忽略规则见 [.gitignore](../.gitignore)。
 
@@ -35,7 +35,7 @@ SDK/JDK 本机路径、私钥、凭据、缓存和构建输出不提交。仓库
 - 业务逻辑或界面状态改动先跑对应测试，例如 `pnpm test --runInBand src/player/PlayerController.test.ts`。提交前用 `pnpm check` 跑完整检查。
 - 修改 Metro、Babel 或资源导入后，用 `pnpm bundle:android` 检查打包。原生依赖或构建配置变更还需构建并启动 Android 应用。
 - 涉及账号、系统媒体操作或数据升级时，用相应账号、设备或旧数据复测。已有缺口见[问题与续测](tasks.md)。
-- 纯文档改动核对事实、链接与 diff。
+- 纯文档改动核对事实、命令、链接和 diff。仓库 Markdown 使用现有 Oxfmt 检查覆盖范围内的格式，例如 `pnpm exec oxfmt README.md docs --check`。网站 MDX 用[网站生产构建](#用户网站)验证。
 
 `pnpm check` 运行应用的静态检查与测试，各项命令见 [package.json](../package.json) 的 `scripts`。`lint:fix` 和 `format` 会修改文件。[CI 工作流](../.github/workflows/check.yml)在 push 和 PR 中执行检查。用户网站的生产构建见[用户网站](#用户网站)。
 
@@ -43,7 +43,7 @@ Lint 规则、全局变量与豁免范围见 [.oxlintrc.json](../.oxlintrc.json)
 
 格式设置与忽略范围见 [.oxfmtrc.json](../.oxfmtrc.json)。编辑器可通过 Oxc 扩展接入同一套 lint 与格式配置。
 
-应用、测试与配置采用 [ESM 工程约束](architecture.md#工程边界)。Babel 同步加载配置依赖项目 Node 范围内的原生 `require(esm)` 能力。配置入口见 [babel.config.js](../babel.config.js) 与 [metro.config.js](../metro.config.js)。
+Babel 同步加载 ESM 配置依赖 Node 的 `require(esm)`。配置入口见 [babel.config.js](../babel.config.js) 与 [metro.config.js](../metro.config.js)。
 
 [应用配置](../tsconfig.json)与[测试配置](../tsconfig.test.json)分开检查，避免应用依赖 Jest 或 Node 全局类型。TypeScript 负责检查，Metro/Babel 负责打包。第三方缺失类型的声明与兼容边界需对应实际版本接口，不能用无类型模块声明绕过检查。
 
@@ -53,13 +53,13 @@ Lint 规则、全局变量与豁免范围见 [.oxlintrc.json](../.oxlintrc.json)
 
 内存迁移后端、网络与原生 mock、直接调用组件方法的状态测试，都不能替代 SQLite、文件写入、React 渲染或设备验收。
 
-PR 写明实际执行的检查与结果。设备验收记录代码基线、日期、环境、操作和未覆盖范围，分别说明构建、启动与业务结果。重要验收按[贡献指南](../CONTRIBUTING.md#文档维护)归档，待处理事项更新到[问题与续测](tasks.md)。
+设备验收分别记录构建、启动与业务结果，按[贡献指南](../CONTRIBUTING.md#文档维护)归档。
 
 ## 环境与配置来源
 
 ### Android 应用
 
-准备 Node.js、pnpm、JDK 17 和 Android SDK。安装依赖前按下表确认工具链，避免在文档维护第二份版本清单。
+准备 Node.js、pnpm、JDK 17 和 Android SDK。安装前核对工具链要求。
 
 | 内容                                                 | 事实来源                                                                                                                                  |
 | ---------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
@@ -79,7 +79,7 @@ Apple Silicon 使用 ARM64 模拟器，Intel Mac 与 Windows x64 使用 x86_64 �
 
 ## 用户网站
 
-主页与用户手册在 [website/pages](../website/pages/) 维护。站点沿用上游 Next.js 与 Nextra，与根项目使用同一版本的 pnpm，依赖由站点的 [package.json](../website/package.json) 和锁文件独立管理。在仓库根目录执行：
+站点的 [package.json](../website/package.json) 和 [锁文件](../website/pnpm-lock.yaml) 独立管理依赖。在仓库根目录执行以下命令启动本地预览。
 
 ```sh
 cd website

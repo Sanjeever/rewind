@@ -1,6 +1,6 @@
 # 第三方声明
 
-本项目由倒带 v3.5.0 Android 发布包重建。项目的 `GPL-3.0-only` 声明适用于有权授权的原创贡献，第三方材料保留原有版权与许可证。各部分版权归相应权利人所有。
+第三方材料保留原有版权与许可证。原创贡献的授权约定见[贡献指南](CONTRIBUTING.md#贡献授权与版权)。
 
 以下记录基于 2026-11-16 的仓库文件、已安装直接 JS 运行依赖的许可声明及相关 Android 依赖的 POM 与源码。它不覆盖全部传递依赖，也不构成整个 APK 已完成许可核查的结论。版本以 [package.json](package.json)、[锁文件](pnpm-lock.yaml)、[Android 依赖定义](android/app/build.gradle) 和实际构建解析结果为准。
 
@@ -70,10 +70,10 @@ SOFTWARE.
 | HanLP portable                     | Apache-2.0；对应版本 POM 声明，源码见 [HanLP](https://github.com/hankcs/HanLP/tree/1.x)。打包字典与数据仍需核实各自来源及许可                                                                                           |
 | jaudiotagger                       | POM 声明 LGPL；[3.0.1 源码包](https://repo.maven.apache.org/maven2/net/jthink/jaudiotagger/3.0.1/jaudiotagger-3.0.1-sources.jar) 中 `AudioFileIO.java` 声明 LGPL-2.1-or-later。分发时需保留相关许可并满足适用的源码义务 |
 
-安装后的 JS 包目录可查各自 `LICENSE`、`NOTICE` 与版权声明；Android 依赖需结合实际解析的 POM、JAR/AAR 和对应源码核查。分发 APK 前，收集实际包含组件的完整许可与声明，覆盖传递依赖和嵌入资源，并按各自许可证提供所需源码。本表不替代这些随附材料。分发方式见 [贡献指南](CONTRIBUTING.md#对外分发)。
+核查 JS 依赖时，查阅已安装包的 `LICENSE`、`NOTICE` 与版权声明。核查 Android 依赖时，查阅实际解析的 POM、JAR/AAR 和对应源码。分发要求见[贡献指南](CONTRIBUTING.md#对外分发)。
 
 ## 许可证文本来源
 
-- 根目录 [LICENSE](LICENSE) 原样采用 [GNU GPLv3 英文正文](https://www.gnu.org/licenses/gpl-3.0.txt)。正文末尾的应用示例包含“or later”，本项目的授权选择由 README、包元数据及适用源码声明明确为 `GPL-3.0-only`。
+- 根目录 [LICENSE](LICENSE) 原样采用 [GNU GPLv3 英文正文](https://www.gnu.org/licenses/gpl-3.0.txt)。正文末尾的应用示例包含“or later”。项目的许可选择见[贡献授权与版权](CONTRIBUTING.md#贡献授权与版权)。
 - [LICENSES/Apache-2.0.txt](LICENSES/Apache-2.0.txt) 原样采用 [Apache 官方正文](https://www.apache.org/licenses/LICENSE-2.0.txt)。
 - [DCO](DCO) 采用 [Developer Certificate of Origin 1.1](https://developercertificate.org/)，保留原版权及文本。

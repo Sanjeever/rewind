@@ -1,21 +1,21 @@
 # 鸣谢
 
-感谢 KusStar 创作倒带并留下原版使用手册。今天的 Android 应用从倒带 v3.5.0 重建，本站也沿用了原文档站的主题与内容。原版使用过的工具与作者当年的致谢见[上游鸣谢](https://github.com/KusStar/rewind-docs/blob/087b74b2f0293812dbdb67f7fd40f8e59f5ac3d7/pages/thanks.mdx)。
+感谢 KusStar 创作倒带并留下原版使用手册。原版使用过的工具与作者当年的致谢见[上游鸣谢](https://github.com/KusStar/rewind-docs/blob/087b74b2f0293812dbdb67f7fd40f8e59f5ac3d7/pages/thanks.mdx)。
 
 ## 应用界面
 
-倒带用 React 和 React Native 实现歌单、搜索与播放页面，页面间的跳转由 React Navigation 管理。感谢这些项目的维护者。[React](https://react.dev/) · [React Native](https://reactnative.dev/) · [React Navigation](https://reactnavigation.org/)
+[React](https://react.dev/) · [React Native](https://reactnative.dev/) · [React Navigation](https://reactnavigation.org/)
 
 ## 音乐播放
 
-倒带在 JavaScript 中管理歌曲队列和播放顺序。Android 原生服务通过 Media3 的 ExoPlayer 播放当前曲目，通过媒体会话接收系统播放控件的操作。MV 页面使用 react-native-video 播放视频。[AndroidX Media3](https://github.com/androidx/media) · [react-native-video](https://github.com/react-native-video/react-native-video)
+[AndroidX Media3](https://github.com/androidx/media) 用于音频播放，[react-native-video](https://github.com/TheWidlarzGroup/react-native-video) 用于 MV 播放。
 
 ## 歌词、曲目信息与评论
 
-- lrc-kit 解析带时间标记的歌词，让歌词能跟随播放进度滚动。[lrc-kit](https://www.npmjs.com/package/lrc-kit)
+- [lrc-kit](https://github.com/weirongxu/lrc-kit) 解析带时间标记的歌词，让歌词能跟随播放进度滚动。
 - pinyin-pro 提供拼音转换，让曲目列表支持用拼音查找中文歌名。[pinyin-pro](https://github.com/zh-lx/pinyin-pro)
 - jaudiotagger 用于将曲目信息和封面写入音频文件。[jaudiotagger](https://www.jthink.net/jaudiotagger/)
-- HanLP 配合随应用打包的词典，让评论分词在手机上完成。[HanLP](https://github.com/hankcs/HanLP/tree/1.x)
+- [HanLP](https://github.com/hankcs/HanLP/tree/1.x) 用于评论分词。
 
 ## 文档网站
 
