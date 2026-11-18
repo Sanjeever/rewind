@@ -15,6 +15,10 @@
 
 上述授权与来源问题仍待解决。DCO 签署、本仓库的许可证文件和元数据不能替代上游授权，也不能追溯证明已有贡献已获许可。
 
+## 用户网站
+
+`website/` 中沿用的 Nextra 配置、主题、图标与文档来自 [KusStar/rewind-docs 的迁移基线](https://github.com/KusStar/rewind-docs/tree/087b74b2f0293812dbdb67f7fd40f8e59f5ac3d7)。上游版权归 KusStar，MIT 许可正文及署名见 [website/LICENSE](website/LICENSE)。
+
 ## Gradle Wrapper 与 React Native 模板
 
 `android/gradlew` 与 Gradle Wrapper 保留 Gradle 作者的 Apache-2.0 声明，完整正文见 [LICENSES/Apache-2.0.txt](LICENSES/Apache-2.0.txt)。Gradle 源码与版权资料见 [Gradle](https://github.com/gradle/gradle)。
