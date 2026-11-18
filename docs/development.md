@@ -16,6 +16,8 @@ pnpm dev
 
 访问终端显示的本地地址。用 `pnpm build` 检查生产构建并生成静态站点 `website/out/`。新增页面时同步更新 [页面导航](../website/pages/_meta.json)。
 
+网站改动合入 `main` 后，由[组织主页仓库的发布工作流](https://github.com/open-rewind/open-rewind.github.io/actions/workflows/pages.yml)定时检查并发布，也可在该工作流页面手动触发。线上版本见[已部署的网站提交](https://open-rewind.github.io/website-revision.txt)。
+
 ### Android 应用
 
 准备 Node.js、pnpm、JDK 17 和 Android SDK。安装依赖前按下表确认工具链，避免在文档维护第二份版本清单。

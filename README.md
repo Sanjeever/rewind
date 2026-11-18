@@ -6,7 +6,7 @@
 
 上游仓库与源码来源：[KusStar/rewind-apks](https://github.com/KusStar/rewind-apks)
 
-用户网站由本仓库维护，入口见[网站主页](website/pages/index.mdx)、[操作指南](website/pages/tutorial.mdx)和[常见问题](website/pages/questions.mdx)。站点源自 [KusStar/rewind-docs](https://github.com/KusStar/rewind-docs)。
+用户网站由本仓库维护，入口见[网站主页](https://open-rewind.github.io/)、[操作指南](https://open-rewind.github.io/tutorial/)和[常见问题](https://open-rewind.github.io/questions/)。站点源自 [KusStar/rewind-docs](https://github.com/KusStar/rewind-docs)。
 
 [倒带公告牌](https://t.me/Rewind_News) · [倒带反馈群](https://t.me/Rewind_Group)
 
