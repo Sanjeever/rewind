@@ -99,7 +99,7 @@ export default class PlayerController extends React.PureComponent<PlayerProps, P
     expanded: false,
     playMode: 'list',
     showLyric: false,
-    loaded: false,
+    loadState: 'loading',
     showTool: true,
     isLike: false,
     volume: 1,
@@ -244,7 +244,7 @@ export default class PlayerController extends React.PureComponent<PlayerProps, P
       playState: 'paused',
       duration: 0,
       currentTime: 0,
-      loaded: false,
+      loadState: 'loading',
       currentMiniLyric: '',
       likePending: false,
     });
@@ -329,6 +329,7 @@ export default class PlayerController extends React.PureComponent<PlayerProps, P
       this.preparePlay(source, request);
     } catch (error) {
       if (request !== this.playbackRequest) return;
+      this.setState({loadState: 'failed'});
       this.pauseSound();
       toast('音源加载失败：' + errorMessage(error));
     }
@@ -340,7 +341,7 @@ export default class PlayerController extends React.PureComponent<PlayerProps, P
       this.setState(
         {
           duration: this.audio!.getDuration(),
-          loaded: true,
+          loadState: 'ready',
           retriedTimes: 0,
         },
         () => {
@@ -389,6 +390,15 @@ export default class PlayerController extends React.PureComponent<PlayerProps, P
     }
   };
   playSound = () => {
+    if (this.state.loadState === 'failed' && isActiveQueue(this.props)) {
+      const {songItem: song, api} = this.props;
+      const request = ++this.playbackRequest;
+      this.setState({loadState: 'loading'}, () => {
+        if (request === this.playbackRequest)
+          this.prepareMusic({song}, extractFullInfo(song), api, request);
+      });
+      return;
+    }
     const request = this.playbackRequest;
     this.audio?.play((finished) => {
       if (request !== this.playbackRequest) return;

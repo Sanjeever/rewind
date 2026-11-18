@@ -298,6 +298,24 @@ test('清空队列后迟到的音源不会开始播放，已准备音频被释�
   assert.equal(calls.play, 0);
   assert.deepEqual(player.props.tracks, []);
 });
+test('音源失败后重试当前歌曲，切歌后忽略迟到的失败', async () => {
+  const {player, calls, requests, getReady} = await controller();
+  play(player, 1);
+  requests[0]('');
+  await tick();
+  assert.equal(player.state.loadState, 'failed');
+  player.togglePlay();
+  assert.equal(player.state.loadState, 'loading');
+  assert.equal(calls.history.length, 1);
+  play(player, 2);
+  requests[2]('https://audio/current');
+  await tick();
+  getReady()(null);
+  requests[1]('');
+  await tick();
+  assert.equal(player.state.loadState, 'ready');
+  assert.equal(calls.toasts.length, 1);
+});
 test('播放与暂停命令等待原生通知，状态通知不会再次发送播放指令', async () => {
   const {player, calls, requests, scheduled, getReady} = await controller();
   play(player, 1);
@@ -306,7 +324,7 @@ test('播放与暂停命令等待原生通知，状态通知不会再次发送�
   getReady()(null);
   assert.equal(calls.play, 1);
   assert.equal(player.state.playState, 'paused');
-  assert.equal(player.state.loaded, true);
+  assert.equal(player.state.loadState, 'ready');
   player.handlePlaybackState({
     playing: true,
   });

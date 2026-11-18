@@ -58,7 +58,7 @@ export function MiniPlayerView({
       randomArray={playback.randomArray}
       playState={playback.playState}
       togglePlay={actions.togglePlay}
-      loaded={playback.loaded}
+      loaded={playback.loadState === 'ready'}
       currentTime={playback.currentTime}
       duration={playback.duration}
       onNowPlaying={actions.showQueue}
@@ -86,7 +86,7 @@ export default function PlayerView({
   const {
     url,
     playState,
-    loaded,
+    loadState,
     showSlider,
     currentTime,
     duration,
@@ -102,6 +102,7 @@ export default function PlayerView({
     showCoverElevation,
     randomArray,
   } = playback;
+  const loaded = loadState === 'ready';
   const {
     isRound,
     hideBottomTip,

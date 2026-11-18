@@ -42,7 +42,7 @@ export interface PlayerState {
   expanded: boolean;
   playMode: PlayMode;
   showLyric: boolean;
-  loaded: boolean;
+  loadState: 'loading' | 'ready' | 'failed';
   showTool: boolean;
   isLike: boolean;
   likePending?: boolean;
