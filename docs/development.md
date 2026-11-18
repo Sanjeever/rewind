@@ -6,15 +6,15 @@
 
 ### 用户网站
 
-主页与用户手册在 [website/pages](../website/pages/) 维护。站点沿用上游 Next.js 与 Nextra，使用独立的 [package.json](../website/package.json) 和锁文件。在仓库根目录执行：
+主页与用户手册在 [website/pages](../website/pages/) 维护。站点沿用上游 Next.js 与 Nextra，与根项目使用同一版本的 pnpm，依赖由站点的 [package.json](../website/package.json) 和锁文件独立管理。在仓库根目录执行：
 
 ```sh
 cd website
-corepack pnpm install --frozen-lockfile
-corepack pnpm dev
+pnpm install --frozen-lockfile
+pnpm dev
 ```
 
-访问终端显示的本地地址。用 `corepack pnpm build` 检查生产构建并生成静态站点 `website/out/`。新增页面时同步更新 [页面导航](../website/pages/_meta.json)。
+访问终端显示的本地地址。用 `pnpm build` 检查生产构建并生成静态站点 `website/out/`。新增页面时同步更新 [页面导航](../website/pages/_meta.json)。
 
 ### Android 应用
 
