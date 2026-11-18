@@ -7,7 +7,7 @@
   "env": {
     "builtin": true
   },
-  "ignorePatterns": ["node_modules/**", ".cache/**", "android/**", "assets/**"],
+  "ignorePatterns": ["node_modules/**", ".cache/**", "android/**", "assets/**", "website/**"],
   "rules": {
     "constructor-super": "error",
     "for-direction": "error",

@@ -26,9 +26,9 @@ const Logo = ({ size, ...props }) => (
 // theme.config.js
 const config: DocsThemeConfig =  {
   project: {
-    link: 'https://github.com/kusstar/rewind-docs', // GitHub link in the navbar
+    link: 'https://github.com/open-rewind/rewind', // GitHub link in the navbar
   },
-  docsRepositoryBase: 'https://github.com/kusstar/rewind-docs/blob/master', // base URL for the docs repository
+  docsRepositoryBase: 'https://github.com/open-rewind/rewind/blob/main/website', // base URL for the docs repository
   useNextSeoProps() {
     const { asPath } = useRouter()
     if (asPath !== '/') {

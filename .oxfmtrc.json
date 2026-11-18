@@ -10,6 +10,7 @@
     ".cache/",
     "android/",
     "assets/",
+    "website/",
     "pnpm-lock.yaml",
     "handoff.md",
     "AGENTS.md"
