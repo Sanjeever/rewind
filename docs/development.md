@@ -32,10 +32,10 @@ SDK/JDK 本机路径、私钥、凭据、缓存和构建输出不提交。仓库
 
 ## 检查与验收
 
-```sh
-pnpm check
-pnpm bundle:android
-```
+- 业务逻辑或界面状态改动先跑对应测试，例如 `pnpm test --runInBand src/player/PlayerController.test.ts`。提交前用 `pnpm check` 跑完整检查。
+- 修改 Metro、Babel 或资源导入后，用 `pnpm bundle:android` 检查打包。原生依赖或构建配置变更还需构建并启动 Android 应用。
+- 涉及账号、系统媒体操作或数据升级时，用相应账号、设备或旧数据复测。已有缺口见[问题与续测](tasks.md)。
+- 纯文档改动核对事实、链接与 diff。
 
 `pnpm check` 运行应用的静态检查与测试，各项命令见 [package.json](../package.json) 的 `scripts`。`lint:fix` 和 `format` 会修改文件。[CI 工作流](../.github/workflows/check.yml)在 push 和 PR 中执行检查。用户网站的生产构建见[用户网站](#用户网站)。
 
@@ -51,9 +51,9 @@ Lint 规则、全局变量与豁免范围见 [.oxlintrc.json](../.oxlintrc.json)
 
 单独 Metro 包写入 `.cache/metro/`；常规 Android 构建由 Gradle 插件管理打包，无需预先执行 `pnpm bundle:android`。
 
-选择能验证本次变化的检查：业务逻辑使用相关回归；依赖、原生或构建变更按影响验证打包和设备运行；纯文档变更核对事实、链接和 diff。内存迁移后端、网络与原生 mock、直接调用组件方法的状态测试，都不能替代 SQLite、文件写入、React 渲染或设备验收。
+内存迁移后端、网络与原生 mock、直接调用组件方法的状态测试，都不能替代 SQLite、文件写入、React 渲染或设备验收。
 
-PR 写明实际执行的检查与结果。设备验收记录代码基线、日期、环境、操作和未覆盖范围，分别说明构建、启动与业务结果。重要验收按[记录方式](validation.md#记录方式)归档，待处理事项更新到[问题与续测](tasks.md)。
+PR 写明实际执行的检查与结果。设备验收记录代码基线、日期、环境、操作和未覆盖范围，分别说明构建、启动与业务结果。重要验收按[贡献指南](../CONTRIBUTING.md#文档维护)归档，待处理事项更新到[问题与续测](tasks.md)。
 
 ## 环境与配置来源
 
