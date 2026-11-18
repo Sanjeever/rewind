@@ -58,7 +58,7 @@ pnpm android:build
 pnpm android:install
 ```
 
-单独通过 Gradle 安装 Debug 到 USB 真机时，还需将设备端口转发到 Metro，默认端口为 `8081`。单设备执行 `adb reverse tcp:8081 tcp:8081`，多设备时用 `adb -s` 指定目标；`pnpm android` 流程会尝试自动配置转发。
+单独通过 Gradle 安装 Debug 到 USB 真机时，还需将设备端口转发到 Metro。使用默认端口时执行 `adb reverse tcp:8081 tcp:8081`。连接多台设备时，先用 `adb devices` 查看序列号，再将 `adb -s SERIAL reverse tcp:8081 tcp:8081` 中的 `SERIAL` 替换为目标设备序列号。`pnpm android` 会尝试自动配置转发。
 
 ## 独立构建
 
@@ -84,7 +84,7 @@ pnpm check
 pnpm bundle:android
 ```
 
-`pnpm check` 串行执行 Oxlint、Oxfmt、严格类型检查与测试；各项也可通过 `lint`、`format:check`、`typecheck`、`test` 独立运行。`lint:fix` 和 `format` 会修改文件。GitHub Actions 在 push 和 PR 中冻结锁文件安装并执行检查。
+`pnpm check` 运行应用的静态检查与测试，各项命令见 [package.json](../package.json) 的 `scripts`。`lint:fix` 和 `format` 会修改文件。[CI 工作流](../.github/workflows/check.yml)在 push 和 PR 中执行检查。用户网站的生产构建见[用户网站](#用户网站)。
 
 Lint 规则、全局变量与豁免范围见 [.oxlintrc.json](../.oxlintrc.json)。TypeScript 文件中交给类型系统负责的规则在该配置中关闭，修改规则时需结合两套类型检查判断覆盖范围。
 

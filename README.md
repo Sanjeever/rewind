@@ -2,7 +2,7 @@
 
 本项目以倒带 v3.5.0 Android 发布包为基础重建。应用逻辑已整理为 TypeScript/TSX 与 ESM 源码，保留自有 Android 原生能力，供二次开发使用。
 
-应用包含本地音乐播放、队列、歌单、历史、歌词，以及网易云和 QQ 音乐搜索与账号入口。在线音源按当前会话申请，主来源失败后会尝试匹配备用来源，具体边界见[歌曲与搜索约束](docs/architecture.md#歌曲与搜索边界)。评论分词在 Android 本地执行。各平台与账号的验收范围见[验证概况](docs/validation.md)。
+应用支持本地音乐播放、队列、歌单、历史、歌词和本地评论分词，也提供网易云和 QQ 音乐搜索与账号入口。在线音源授权与备用匹配见[歌曲与搜索约束](docs/architecture.md#歌曲与搜索边界)，各平台与账号的实测范围见[验证概况](docs/validation.md)。
 
 上游仓库与源码来源：[KusStar/rewind-apks](https://github.com/KusStar/rewind-apks)
 
