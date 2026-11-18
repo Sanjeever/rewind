@@ -47,7 +47,7 @@ Lint 规则、全局变量与豁免范围见 [.oxlintrc.json](../.oxlintrc.json)
 
 [应用配置](../tsconfig.json)与[测试配置](../tsconfig.test.json)分开检查，避免应用依赖 Jest 或 Node 全局类型。TypeScript 负责检查，Metro/Babel 负责打包。第三方缺失类型的声明与兼容边界需对应实际版本接口，不能用无类型模块声明绕过检查。
 
-测试入口与发现范围见 [jest.config.js](../jest.config.js)。`pnpm test` 通过 Node VM Modules 执行 ESM，Babel 根据调用方保留模块语法；Node 仍会打印实验性 VM Modules 提示。ESM mock 使用 `jest.unstable_mockModule` 后动态导入，隔离使用异步模块隔离，不能照搬 CJS 的 require/mock 提升时序。可参考[命令通道回归](../src/player/commands.test.ts)与[播放器渲染回归](../src/player/VideoPlayer.test.tsx)；测试靠近对应源码，按变更概念查[实现与回归入口](architecture.md#按概念查实现与回归)。
+测试入口与发现范围见 [jest.config.js](../jest.config.js)。`pnpm test` 通过 Node VM Modules 执行 ESM，Babel 根据调用方保留模块语法；Node 仍会打印实验性 VM Modules 提示。ESM mock 使用 `jest.unstable_mockModule` 后动态导入，隔离使用异步模块隔离，不能照搬 CJS 的 require/mock 提升时序。可参考[命令通道回归](../src/player/commands.test.ts)与[播放器渲染回归](../src/player/VideoPlayer.test.tsx)。测试位于对应源码旁。
 
 单独 Metro 包写入 `.cache/metro/`；常规 Android 构建由 Gradle 插件管理打包，无需预先执行 `pnpm bundle:android`。
 

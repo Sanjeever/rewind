@@ -31,17 +31,6 @@ pnpm android --no-packager
 
 安装成功后，设备会打开倒带并从 Metro 加载界面。
 
-## 项目结构
-
-| 代码位置                                                               | 职责                                 |
-| ---------------------------------------------------------------------- | ------------------------------------ |
-| `src/screens/`、`src/navigation/`                                      | 路由页面与导航                       |
-| `src/features/`                                                        | 按业务归置的组件与辅助逻辑           |
-| `src/components/`                                                      | 跨业务复用的通用 UI                  |
-| `src/player/`、`src/services/`、`src/storage/`                         | 播放业务、音乐服务与持久化           |
-| `src/native/`、`android/app/src/main/kotlin/`                          | JS 原生接口与 Android 实现           |
-| `assets/`、`android/app/src/main/res/`、`android/app/src/main/assets/` | Metro 图片与动画、Android 资源和字体 |
-
 ## 参与开发
 
 - 调试设备、打独立包或运行检查，见[开发与构建](docs/development.md)。
