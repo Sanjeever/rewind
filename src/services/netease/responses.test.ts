@@ -52,6 +52,13 @@ test('外部响应校验保留业务错误、未知字段与原始歌曲字段',
   });
 });
 
+test('音源未返回地址时保留空格式与歌曲状态码，仍拒绝数字格式', () => {
+  const item = {code: -110, type: null, url: null};
+  const response = {code: 200, data: [item]};
+  expect(responses.musicUrl.parse(response)).toEqual(response);
+  expect(() => responses.musicUrl.parse({...response, data: [{...item, type: 42}]})).toThrow();
+});
+
 test('畸形响应在网络边界失败，不以类型断言传入业务', () => {
   expect(() => responses.search.parse({result: {songs: []}})).toThrow();
   expect(() => responses.search.parse({code: 200, result: {songs: 'broken'}})).toThrow();

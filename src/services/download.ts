@@ -90,7 +90,7 @@ const x = async (
     api,
     name,
     obj,
-    type: response.data?.[0]?.type,
+    type: response.data?.[0]?.type ?? undefined,
   });
 };
 const R = async (
@@ -112,7 +112,7 @@ const R = async (
   let url = response.data?.[0]?.url;
   let type;
   if (url) {
-    type = response.data?.[0]?.type;
+    type = response.data?.[0]?.type ?? undefined;
   } else {
     url = await services.provider.getUrlFromOther(obj);
     type = 'mp3';

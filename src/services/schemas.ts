@@ -124,7 +124,7 @@ export const comment = z.looseObject({
   beReplied: z.optional(z.array(z.looseObject({content: z.nullable(z.string()), user: profile}))),
 });
 export const audio = z.looseObject({
-  type: string,
+  type: z.optional(z.nullable(z.string())),
   url: z.optional(z.nullable(z.string())),
   code: number,
   payed: number,
