@@ -2,7 +2,8 @@ import React from 'react';
 import {Animated, View} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import * as Animatable from 'react-native-animatable';
-import {Background, Spinkit, TouchableBorderless} from '../components';
+import {Background, TouchableBorderless} from '../components';
+import PlayButton from './PlayButton';
 import Text from '../components/Text';
 import {DEVICE_WIDTH, STATUS_BAR_HEIGHT} from '../theme/constants';
 import buttons from './buttons';
@@ -58,7 +59,7 @@ export function MiniPlayerView({
       randomArray={playback.randomArray}
       playState={playback.playState}
       togglePlay={actions.togglePlay}
-      loaded={playback.loadState === 'ready'}
+      loadState={playback.loadState}
       currentTime={playback.currentTime}
       duration={playback.duration}
       onNowPlaying={actions.showQueue}
@@ -222,7 +223,7 @@ export default function PlayerView({
           togglePlay={actions.togglePlay}
           onNowPlaying={actions.showQueue}
           color="#fff"
-          loaded={loaded}
+          loadState={loadState}
         />
       )}
       {!showTool && !hidePlayingTime && showLyric && (
@@ -298,9 +299,14 @@ export default function PlayerView({
       >
         <Text>{showTool ? '精简' : '控件'}</Text>
       </TouchableBorderless>
-      {!showLyric && !showTool && !loaded && (
+      {!showTool && !loaded && (!showLyric || loadState === 'failed') && (
         <View style={styles.blankLyric}>
-          <Spinkit size={55} />
+          <PlayButton
+            playState={playState}
+            loadState={loadState}
+            spinSize={55}
+            onPress={actions.togglePlay}
+          />
         </View>
       )}
       {!hideBottomTip && !showLyric && (

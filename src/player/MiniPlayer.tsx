@@ -8,7 +8,7 @@ import ControlIcon from './ControlIcon';
 import buttons from './buttons';
 import {motion, ReducedMotionContext} from '../theme/motion';
 import type {TrackFields} from '../services/track';
-import type {PlayMode, PlayState} from './types';
+import type {PlayMode, PlayState, PlayerState} from './types';
 interface Props {
   playingIndex: number;
   tracks: readonly TrackFields[];
@@ -17,7 +17,7 @@ interface Props {
   playMode: PlayMode;
   playState: PlayState;
   togglePlay(): void;
-  loaded: boolean;
+  loadState: PlayerState['loadState'];
   hideTopBorder: boolean;
   isRound: boolean;
   unknown: boolean;
@@ -69,7 +69,7 @@ class MiniPlayer extends React.PureComponent<Props> {
       playMode,
       playState,
       togglePlay,
-      loaded,
+      loadState,
       hideTopBorder,
       isRound,
       unknown,
@@ -132,7 +132,7 @@ class MiniPlayer extends React.PureComponent<Props> {
             size={25}
             spinSize={30}
             playState={playState}
-            loaded={loaded}
+            loadState={loadState}
             onPress={togglePlay}
             onLongPress={onNowPlaying}
           />

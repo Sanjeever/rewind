@@ -9,7 +9,7 @@ import SeekBar from './SeekBar';
 import Text from '../components/Text';
 import timeFormatter from '../utils/timeFormatter';
 import type {SeekBarProps} from './SeekBar';
-import type {PlayMode, PlayState} from './types';
+import type {PlayMode, PlayState, PlayerState} from './types';
 interface Props extends Pick<
   SeekBarProps,
   'duration' | 'currentTime' | 'slidingStart' | 'slidingEnd' | 'onSliderValueChange'
@@ -23,7 +23,7 @@ interface Props extends Pick<
   onNowPlaying(): void;
   color?: ReactNative.ColorValue;
   playState: PlayState;
-  loaded: boolean;
+  loadState: PlayerState['loadState'];
 }
 class PlaybackControls extends React.PureComponent<Props> {
   render() {
@@ -38,7 +38,7 @@ class PlaybackControls extends React.PureComponent<Props> {
       onNowPlaying,
       color,
       playState,
-      loaded,
+      loadState,
     } = props;
     return (
       <ReactNative.Animated.View
@@ -58,7 +58,7 @@ class PlaybackControls extends React.PureComponent<Props> {
             showLyric={false}
             isRound={false}
             width={0}
-            loaded={loaded}
+            loaded={loadState === 'ready'}
             duration={props.duration}
             currentTime={props.currentTime}
             slidingStart={props.slidingStart}
@@ -102,7 +102,12 @@ class PlaybackControls extends React.PureComponent<Props> {
               padding: 5,
             }}
           />
-          <PlayButton playState={playState} onPress={togglePlay} color={color} loaded={loaded} />
+          <PlayButton
+            playState={playState}
+            onPress={togglePlay}
+            color={color}
+            loadState={loadState}
+          />
           <ControlIcon
             accessibilityLabel="下一首"
             name={buttons.NEXT.name}
