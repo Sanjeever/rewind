@@ -1,4 +1,6 @@
-# 倒带 rewind
+# 倒带
+
+![倒带图标](android/app/src/main/res/mipmap-xhdpi/ic_launcher.png)
 
 本项目以倒带 v3.5.0 Android 发布包为基础重建。应用逻辑已整理为 TypeScript/TSX 与 ESM 源码，保留自有 Android 原生能力，供二次开发使用。
 
