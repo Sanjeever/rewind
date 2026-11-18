@@ -1,55 +1,8 @@
 # 开发与构建
 
-本文说明环境准备、开发命令、构建类型和验证方式。版本与脚本定义以仓库配置为准，设计取舍见[架构约束](architecture.md)，已验证范围见[验证概况](validation.md)。
-
-## 环境与配置来源
-
-### 用户网站
-
-主页与用户手册在 [website/pages](../website/pages/) 维护。站点沿用上游 Next.js 与 Nextra，与根项目使用同一版本的 pnpm，依赖由站点的 [package.json](../website/package.json) 和锁文件独立管理。在仓库根目录执行：
-
-```sh
-cd website
-pnpm install --frozen-lockfile
-pnpm dev
-```
-
-访问终端显示的本地地址。用 `pnpm build` 检查生产构建并生成静态站点 `website/out/`。新增页面时同步更新 [页面导航](../website/pages/_meta.json)。
-
-网站改动合入 `main` 后，由[组织主页仓库的发布工作流](https://github.com/open-rewind/open-rewind.github.io/actions/workflows/pages.yml)定时检查并发布，也可在该工作流页面手动触发。线上版本见[已部署的网站提交](https://open-rewind.github.io/website-revision.txt)。
-
-### Android 应用
-
-准备 Node.js、pnpm、JDK 17 和 Android SDK。安装依赖前按下表确认工具链，避免在文档维护第二份版本清单。
-
-| 内容                                                 | 事实来源                                                                                                                                  |
-| ---------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| Node 范围、pnpm、JS 依赖与命令                       | [package.json](../package.json)；依赖解析见 [pnpm-lock.yaml](../pnpm-lock.yaml)，安装策略见 [pnpm-workspace.yaml](../pnpm-workspace.yaml) |
-| Android SDK、Build Tools、NDK、Kotlin 与最低设备 API | [android/build.gradle](../android/build.gradle)；依赖模块也可能要求额外 Build Tools                                                       |
-| Gradle Wrapper                                       | [Wrapper 配置](../android/gradle/wrapper/gradle-wrapper.properties)                                                                       |
-| AGP 与 Gradle 插件的 JDK 要求                        | 固定版本的 `@react-native/gradle-plugin`，安装后可查其 `gradle/libs.versions.toml` 与构建文件                                             |
-| ABI、新架构、Hermes 与 Gradle 参数                   | [android/gradle.properties](../android/gradle.properties)                                                                                 |
-| 应用标识、版本、构建类型与签名                       | [android/app/build.gradle](../android/app/build.gradle)；JS 注册名见 [index.js](../index.js)                                              |
-| 权限声明与运行时申请                                 | [AndroidManifest.xml](../android/app/src/main/AndroidManifest.xml)、[权限入口](../src/native/permissions.ts)                              |
-
-设置 `JAVA_HOME` 指向所需 JDK，优先用 `ANDROID_HOME` 指向本机 SDK，并将 SDK 的 `platform-tools` 加入 `PATH`。使用 `ANDROID_SDK_ROOT` 时也须保证 `adb` 在 `PATH` 中，因为 React Native CLI 通过 `ANDROID_HOME` 或 `PATH` 定位它。Gradle 还支持本地 `android/local.properties`，该文件保持忽略，不提交机器路径。
-
-依赖使用精确版本，框架升级按对应官方模板核对兼容性。pnpm 使用严格依赖布局，根开发依赖中的 Gradle 插件、Codegen 和 Hermes 编译器供构建工具定位。Kotlin 需满足原生依赖的编译器要求，AsyncStorage 的 KSP 匹配逻辑由依赖管理。
-
-Apple Silicon 使用 ARM64 模拟器，Intel Mac 与 Windows x64 使用 x86_64 模拟器。单一设备构建可向 `pnpm android:build` 追加 `-PreactNativeArchitectures=arm64-v8a` 或 `-PreactNativeArchitectures=x86_64`；默认 ABI 查 Gradle 参数。
-
 ## 日常开发
 
-```sh
-pnpm install --frozen-lockfile
-pnpm start
-```
-
-保持 Metro 运行，在另一终端连接已授权 USB 调试的设备或启动模拟器：
-
-```sh
-pnpm android --no-packager
-```
+首次运行按 [README 的快速开始](../README.md#快速开始)安装依赖并启动应用。
 
 Debug 使用 Metro。应用内开发菜单支持刷新，首页菜单图标长按也可打开开发菜单。Windows、macOS 使用相同 pnpm 入口，[Android 脚本](../scripts/android.mjs)选择对应 Gradle Wrapper。单独构建与安装 Debug：
 
@@ -101,3 +54,39 @@ Lint 规则、全局变量与豁免范围见 [.oxlintrc.json](../.oxlintrc.json)
 选择能验证本次变化的检查：业务逻辑使用相关回归；依赖、原生或构建变更按影响验证打包和设备运行；纯文档变更核对事实、链接和 diff。内存迁移后端、网络与原生 mock、直接调用组件方法的状态测试，都不能替代 SQLite、文件写入、React 渲染或设备验收。
 
 PR 写明实际执行的检查与结果。设备验收记录代码基线、日期、环境、操作和未覆盖范围，分别说明构建、启动与业务结果。重要验收按[记录方式](validation.md#记录方式)归档，待处理事项更新到[问题与续测](tasks.md)。
+
+## 环境与配置来源
+
+### Android 应用
+
+准备 Node.js、pnpm、JDK 17 和 Android SDK。安装依赖前按下表确认工具链，避免在文档维护第二份版本清单。
+
+| 内容                                                 | 事实来源                                                                                                                                  |
+| ---------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| Node 范围、pnpm、JS 依赖与命令                       | [package.json](../package.json)；依赖解析见 [pnpm-lock.yaml](../pnpm-lock.yaml)，安装策略见 [pnpm-workspace.yaml](../pnpm-workspace.yaml) |
+| Android SDK、Build Tools、NDK、Kotlin 与最低设备 API | [android/build.gradle](../android/build.gradle)；依赖模块也可能要求额外 Build Tools                                                       |
+| Gradle Wrapper                                       | [Wrapper 配置](../android/gradle/wrapper/gradle-wrapper.properties)                                                                       |
+| AGP 与 Gradle 插件的 JDK 要求                        | 固定版本的 `@react-native/gradle-plugin`，安装后可查其 `gradle/libs.versions.toml` 与构建文件                                             |
+| ABI、新架构、Hermes 与 Gradle 参数                   | [android/gradle.properties](../android/gradle.properties)                                                                                 |
+| 应用标识、版本、构建类型与签名                       | [android/app/build.gradle](../android/app/build.gradle)；JS 注册名见 [index.js](../index.js)                                              |
+| 权限声明与运行时申请                                 | [AndroidManifest.xml](../android/app/src/main/AndroidManifest.xml)、[权限入口](../src/native/permissions.ts)                              |
+
+设置 `JAVA_HOME` 指向所需 JDK，优先用 `ANDROID_HOME` 指向本机 SDK，并将 SDK 的 `platform-tools` 加入 `PATH`。使用 `ANDROID_SDK_ROOT` 时也须保证 `adb` 在 `PATH` 中，因为 React Native CLI 通过 `ANDROID_HOME` 或 `PATH` 定位它。Gradle 还支持本地 `android/local.properties`，该文件保持忽略，不提交机器路径。
+
+依赖使用精确版本，框架升级按对应官方模板核对兼容性。pnpm 使用严格依赖布局，根开发依赖中的 Gradle 插件、Codegen 和 Hermes 编译器供构建工具定位。Kotlin 需满足原生依赖的编译器要求，AsyncStorage 的 KSP 匹配逻辑由依赖管理。
+
+Apple Silicon 使用 ARM64 模拟器，Intel Mac 与 Windows x64 使用 x86_64 模拟器。单一设备构建可向 `pnpm android:build` 追加 `-PreactNativeArchitectures=arm64-v8a` 或 `-PreactNativeArchitectures=x86_64`；默认 ABI 查 Gradle 参数。
+
+## 用户网站
+
+主页与用户手册在 [website/pages](../website/pages/) 维护。站点沿用上游 Next.js 与 Nextra，与根项目使用同一版本的 pnpm，依赖由站点的 [package.json](../website/package.json) 和锁文件独立管理。在仓库根目录执行：
+
+```sh
+cd website
+pnpm install --frozen-lockfile
+pnpm dev
+```
+
+访问终端显示的本地地址。用 `pnpm build` 检查生产构建并生成静态站点 `website/out/`。新增页面时同步更新 [页面导航](../website/pages/_meta.json)。
+
+网站改动合入 `main` 后，由[组织主页仓库的发布工作流](https://github.com/open-rewind/open-rewind.github.io/actions/workflows/pages.yml)定时检查并发布，也可在该工作流页面手动触发。线上版本见[已部署的网站提交](https://open-rewind.github.io/website-revision.txt)。
