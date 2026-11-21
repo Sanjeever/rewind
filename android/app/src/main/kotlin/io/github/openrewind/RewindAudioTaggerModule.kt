@@ -1,4 +1,4 @@
-package com.kuss.rewind
+package io.github.openrewind
 
 import com.facebook.react.bridge.*
 import org.jaudiotagger.audio.AudioFileIO

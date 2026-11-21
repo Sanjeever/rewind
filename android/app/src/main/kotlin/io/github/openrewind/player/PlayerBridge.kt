@@ -1,4 +1,4 @@
-package com.kuss.rewind.player
+package io.github.openrewind.player
 
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReactApplicationContext

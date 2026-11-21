@@ -1,4 +1,4 @@
-package com.kuss.rewind
+package io.github.openrewind
 
 import android.util.Base64
 import com.facebook.react.bridge.*

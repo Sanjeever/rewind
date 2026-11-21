@@ -66,19 +66,6 @@ class About extends React.PureComponent<ScreenProps<'About'>, {speed: number; en
   renderAll = () => {
     return (
       <React.Fragment>
-        {React.createElement(
-          Text,
-          {
-            style: [
-              styles.text,
-              {
-                marginBottom: 10,
-              },
-            ],
-          },
-          '\t\t',
-          '本应用只在相关群组/频道发布更新，其他地方下载的无法保证可用性。',
-        )}
         {linkData.sites.map((e, key) => (
           <CreditsSection
             key={key}

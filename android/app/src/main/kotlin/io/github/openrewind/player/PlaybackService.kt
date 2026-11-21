@@ -1,4 +1,4 @@
-package com.kuss.rewind.player
+package io.github.openrewind.player
 
 import android.app.PendingIntent
 import android.content.Intent
@@ -17,8 +17,8 @@ import androidx.media3.datasource.cache.SimpleCache
 import androidx.media3.database.StandaloneDatabaseProvider
 import androidx.media3.session.MediaSession
 import androidx.media3.session.MediaSessionService
-import com.kuss.rewind.MainActivity
-import com.kuss.rewind.BuildConfig
+import io.github.openrewind.MainActivity
+import io.github.openrewind.BuildConfig
 import java.io.File
 import java.util.concurrent.Executors
 

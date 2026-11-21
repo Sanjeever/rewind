@@ -3,6 +3,7 @@ import * as reactNativeSpringScrollview from './../components/Scrolling';
 import * as components from '../components/index';
 import locales from '../locales/index';
 import audioPlayer from '../native/audioPlayer';
+import {audio_cache} from '../storage/paths';
 import languageModule from '../native/language';
 import type {ScreenProps} from '../navigation/types';
 import {toast} from '../native/toast';
@@ -34,7 +35,7 @@ class FeaturePage extends React.PureComponent<ScreenProps<'FeaturePage'>> {
       },
       {
         title: locales.CACHE,
-        subtitle: '/Android/data/com.kuss.rewind/cache/audio-cache',
+        subtitle: audio_cache,
         onPress: () => this.props.navigation.navigate('CachePage'),
       },
       {

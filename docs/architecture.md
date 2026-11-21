@@ -21,7 +21,7 @@ Metro、React Native Gradle 插件和自动链接负责将声明的依赖纳入�
 - **播放视图通过数据和回调连接控制器。** 视图不依赖控制器实例，布局调整与播放命令处理可以独立演进。
 - **退出遵循宿主生命周期。** 关闭时释放媒体资源，由 Activity 正常生命周期卸载界面。提前销毁 ReactHost 曾触发 Fabric Surface 生命周期断言，不以强制销毁宿主替代资源清理。
 
-修改后台播放时，从 [PlayerController](../src/player/PlayerController.ts) 跟踪 JS 状态与[原生播放服务](../android/app/src/main/kotlin/com/kuss/rewind/player/)的交界。切歌、暂停和卸载先查[控制器回归](../src/player/PlayerController.test.ts)，队列提交查[应用层回归](../src/App.test.ts)。锁屏控制、后台音频和焦点切换需要在设备上验证。
+修改后台播放时，从 [PlayerController](../src/player/PlayerController.ts) 跟踪 JS 状态与[原生播放服务](../android/app/src/main/kotlin/io/github/openrewind/player/)的交界。切歌、暂停和卸载先查[控制器回归](../src/player/PlayerController.test.ts)，队列提交查[应用层回归](../src/App.test.ts)。锁屏控制、后台音频和焦点切换需要在设备上验证。
 
 ## 界面反馈与动效
 
@@ -53,10 +53,10 @@ QQ 歌曲搜索按服务返回的会话与游标继续翻页，不能用当前�
 
 ## 数据保护与升级
 
-验收升级时须保留原有数据，禁止通过卸载、清空数据、改包名或换目录规避迁移。安装条件见[覆盖安装与签名](development.md#覆盖安装与签名)。
+验收回听自身版本间的升级时须保留原有数据，禁止通过卸载、清空数据、改包名或换目录规避迁移。安装条件见[覆盖安装与签名](development.md#覆盖安装与签名)。
 
 旧数据库包含业务包装值、索引及未知键，迁移必须原样保留，不能按已知业务 JSON 重建。旧值写入并读回校验成功后才能标记完成，旧数据库保留供恢复。每次启动先校验本地歌单，已有迁移标记时仍须校验。旧数据读取或歌单校验失败时，应用显示启动错误并阻止正常启动，避免写入空数据。
 
 歌单保留原文件位置，更新时串行写入并原子替换，降低并发与中断写入造成损坏的风险。持久数据与可回收缓存分开，调整[存储路径](../src/storage/paths.ts)时必须考虑已有数据并核对原生实现。媒体扫描、导出与删除使用 MediaStore，删除其他应用创建的媒体时处理系统确认及取消结果。
 
-升级从[存储初始化](../src/storage/index.ts)进入，对照[迁移实现](../src/storage/migrate.ts)和[迁移回归](../src/storage/migrate.test.ts)。涉及文件落盘时，沿[歌单文件操作](../src/storage/playlistFiles.ts)查到[原生存储](../android/app/src/main/kotlin/com/kuss/rewind/RewindStorageModule.kt)，用保留旧数据的安装验证实际写入结果。
+升级从[存储初始化](../src/storage/index.ts)进入，对照[迁移实现](../src/storage/migrate.ts)和[迁移回归](../src/storage/migrate.test.ts)。涉及文件落盘时，沿[歌单文件操作](../src/storage/playlistFiles.ts)查到[原生存储](../android/app/src/main/kotlin/io/github/openrewind/RewindStorageModule.kt)，用保留旧数据的安装验证实际写入结果。

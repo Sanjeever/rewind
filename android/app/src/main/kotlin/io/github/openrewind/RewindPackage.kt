@@ -1,10 +1,10 @@
-package com.kuss.rewind
+package io.github.openrewind
 
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.uimanager.ViewManager
-import com.kuss.rewind.player.AudioPlayerModule
+import io.github.openrewind.player.AudioPlayerModule
 
 class RewindPackage : ReactPackage {
     override fun createNativeModules(context: ReactApplicationContext): List<NativeModule> =

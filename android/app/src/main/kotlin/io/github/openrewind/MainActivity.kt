@@ -1,4 +1,4 @@
-package com.kuss.rewind
+package io.github.openrewind
 
 import android.os.Bundle
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen

@@ -1,4 +1,4 @@
-package com.kuss.rewind
+package io.github.openrewind
 
 import android.content.Intent
 import android.content.pm.ActivityInfo
@@ -62,9 +62,9 @@ class RewindDeviceModule(private val context: ReactApplicationContext) : ReactCo
     @ReactMethod
     fun close() {
         handler.post {
-            com.kuss.rewind.player.PlayerBridge.closeController?.invoke()
-            com.kuss.rewind.player.PlayerBridge.stopService?.invoke()
-            context.stopService(Intent(context, com.kuss.rewind.player.PlaybackService::class.java))
+            io.github.openrewind.player.PlayerBridge.closeController?.invoke()
+            io.github.openrewind.player.PlayerBridge.stopService?.invoke()
+            context.stopService(Intent(context, io.github.openrewind.player.PlaybackService::class.java))
             context.currentActivity?.finishAndRemoveTask()
         }
     }

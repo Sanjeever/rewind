@@ -1,7 +1,7 @@
-# 倒带
+# 回听
 
 <p align="center">
-  <img src="android/app/src/main/res/mipmap-xhdpi/ic_launcher.png" alt="倒带图标">
+  <img src="android/app/src/main/res/mipmap-xhdpi/ic_launcher.png" alt="回听图标">
 </p>
 
 本项目以倒带 v3.5.0 Android 发布包为基础重建。应用逻辑已整理为 TypeScript/TSX 与 ESM 源码，保留自有 Android 原生能力，供二次开发使用。
@@ -18,7 +18,7 @@
 
 先按[开发指南](docs/development.md#android-应用)准备 Node.js、pnpm、JDK 和 Android SDK。以下命令在仓库根目录执行。
 
-启动模拟器，或连接已授权 USB 调试的设备。执行 `adb devices`，确认目标设备状态为 `device`。设备已有倒带且需要保留数据时，先核对[覆盖安装与签名](docs/development.md#覆盖安装与签名)。
+启动模拟器，或连接已授权 USB 调试的设备。执行 `adb devices`，确认目标设备状态为 `device`。更新设备上已有的回听时，先核对[覆盖安装与签名](docs/development.md#覆盖安装与签名)。
 
 在第一个终端安装依赖并启动 Metro。
 

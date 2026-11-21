@@ -1,4 +1,4 @@
-package com.kuss.rewind
+package io.github.openrewind
 
 import android.app.Application
 import com.facebook.react.PackageList

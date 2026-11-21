@@ -1,4 +1,4 @@
-package com.kuss.rewind.player
+package io.github.openrewind.player
 
 import android.content.ComponentName
 import android.content.ActivityNotFoundException

@@ -33,7 +33,7 @@ const config: DocsThemeConfig =  {
     const { asPath } = useRouter()
     if (asPath !== '/') {
       return {
-       titleTemplate: '%s – 倒带'
+       titleTemplate: '%s – 回听'
       }
     }
   },
@@ -65,14 +65,14 @@ const config: DocsThemeConfig =  {
       <Logo size={32} style={{
         marginTop: 6
       }} />
-      <span>倒带</span>
+      <span>回听</span>
     </>
   ),
   head: (
     <>
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <meta name="description" content="Rewind" />
-      <meta name="og:title" content="Rewind" />
+      <meta name="description" content="Open Rewind" />
+      <meta name="og:title" content="Open Rewind" />
       <link rel="icon" type="image/svg+xml" href="/favicon.svg"></link>
     </>
   ),

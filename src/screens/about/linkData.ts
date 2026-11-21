@@ -15,17 +15,17 @@ const r = {
   ],
   sites: [
     {
-      name: '倒带首页',
+      name: '回听首页',
       url: endpoints.HOST_PAGE,
       icon: icons.WEB,
     },
     {
-      name: '电报群组',
+      name: '倒带反馈群',
       url: 'https://t.me/Rewind_Group',
       icon: icons.CHAT_OUTLINE,
     },
     {
-      name: '电报频道',
+      name: '倒带公告牌',
       url: 'https://t.me/Rewind_News',
       icon: icons.BELL_OUTLINE,
     },

@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <string name="app_name">倒带</string>
+  <string name="app_name">回听</string>
   <string name="channelDesc">rewindDesc</string>
   <string name="channelName">rewindChannel</string>
   <style name="AppTheme" parent="@style/Theme.ReactNative.AppCompat.Light.NoActionBar.FullScreen">

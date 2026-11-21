@@ -1,4 +1,4 @@
-package com.kuss.rewind
+package io.github.openrewind
 
 import com.facebook.react.bridge.*
 import com.hankcs.hanlp.dictionary.stopword.CoreStopWordDictionary

@@ -1,4 +1,4 @@
-package com.kuss.rewind
+package io.github.openrewind
 
 import android.content.ContentUris
 import android.content.ContentValues
